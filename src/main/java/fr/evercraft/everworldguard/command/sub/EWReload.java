@@ -1,20 +1,4 @@
-/*
- * This file is part of EverSigns.
- *
- * EverSigns is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * EverSigns is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with EverSigns.  If not, see <http://www.gnu.org/licenses/>.
- */
-package fr.evercraft.eversigns.command.sub;
+package fr.evercraft.everworldguard.command.sub;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,18 +12,18 @@ import org.spongepowered.api.text.format.TextColors;
 import fr.evercraft.everapi.EAMessage.EAMessages;
 import fr.evercraft.everapi.plugin.EChat;
 import fr.evercraft.everapi.plugin.command.ESubCommand;
-import fr.evercraft.eversigns.ESCommand;
-import fr.evercraft.eversigns.ESMessage.ESMessages;
-import fr.evercraft.eversigns.ESPermissions;
-import fr.evercraft.eversigns.EverSigns;
+import fr.evercraft.everworldguard.EWCommand;
+import fr.evercraft.everworldguard.EWPermissions;
+import fr.evercraft.everworldguard.EverWorldGuard;
+import fr.evercraft.everworldguard.EWMessage.EWMessages;
 
-public class ESReload extends ESubCommand<EverSigns> {
-	public ESReload(final EverSigns plugin, final ESCommand command) {
+public class EWReload extends ESubCommand<EverWorldGuard> {
+	public EWReload(final EverWorldGuard plugin, final EWCommand command) {
         super(plugin, command, "reload");
     }
 	
 	public boolean testPermission(final CommandSource source) {
-		return source.hasPermission(ESPermissions.RELOAD.get());
+		return source.hasPermission(EWPermissions.RELOAD.get());
 	}
 
 	public Text description(final CommandSource source) {
@@ -67,7 +51,7 @@ public class ESReload extends ESubCommand<EverSigns> {
 
 	private boolean commandReload(final CommandSource player) {
 		this.plugin.reload();
-		player.sendMessage(EChat.of(ESMessages.PREFIX.get() + EAMessages.RELOAD_COMMAND.get()));
+		player.sendMessage(EChat.of(EWMessages.PREFIX.get() + EAMessages.RELOAD_COMMAND.get()));
 		return true;
 	}
 }

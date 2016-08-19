@@ -14,32 +14,35 @@
  * You should have received a copy of the GNU General Public License
  * along with EverSigns.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.evercraft.eversigns;
+package fr.evercraft.everworldguard;
 
 import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.text.Text;
 
-import fr.evercraft.everapi.plugin.command.EParentCommand;
-import fr.evercraft.eversigns.ESMessage.ESMessages;
+import com.google.common.base.Preconditions;
 
-public class ESCommand extends EParentCommand<EverSigns> {
+import fr.evercraft.everapi.plugin.EnumPermission;
+
+public enum EWPermissions implements EnumPermission {
+	EVERWORLDGUARD("command"),
 	
-	public ESCommand(final EverSigns plugin) {
-        super(plugin, "eversigns");
+	HELP("help"),
+	RELOAD("reload");
+	
+	private final static String prefix = "everworldguard";
+	
+	private final String permission;
+    
+    private EWPermissions(final String permission) {   	
+    	Preconditions.checkNotNull(permission, "La permission '" + this.name() + "' n'est pas définit");
+    	
+    	this.permission = permission;
     }
-	
-	@Override
-	public boolean testPermission(final CommandSource source) {
-		return source.hasPermission(ESPermissions.EVERSIGNS.get());
-	}
 
-	@Override
-	public Text description(final CommandSource source) {
-		return ESMessages.DESCRIPTION.getText();
+    public String get() {
+		return EWPermissions.prefix + "." + this.permission;
 	}
-
-	@Override
-	public boolean testPermissionHelp(final CommandSource source) {
-		return source.hasPermission(ESPermissions.HELP.get());
-	}
+    
+    public boolean has(CommandSource player) {
+    	return player.hasPermission(this.get());
+    }
 }

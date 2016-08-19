@@ -1,20 +1,4 @@
-/*
- * This file is part of EverSigns.
- *
- * EverSigns is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * EverSigns is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with EverSigns.  If not, see <http://www.gnu.org/licenses/>.
- */
-package fr.evercraft.eversigns;
+package fr.evercraft.everworldguard;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,9 +9,9 @@ import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import fr.evercraft.everapi.plugin.file.EConfig;
 import fr.evercraft.everapi.plugin.file.EMessage;
 
-public class ESConfig extends EConfig {
+public class EWConfig extends EConfig {
 
-	public ESConfig(final EverSigns plugin) {
+	public EWConfig(final EverWorldGuard plugin) {
 		super(plugin);
 	}
 	
