@@ -26,7 +26,35 @@ public enum EWPermissions implements EnumPermission {
 	EVERWORLDGUARD("command"),
 	
 	HELP("help"),
-	RELOAD("reload");
+	RELOAD("reload"),
+	
+	DEFINE("region.define"),
+	
+	REDEFINE_OWN("redefine.own"),
+	REDEFINE_MEMBER("redefine.member"),
+	
+	INFO_OWN("info.own"),
+	INFO_MEMBER("info.member"),
+	INFO_REGION("info.region"),
+	
+	ADD_OWNER_OWN("addowner.own"),
+	ADD_OWNER_MEMBER("addowner.member"),
+	ADD_OWNER_ALL("addowner"),
+	
+	REMOVE_OWNER_OWN("removeowner.own"),
+	REMOVE_OWNER_MEMBER("removeowner.member"),
+	REMOVE_OWNER_ALL("removeowner"),
+	
+	ADD_MEMBER_OWN("addmember.own"),
+	ADD_MEMBER_MEMBER("addmember.member"),
+	ADD_MEMBER_ALL("addmember"),
+	
+	REMOVE_MEMBER_OWN("removemember.own"),
+	REMOVE_MEMBER_MEMBER("removemember.member"),
+	REMOVE_MEMBER_ALL("removemember"),
+	
+	LIST_OWN("list.own"),
+	LIST("list");
 	
 	private final static String prefix = "everworldguard";
 	
