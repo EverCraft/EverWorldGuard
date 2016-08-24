@@ -58,7 +58,7 @@ public class EWReload extends ESubCommand<EverWorldGuard> {
 	}
 	
 	public boolean subExecute(final CommandSource source, final List<String> args) {
-		if(args.size() == 0) {
+		if (args.size() == 0) {
 			return commandReload(source);
 		}
 		source.sendMessage(this.help(source));
