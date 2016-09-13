@@ -19,18 +19,19 @@ package fr.evercraft.everworldguard;
 import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 
+import fr.evercraft.everapi.EverAPI;
 import fr.evercraft.everapi.plugin.EPlugin;
 import fr.evercraft.everworldguard.command.sub.EWReload;
 import fr.evercraft.everworldguard.service.EWorldGuardService;
 
-@Plugin(id = "fr.evercraft.everworldguard", 
+@Plugin(id = "everworldguard", 
 		name = "EverWorldGuard", 
-		version = "1.2", 
+		version = EverAPI.VERSION, 
 		description = "WorldGuard",
 		url = "http://evercraft.fr/",
 		authors = {"rexbut"},
 		dependencies = {
-		    @Dependency(id = "fr.evercraft.everapi", version = "1.2")
+		    @Dependency(id = "everapi", version = EverAPI.VERSION)
 		})
 public class EverWorldGuard extends EPlugin {
 	private EWConfig configs;
