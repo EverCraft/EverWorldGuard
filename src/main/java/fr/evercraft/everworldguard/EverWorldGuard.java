@@ -34,7 +34,7 @@ import fr.evercraft.everworldguard.service.EWorldGuardService;
 		    @Dependency(id = "everapi", version = EverAPI.VERSION),
 		    @Dependency(id = "spongeapi", version = EverAPI.SPONGEAPI_VERSION)
 		})
-public class EverWorldGuard extends EPlugin {
+public class EverWorldGuard extends EPlugin<EverWorldGuard> {
 	private EWConfig configs;
 	private EWMessage messages;
 	

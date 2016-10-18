@@ -25,7 +25,7 @@ import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import fr.evercraft.everapi.plugin.file.EConfig;
 import fr.evercraft.everapi.plugin.file.EMessage;
 
-public class EWConfig extends EConfig {
+public class EWConfig extends EConfig<EverWorldGuard> {
 
 	public EWConfig(final EverWorldGuard plugin) {
 		super(plugin);
