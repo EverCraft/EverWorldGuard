@@ -32,7 +32,52 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 	
 	public enum EWMessages implements EnumMessage {
 		PREFIX("prefix", 				"[&4Ever&6&lWorldGuard&f] "),
-		DESCRIPTION("description",		"Gestionnaire des régions");
+		DESCRIPTION("description",		"Gestionnaire des régions"), 
+		
+		SELECT_DESCRIPTION("select.description",				""),
+		
+		SELECT_INFO_POS("select.info.pos",												"&7(&6<x>&7, &6<y>&7, &6<z>&7)"),
+		SELECT_INFO_POS_HOVER("select.info.posHover",									"&7X : &6<x>[RT]&7Y : &6<y>[RT]&7Z : &6<z>"),
+		SELECT_INFO_CUBOID_POS1_AND_POS2("select.info.cuboidPos1AndPos2",				"&7Position 1 : <pos1> &7et Position 2 : <pos2> &7(&6<area>&7)"),
+		SELECT_INFO_CUBOID_POS1("select.info.cuboidPos1",								"&7Position 1 : <pos>"),
+		SELECT_INFO_CUBOID_POS2("select.info.cuboidPos2",								"&7Position 2 : <pos>"),
+		SELECT_INFO_CUBOID_EMPTY("select.info.cuboidEmpty",								"&7Aucune position sélectionné"),
+		SELECT_INFO_POLY_LINE("select.info.polyLine",									"    &7- <pos>"),
+		SELECT_INFO_POLY_TITLE("select.info.polyTitle",									"&7Liste des positions &7(&6<area>&7)"),
+		SELECT_INFO_POLY_EMPTY("select.info.polyEmpty",									"&7Aucune position sélectionné"),
+		SELECT_INFO_CYLINDER_CENTER_AND_RADIUS("select.info.cylinderCenterAndRadius",	"&7Centre : <pos1> &7et Radius : <pos2> &7(&6<area>&7)"),
+		SELECT_INFO_CYLINDER_CENTER("select.info.cylinderCenter",						"&7Centre : <pos>"),
+		SELECT_INFO_CYLINDER_RADIUS("select.info.cylinderRadius",						"&7Radius : <pos>"),
+		SELECT_INFO_CYLINDER_EMPTY("select.info.cylinderEmpty",							"&7Aucune position sélectionné"),
+		
+		SELECT_POS1_DESCRIPTION("select.pos1.description",			"Definie la première position"),
+		SELECT_POS1_CUBOID_ONE("select.pos1.cuboidOne",				"&7Selection de la première position : <pos>"),
+		SELECT_POS1_CUBOID_TWO("select.pos1.cuboidTwo",				"&7Selection de la première position : <pos> &7(&6<area>&7)"),
+		SELECT_POS1_POLY("select.pos1.poly",						"&7Selection de la première position : <pos>"),
+		SELECT_POS1_CYLINDER_CENTER("select.pos1.cylinderCentor",	"&7Selection du centre : <pos>"),
+		SELECT_POS1_EQUALS("select.pos1.equals",					"&cErreur : Vous avez déjà selectionné cette position."),
+		SELECT_POS1_CANCEL("select.pos1.cancel",					"&cErreur : Impossible de sélection la position pour le moment."),
+		
+		SELECT_POS2_DESCRIPTION("select.pos2.description",			"Definie la deuxième position"),
+		SELECT_POS2_CUBOID_ONE("select.pos2.cuboidOne",				"&7Selection de la deuxième position : <pos>"),
+		SELECT_POS2_CUBOID_TWO("select.pos2.cuboidTwo",				"&7Selection de la deuxième position : <pos> &7(&6<area>&7)"),
+		SELECT_POS2_POLY("select.pos2.poly",						"&7Ajoute de la position &6#<num> &7: <pos>"),
+		SELECT_POS2_RADIUS("select.pos2.radius",					"&7Selection d'un rayon de <radius> &7block(s) : <pos>"),
+		SELECT_POS2_NO_CENTER("select.pos2.noCenter",				"&cErreur : Aucune position centrale selectionné."),
+		SELECT_POS2_EQUALS("select.pos2.equals",					"&cErreur : Vous avez déjà selectionné cette position."),
+		SELECT_POS2_CANCEL("select.pos2.cancel",					"&cErreur : Impossible de sélection la position pour le moment."),
+		
+		SELECT_EXPAND_DESCRIPTION("select.expand.description",	""),
+		
+		SELECT_TYPE_DESCRIPTION("select.type.description",		"&7Changé le type de selection"),
+		SELECT_TYPE_CUBOID("select.type.cuboid",				"&7Cuboid : clique gauche pour définir le point 1 et clique droit pour définir le point 2.",
+																"&7Cuboid: left click for point 1, right for point 2."),
+		SELECT_TYPE_POLYGONAL("select.type.poly",				"&72D Polygonal : clique gauche pour définir le premier point et clique droit pour définir les points suivants.",
+																"&72D polygon selector: Left/right click to add a point."),
+		SELECT_TYPE_CYLINDER("select.type.cylinder",			"&7Cylindrique : clique gauche pour définir le centre, clique droit pour définir le rayon",
+																"&7Cylindrical select: Left click=center, right click to extend."),
+		SELECT_TYPE_EQUALS("select.type.equals",				"&cErreur : Sélection &6<type> &cdéjà activée"),
+		SELECT_TYPE_CANCEL("select.type.cancel",				"&cErreur : Impossible de changé de type de selection pour le moment");
 		
 		private final String path;
 	    private final EMessageBuilder french;

@@ -54,7 +54,11 @@ public enum EWPermissions implements EnumPermission {
 	REMOVE_MEMBER_ALL("removemember"),
 	
 	LIST_OWN("list.own"),
-	LIST("list");
+	LIST("list"),
+	
+	SELECT("select.command"),
+	SELECT_POS("select.pos"),
+	SELECT_EXPAND("select.expand");
 	
 	private final static String prefix = "everworldguard";
 	

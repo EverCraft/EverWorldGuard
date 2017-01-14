@@ -21,7 +21,8 @@ import org.spongepowered.api.plugin.Plugin;
 
 import fr.evercraft.everapi.EverAPI;
 import fr.evercraft.everapi.plugin.EPlugin;
-import fr.evercraft.everworldguard.command.sub.EWReload;
+import fr.evercraft.everapi.services.worldguard.WorldGuardService;
+import fr.evercraft.everworldguard.command.EWManagerCommands;
 import fr.evercraft.everworldguard.service.EWorldGuardService;
 
 @Plugin(id = "everworldguard", 
@@ -39,6 +40,7 @@ public class EverWorldGuard extends EPlugin<EverWorldGuard> {
 	private EWMessage messages;
 	
 	private EWorldGuardService service;
+	private EWManagerCommands commands;
 	
 	@Override
 	protected void onPreEnable() {		
@@ -46,16 +48,14 @@ public class EverWorldGuard extends EPlugin<EverWorldGuard> {
 		this.messages = new EWMessage(this);
 		
 		this.service = new EWorldGuardService(this);
-		//this.getGame().getServiceManager().setProvider(this, WorldGuardService.class, this.service);
+		this.getGame().getServiceManager().setProvider(this, WorldGuardService.class, this.service);
 		
 		this.getGame().getEventManager().registerListeners(this, new EWListener(this));
 	}
 	
 	@Override
 	protected void onCompleteEnable() {
-		EWCommand command = new EWCommand(this);
-		
-		command.add(new EWReload(this, command));
+		this.commands = new EWManagerCommands(this);
 	}
 
 	protected void onReload(){
@@ -79,5 +79,9 @@ public class EverWorldGuard extends EPlugin<EverWorldGuard> {
 	
 	public EWorldGuardService getService() {
 		return this.service;
+	}
+	
+	public EWManagerCommands getManagerCommands() {
+		return this.commands;
 	}
 }
