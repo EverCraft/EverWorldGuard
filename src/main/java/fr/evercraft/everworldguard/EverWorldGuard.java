@@ -23,6 +23,7 @@ import fr.evercraft.everapi.EverAPI;
 import fr.evercraft.everapi.plugin.EPlugin;
 import fr.evercraft.everapi.services.worldguard.WorldGuardService;
 import fr.evercraft.everworldguard.command.EWManagerCommands;
+import fr.evercraft.everworldguard.listeners.EWListener;
 import fr.evercraft.everworldguard.service.EWorldGuardService;
 
 @Plugin(id = "everworldguard", 

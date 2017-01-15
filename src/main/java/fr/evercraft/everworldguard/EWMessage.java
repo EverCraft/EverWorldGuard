@@ -31,7 +31,7 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 	}
 	
 	public enum EWMessages implements EnumMessage {
-		PREFIX("prefix", 				"[&4Ever&6&lWorldGuard&f] "),
+		PREFIX("prefix", 				"[&4Ever&6&lWG&f] "),
 		DESCRIPTION("description",		"Gestionnaire des régions"), 
 		
 		SELECT_DESCRIPTION("select.description",				""),
@@ -61,11 +61,21 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		SELECT_POS2_DESCRIPTION("select.pos2.description",			"Definie la deuxième position"),
 		SELECT_POS2_CUBOID_ONE("select.pos2.cuboidOne",				"&7Selection de la deuxième position : <pos>"),
 		SELECT_POS2_CUBOID_TWO("select.pos2.cuboidTwo",				"&7Selection de la deuxième position : <pos> &7(&6<area>&7)"),
-		SELECT_POS2_POLY("select.pos2.poly",						"&7Ajoute de la position &6#<num> &7: <pos>"),
+		SELECT_POS2_POLY_ONE("select.pos2.polyOne",					"&7Ajoute de la position &6#<num> &7: <pos>"),
+		SELECT_POS2_POLY_ALL("select.pos2.polyAll",					"&7Ajoute de la position &6#<num> &7: <pos> &7(&6<area>&7)"),
 		SELECT_POS2_RADIUS("select.pos2.radius",					"&7Selection d'un rayon de <radius> &7block(s) : <pos>"),
 		SELECT_POS2_NO_CENTER("select.pos2.noCenter",				"&cErreur : Aucune position centrale selectionné."),
 		SELECT_POS2_EQUALS("select.pos2.equals",					"&cErreur : Vous avez déjà selectionné cette position."),
 		SELECT_POS2_CANCEL("select.pos2.cancel",					"&cErreur : Impossible de sélection la position pour le moment."),
+		
+		SELECT_CLEAR_DESCRIPTION("select.clear.description",		"Supprime toutes les positions selectionné"),
+		SELECT_CLEAR_PLAYER("select.clear.player",					"&7Vous n'avez plus aucune position sélectionné."),
+		
+		SELECT_REMOVE_DESCRIPTION("select.remove.description",		"Supprime la denière position sélectionné d'un polygone"),
+		SELECT_REMOVE_PLAYER("select.remove.player",				"&7Vous avez supprimer la position : <pos>"),
+		SELECT_REMOVE_EMPTY("select.remove.empty",					"&4Erreur : Vous n'avez aucune position sélectionné."),
+		SELECT_REMOVE_ERROR("select.remove.error",					"&4Erreur : Uniquement pour le type &62D Polygonal&c."),
+		
 		
 		SELECT_EXPAND_DESCRIPTION("select.expand.description",	""),
 		

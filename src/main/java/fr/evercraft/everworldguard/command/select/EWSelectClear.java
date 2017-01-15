@@ -15,10 +15,10 @@ import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EverWorldGuard;
 
-public class EWSelectExpand extends ESubCommand<EverWorldGuard> {
+public class EWSelectClear extends ESubCommand<EverWorldGuard> {
 	
-	public EWSelectExpand(final EverWorldGuard plugin, final EWSelect command) {
-        super(plugin, command, "expand");
+	public EWSelectClear(final EverWorldGuard plugin, final EWSelect command) {
+        super(plugin, command, "clear");
     }
 	
 	@Override
@@ -28,7 +28,7 @@ public class EWSelectExpand extends ESubCommand<EverWorldGuard> {
 
 	@Override
 	public Text description(final CommandSource source) {
-		return EWMessages.SELECT_EXPAND_DESCRIPTION.getText();
+		return EWMessages.SELECT_CLEAR_DESCRIPTION.getText();
 	}
 
 	@Override
@@ -49,9 +49,9 @@ public class EWSelectExpand extends ESubCommand<EverWorldGuard> {
 		// Résultat de la commande :
 		boolean resultat = false;
 		
-		if (args.size() == 1) {
+		if (args.size() == 0) {
 			if (source instanceof EPlayer) {
-				resultat = this.commandSelectExpand((EPlayer) source, args.get(0));
+				resultat = this.commandSelectClear((EPlayer) source);
 			} else {
 				EAMessages.COMMAND_ERROR_FOR_PLAYER.sender()
 					.prefix(EWMessages.PREFIX)
@@ -64,7 +64,12 @@ public class EWSelectExpand extends ESubCommand<EverWorldGuard> {
 		return resultat;
 	}
 
-	private boolean commandSelectExpand(final EPlayer player, final String type_string) {
-		return false;
+	private boolean commandSelectClear(final EPlayer player) {
+		player.setSelectPos1(null);
+		player.setSelectPos2(null);
+		player.clearSelectPoints();
+		
+		EWMessages.SELECT_CLEAR_PLAYER.sendTo(player);
+		return true;
 	}
 }

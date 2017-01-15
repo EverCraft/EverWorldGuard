@@ -1,19 +1,3 @@
-/*
- * This file is part of EverEssentials.
- *
- * EverEssentials is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * EverEssentials is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with EverEssentials.  If not, see <http://www.gnu.org/licenses/>.
- */
 package fr.evercraft.everworldguard.command.select;
 
 import java.util.ArrayList;
@@ -168,7 +152,7 @@ public class EWSelect extends EParentCommand<EverWorldGuard> {
 		return true;
 	}
 	
-	public static final Text getPositionHover(final Vector3i position) {
+	public static Text getPositionHover(final Vector3i position) {
 		Map<String, EReplace<?>> replaces = new HashMap<String, EReplace<?>>();
 		replaces.put("<x>", EReplace.of(String.valueOf(position.getX())));
 		replaces.put("<y>", EReplace.of(String.valueOf(position.getY())));
@@ -177,5 +161,100 @@ public class EWSelect extends EParentCommand<EverWorldGuard> {
 				.toBuilder()
 				.onHover(TextActions.showText(EWMessages.SELECT_INFO_POS_HOVER.getFormat().toText(replaces)))
 				.build();
+	}
+	
+	public static boolean eventPos1(final EPlayer player, final Vector3i position) {
+		if (!player.hasPermission(EWPermissions.SELECT_WAND.get())) {
+			return false;
+		}
+		
+		if (!player.setSelectPos1(position)) {
+			return true;
+		}
+		
+		if (player.getSelectType().equals(SelectType.CUBOID)) {
+			if (!player.getSelectPos2().isPresent()) {
+				EWMessages.SELECT_POS1_CUBOID_ONE.sender()
+					.replace("<pos>", EWSelect.getPositionHover(position))
+					.sendTo(player);
+			} else {
+				EWMessages.SELECT_POS1_CUBOID_TWO.sender()
+					.replace("<pos>", EWSelect.getPositionHover(position))
+					.replace("<area>", player.getSelectArea().orElse(0).toString())
+					.sendTo(player);
+			}
+		} else if (player.getSelectType().equals(SelectType.POLY)) {
+			player.setSelectPos2(null);
+			player.clearSelectPoints();
+			EWMessages.SELECT_POS1_POLY.sender()
+				.replace("<pos>", EWSelect.getPositionHover(position))
+				.sendTo(player);
+		} else if (player.getSelectType().equals(SelectType.CYLINDER)) {
+			player.setSelectPos2(null);
+			EWMessages.SELECT_POS1_CYLINDER_CENTER.sender()
+				.replace("<pos>", EWSelect.getPositionHover(position))
+				.sendTo(player);
+		}
+		return true;
+	}
+	
+	public static boolean eventPos2(final EPlayer player, final Vector3i position) {
+		if (!player.hasPermission(EWPermissions.SELECT_WAND.get())) {
+			return false;
+		}
+		
+		if (player.getSelectType().equals(SelectType.CUBOID)) {
+			if (!player.setSelectPos2(position)) {
+				return true;
+			}
+			
+			if (!player.getSelectPos2().isPresent()) {
+				EWMessages.SELECT_POS2_CUBOID_ONE.sender()
+					.replace("<pos>", EWSelect.getPositionHover(position))
+					.sendTo(player);
+			} else {
+				EWMessages.SELECT_POS2_CUBOID_TWO.sender()
+					.replace("<pos>", EWSelect.getPositionHover(position))
+					.replace("<area>", player.getSelectArea().orElse(0).toString())
+					.sendTo(player);
+			}
+		} else if (player.getSelectType().equals(SelectType.POLY)) {
+			if (!player.addSelectPoint(position)) {
+				return true;
+			}
+			
+			if (player.getSelectPoints().size() == 1) {
+				EWMessages.SELECT_POS2_POLY_ONE.sender()
+					.replace("<pos>", EWSelect.getPositionHover(position))
+					.replace("<num>", String.valueOf(player.getSelectPoints().size()))
+					.sendTo(player);
+			} else {
+				EWMessages.SELECT_POS2_POLY_ALL.sender()
+					.replace("<pos>", EWSelect.getPositionHover(position))
+					.replace("<num>", String.valueOf(player.getSelectPoints().size()))
+					.replace("<area>", player.getSelectArea().orElse(0).toString())
+					.sendTo(player);
+			}
+		} else if (player.getSelectType().equals(SelectType.CYLINDER)) {
+			Optional<Vector3i> pos1 = player.getSelectPos1();
+			
+			if (!pos1.isPresent()) {
+				EWMessages.SELECT_POS2_NO_CENTER.sender()
+					.replace("<pos>", EWSelect.getPositionHover(position))
+					.sendTo(player);
+				return false;
+			}
+			
+			if (!player.setSelectPos2(position)) {
+				return true;
+			}
+			
+			EWMessages.SELECT_POS2_RADIUS.sender()
+				.replace("<pos>", EWSelect.getPositionHover(position))
+				.replace("<radius>", String.valueOf(position.distance(pos1.get())))
+				.replace("<area>", player.getSelectArea().orElse(0).toString())
+				.sendTo(player);
+		}
+		return true;
 	}
 }

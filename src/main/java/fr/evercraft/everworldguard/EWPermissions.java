@@ -57,6 +57,7 @@ public enum EWPermissions implements EnumPermission {
 	LIST("list"),
 	
 	SELECT("select.command"),
+	SELECT_WAND("select.wand"),
 	SELECT_POS("select.pos"),
 	SELECT_EXPAND("select.expand");
 	
