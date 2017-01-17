@@ -1,3 +1,19 @@
+/*
+ * This file is part of EverWorldGuard.
+ *
+ * EverWorldGuard is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * EverWorldGuard is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with EverWorldGuard.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package fr.evercraft.everworldguard.service;
 
 import java.util.ArrayList;
@@ -13,7 +29,9 @@ import com.google.common.collect.ImmutableList.Builder;
 import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everapi.services.worldguard.SelectType;
 import fr.evercraft.everapi.services.worldguard.SubjectWorldGuard;
+import fr.evercraft.everapi.services.worldguard.regions.Region;
 import fr.evercraft.everworldguard.EverWorldGuard;
+import fr.evercraft.everworldguard.regions.CuboidRegion;
 
 public class EUserSubject implements SubjectWorldGuard {
 	
@@ -126,6 +144,20 @@ public class EUserSubject implements SubjectWorldGuard {
 
 	@Override
 	public Optional<Integer> getSelectArea() {
+		Optional<Region> region = this.getSelectRegion();
+		if (region.isPresent()) {
+			return Optional.of(region.get().getArea());
+		}
+		return Optional.empty();
+    }
+	
+	@Override
+	public Optional<Region> getSelectRegion() {
+		if (this.getSelectType().equals(SelectType.CUBOID)) {
+			if (this.pos1 != null && this.pos2 != null) {
+				return Optional.of(new CuboidRegion(null, this.pos1, this.pos2));
+			}
+		}
 		return Optional.empty();
     }
 	
