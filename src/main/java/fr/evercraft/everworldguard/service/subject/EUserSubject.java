@@ -14,12 +14,19 @@
  * You should have received a copy of the GNU General Public License
  * along with EverWorldGuard.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.evercraft.everworldguard.service;
+package fr.evercraft.everworldguard.service.subject;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+
+import org.spongepowered.api.entity.Transform;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
 
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.base.Preconditions;
@@ -32,6 +39,7 @@ import fr.evercraft.everapi.services.worldguard.SubjectWorldGuard;
 import fr.evercraft.everapi.services.worldguard.regions.Region;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.regions.CuboidRegion;
+import fr.evercraft.everworldguard.regions.ProtectedRegion;
 
 public class EUserSubject implements SubjectWorldGuard {
 	
@@ -43,6 +51,9 @@ public class EUserSubject implements SubjectWorldGuard {
 	private Vector3i pos2;
 	private List<Vector3i> points;
 	private SelectType type;
+	
+	private Location<World> lastPos;
+	private final Set<ProtectedRegion> lastRegionSet;
 
 	public EUserSubject(final EverWorldGuard plugin, final UUID uuid) {
 		Preconditions.checkNotNull(plugin, "plugin");
@@ -51,7 +62,22 @@ public class EUserSubject implements SubjectWorldGuard {
 		this.plugin = plugin;
 		this.identifier = uuid;
 		this.points = new ArrayList<Vector3i>();
+		
+		this.lastRegionSet = new HashSet<ProtectedRegion>();
 	}
+	
+	/*
+	 * Region
+	 */
+	
+	public void initialize(Player player) {
+		this.lastPos = player.getLocation();
+	}
+	
+	
+	/*
+	 * Select
+	 */
 	
 	@Override
 	public Optional<Vector3i> getSelectPos1() {

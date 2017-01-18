@@ -20,11 +20,13 @@ import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 
 import fr.evercraft.everapi.EverAPI;
+import fr.evercraft.everapi.exception.PluginDisableException;
 import fr.evercraft.everapi.plugin.EPlugin;
 import fr.evercraft.everapi.services.worldguard.WorldGuardService;
 import fr.evercraft.everworldguard.command.EWManagerCommands;
 import fr.evercraft.everworldguard.listeners.EWListener;
 import fr.evercraft.everworldguard.service.EWorldGuardService;
+import fr.evercraft.everworldguard.service.storage.EWDataBases;
 
 @Plugin(id = "everworldguard", 
 		name = "EverWorldGuard", 
@@ -42,11 +44,14 @@ public class EverWorldGuard extends EPlugin<EverWorldGuard> {
 	
 	private EWorldGuardService service;
 	private EWManagerCommands commands;
+	private EWDataBases database;
 	
 	@Override
-	protected void onPreEnable() {		
+	protected void onPreEnable() throws PluginDisableException {		
 		this.configs = new EWConfig(this);
 		this.messages = new EWMessage(this);
+		
+		this.database = new EWDataBases(this);
 		
 		this.service = new EWorldGuardService(this);
 		this.getGame().getServiceManager().setProvider(this, WorldGuardService.class, this.service);
@@ -59,8 +64,10 @@ public class EverWorldGuard extends EPlugin<EverWorldGuard> {
 		this.commands = new EWManagerCommands(this);
 	}
 
-	protected void onReload(){
+	protected void onReload() throws PluginDisableException{
 		this.reloadConfigurations();
+		this.database.reload();
+		this.service.reload();
 	}
 	
 	protected void onDisable() {
@@ -80,6 +87,10 @@ public class EverWorldGuard extends EPlugin<EverWorldGuard> {
 	
 	public EWorldGuardService getService() {
 		return this.service;
+	}
+	
+	public EWDataBases getDataBase() {
+		return this.database;
 	}
 	
 	public EWManagerCommands getManagerCommands() {
