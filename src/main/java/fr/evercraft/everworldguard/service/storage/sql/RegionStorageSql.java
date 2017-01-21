@@ -4,6 +4,8 @@ import java.util.Set;
 
 import org.spongepowered.api.world.World;
 
+import com.google.common.collect.ImmutableSet;
+
 import fr.evercraft.everapi.services.worldguard.exception.StorageException;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.regions.ProtectedRegion;
@@ -11,21 +13,33 @@ import fr.evercraft.everworldguard.service.storage.RegionStorage;
 
 public class RegionStorageSql implements RegionStorage {
 	
+	@SuppressWarnings("unused")
 	private final EverWorldGuard plugin;
 	
 	public RegionStorageSql(EverWorldGuard plugin, World world) {		
 		this.plugin = plugin;
 	}
-	
-	public Set<ProtectedRegion> getAll() throws StorageException {
-		return null;
+
+	@Override
+	public Set<ProtectedRegion> getAll() {
+		return ImmutableSet.of();
 	}
-	
-	public void save(ProtectedRegion difference) throws StorageException {
+
+	@Override
+	public void add(ProtectedRegion region) throws StorageException {
+		// TODO Auto-generated method stub
 		
 	}
-	
-	public void save(Set<ProtectedRegion> regions) throws StorageException {
+
+	@Override
+	public void remove(ProtectedRegion region) throws StorageException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void remove(Set<ProtectedRegion> regions) throws StorageException {
+		// TODO Auto-generated method stub
 		
 	}
 }

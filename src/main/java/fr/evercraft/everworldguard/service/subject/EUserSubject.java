@@ -23,7 +23,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
@@ -38,7 +37,6 @@ import fr.evercraft.everapi.services.worldguard.SelectType;
 import fr.evercraft.everapi.services.worldguard.SubjectWorldGuard;
 import fr.evercraft.everapi.services.worldguard.regions.Region;
 import fr.evercraft.everworldguard.EverWorldGuard;
-import fr.evercraft.everworldguard.regions.CuboidRegion;
 import fr.evercraft.everworldguard.regions.ProtectedRegion;
 
 public class EUserSubject implements SubjectWorldGuard {
@@ -181,7 +179,7 @@ public class EUserSubject implements SubjectWorldGuard {
 	public Optional<Region> getSelectRegion() {
 		if (this.getSelectType().equals(SelectType.CUBOID)) {
 			if (this.pos1 != null && this.pos2 != null) {
-				return Optional.of(new CuboidRegion(null, this.pos1, this.pos2));
+				return Optional.empty();
 			}
 		}
 		return Optional.empty();

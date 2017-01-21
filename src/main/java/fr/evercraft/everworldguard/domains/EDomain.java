@@ -47,6 +47,17 @@ public class EDomain implements Domain {
 		this.groups.addAll(existing.getGroups());
 	}
 	
+	public void init(Set<UUID> players, Set<String> name) {
+		Preconditions.checkNotNull(players);
+		Preconditions.checkNotNull(name);
+		
+		this.players.clear();
+		this.groups.clear();
+		
+		this.players.addAll(players);
+		this.groups.addAll(name);
+	}
+	
 	/*
 	 * Player
 	 */

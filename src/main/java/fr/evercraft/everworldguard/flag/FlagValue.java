@@ -16,9 +16,12 @@
  */
 package fr.evercraft.everworldguard.flag;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+
+import com.google.common.collect.ImmutableMap;
 
 import fr.evercraft.everworldguard.domains.Association;
 
@@ -45,5 +48,9 @@ public class FlagValue<T> {
 
 	public Optional<T> get(Association association) {
 		return Optional.ofNullable(this.values.get(association));
+	}
+	
+	public Map<Association, T> getAll() {
+		return ImmutableMap.copyOf(this.values);
 	}
 }

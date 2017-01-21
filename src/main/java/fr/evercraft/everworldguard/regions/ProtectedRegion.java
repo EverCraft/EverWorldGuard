@@ -16,12 +16,14 @@
  */
 package fr.evercraft.everworldguard.regions;
 
-import com.flowpowered.math.vector.Vector2i;
 import com.flowpowered.math.vector.Vector3i;
+
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList.Builder;
 
 import fr.evercraft.everapi.java.UtilsString;
+import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everapi.services.worldguard.flag.Flag;
 import fr.evercraft.everapi.services.worldguard.regions.RegionType;
 import fr.evercraft.everworldguard.domains.Association;
@@ -34,17 +36,19 @@ import org.spongepowered.api.entity.living.player.Player;
 
 import java.awt.geom.Area;
 import java.awt.geom.Line2D;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Pattern;
 
 public abstract class ProtectedRegion implements Comparable<ProtectedRegion> {
 
-	public static final String GLOBAL_REGION = "__global__";
 	private static final Pattern VALID_ID_PATTERN = Pattern.compile("^[A-Za-z0-9_,'\\-\\+/]{1,}$");
 
 	protected Vector3i min;
@@ -62,7 +66,7 @@ public abstract class ProtectedRegion implements Comparable<ProtectedRegion> {
 	
 	public ProtectedRegion(String id, boolean transientRegion) {
 		Preconditions.checkNotNull(id);
-		Preconditions.checkArgument(!ProtectedRegion.isValidId(id), "Invalid region ID: " + id);
+		Preconditions.checkArgument(ProtectedRegion.isValidId(id), "Invalid region ID: " + id);
 
 		this.id = UtilsString.normalize(id);
 		this.owners = new EDomain();
@@ -71,6 +75,52 @@ public abstract class ProtectedRegion implements Comparable<ProtectedRegion> {
 		this.flags = new ConcurrentHashMap<Flag<?>, FlagValue<?>>();
 		
 		this.transientRegion = transientRegion;
+	}
+	
+	public void init(int priority, Set<UUID> owners, Set<String> group_owners, 
+			Set<UUID> members, Set<String> group_members, Map<Flag<?>, FlagValue<?>> flags) {
+		this.flags.clear();
+		
+		this.priority = priority;
+		this.owners.init(owners, group_owners);
+		this.members.init(members, group_members);
+		this.flags.putAll(flags);
+	}
+	
+	/*
+	 * Abstract
+	 */
+	
+	public abstract int volume();
+	
+	public abstract Optional<Area> toArea();
+	
+	public abstract boolean isPhysicalArea();
+	
+	public abstract RegionType getType();
+	
+	public abstract List<Vector3i> getPoints();
+	
+	public abstract boolean containsPosition(Vector3i pt);
+	
+	/*
+	 * Accesseurs
+	 */
+	
+	public String getId() {
+		return this.id;
+	}
+	
+	public boolean isTransient() {
+		return this.transientRegion;
+	}	
+	
+	public Vector3i getMinimumPoint() {
+		return this.min;
+	}
+	
+	public Vector3i getMaximumPoint() {
+		return this.max;
 	}
 	
 	protected void setMinMaxPoints(List<Vector3i> points) {
@@ -99,20 +149,6 @@ public abstract class ProtectedRegion implements Comparable<ProtectedRegion> {
 		this.max = new Vector3i(maxX, maxY, maxZ);
 	}
 	
-	public String getId() {
-		return this.id;
-	}
-	
-	public abstract boolean isPhysicalArea();
-	
-	public Vector3i getMinimumPoint() {
-		return this.min;
-	}
-	
-	public Vector3i getMaximumPoint() {
-		return this.max;
-	}
-	
 	public int getPriority() {
 		return this.priority;
 	}
@@ -123,7 +159,7 @@ public abstract class ProtectedRegion implements Comparable<ProtectedRegion> {
 
 	public Optional<ProtectedRegion> getParent() {
 		return Optional.of(this.parent);
-	}
+	}	
 	
 	public void setParent(@Nullable ProtectedRegion parent) throws CircularInheritanceException {
 		if (parent == null) {
@@ -204,7 +240,7 @@ public abstract class ProtectedRegion implements Comparable<ProtectedRegion> {
 		return false;
 	}
 	
-	public boolean isMemberOnly(Player player) {
+	public boolean isMemberOnly(EPlayer player) {
 		Preconditions.checkNotNull(player);
 
 		if (this.members.contains(player)) {
@@ -222,6 +258,10 @@ public abstract class ProtectedRegion implements Comparable<ProtectedRegion> {
 
 		return false;
 	}
+	
+	/*
+	 * Flags
+	 */
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Nullable
@@ -269,41 +309,46 @@ public abstract class ProtectedRegion implements Comparable<ProtectedRegion> {
 		this.flags.putAll(flags);
 	}
 	
-	public abstract List<Vector2i> getPoints();
+	/*
+	 * Contains
+	 */
 	
-	public abstract int volume();
-	
-	public abstract boolean contains(Vector3i pt);
-	
-	public boolean contains(Vector2i position) {
-		Preconditions.checkNotNull(position);
-		
-		return this.contains(new Vector3i(position.getX(), min.getY(), position.getY()));
+	public boolean containsPosition(int x, int y, int z) {
+		return this.containsPosition(new Vector3i(x, y, z));
 	}
 	
-	public boolean contains(int x, int y, int z) {
-		return this.contains(new Vector3i(x, y, z));
-	}
-	
-	public boolean containsAny(List<Vector2i> positions) {
+	public boolean containsAnyPosition(List<Vector3i> positions) {
 		Preconditions.checkNotNull(positions);
 
-		for (Vector2i pt : positions) {
-			if (this.contains(pt)) {
+		for (Vector3i position : positions) {
+			if (this.containsPosition(position)) {
 				return true;
 			}
 		}
 		return false;
 	}
-
-	public abstract RegionType getType();
+	
+	public boolean containsChunk(Vector3i position) {
+		Preconditions.checkNotNull(position);
+		
+		return this.containsPosition(new Vector3i(position.getX(), this.getMinimumPoint().getY(), position.getZ()));
+	}
+	
+	public List<ProtectedRegion> getIntersecting(ProtectedRegion region) {
+		return this.getIntersectingRegions(Arrays.asList(region));
+	}
 
 	public List<ProtectedRegion> getIntersectingRegions(Collection<ProtectedRegion> regions) {
 		Preconditions.checkNotNull(regions, "regions");
 
-		List<ProtectedRegion> intersecting = Lists.newArrayList();
-		Area thisArea = this.toArea();
-
+		Optional<Area> optThisArea = this.toArea();
+		if (!optThisArea.isPresent()) {
+			return Arrays.asList();
+		}
+		
+		Area thisArea = optThisArea.get();
+		Builder<ProtectedRegion> intersecting = ImmutableList.builder();
+		
 		for (ProtectedRegion region : regions) {
 			if (!region.isPhysicalArea()) continue;
 
@@ -312,17 +357,18 @@ public abstract class ProtectedRegion implements Comparable<ProtectedRegion> {
 			}
 		}
 
-		return intersecting;
+		return intersecting.build();
 	}
 	
 	protected boolean intersects(ProtectedRegion region, Area thisArea) {
 		if (this.intersectsBoundingBox(region)) {
-			Area testArea = region.toArea();
-			testArea.intersect(thisArea);
-			return !testArea.isEmpty();
-		} else {
-			return false;
+			Optional<Area> testArea = region.toArea();
+			if (testArea.isPresent()) {
+				testArea.get().intersect(thisArea);
+				return !testArea.get().isEmpty();
+			}
 		}
+		return false;
 	}
 	
 	protected boolean intersectsBoundingBox(ProtectedRegion region) {
@@ -342,46 +388,38 @@ public abstract class ProtectedRegion implements Comparable<ProtectedRegion> {
 
 		return true;
 	}
-
-	/**
-	 * Compares all edges of two regions to see if any of them intersect.
-	 *
-	 * @param region the region to check
-	 * @return whether any edges of a region intersect
-	 */
+	
 	protected boolean intersectsEdges(ProtectedRegion region) {
-		List<Vector2i> pts1 = this.getPoints();
-		List<Vector2i> pts2 = region.getPoints();
-		Vector2i lastPt1 = pts1.get(pts1.size() - 1);
-		Vector2i lastPt2 = pts2.get(pts2.size() - 1);
-		for (Vector2i aPts1 : pts1) {
-			for (Vector2i aPts2 : pts2) {
+        List<Vector3i> pos1 = getPoints();
+        List<Vector3i> pos2 = region.getPoints();
+        Vector3i lastPos1 = pos1.get(pos1.size() - 1);
+        Vector3i lastPos2 = pos2.get(pos2.size() - 1);
+        for (Vector3i aPos1 : pos1) {
+            for (Vector3i aPos2 : pos2) {
 
-				Line2D line1 = new Line2D.Double(
-						lastPt1.getX(),
-						lastPt1.getY(),
-						aPts1.getX(),
-						aPts1.getY());
+                Line2D line1 = new Line2D.Double(
+                        lastPos1.getX(),
+                        lastPos1.getZ(),
+                        aPos1.getX(),
+                        aPos1.getZ());
 
-				if (line1.intersectsLine(
-						lastPt2.getX(),
-						lastPt2.getY(),
-						aPts2.getX(),
-						aPts2.getY())) {
-					return true;
-				}
-				lastPt2 = aPts2;
-			}
-			lastPt1 = aPts1;
-		}
-		return false;
-	}
+                if (line1.intersectsLine(
+                        lastPos2.getX(),
+                        lastPos2.getZ(),
+                        aPos2.getX(),
+                        aPos2.getZ())) {
+                    return true;
+                }
+                lastPos2 = aPos2;
+            }
+            lastPos1 = aPos1;
+        }
+        return false;
+    }
 	
-	abstract Area toArea();
-	
-	public boolean isTransient() {
-		return this.transientRegion;
-	}
+	/*
+	 * Java
+	 */
 	
 	@Override
 	public int compareTo(ProtectedRegion other) {
@@ -411,12 +449,14 @@ public abstract class ProtectedRegion implements Comparable<ProtectedRegion> {
 
 	@Override
 	public String toString() {
-		return "ProtectedRegion{" +
-				"id='" + this.id + "', " +
-				"type='" + this.getType() + '\'' +
-				'}';
-	}
+		return "ProtectedRegion [id=" + this.id + ", type=" + this.getType().name() + ", transient=" + this.transientRegion
+				+ ", priority=" + this.priority + ", owners=" + this.owners + ", members=" + this.members + "]";
+	}	
 	
+	/*
+	 * Static
+	 */
+
 	public static boolean isValidId(String id) {
 		Preconditions.checkNotNull(id);
 		

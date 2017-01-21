@@ -32,12 +32,25 @@ import com.flowpowered.math.vector.Vector3i;
 import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.command.select.EWSelect;
+import fr.evercraft.everworldguard.listeners.world.ChunkListener;
+import fr.evercraft.everworldguard.listeners.world.WorldListener;
 
 public class EWListener {
 	private EverWorldGuard plugin;
 
 	public EWListener(EverWorldGuard plugin) {
 		this.plugin = plugin;
+		
+		this.load();
+	}
+	
+	public void load() {
+		this.register(new WorldListener(this.plugin));
+		this.register(new ChunkListener(this.plugin));
+	}
+	
+	public void register(Object listener) {
+		this.plugin.getGame().getEventManager().registerListeners(this.plugin, listener);
 	}
 	
 	@Listener(order=Order.FIRST)

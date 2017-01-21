@@ -7,9 +7,11 @@ import fr.evercraft.everworldguard.regions.ProtectedRegion;
 
 public interface RegionStorage {
 
-	Set<ProtectedRegion> getAll() throws StorageException;
+	Set<ProtectedRegion> getAll();
 	
-	void save(ProtectedRegion difference) throws StorageException;
+	<T> void add(ProtectedRegion region) throws StorageException;
 	
-	void save(Set<ProtectedRegion> regions) throws StorageException;
+	void remove(ProtectedRegion region) throws StorageException;
+	
+	void remove(Set<ProtectedRegion> regions) throws StorageException;
 }

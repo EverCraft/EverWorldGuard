@@ -30,6 +30,8 @@ import fr.evercraft.everworldguard.service.index.EManagerWorld;
 
 public class EWorldGuardService implements WorldGuardService {
 	
+	public static final String GLOBAL_REGION = "__global__";
+	
 	private final EverWorldGuard plugin;
 	
 	private final EUserSubjectList subjects;
@@ -70,6 +72,10 @@ public class EWorldGuardService implements WorldGuardService {
 	
 	public EManagerWorld getOrCreate(World world) {
 		return this.worlds.getOrCreate(world);
+	}
+	
+	public void unLoad(World world) {
+		this.worlds.unLoad(world);
 	}
 	
 	public Set<EManagerWorld> getAll() {

@@ -2,27 +2,18 @@ package fr.evercraft.everworldguard.service.index;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-
 import org.spongepowered.api.world.World;
 
-import com.flowpowered.math.vector.Vector2i;
+import com.flowpowered.math.vector.Vector3i;
 import com.google.common.base.Preconditions;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 
-import fr.evercraft.everapi.util.Chronometer;
+import fr.evercraft.everapi.sponge.UtilsChunk;
+import fr.evercraft.everapi.util.LongHashTable;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.regions.ProtectedRegion;
-import fr.evercraft.everworldguard.service.EUserSubjectList;
 import fr.evercraft.everworldguard.service.storage.RegionStorage;
 import fr.evercraft.everworldguard.service.storage.conf.RegionStorageConf;
 import fr.evercraft.everworldguard.service.storage.sql.RegionStorageSql;
-import fr.evercraft.everworldguard.service.subject.EUserSubject;
 
 public class EManagerWorld {
 	
@@ -31,7 +22,7 @@ public class EManagerWorld {
 	private RegionStorage storage;
 	
 	private final Set<ProtectedRegion> regions;
-	private final LoadingCache<Vector2i, EIndexChunk> cache;
+	private final LongHashTable<EManagerChunk> cache;
 	
 	private final World world;
 	
@@ -41,43 +32,73 @@ public class EManagerWorld {
 		this.plugin = plugin;
 		this.world = world;
 		this.regions = new HashSet<ProtectedRegion>();		
-		this.cache = CacheBuilder.newBuilder()
-			    .maximumSize(this.plugin.getEServer().getMaxPlayers() * 5)
-			    .expireAfterAccess(2, TimeUnit.MINUTES)
-			    .build(new CacheLoader<Vector2i, EIndexChunk>() {
-			        @Override
-			        public EIndexChunk load(Vector2i vector){
-			        	Chronometer chronometer = new Chronometer();
-			        	
-			        	EIndexChunk chunk = new EIndexChunk(EManagerWorld.this.plugin, vector, EManagerWorld.this.regions);
-			        	EManagerWorld.this.plugin.getLogger().debug("Loading chunk (x:" + vector.getX() + ";z:" + vector.getY() + ") in " +  chronometer.getMilliseconds().toString() + " ms");
-			        	
-			            return chunk;
-			        }
-			    });
+		this.cache = new LongHashTable<EManagerChunk>();
 		
 		if (this.plugin.getDataBase().isEnable()) {
-			this.storage = null;
+			this.storage = new RegionStorageSql(this.plugin, this.world);
 		} else {
-			this.storage = null;
+			this.storage = new RegionStorageConf(this.plugin, this.world);
 		}
+		
+		this.start();
 	}
 
 	public void reload() {
-		this.save();
-		
 		if (this.plugin.getDataBase().isEnable() && !(this.storage instanceof RegionStorageSql)) {
 			this.storage = new RegionStorageSql(this.plugin, this.world);
 		} else if (!this.plugin.getDataBase().isEnable() && !(this.storage instanceof RegionStorageConf)) {
 			this.storage = new RegionStorageConf(this.plugin, this.world);
 		}
-	}
-	
-	public void save() {
 		
+		this.start();
 	}
 	
-	public EIndexChunk getChunk(final Vector2i chunk) throws ExecutionException {
-		return this.cache.get(chunk);
+	public void start() {
+		this.plugin.getLogger().info("Loading region for world '" + this.world.getName() + "' ...");
+		
+		this.regions.clear();
+		this.regions.addAll(this.storage.getAll());
+		
+		this.plugin.getLogger().info("Loading " + this.regions.size() + " region(s) for world '" + this.world.getName() + "'.");
+	}
+	
+	public void stop() {
+		this.plugin.getLogger().info("Region data changes made in '" + this.world.getName() + "' have been background saved.");
+	}
+	
+	/*
+	 * Chunk
+	 */
+	public EManagerChunk getChunk(final Vector3i chunk) {
+		return this.getChunk(chunk.getX(), chunk.getZ());
+	}
+	
+	public EManagerChunk getChunk(final int x, final int z) {
+		EManagerChunk value = this.cache.get(x, z);
+		if (value == null) {
+			value = new EManagerChunk(this.plugin, Vector3i.from(x, 0, z), regions);
+		}
+		return value;
+	}
+	
+	public EManagerChunk loadChunk(final Vector3i chunk) {
+		EManagerChunk value = this.cache.get(chunk.getX(), chunk.getZ());
+		if (value == null) {
+			value = new EManagerChunk(this.plugin, chunk, regions);
+			this.cache.put(chunk.getX(), chunk.getZ(), value);
+		}
+		return value;
+	}
+	
+	public boolean unLoadChunk(final int x, final int z) {
+		return this.cache.remove(x, z) != null;
+	}
+	
+	/*
+	 * Block
+	 */
+	
+	public SetProtectedRegion getRegions(final Vector3i position) {
+		return this.getChunk(position.getX() >> UtilsChunk.CHUNK_SHIFTS, position.getX() >> UtilsChunk.CHUNK_SHIFTS).getPosition(position);
 	}
 }

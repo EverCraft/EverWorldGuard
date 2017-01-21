@@ -52,7 +52,12 @@ public class EWorldList {
 	public EManagerWorld getOrCreate(World world) {
 		Preconditions.checkNotNull(world, "world");
 		
-		return this.get(world).orElseGet(() -> new EManagerWorld(this.plugin, world));
+		EManagerWorld value = this.worlds.get(world.getUniqueId());
+		if (value == null) {
+			value = new EManagerWorld(this.plugin, world);
+			this.worlds.put(world.getUniqueId(), value);
+		}
+		return value;
 	}
 
 	public boolean hasRegistered(World world) {
@@ -67,5 +72,11 @@ public class EWorldList {
 	
 	public Set<EManagerWorld> getAll() {
 		return ImmutableSet.copyOf(this.worlds.values());
+	}
+
+	public void unLoad(World world) {
+		Preconditions.checkNotNull(world, "world");
+		
+		this.worlds.remove(world).stop();
 	}
 }
