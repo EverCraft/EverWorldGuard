@@ -17,15 +17,19 @@
 package fr.evercraft.everworldguard.command.region;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 
 import fr.evercraft.everapi.EAMessage.EAMessages;
+import fr.evercraft.everapi.plugin.command.Args;
 import fr.evercraft.everapi.plugin.command.ESubCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
@@ -33,8 +37,31 @@ import fr.evercraft.everworldguard.EverWorldGuard;
 
 public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 	
+	private final String MARKER_WORLD = "-w";
+	private final Args.Builder pattern;
+	
 	public EWRegionInfo(final EverWorldGuard plugin, final EWRegion command) {
         super(plugin, command, "info");
+        
+        this.pattern = Args.builder()
+			.value(MARKER_WORLD, (source, args) -> command.getAllWorlds())
+			.arg((source, args) -> {
+				List<String> suggests = new ArrayList<String>();
+				Optional<String> optWorld = args.getValue(MARKER_WORLD);
+				
+				if (optWorld.isPresent()) {
+					this.plugin.getEServer().getWorld(optWorld.get()).ifPresent(world -> 
+						this.plugin.getService().getRegion(world).forEach(region ->
+							suggests.add(region.getIdentifier())
+					));
+				} else if (source instanceof Player) {
+					this.plugin.getService().getRegion(((Player) source).getWorld()).forEach(region ->
+						suggests.add(region.getIdentifier())
+					);
+				}
+				
+				return suggests;
+			});
     }
 	
 	@Override
@@ -49,16 +76,16 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 
 	@Override
 	public Text help(final CommandSource source) {
-		return Text.builder("/" + this.getName() + "[-w " + EAMessages.ARGS_WORLD.getString() + "] "
-												 + "[" + EAMessages.ARGS_REGION.getString() + "]")
+		return Text.builder("/" + this.getName() + " [-w " + EAMessages.ARGS_WORLD.getString() + "]"
+												 + " [" + EAMessages.ARGS_REGION.getString() + "]")
 				.onClick(TextActions.suggestCommand("/" + this.getName() + " "))
 				.color(TextColors.RED)
 				.build();
 	}
 	
 	@Override
-	public List<String> subTabCompleter(final CommandSource source, final List<String> args) throws CommandException {
-		return new ArrayList<String>();
+	public Collection<String> subTabCompleter(final CommandSource source, final List<String> args) throws CommandException {
+		return this.pattern.suggest(source, args);
 	}
 	
 	@Override

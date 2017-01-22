@@ -17,10 +17,8 @@
 package fr.evercraft.everworldguard.service.subject;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 import org.spongepowered.api.entity.living.player.Player;
@@ -38,7 +36,6 @@ import fr.evercraft.everapi.services.worldguard.SubjectWorldGuard;
 import fr.evercraft.everapi.services.worldguard.regions.Region;
 import fr.evercraft.everapi.services.worldguard.regions.SetProtectedRegion;
 import fr.evercraft.everworldguard.EverWorldGuard;
-import fr.evercraft.everworldguard.regions.EProtectedRegion;
 import fr.evercraft.everworldguard.service.index.ESetProtectedRegion;
 
 public class EUserSubject implements SubjectWorldGuard {

@@ -66,6 +66,10 @@ public class EManagerWorld {
 		this.plugin.getLogger().info("Region data changes made in '" + this.world.getName() + "' have been background saved.");
 	}
 	
+	public Set<EProtectedRegion> getAll() {
+		return this.regions;
+	}
+	
 	/*
 	 * Chunk
 	 */

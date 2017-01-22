@@ -25,6 +25,7 @@ import org.spongepowered.api.world.World;
 import fr.evercraft.everapi.services.worldguard.SubjectWorldGuard;
 import fr.evercraft.everapi.services.worldguard.WorldGuardService;
 import fr.evercraft.everapi.services.worldguard.flag.Flag;
+import fr.evercraft.everapi.services.worldguard.regions.ProtectedRegion;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.service.index.EManagerWorld;
 
@@ -109,5 +110,15 @@ public class EWorldGuardService implements WorldGuardService {
 	@Override
 	public void clearFlags() {
 		// TODO Supprimer les flags non utilisé dans la config
+	}
+	
+	/*
+	 * Regions
+	 */
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
+	public Set<ProtectedRegion> getRegion(World world) {
+		return (Set) this.getOrCreate(world).getAll();
 	}
 }
