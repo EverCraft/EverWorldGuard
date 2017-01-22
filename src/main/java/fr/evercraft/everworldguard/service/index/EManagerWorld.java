@@ -1,12 +1,17 @@
 package fr.evercraft.everworldguard.service.index;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.spongepowered.api.world.World;
 
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableSet;
 
+import fr.evercraft.everapi.services.worldguard.regions.ProtectedRegion;
 import fr.evercraft.everapi.sponge.UtilsChunk;
 import fr.evercraft.everapi.util.LongHashTable;
 import fr.evercraft.everworldguard.EverWorldGuard;
@@ -21,7 +26,7 @@ public class EManagerWorld {
 	
 	private RegionStorage storage;
 	
-	private final Set<EProtectedRegion> regions;
+	private final ConcurrentHashMap<String, EProtectedRegion> regions;
 	private final LongHashTable<EManagerChunk> cache;
 	
 	private final World world;
@@ -31,7 +36,7 @@ public class EManagerWorld {
 		
 		this.plugin = plugin;
 		this.world = world;
-		this.regions = new HashSet<EProtectedRegion>();		
+		this.regions = new ConcurrentHashMap<String, EProtectedRegion>();		
 		this.cache = new LongHashTable<EManagerChunk>();
 		
 		if (this.plugin.getDataBase().isEnable()) {
@@ -57,7 +62,7 @@ public class EManagerWorld {
 		this.plugin.getLogger().info("Loading region for world '" + this.world.getName() + "' ...");
 		
 		this.regions.clear();
-		this.regions.addAll(this.storage.getAll());
+		this.storage.getAll().forEach(region -> this.regions.put(region.getIdentifier().toLowerCase(), region));
 		
 		this.plugin.getLogger().info("Loading " + this.regions.size() + " region(s) for world '" + this.world.getName() + "'.");
 	}
@@ -67,7 +72,7 @@ public class EManagerWorld {
 	}
 	
 	public Set<EProtectedRegion> getAll() {
-		return this.regions;
+		return ImmutableSet.copyOf(this.regions.values());
 	}
 	
 	/*
@@ -80,7 +85,7 @@ public class EManagerWorld {
 	public EManagerChunk getChunk(final int x, final int z) {
 		EManagerChunk value = this.cache.get(x, z);
 		if (value == null) {
-			value = new EManagerChunk(this.plugin, Vector3i.from(x, 0, z), regions);
+			value = new EManagerChunk(this.plugin, Vector3i.from(x, 0, z), this.regions);
 		}
 		return value;
 	}
@@ -88,7 +93,7 @@ public class EManagerWorld {
 	public EManagerChunk loadChunk(final Vector3i chunk) {
 		EManagerChunk value = this.cache.get(chunk.getX(), chunk.getZ());
 		if (value == null) {
-			value = new EManagerChunk(this.plugin, chunk, regions);
+			value = new EManagerChunk(this.plugin, chunk, this.regions);
 			this.cache.put(chunk.getX(), chunk.getZ(), value);
 		}
 		return value;
@@ -104,5 +109,13 @@ public class EManagerWorld {
 	
 	public ESetProtectedRegion getRegions(final Vector3i position) {
 		return this.getChunk(position.getX() >> UtilsChunk.CHUNK_SHIFTS, position.getX() >> UtilsChunk.CHUNK_SHIFTS).getPosition(position);
+	}
+
+	/*
+	 * Region
+	 */
+	
+	public Optional<ProtectedRegion> getRegion(String region) {
+		return Optional.ofNullable(this.regions.get(region));
 	}
 }

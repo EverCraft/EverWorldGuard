@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandSource;
@@ -27,11 +28,14 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.world.World;
 
 import fr.evercraft.everapi.EAMessage.EAMessages;
 import fr.evercraft.everapi.plugin.command.Args;
 import fr.evercraft.everapi.plugin.command.ESubCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
+import fr.evercraft.everapi.services.worldguard.regions.ProtectedRegion;
+import fr.evercraft.everapi.services.worldguard.regions.SetProtectedRegion;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EverWorldGuard;
 
@@ -89,17 +93,30 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 	}
 	
 	@Override
-	public boolean subExecute(final CommandSource source, final List<String> args) throws CommandException {
-		// Résultat de la commande :
+	public boolean subExecute(final CommandSource source, final List<String> args_list) throws CommandException {
 		boolean resultat = false;
+		Args args = this.pattern.build(args_list);
 		
-		if (args.size() == 0) {
+		if (args.getArgs().size() == 0) {
 			if (source instanceof EPlayer) {
-				resultat = this.commandRegionInfo((EPlayer) source);
+				resultat = this.commandRegionInfo(source, ((EPlayer) source).getRegions());
 			} else {
 				EAMessages.COMMAND_ERROR_FOR_PLAYER.sender()
 					.prefix(EWMessages.PREFIX)
 					.sendTo(source);
+			}
+		} else if (args.getArgs().size() == 1) {
+			Optional<String> world = args.getValue(MARKER_WORLD);
+			if (world.isPresent()) {
+				resultat = this.commandRegionInfo(source, args.getArgs().get(0), world.get());
+			} else {
+				if (source instanceof EPlayer) {
+					resultat = this.commandRegionInfo(source, args.getArgs().get(0), ((EPlayer) source).getWorld());
+				} else {
+					EAMessages.COMMAND_ERROR_FOR_PLAYER.sender()
+						.prefix(EWMessages.PREFIX)
+						.sendTo(source);
+				}
 			}
 		} else {
 			source.sendMessage(this.help(source));
@@ -107,12 +124,55 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 		
 		return resultat;
 	}
+	
+	private boolean commandRegionInfo(final CommandSource player, final SetProtectedRegion regions) {
+		if (regions.getAll().isEmpty()) {
+			EAMessages.COMMAND_ERROR.sender()
+				.prefix(EWMessages.PREFIX)
+				.sendTo(player);
+			return false;
+		}
+		
+		if (regions.getAll().size() == 1) {
+			return this.commandRegionInfo(player, regions.getAll().iterator().next());
+		} else {
+			return this.commandRegionInfo(player, regions.getAll());
+		}
+	}	
+	
+	private boolean commandRegionInfo(final CommandSource player, final String region_string, final String world_string) {
+		Optional<World> world = this.plugin.getEServer().getEWorld(world_string);
+		// Monde introuvable
+		if (!world.isPresent()) {
+			EAMessages.WORLD_NOT_FOUND.sender()
+				.prefix(EWMessages.PREFIX)
+				.replace("<world>", world_string)
+				.sendTo(player);
+			return false;
+		}
+		
+		return this.commandRegionInfo(player, region_string, world.get());
+	}
+	
+	private boolean commandRegionInfo(final CommandSource player, final String region_string, final World world) {
+		Optional<ProtectedRegion> region = this.plugin.getService().getOrCreate(world).getRegion(region_string);
+		// Region introuvable
+		if (!region.isPresent()) {
+			EAMessages.REGION_NOT_FOUND.sender()
+				.prefix(EWMessages.PREFIX)
+				.replace("<region>", region_string)
+				.sendTo(player);
+			return false;
+		}
+		
+		return this.commandRegionInfo(player, region.get());
+	}
+	
+	private boolean commandRegionInfo(final CommandSource player, final Set<ProtectedRegion> regions) {
+		return true;
+	}
 
-	private boolean commandRegionInfo(final EPlayer player) {
-		player.sendMessage("Regions : " + player.getRegions().getAll().size());
-		player.getRegions().getAll().forEach(region -> 
-			player.sendMessage(region.getIdentifier() + " : " + region.getType().name())
-		);
+	private boolean commandRegionInfo(final CommandSource player, final ProtectedRegion regions) {
 		return true;
 	}
 }

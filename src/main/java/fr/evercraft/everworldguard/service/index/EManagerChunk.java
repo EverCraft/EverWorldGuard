@@ -1,6 +1,7 @@
 package fr.evercraft.everworldguard.service.index;
 
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -22,12 +23,14 @@ public class EManagerChunk {
 	private final Set<EProtectedRegion> regions;
 	private final LoadingCache<Vector3i, ESetProtectedRegion> cache;
 	
-	public EManagerChunk(EverWorldGuard plugin, Vector3i vector, Set<EProtectedRegion> regions) {
+	public EManagerChunk(EverWorldGuard plugin, Vector3i vector, ConcurrentHashMap<String, EProtectedRegion> regions) {
 		this.plugin = plugin;
 		Builder<EProtectedRegion> builder = ImmutableSet.builder();
-		regions.stream()
-			.filter(region -> region.containsPosition(vector))
-			.forEach(region -> builder.add(region));
+		regions.forEach((id, region) -> {
+			if (region.containsPosition(vector)) {
+				builder.add(region);
+			}
+		});
 		this.regions = builder.build();
 		
 		this.cache = CacheBuilder.newBuilder()
