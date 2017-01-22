@@ -17,13 +17,13 @@ import com.google.common.reflect.TypeToken;
 import fr.evercraft.everapi.plugin.file.EConfig;
 import fr.evercraft.everapi.services.worldguard.exception.StorageException;
 import fr.evercraft.everapi.services.worldguard.flag.Flag;
+import fr.evercraft.everapi.services.worldguard.flag.FlagValue;
+import fr.evercraft.everapi.services.worldguard.regions.Association;
 import fr.evercraft.everapi.services.worldguard.regions.RegionType;
 import fr.evercraft.everworldguard.EverWorldGuard;
-import fr.evercraft.everworldguard.domains.Association;
-import fr.evercraft.everworldguard.flag.FlagValue;
-import fr.evercraft.everworldguard.regions.ProtectedCuboidRegion;
-import fr.evercraft.everworldguard.regions.ProtectedGlobalRegion;
-import fr.evercraft.everworldguard.regions.ProtectedRegion;
+import fr.evercraft.everworldguard.regions.EProtectedCuboidRegion;
+import fr.evercraft.everworldguard.regions.EProtectedGlobalRegion;
+import fr.evercraft.everworldguard.regions.EProtectedRegion;
 import fr.evercraft.everworldguard.service.EWorldGuardService;
 import fr.evercraft.everworldguard.service.storage.RegionStorage;
 
@@ -44,15 +44,15 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 	
 	@Override
 	protected void loadDefault() {
-		ProtectedRegion global = new ProtectedGlobalRegion(EWorldGuardService.GLOBAL_REGION);
-		if (this.getNode().getNode(global.getId()).isVirtual()) {
+		EProtectedRegion global = new EProtectedGlobalRegion(EWorldGuardService.GLOBAL_REGION);
+		if (this.getNode().getNode(global.getIdentifier()).isVirtual()) {
 			this.add(global);
 		}
 	}
 
 	@Override
-	public Set<ProtectedRegion> getAll() {
-		Builder<ProtectedRegion> builder = ImmutableSet.builder();
+	public Set<EProtectedRegion> getAll() {
+		Builder<EProtectedRegion> builder = ImmutableSet.builder();
 		for (Entry<Object, ? extends ConfigurationNode> config : this.getNode().getChildrenMap().entrySet()) {
 			if (config.getKey() instanceof String) {
 				this.get((String) config.getKey(), config.getValue())
@@ -65,7 +65,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 	}
 	
 	@SuppressWarnings("unchecked")
-	public <T> Optional<ProtectedRegion> get(String id, ConfigurationNode config) {
+	public <T> Optional<EProtectedRegion> get(String id, ConfigurationNode config) {
 		// Type
 		String type_string = config.getNode("type").getString("");
 		Optional<RegionType> optType = RegionType.of(type_string);
@@ -159,9 +159,9 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 			}
 		}
 		
-		ProtectedRegion region = null;
+		EProtectedRegion region = null;
 		if (type.equals(RegionType.GLOBAL)) {
-			region = new ProtectedGlobalRegion(id);
+			region = new EProtectedGlobalRegion(id);
 		} else if (type.equals(RegionType.CUBOID)) {
 			Vector3i min, max;
 			try {
@@ -176,11 +176,11 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 				this.plugin.getLogger().warn("Max incorrect (id:'" + id + "')");
 				return Optional.empty();
 			}
-			region = new ProtectedCuboidRegion(id, min, max);
+			region = new EProtectedCuboidRegion(id, min, max);
 		} else if (type.equals(RegionType.TEMPLATE)) {
-			region = new ProtectedGlobalRegion(id);
+			region = new EProtectedGlobalRegion(id);
 		} else if (type.equals(RegionType.POLYGONAL)) {
-			region = new ProtectedGlobalRegion(id);
+			region = new EProtectedGlobalRegion(id);
 		} else {
 			return Optional.empty();
 		}
@@ -200,8 +200,8 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> void add(ProtectedRegion region) {
-		ConfigurationNode config = this.getNode().getNode(region.getId());
+	public <T> void add(EProtectedRegion region) {
+		ConfigurationNode config = this.getNode().getNode(region.getIdentifier());
 		
 		// Type
 		config.getNode("type").setValue(region.getType().name());
@@ -258,12 +258,12 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 	}
 
 	@Override
-	public void remove(ProtectedRegion region) throws StorageException {
-		this.getNode().removeChild(region.getId());
+	public void remove(EProtectedRegion region) throws StorageException {
+		this.getNode().removeChild(region.getIdentifier());
 	}
 	
 	@Override
-	public void remove(Set<ProtectedRegion> regions) throws StorageException {
-		regions.stream().forEach(region -> this.getNode().removeChild(region.getId()));
+	public void remove(Set<EProtectedRegion> regions) throws StorageException {
+		regions.stream().forEach(region -> this.getNode().removeChild(region.getIdentifier()));
 	}
 }

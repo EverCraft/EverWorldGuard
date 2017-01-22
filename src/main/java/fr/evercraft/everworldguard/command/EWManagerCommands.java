@@ -21,6 +21,7 @@ import java.util.HashSet;
 import fr.evercraft.everapi.plugin.command.*;
 import fr.evercraft.everworldguard.EWCommand;
 import fr.evercraft.everworldguard.EverWorldGuard;
+import fr.evercraft.everworldguard.command.region.*;
 import fr.evercraft.everworldguard.command.select.*;
 import fr.evercraft.everworldguard.command.sub.*;
 
@@ -50,6 +51,11 @@ public class EWManagerCommands extends HashSet<ECommand<EverWorldGuard>> {
 		select.add(new EWSelectPos2(this.plugin, select));
 		select.add(new EWSelectType(this.plugin, select));
 		register(select);
+		
+		EWRegion region = new EWRegion(this.plugin);
+		region.add(new EWRegionInfo(this.plugin, region));
+		region.add(new EWRegionList(this.plugin, region));
+		register(region);
 	}
 	
 	public void reload(){

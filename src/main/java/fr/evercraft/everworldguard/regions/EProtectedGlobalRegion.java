@@ -16,6 +16,7 @@
  */
 package fr.evercraft.everworldguard.regions;
 
+import fr.evercraft.everapi.services.worldguard.regions.ProtectedRegion;
 import fr.evercraft.everapi.services.worldguard.regions.RegionType;
 
 import java.awt.geom.Area;
@@ -27,13 +28,13 @@ import java.util.Optional;
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.collect.ImmutableList;
 
-public class ProtectedGlobalRegion extends ProtectedRegion {
+public class EProtectedGlobalRegion extends EProtectedRegion {
 	
-	public ProtectedGlobalRegion(String id) {
+	public EProtectedGlobalRegion(String id) {
 		this(id, false);
 	}
 	
-	public ProtectedGlobalRegion(String id, boolean transientRegion) {
+	public EProtectedGlobalRegion(String id, boolean transientRegion) {
 		super(id, transientRegion);
 		
 		 this.min = Vector3i.ZERO;
@@ -52,7 +53,7 @@ public class ProtectedGlobalRegion extends ProtectedRegion {
 
 	@Override
 	public boolean containsPosition(Vector3i pos) {
-		return false;
+		return true;
 	}
 
 	@Override
@@ -71,7 +72,7 @@ public class ProtectedGlobalRegion extends ProtectedRegion {
 	}
 
 	@Override
-	public int volume() {
+	public int getVolume() {
 		return 0;
 	}
 }

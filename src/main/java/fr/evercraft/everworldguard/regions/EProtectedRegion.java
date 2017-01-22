@@ -24,11 +24,14 @@ import com.google.common.collect.ImmutableList.Builder;
 
 import fr.evercraft.everapi.java.UtilsString;
 import fr.evercraft.everapi.server.player.EPlayer;
+import fr.evercraft.everapi.services.worldguard.exception.CircularInheritanceException;
 import fr.evercraft.everapi.services.worldguard.flag.Flag;
+import fr.evercraft.everapi.services.worldguard.flag.FlagValue;
+import fr.evercraft.everapi.services.worldguard.regions.Association;
+import fr.evercraft.everapi.services.worldguard.regions.Domain;
+import fr.evercraft.everapi.services.worldguard.regions.ProtectedRegion;
 import fr.evercraft.everapi.services.worldguard.regions.RegionType;
-import fr.evercraft.everworldguard.domains.Association;
 import fr.evercraft.everworldguard.domains.EDomain;
-import fr.evercraft.everworldguard.flag.FlagValue;
 
 import javax.annotation.Nullable;
 
@@ -45,11 +48,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.regex.Pattern;
 
-public abstract class ProtectedRegion implements Comparable<ProtectedRegion> {
-
-	private static final Pattern VALID_ID_PATTERN = Pattern.compile("^[A-Za-z0-9_,'\\-\\+/]{1,}$");
+public abstract class EProtectedRegion implements ProtectedRegion {
 
 	protected Vector3i min;
 	protected Vector3i max;
@@ -64,7 +64,7 @@ public abstract class ProtectedRegion implements Comparable<ProtectedRegion> {
 	
 	private final ConcurrentMap<Flag<?>, FlagValue<?>> flags;
 	
-	public ProtectedRegion(String id, boolean transientRegion) {
+	public EProtectedRegion(String id, boolean transientRegion) {
 		Preconditions.checkNotNull(id);
 		Preconditions.checkArgument(ProtectedRegion.isValidId(id), "Invalid region ID: " + id);
 
@@ -91,34 +91,44 @@ public abstract class ProtectedRegion implements Comparable<ProtectedRegion> {
 	 * Abstract
 	 */
 	
-	public abstract int volume();
+	@Override
+	public abstract int getVolume();
 	
-	public abstract Optional<Area> toArea();
-	
-	public abstract boolean isPhysicalArea();
-	
+	@Override
 	public abstract RegionType getType();
 	
+	@Override
 	public abstract List<Vector3i> getPoints();
 	
-	public abstract boolean containsPosition(Vector3i pt);
+	@Override
+	public abstract boolean containsPosition(Vector3i pos);
+	
+	@Override
+	public abstract Optional<Area> toArea();
+	
+	@Override
+	public abstract boolean isPhysicalArea();
 	
 	/*
 	 * Accesseurs
 	 */
 	
-	public String getId() {
+	@Override
+	public String getIdentifier() {
 		return this.id;
 	}
 	
+	@Override
 	public boolean isTransient() {
 		return this.transientRegion;
 	}	
 	
+	@Override
 	public Vector3i getMinimumPoint() {
 		return this.min;
 	}
 	
+	@Override
 	public Vector3i getMaximumPoint() {
 		return this.max;
 	}
@@ -149,18 +159,22 @@ public abstract class ProtectedRegion implements Comparable<ProtectedRegion> {
 		this.max = new Vector3i(maxX, maxY, maxZ);
 	}
 	
+	@Override
 	public int getPriority() {
 		return this.priority;
 	}
 	
+	@Override
 	public void setPriority(int priority) {
 		this.priority = priority;
 	}
 
+	@Override
 	public Optional<ProtectedRegion> getParent() {
 		return Optional.of(this.parent);
 	}	
 	
+	@Override
 	public void setParent(@Nullable ProtectedRegion parent) throws CircularInheritanceException {
 		if (parent == null) {
 			this.parent = null;
@@ -182,22 +196,22 @@ public abstract class ProtectedRegion implements Comparable<ProtectedRegion> {
 		this.parent = parent;
 	}
 	
-	public void clearParent() {
-		this.parent = null;
-	}
-	
-	public EDomain getOwners() {
+	@Override
+	public Domain getOwners() {
 		return this.owners;
 	}
 	
-	public EDomain getMembers() {
+	@Override
+	public Domain getMembers() {
 		return this.members;
 	}
 	
+	@Override
 	public boolean hasMembersOrOwners() {
 		return this.owners.size() > 0 || this.members.size() > 0;
 	}
 	
+	@Override
 	public boolean isOwner(Player player) {
 		Preconditions.checkNotNull(player);
 
@@ -217,6 +231,7 @@ public abstract class ProtectedRegion implements Comparable<ProtectedRegion> {
 		return false;
 	}
 	
+	@Override
 	public boolean isMember(Player player) {
 		Preconditions.checkNotNull(player);
 
@@ -240,6 +255,7 @@ public abstract class ProtectedRegion implements Comparable<ProtectedRegion> {
 		return false;
 	}
 	
+	@Override
 	public boolean isMemberOnly(EPlayer player) {
 		Preconditions.checkNotNull(player);
 
@@ -264,7 +280,7 @@ public abstract class ProtectedRegion implements Comparable<ProtectedRegion> {
 	 */
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@Nullable
+	@Override
 	public <T extends Flag<V>, V> FlagValue<V> getFlag(T flag) {
 		Preconditions.checkNotNull(flag);
 
@@ -281,6 +297,7 @@ public abstract class ProtectedRegion implements Comparable<ProtectedRegion> {
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
 	public <T extends Flag<V>, V> void setFlag(T flag, Association association, @Nullable V value) {
 		Preconditions.checkNotNull(flag);
 
@@ -298,10 +315,12 @@ public abstract class ProtectedRegion implements Comparable<ProtectedRegion> {
 		}
 	}
 	
+	@Override
 	public Map<Flag<?>, FlagValue<?>> getFlags() {
 		return this.flags;
 	}
 	
+	@Override
 	public void setFlags(Map<Flag<?>, FlagValue<?>> flags) {
 		Preconditions.checkNotNull(flags);
 		
@@ -313,10 +332,12 @@ public abstract class ProtectedRegion implements Comparable<ProtectedRegion> {
 	 * Contains
 	 */
 	
+	@Override
 	public boolean containsPosition(int x, int y, int z) {
 		return this.containsPosition(new Vector3i(x, y, z));
 	}
 	
+	@Override
 	public boolean containsAnyPosition(List<Vector3i> positions) {
 		Preconditions.checkNotNull(positions);
 
@@ -328,16 +349,21 @@ public abstract class ProtectedRegion implements Comparable<ProtectedRegion> {
 		return false;
 	}
 	
+	@Override
 	public boolean containsChunk(Vector3i position) {
 		Preconditions.checkNotNull(position);
 		
 		return this.containsPosition(new Vector3i(position.getX(), this.getMinimumPoint().getY(), position.getZ()));
 	}
 	
+	@Override
 	public List<ProtectedRegion> getIntersecting(ProtectedRegion region) {
+		Preconditions.checkNotNull(region, "region");
+		
 		return this.getIntersectingRegions(Arrays.asList(region));
 	}
 
+	@Override
 	public List<ProtectedRegion> getIntersectingRegions(Collection<ProtectedRegion> regions) {
 		Preconditions.checkNotNull(regions, "regions");
 
@@ -429,7 +455,7 @@ public abstract class ProtectedRegion implements Comparable<ProtectedRegion> {
 			return 1;
 		}
 
-		return this.getId().compareTo(other.getId());
+		return this.getIdentifier().compareTo(other.getIdentifier());
 	}
 
 	@Override
@@ -439,35 +465,17 @@ public abstract class ProtectedRegion implements Comparable<ProtectedRegion> {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof ProtectedRegion)) {
+		if (!(obj instanceof EProtectedRegion)) {
 			return false;
 		}
 
-		ProtectedRegion other = (ProtectedRegion) obj;
-		return other.getId().equals(getId());
+		EProtectedRegion other = (EProtectedRegion) obj;
+		return other.getIdentifier().equals(getIdentifier());
 	}
 
 	@Override
 	public String toString() {
 		return "ProtectedRegion [id=" + this.id + ", type=" + this.getType().name() + ", transient=" + this.transientRegion
 				+ ", priority=" + this.priority + ", owners=" + this.owners + ", members=" + this.members + "]";
-	}	
-	
-	/*
-	 * Static
-	 */
-
-	public static boolean isValidId(String id) {
-		Preconditions.checkNotNull(id);
-		
-		return VALID_ID_PATTERN.matcher(id).matches();
 	}
-
-	/**
-	 * Exception : Probleme du parent
-	 */
-	public static class CircularInheritanceException extends Exception {
-		private static final long serialVersionUID = 1L;
-	}
-
 }

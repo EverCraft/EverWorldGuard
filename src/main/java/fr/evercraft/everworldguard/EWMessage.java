@@ -34,7 +34,7 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		PREFIX("prefix", 				"[&4Ever&6&lWG&f] "),
 		DESCRIPTION("description",		"Gestionnaire des régions"), 
 		
-		SELECT_DESCRIPTION("select.description",				""),
+		SELECT_DESCRIPTION("select.description",					"Permet de sélectionner une région"),
 		
 		SELECT_INFO_POS("select.info.pos",												"&7(&6<x>&7, &6<y>&7, &6<z>&7)"),
 		SELECT_INFO_POS_HOVER("select.info.posHover",									"&7X : &6<x>[RT]&7Y : &6<y>[RT]&7Z : &6<z>"),
@@ -87,7 +87,13 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		SELECT_TYPE_CYLINDER("select.type.cylinder",			"&7Cylindrique : clique gauche pour définir le centre, clique droit pour définir le rayon",
 																"&7Cylindrical select: Left click=center, right click to extend."),
 		SELECT_TYPE_EQUALS("select.type.equals",				"&cErreur : Sélection &6<type> &cdéjà activée"),
-		SELECT_TYPE_CANCEL("select.type.cancel",				"&cErreur : Impossible de changé de type de selection pour le moment");
+		SELECT_TYPE_CANCEL("select.type.cancel",				"&cErreur : Impossible de changé de type de selection pour le moment"),
+		
+		REGION_DESCRIPTION("region.description",				"Permet de gérer les régions protéger"),
+		
+		REGION_INFO_DESCRIPTION("region.info.description",		"Permet de voir la liste des régions sur votre position"),
+		
+		REGION_LIST_DESCRIPTION("region.list.description",		"Permet de voir la liste des régions sur tout le monde");
 		
 		private final String path;
 	    private final EMessageBuilder french;

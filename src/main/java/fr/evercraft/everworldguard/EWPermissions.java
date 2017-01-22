@@ -33,10 +33,6 @@ public enum EWPermissions implements EnumPermission {
 	REDEFINE_OWN("redefine.own"),
 	REDEFINE_MEMBER("redefine.member"),
 	
-	INFO_OWN("info.own"),
-	INFO_MEMBER("info.member"),
-	INFO_REGION("info.region"),
-	
 	ADD_OWNER_OWN("addowner.own"),
 	ADD_OWNER_MEMBER("addowner.member"),
 	ADD_OWNER_ALL("addowner"),
@@ -53,13 +49,19 @@ public enum EWPermissions implements EnumPermission {
 	REMOVE_MEMBER_MEMBER("removemember.member"),
 	REMOVE_MEMBER_ALL("removemember"),
 	
-	LIST_OWN("list.own"),
-	LIST("list"),
-	
 	SELECT("select.command"),
 	SELECT_WAND("select.wand"),
 	SELECT_POS("select.pos"),
-	SELECT_EXPAND("select.expand");
+	SELECT_EXPAND("select.expand"),
+	
+	REGION("region.command"),
+	
+	REGION_INFO_OWN("region.info.owner"),
+	REGION_INFO_MEMBER("region.info.member"),
+	REGION_INFO_REGION("region.info.region"),
+	
+	REGION_LIST_OWNER("region.list.owner"),
+	REGION_LIST_MEMBER("region.list.member");
 	
 	private final static String prefix = "everworldguard";
 	

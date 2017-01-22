@@ -8,14 +8,16 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
 
 import fr.evercraft.everapi.services.worldguard.flag.Flag;
-import fr.evercraft.everworldguard.flag.FlagValue;
-import fr.evercraft.everworldguard.regions.ProtectedRegion;
+import fr.evercraft.everapi.services.worldguard.flag.FlagValue;
+import fr.evercraft.everapi.services.worldguard.regions.ProtectedRegion;
+import fr.evercraft.everapi.services.worldguard.regions.SetProtectedRegion;
+import fr.evercraft.everworldguard.regions.EProtectedRegion;
 
-public class SetProtectedRegion {
+public class ESetProtectedRegion implements SetProtectedRegion {
 
 	private final Set<ProtectedRegion> regions;
 	
-	public SetProtectedRegion(Vector3i positon, Set<ProtectedRegion> regions) {
+	public ESetProtectedRegion(Vector3i positon, Set<EProtectedRegion> regions) {
 		Builder<ProtectedRegion> builder = ImmutableSet.builder();
 		regions.stream()
 			.filter(region -> region.containsPosition(positon))
@@ -23,11 +25,13 @@ public class SetProtectedRegion {
 		this.regions = builder.build();
 	}
 	
+	@Override
 	public <T extends Flag<V>, V> FlagValue<V> getFlag(T flag) {
 		return null;
 	}
 	
-	public Set<ProtectedRegion> getRegions() {
+	@Override
+	public Set<ProtectedRegion> getAll() {
 		return this.regions;
 	}
 }

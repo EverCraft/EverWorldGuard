@@ -10,7 +10,7 @@ import com.google.common.base.Preconditions;
 import fr.evercraft.everapi.sponge.UtilsChunk;
 import fr.evercraft.everapi.util.LongHashTable;
 import fr.evercraft.everworldguard.EverWorldGuard;
-import fr.evercraft.everworldguard.regions.ProtectedRegion;
+import fr.evercraft.everworldguard.regions.EProtectedRegion;
 import fr.evercraft.everworldguard.service.storage.RegionStorage;
 import fr.evercraft.everworldguard.service.storage.conf.RegionStorageConf;
 import fr.evercraft.everworldguard.service.storage.sql.RegionStorageSql;
@@ -21,7 +21,7 @@ public class EManagerWorld {
 	
 	private RegionStorage storage;
 	
-	private final Set<ProtectedRegion> regions;
+	private final Set<EProtectedRegion> regions;
 	private final LongHashTable<EManagerChunk> cache;
 	
 	private final World world;
@@ -31,7 +31,7 @@ public class EManagerWorld {
 		
 		this.plugin = plugin;
 		this.world = world;
-		this.regions = new HashSet<ProtectedRegion>();		
+		this.regions = new HashSet<EProtectedRegion>();		
 		this.cache = new LongHashTable<EManagerChunk>();
 		
 		if (this.plugin.getDataBase().isEnable()) {
@@ -98,7 +98,7 @@ public class EManagerWorld {
 	 * Block
 	 */
 	
-	public SetProtectedRegion getRegions(final Vector3i position) {
+	public ESetProtectedRegion getRegions(final Vector3i position) {
 		return this.getChunk(position.getX() >> UtilsChunk.CHUNK_SHIFTS, position.getX() >> UtilsChunk.CHUNK_SHIFTS).getPosition(position);
 	}
 }

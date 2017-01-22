@@ -8,7 +8,7 @@ import com.google.common.collect.ImmutableSet;
 
 import fr.evercraft.everapi.services.worldguard.exception.StorageException;
 import fr.evercraft.everworldguard.EverWorldGuard;
-import fr.evercraft.everworldguard.regions.ProtectedRegion;
+import fr.evercraft.everworldguard.regions.EProtectedRegion;
 import fr.evercraft.everworldguard.service.storage.RegionStorage;
 
 public class RegionStorageSql implements RegionStorage {
@@ -21,24 +21,24 @@ public class RegionStorageSql implements RegionStorage {
 	}
 
 	@Override
-	public Set<ProtectedRegion> getAll() {
+	public Set<EProtectedRegion> getAll() {
 		return ImmutableSet.of();
 	}
 
 	@Override
-	public void add(ProtectedRegion region) throws StorageException {
+	public void add(EProtectedRegion region) throws StorageException {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void remove(ProtectedRegion region) throws StorageException {
+	public void remove(EProtectedRegion region) throws StorageException {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void remove(Set<ProtectedRegion> regions) throws StorageException {
+	public void remove(Set<EProtectedRegion> regions) throws StorageException {
 		// TODO Auto-generated method stub
 		
 	}

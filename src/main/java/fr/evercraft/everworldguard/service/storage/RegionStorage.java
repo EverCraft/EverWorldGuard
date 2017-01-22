@@ -3,15 +3,15 @@ package fr.evercraft.everworldguard.service.storage;
 import java.util.Set;
 
 import fr.evercraft.everapi.services.worldguard.exception.StorageException;
-import fr.evercraft.everworldguard.regions.ProtectedRegion;
+import fr.evercraft.everworldguard.regions.EProtectedRegion;
 
 public interface RegionStorage {
 
-	Set<ProtectedRegion> getAll();
+	Set<EProtectedRegion> getAll();
 	
-	<T> void add(ProtectedRegion region) throws StorageException;
+	<T> void add(EProtectedRegion region) throws StorageException;
 	
-	void remove(ProtectedRegion region) throws StorageException;
+	void remove(EProtectedRegion region) throws StorageException;
 	
-	void remove(Set<ProtectedRegion> regions) throws StorageException;
+	void remove(Set<EProtectedRegion> regions) throws StorageException;
 }

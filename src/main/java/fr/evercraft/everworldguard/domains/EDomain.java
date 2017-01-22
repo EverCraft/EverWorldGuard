@@ -20,6 +20,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 
 import fr.evercraft.everapi.server.player.EPlayer;
+import fr.evercraft.everapi.services.worldguard.regions.Domain;
 
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.context.Context;

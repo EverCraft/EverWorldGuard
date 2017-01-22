@@ -36,8 +36,10 @@ import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everapi.services.worldguard.SelectType;
 import fr.evercraft.everapi.services.worldguard.SubjectWorldGuard;
 import fr.evercraft.everapi.services.worldguard.regions.Region;
+import fr.evercraft.everapi.services.worldguard.regions.SetProtectedRegion;
 import fr.evercraft.everworldguard.EverWorldGuard;
-import fr.evercraft.everworldguard.regions.ProtectedRegion;
+import fr.evercraft.everworldguard.regions.EProtectedRegion;
+import fr.evercraft.everworldguard.service.index.ESetProtectedRegion;
 
 public class EUserSubject implements SubjectWorldGuard {
 	
@@ -51,17 +53,17 @@ public class EUserSubject implements SubjectWorldGuard {
 	private SelectType type;
 	
 	private Location<World> lastPos;
-	private final Set<ProtectedRegion> lastRegionSet;
+	private ESetProtectedRegion lastRegionSet;
 
-	public EUserSubject(final EverWorldGuard plugin, final UUID uuid) {
+	public EUserSubject(final EverWorldGuard plugin, final UUID identifier) {
 		Preconditions.checkNotNull(plugin, "plugin");
-		Preconditions.checkNotNull(uuid, "uuid");
+		Preconditions.checkNotNull(identifier, "identifier");
 		
 		this.plugin = plugin;
-		this.identifier = uuid;
+		this.identifier = identifier;
 		this.points = new ArrayList<Vector3i>();
 		
-		this.lastRegionSet = new HashSet<ProtectedRegion>();
+		this.lastRegionSet = null;
 	}
 	
 	/*
@@ -70,6 +72,16 @@ public class EUserSubject implements SubjectWorldGuard {
 	
 	public void initialize(Player player) {
 		this.lastPos = player.getLocation();
+	}
+	
+	@Override
+	public SetProtectedRegion getRegions() {
+		Optional<EPlayer> player = this.getEPlayer();
+		if (player.isPresent()) {
+			return this.plugin.getService().getOrCreate(player.get().getWorld()).getRegions(player.get().getLocation().getPosition().toInt());
+		}
+		this.plugin.getLogger().warn("SetProtectedRegion.empty()");
+		return SetProtectedRegion.empty();
 	}
 	
 	

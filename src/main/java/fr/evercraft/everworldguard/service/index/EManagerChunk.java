@@ -13,18 +13,18 @@ import com.google.common.collect.ImmutableSet.Builder;
 
 import fr.evercraft.everapi.util.Chronometer;
 import fr.evercraft.everworldguard.EverWorldGuard;
-import fr.evercraft.everworldguard.regions.ProtectedRegion;
+import fr.evercraft.everworldguard.regions.EProtectedRegion;
 
 public class EManagerChunk {
 	
 	private final EverWorldGuard plugin;
 
-	private final Set<ProtectedRegion> regions;
-	private final LoadingCache<Vector3i, SetProtectedRegion> cache;
+	private final Set<EProtectedRegion> regions;
+	private final LoadingCache<Vector3i, ESetProtectedRegion> cache;
 	
-	public EManagerChunk(EverWorldGuard plugin, Vector3i vector, Set<ProtectedRegion> regions) {
+	public EManagerChunk(EverWorldGuard plugin, Vector3i vector, Set<EProtectedRegion> regions) {
 		this.plugin = plugin;
-		Builder<ProtectedRegion> builder = ImmutableSet.builder();
+		Builder<EProtectedRegion> builder = ImmutableSet.builder();
 		regions.stream()
 			.filter(region -> region.containsPosition(vector))
 			.forEach(region -> builder.add(region));
@@ -33,12 +33,12 @@ public class EManagerChunk {
 		this.cache = CacheBuilder.newBuilder()
 					    .maximumSize(32)
 					    .expireAfterAccess(2, TimeUnit.MINUTES)
-					    .build(new CacheLoader<Vector3i, SetProtectedRegion>() {
+					    .build(new CacheLoader<Vector3i, ESetProtectedRegion>() {
 					        @Override
-					        public SetProtectedRegion load(Vector3i position){
+					        public ESetProtectedRegion load(Vector3i position){
 					        	Chronometer chronometer = new Chronometer();
 					        	
-					        	SetProtectedRegion regions = new SetProtectedRegion(position, EManagerChunk.this.regions);
+					        	ESetProtectedRegion regions = new ESetProtectedRegion(position, EManagerChunk.this.regions);
 					        	
 					        	EManagerChunk.this.plugin.getLogger().debug("Loading bloc (x:" + vector.getX() + ";y:" + vector.getY() + ";z:" + vector.getY() + ") in " +  chronometer.getMilliseconds().toString() + " ms");
 					            return regions;
@@ -46,11 +46,11 @@ public class EManagerChunk {
 					    });
 	}
 	
-	public SetProtectedRegion getPosition(final Vector3i position) {
+	public ESetProtectedRegion getPosition(final Vector3i position) {
 		try {
 			return this.cache.get(position);
 		} catch (ExecutionException e) {
-			return new SetProtectedRegion(position, EManagerChunk.this.regions);
+			return new ESetProtectedRegion(position, EManagerChunk.this.regions);
 		}
 	}
 	
