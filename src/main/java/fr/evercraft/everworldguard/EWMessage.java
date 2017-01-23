@@ -91,7 +91,30 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		
 		REGION_DESCRIPTION("region.description",				"Permet de gérer les régions protéger"),
 		
-		REGION_INFO_DESCRIPTION("region.info.description",		"Permet de voir la liste des régions sur votre position"),
+		REGION_INFO_DESCRIPTION("region.info.description",								"Permet de voir la liste des régions sur votre position"),
+		REGION_INFO_ONE_TITLE("region.info.one.title",									"&aRégion Info : &6<region>"),
+		REGION_INFO_ONE_WORLD("region.info.one.world",									"    &6&l➤  World : &c<world>"),
+		REGION_INFO_ONE_TYPE("region.info.one.type",									"    &6&l➤  Type : &c<type>"),
+		REGION_INFO_ONE_POINTS("region.info.one.points",								"    &6&l➤  Points : &c<min> <max>"),
+		REGION_INFO_ONE_PRIORITY("region.info.one.priority",							"    &6&l➤  Priorité : &c<prority>"),
+		REGION_INFO_ONE_PARENT("region.info.one.parent",								"    &6&l➤  Parent : &c<parent>"),
+		REGION_INFO_ONE_HERITAGE("region.info.one.heritage",							"    &6&l➤  Héritage : &c<heritage>"),
+		REGION_INFO_ONE_HERITAGE_LINE("region.info.one.heritageLine",					"        &c&l└ <region> : &c<type>"),
+		REGION_INFO_ONE_HERITAGE_LINE_PADDING("region.info.one.heritageLinePadding",	"    "),
+		REGION_INFO_ONE_OWNERS("region.info.one.owners",								"    &6&l➤  Owners : &c<owners>"),
+		REGION_INFO_ONE_GROUP_OWNERS("region.info.one.groupOwners",						"    &6&l➤  Groupes Owners : &c<owners>"),
+		REGION_INFO_ONE_MEMBERS("region.info.one.Members",								"    &6&l➤  Members : &c<owners>"),
+		REGION_INFO_ONE_GROUP_MEMBERS("region.info.one.groupMembers",					"    &6&l➤  Groupes Members : &c<owners>"),
+		REGION_INFO_ONE_FLAGS("region.info.one.flags",									"    &6&l➤  Flag :"),
+		REGION_INFO_ONE_FLAGS_LINE("region.info.one.flagsLine",							"            &a&l- <flag> : &c<value>"),
+		REGION_INFO_ONE_FLAGS_DEFAULT("region.info.one.flagsDefault",					"        &6&l●  Default:"),
+		REGION_INFO_ONE_FLAGS_MEMBER("region.info.one.flagsMember",						"        &6&l●  Member:"),
+		REGION_INFO_ONE_FLAGS_OWNER("region.info.one.flagsOwner",						"        &6&l●  Owner:"),
+		REGION_INFO_ONE_HERITAGE_FLAGS("region.info.one.heritageFlags",					"    &6&l➤  Flag Héritage :"),
+		REGION_INFO_ONE_HERITAGE_FLAGS_LINE("region.info.one.heritageFlagsLine",		"            &a&l- <flag> : &c<value>"),
+		REGION_INFO_ONE_HERITAGE_FLAGS_DEFAULT("region.info.one.heritageFlagsDefault",	"        &6&l●  Default:"),
+		REGION_INFO_ONE_HERITAGE_FLAGS_MEMBER("region.info.one.heritageFlagsMember",	"        &6&l●  Member:"),
+		REGION_INFO_ONE_HERITAGE_FLAGS_OWNER("region.info.one.heritageFlagsOwner",		"        &6&l●  Owner:"),
 		
 		REGION_LIST_DESCRIPTION("region.list.description",		"Permet de voir la liste des régions sur tout le monde");
 		

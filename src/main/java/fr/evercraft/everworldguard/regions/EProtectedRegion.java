@@ -172,7 +172,27 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	@Override
 	public Optional<ProtectedRegion> getParent() {
 		return Optional.of(this.parent);
-	}	
+	}
+	
+	@Override
+	public List<ProtectedRegion> getHeritage() throws CircularInheritanceException {
+		if (this.parent == null) {
+			return ImmutableList.of();
+		}
+		
+		Builder<ProtectedRegion> parents = ImmutableList.builder();
+		
+		ProtectedRegion curParent = this.parent;
+		while (curParent != null) {
+			if (curParent == this) {
+				throw new CircularInheritanceException();
+			}
+			parents.add(curParent);
+			curParent = curParent.getParent().orElse(null);
+		}
+		
+		return parents.build();
+	}
 	
 	@Override
 	public void setParent(@Nullable ProtectedRegion parent) throws CircularInheritanceException {
@@ -185,12 +205,12 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 			throw new CircularInheritanceException();
 		}
 
-		ProtectedRegion p = parent.getParent().orElse(null);
-		while (p != null) {
-			if (p == this) {
+		ProtectedRegion curParent = this.parent;
+		while (curParent != null) {
+			if (curParent == this) {
 				throw new CircularInheritanceException();
 			}
-			p = p.getParent().orElse(null);
+			curParent = curParent.getParent().orElse(null);
 		}
 
 		this.parent = parent;
@@ -219,7 +239,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 			return true;
 		}
 
-		ProtectedRegion curParent = this.getParent().orElse(null);
+		ProtectedRegion curParent = this.parent;
 		while (curParent != null) {
 			if (curParent.getOwners().contains(player)) {
 				return true;
@@ -243,7 +263,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 			return true;
 		}
 
-		ProtectedRegion curParent = this.getParent().orElse(null);
+		ProtectedRegion curParent = this.parent;
 		while (curParent != null) {
 			if (curParent.getMembers().contains(player)) {
 				return true;
@@ -263,7 +283,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 			return true;
 		}
 
-		ProtectedRegion curParent = this.getParent().orElse(null);
+		ProtectedRegion curParent = this.parent;
 		while (curParent != null) {
 			if (curParent.getMembers().contains(player)) {
 				return true;

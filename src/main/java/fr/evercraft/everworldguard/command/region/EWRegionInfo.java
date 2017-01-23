@@ -34,6 +34,7 @@ import fr.evercraft.everapi.EAMessage.EAMessages;
 import fr.evercraft.everapi.plugin.command.Args;
 import fr.evercraft.everapi.plugin.command.ESubCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
+import fr.evercraft.everapi.services.worldguard.exception.CircularInheritanceException;
 import fr.evercraft.everapi.services.worldguard.regions.ProtectedRegion;
 import fr.evercraft.everapi.services.worldguard.regions.SetProtectedRegion;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
@@ -99,7 +100,8 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 		
 		if (args.getArgs().size() == 0) {
 			if (source instanceof EPlayer) {
-				resultat = this.commandRegionInfo(source, ((EPlayer) source).getRegions());
+				EPlayer player = (EPlayer) source;
+				resultat = this.commandRegionInfo(source, player.getRegions(), player.getWorld());
 			} else {
 				EAMessages.COMMAND_ERROR_FOR_PLAYER.sender()
 					.prefix(EWMessages.PREFIX)
@@ -125,7 +127,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 		return resultat;
 	}
 	
-	private boolean commandRegionInfo(final CommandSource player, final SetProtectedRegion regions) {
+	private boolean commandRegionInfo(final CommandSource player, final SetProtectedRegion regions, final World world) {
 		if (regions.getAll().isEmpty()) {
 			EAMessages.COMMAND_ERROR.sender()
 				.prefix(EWMessages.PREFIX)
@@ -134,9 +136,9 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 		}
 		
 		if (regions.getAll().size() == 1) {
-			return this.commandRegionInfo(player, regions.getAll().iterator().next());
+			return this.commandRegionInfo(player, regions.getAll().iterator().next(), world);
 		} else {
-			return this.commandRegionInfo(player, regions.getAll());
+			return this.commandRegionInfo(player, regions.getAll(), world);
 		}
 	}	
 	
@@ -165,14 +167,55 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 			return false;
 		}
 		
-		return this.commandRegionInfo(player, region.get());
+		return this.commandRegionInfo(player, region.get(), world);
 	}
 	
-	private boolean commandRegionInfo(final CommandSource player, final Set<ProtectedRegion> regions) {
+	private boolean commandRegionInfo(final CommandSource player, final Set<ProtectedRegion> regions, final World world) {
 		return true;
 	}
 
-	private boolean commandRegionInfo(final CommandSource player, final ProtectedRegion regions) {
+	private boolean commandRegionInfo(final CommandSource player, final ProtectedRegion region, final World world) {
+		List<Text> list = new ArrayList<Text>();
+		
+		list.add(EWMessages.REGION_INFO_ONE_WORLD.getFormat()
+				.toText("<world>", world.getName()));
+		
+		list.add(EWMessages.REGION_INFO_ONE_TYPE.getFormat()
+				.toText("<type>", region.getType().getNameFormat()));
+		
+		list.add(EWMessages.REGION_INFO_ONE_PRIORITY.getFormat()
+				.toText("<prority>", Text.builder(String.valueOf(region.getPriority()))
+					.onClick(TextActions.suggestCommand(
+						"/" + this.getParentName() + " setpriority -w \"" + world.getName() + "\" \"" + region.getIdentifier() + "\" " + region.getPriority()))
+					.build()));
+		Optional<ProtectedRegion> parent = region.getParent();
+		if (parent.isPresent()) {
+			list.add(EWMessages.REGION_INFO_ONE_PARENT.getFormat()
+					.toText("<parent>", Text.builder(String.valueOf(region.getPriority()))
+						.onClick(TextActions.suggestCommand(
+							"/" + this.getParentName() + " setparent -w \"" + world.getName() + "\" \"" + region.getIdentifier() + "\" \"" + parent.get().getIdentifier() + "\""))
+						.build()));
+		}
+		
+		try {
+			List<ProtectedRegion> parents = region.getHeritage();
+			if (parents.size() > 1) {
+				list.add(EWMessages.REGION_INFO_ONE_PARENT.getFormat()
+						.toText("<parent>", Text.builder(String.valueOf(region.getPriority()))
+							.onClick(TextActions.suggestCommand(
+								"/" + this.getParentName() + " setparent -w \"" + world.getName() + "\" \"" + region.getIdentifier() + "\" \"" + parent.get().getIdentifier() + "\""))
+							.build()));
+			}
+		} catch (CircularInheritanceException e) {}
+		
+		this.plugin.getEverAPI().getManagerService().getEPagination().sendTo(
+				EWMessages.REGION_INFO_ONE_TITLE.getFormat()
+					.toText("<region>", region.getIdentifier())
+					.toBuilder()
+					.onClick(TextActions.runCommand("/" + this.getName() + " -w \"" + world.getName() + "\" \"" + region.getIdentifier() + "\" "))
+					.build(), 
+				list, player);
+		
 		return true;
 	}
 }

@@ -1,6 +1,5 @@
 package fr.evercraft.everworldguard.service.index;
 
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
