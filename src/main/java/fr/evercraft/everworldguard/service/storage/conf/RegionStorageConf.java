@@ -11,7 +11,6 @@ import org.spongepowered.api.world.World;
 
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.ImmutableSet.Builder;
 import com.google.common.reflect.TypeToken;
 
 import fr.evercraft.everapi.plugin.file.EConfig;
@@ -24,6 +23,7 @@ import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.regions.EProtectedCuboidRegion;
 import fr.evercraft.everworldguard.regions.EProtectedGlobalRegion;
 import fr.evercraft.everworldguard.regions.EProtectedRegion;
+import fr.evercraft.everworldguard.regions.EProtectedTemplateRegion;
 import fr.evercraft.everworldguard.service.EWorldGuardService;
 import fr.evercraft.everworldguard.service.storage.RegionStorage;
 
@@ -52,16 +52,35 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 
 	@Override
 	public Set<EProtectedRegion> getAll() {
-		Builder<EProtectedRegion> builder = ImmutableSet.builder();
+		Map<String, EProtectedRegion> regions = new HashMap<String, EProtectedRegion>();
 		for (Entry<Object, ? extends ConfigurationNode> config : this.getNode().getChildrenMap().entrySet()) {
 			if (config.getKey() instanceof String) {
 				this.get((String) config.getKey(), config.getValue())
-					.ifPresent(region -> builder.add(region));
+					.ifPresent(region -> regions.put(region.getIdentifier().toLowerCase(), region));
 			} else {
 				this.plugin.getLogger().warn("Nom de la région incorrect : " + config.getKey().toString());
 			}
 		}
-		return builder.build();
+		
+		// Parents
+		for (Entry<Object, ? extends ConfigurationNode> config : this.getNode().getChildrenMap().entrySet()) {
+			if (config.getKey() instanceof String) {
+				String key = (String) config.getKey();
+				String value = config.getValue().getNode("parent").getString(null);
+				EProtectedRegion region = regions.get(key.toLowerCase());
+				if (region != null && value != null && !value.isEmpty()) {
+					EProtectedRegion parent = regions.get(value.toLowerCase());
+					if (parent != null) {
+						region.init(parent);
+						this.plugin.getLogger().warn("Parent int : " + parent.getIdentifier());
+					} else {
+						this.plugin.getLogger().warn("Parent incorrect : " + value);
+					}
+				}
+			}
+		}
+		
+		return ImmutableSet.copyOf(regions.values());
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -178,7 +197,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 			}
 			region = new EProtectedCuboidRegion(id, min, max);
 		} else if (type.equals(RegionType.TEMPLATE)) {
-			region = new EProtectedGlobalRegion(id);
+			region = new EProtectedTemplateRegion(id);
 		} else if (type.equals(RegionType.POLYGONAL)) {
 			region = new EProtectedGlobalRegion(id);
 		} else {
@@ -219,6 +238,9 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 			config.getNode("group-members").setValue(region.getMembers().getGroups());
 		}
 		
+		// Parent
+		region.getParent().ifPresent(parent -> config.getNode("parent").setValue(parent));
+		
 		// Flags
 		Map<String, String> flags_owner = new HashMap<String, String>();
 		Map<String, String> flags_member = new HashMap<String, String>();
@@ -229,7 +251,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 			for (Entry<Association, ?> value : flag.getValue().getAll().entrySet()) {
 				T val = (T) value.getValue();
 				if (value.getKey().equals(Association.DEFAULT)) {
-					flags_default.put(key.getID(), key.serialize(val));
+					flags_default.put(key.getIdentifier(), key.serialize(val));
 				} else if (value.getKey().equals(Association.MEMBER)) {
 					
 				} else if (value.getKey().equals(Association.OWNER)) {

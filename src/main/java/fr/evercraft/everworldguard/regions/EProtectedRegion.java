@@ -77,6 +77,10 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 		this.transientRegion = transientRegion;
 	}
 	
+	public void init(EProtectedRegion parent) {
+		this.parent = parent;
+	}
+	
 	public void init(int priority, Set<UUID> owners, Set<String> group_owners, 
 			Set<UUID> members, Set<String> group_members, Map<Flag<?>, FlagValue<?>> flags) {
 		this.flags.clear();
@@ -171,7 +175,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 
 	@Override
 	public Optional<ProtectedRegion> getParent() {
-		return Optional.of(this.parent);
+		return Optional.ofNullable(this.parent);
 	}
 	
 	@Override

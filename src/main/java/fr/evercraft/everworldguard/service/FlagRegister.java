@@ -61,11 +61,11 @@ public class FlagRegister {
 				throw new FlagRegisterException(FlagRegisterException.Type.INITIALIZED, flag);
 			}
 			
-			if (this.flags.containsKey(flag.getID())) {
+			if (this.flags.containsKey(flag.getIdentifier())) {
 				throw new FlagRegisterException(FlagRegisterException.Type.CONFLICT, flag);
 			}
 			
-			this.flags.put(flag.getID(), flag);
+			this.flags.put(flag.getIdentifier(), flag);
 		} finally {
 			this.write_lock.unlock();
 		}

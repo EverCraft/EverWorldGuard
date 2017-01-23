@@ -18,9 +18,13 @@ package fr.evercraft.everworldguard.command.region;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.UUID;
 
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandSource;
@@ -30,12 +34,20 @@ import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.World;
 
+import com.flowpowered.math.vector.Vector3i;
+
 import fr.evercraft.everapi.EAMessage.EAMessages;
+import fr.evercraft.everapi.message.replace.EReplace;
 import fr.evercraft.everapi.plugin.command.Args;
 import fr.evercraft.everapi.plugin.command.ESubCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
+import fr.evercraft.everapi.server.user.EUser;
 import fr.evercraft.everapi.services.worldguard.exception.CircularInheritanceException;
+import fr.evercraft.everapi.services.worldguard.flag.Flag;
+import fr.evercraft.everapi.services.worldguard.flag.FlagValue;
+import fr.evercraft.everapi.services.worldguard.regions.Association;
 import fr.evercraft.everapi.services.worldguard.regions.ProtectedRegion;
+import fr.evercraft.everapi.services.worldguard.regions.RegionType;
 import fr.evercraft.everapi.services.worldguard.regions.SetProtectedRegion;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EverWorldGuard;
@@ -174,39 +186,238 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 		return true;
 	}
 
-	private boolean commandRegionInfo(final CommandSource player, final ProtectedRegion region, final World world) {
+	@SuppressWarnings("unchecked")
+	private <T> boolean commandRegionInfo(final CommandSource player, final ProtectedRegion region, final World world) {
 		List<Text> list = new ArrayList<Text>();
 		
-		list.add(EWMessages.REGION_INFO_ONE_WORLD.getFormat()
-				.toText("<world>", world.getName()));
+		// World
+		this.addLine(list, EWMessages.REGION_INFO_ONE_WORLD.getFormat()
+								.toText("<world>", world.getName()));
 		
-		list.add(EWMessages.REGION_INFO_ONE_TYPE.getFormat()
-				.toText("<type>", region.getType().getNameFormat()));
+		// Type
+		this.addLine(list, EWMessages.REGION_INFO_ONE_TYPE.getFormat()
+								.toText("<type>", region.getType().getNameFormat()));
 		
-		list.add(EWMessages.REGION_INFO_ONE_PRIORITY.getFormat()
+		// Priority
+		this.addLine(list, EWMessages.REGION_INFO_ONE_PRIORITY.getFormat()
 				.toText("<prority>", Text.builder(String.valueOf(region.getPriority()))
 					.onClick(TextActions.suggestCommand(
 						"/" + this.getParentName() + " setpriority -w \"" + world.getName() + "\" \"" + region.getIdentifier() + "\" " + region.getPriority()))
 					.build()));
+		
+		// Points
+		if (region.getType().equals(RegionType.CUBOID) || region.getType().equals(RegionType.POLYGONAL)) {
+			Vector3i min = region.getMinimumPoint();
+			Vector3i max = region.getMinimumPoint();
+			Map<String, EReplace<?>> replaces = new HashMap<String, EReplace<?>>();
+			replaces.put("<min_x>", EReplace.of(String.valueOf(min.getX())));
+			replaces.put("<min_y>", EReplace.of(String.valueOf(min.getY())));
+			replaces.put("<min_z>", EReplace.of(String.valueOf(min.getZ())));
+			replaces.put("<max_x>", EReplace.of(String.valueOf(max.getX())));
+			replaces.put("<max_y>", EReplace.of(String.valueOf(max.getY())));
+			replaces.put("<max_z>", EReplace.of(String.valueOf(max.getZ())));
+			
+			
+			if (region.getType().equals(RegionType.CUBOID)) {
+				this.addLine(list, EWMessages.REGION_INFO_ONE_POINTS.getFormat()
+						.toText("<position>",  EWMessages.REGION_INFO_ONE_POINTS_CUBOID.getFormat()
+								.toText(replaces).toBuilder()
+								.onHover(TextActions.showText(EWMessages.REGION_INFO_ONE_POINTS_CUBOID.getFormat()
+										.toText(replaces)))
+								.build()));
+			} else if (region.getType().equals(RegionType.POLYGONAL)) {
+				List<Text> positions = new ArrayList<Text>();
+				for(Vector3i pos : region.getPoints()) {
+					positions.add(EWMessages.REGION_INFO_ONE_POINTS_POLYGONAL_HOVER_POSITIONS.getFormat()
+							.toText("<x>", String.valueOf(pos.getX()),
+									"<y>", String.valueOf(pos.getY()),
+									"<z>", String.valueOf(pos.getZ())));
+				}				
+				replaces.put("<positions>", EReplace.of(Text.joinWith(EWMessages.REGION_INFO_ONE_POINTS_POLYGONAL_HOVER_JOIN.getText(), positions)));
+				
+				this.addLine(list, EWMessages.REGION_INFO_ONE_POINTS.getFormat()
+						.toText("<position>",  EWMessages.REGION_INFO_ONE_POINTS_POLYGONAL.getFormat()
+								.toText(replaces).toBuilder()
+								.onHover(TextActions.showText(EWMessages.REGION_INFO_ONE_POINTS_POLYGONAL_HOVER.getFormat()
+										.toText(replaces)))
+								.build()));
+			}
+		}
+		
+		// Parent
 		Optional<ProtectedRegion> parent = region.getParent();
 		if (parent.isPresent()) {
-			list.add(EWMessages.REGION_INFO_ONE_PARENT.getFormat()
-					.toText("<parent>", Text.builder(String.valueOf(region.getPriority()))
+			this.addLine(list, EWMessages.REGION_INFO_ONE_PARENT.getFormat()
+					.toText("<parent>", Text.builder(parent.get().getIdentifier())
+						.onShiftClick(TextActions.insertText(region.getIdentifier()))
 						.onClick(TextActions.suggestCommand(
 							"/" + this.getParentName() + " setparent -w \"" + world.getName() + "\" \"" + region.getIdentifier() + "\" \"" + parent.get().getIdentifier() + "\""))
 						.build()));
 		}
 		
+		// Héritage
+		List<ProtectedRegion> parents = null;
 		try {
-			List<ProtectedRegion> parents = region.getHeritage();
+			parents = region.getHeritage();
 			if (parents.size() > 1) {
-				list.add(EWMessages.REGION_INFO_ONE_PARENT.getFormat()
-						.toText("<parent>", Text.builder(String.valueOf(region.getPriority()))
-							.onClick(TextActions.suggestCommand(
-								"/" + this.getParentName() + " setparent -w \"" + world.getName() + "\" \"" + region.getIdentifier() + "\" \"" + parent.get().getIdentifier() + "\""))
-							.build()));
+				List<Text> messages = new ArrayList<Text>();
+				messages.add(EWMessages.REGION_INFO_ONE_HERITAGE.getText());
+				
+				Text padding = EWMessages.REGION_INFO_ONE_HERITAGE_PADDING.getText();
+				for (int cpt=0; cpt < parents.size(); cpt++) {
+					Text message = Text.of("");
+					for (int cpt2=0; cpt2 < cpt; cpt2++) {
+						message = message.concat(padding);
+					}
+					
+					ProtectedRegion curParent = parents.get(parents.size()-1-cpt);
+					message = message.concat(EWMessages.REGION_INFO_ONE_HERITAGE_LINE.getFormat()
+						.toText("<region>", Text.builder(curParent.getIdentifier())
+									.onShiftClick(TextActions.insertText(curParent.getIdentifier()))
+									.onClick(TextActions.runCommand("/" + this.getName() + " -w \"" + world.getName() + "\" \"" + curParent.getIdentifier() + "\" "))
+									.build(),
+								"<type>", curParent.getType().getNameFormat(),
+								"<priority>", String.valueOf(curParent.getPriority())));
+					messages.add(message);
+				}
+				this.addLine(list, Text.joinWith(Text.of("\n"), messages));
 			}
 		} catch (CircularInheritanceException e) {}
+		
+		// Owner
+		Set<UUID> owners = region.getOwners().getPlayers();
+		if (!owners.isEmpty()) {
+			List<Text> messages = new ArrayList<Text>();
+			for (UUID owner : owners) {
+				Optional<EUser> user = this.plugin.getEServer().getEUser(owner);
+				if (user.isPresent()) {
+					messages.add(Text.builder(user.get().getName())
+										.onShiftClick(TextActions.insertText(user.get().getName()))
+										.onClick(TextActions.suggestCommand(
+										"/" + this.getParentName() + " removeowner -w \"" + world.getName() + "\" \"" + region.getIdentifier() + "\" " + user.get().getName()))
+										.build());
+				} else {
+					messages.add(Text.builder(owner.toString())
+							.onShiftClick(TextActions.insertText(owner.toString()))
+							.onClick(TextActions.suggestCommand(
+									"/" + this.getParentName() + " removeowner -w \"" + world.getName() + "\" \"" + region.getIdentifier() + "\" " + owner.toString()))
+							.build());
+				}
+			}
+			
+			this.addLine(list, EWMessages.REGION_INFO_ONE_OWNERS.getFormat()
+					.toText("<owners>", Text.joinWith(EWMessages.REGION_INFO_ONE_OWNERS_JOIN.getText(), messages)));
+		}
+		
+		// Groups Owner
+		Set<String> groups_owners = region.getMembers().getGroups();
+		if (!groups_owners.isEmpty()) {
+			List<Text> messages = new ArrayList<Text>();
+			for (String owner : groups_owners) {
+				messages.add(Text.builder(owner)
+					.onShiftClick(TextActions.insertText(owner))
+					.onClick(TextActions.suggestCommand(
+							"/" + this.getParentName() + " removeowner -w \"" + world.getName() + "\" \"" + region.getIdentifier() + "\" -g \"" + owner + "\""))
+					.build());
+			}
+			
+			this.addLine(list, EWMessages.REGION_INFO_ONE_GROUP_MEMBERS.getFormat()
+					.toText("<members>", Text.joinWith(EWMessages.REGION_INFO_ONE_GROUP_MEMBERS_JOIN.getText(), messages)));
+		}
+		
+		// Members
+		Set<UUID> members = region.getMembers().getPlayers();
+		if (!members.isEmpty()) {
+			List<Text> messages = new ArrayList<Text>();
+			for (UUID member : members) {
+				Optional<EUser> user = this.plugin.getEServer().getEUser(member);
+				if (user.isPresent()) {
+					messages.add(Text.builder(user.get().getName())
+						.onShiftClick(TextActions.insertText(user.get().getName()))
+						.onClick(TextActions.suggestCommand(
+								"/" + this.getParentName() + " removemember -w \"" + world.getName() + "\" \"" + region.getIdentifier() + "\" " + user.get().getName()))
+						.build());
+				} else {
+					messages.add(Text.builder(member.toString())
+						.onShiftClick(TextActions.insertText(member.toString()))
+						.onClick(TextActions.suggestCommand(
+								"/" + this.getParentName() + " removemember -w \"" + world.getName() + "\" \"" + region.getIdentifier() + "\" " + member.toString()))
+						.build());
+				}
+			}
+			
+			this.addLine(list, EWMessages.REGION_INFO_ONE_MEMBERS.getFormat()
+					.toText("<members>", Text.joinWith(EWMessages.REGION_INFO_ONE_MEMBERS_JOIN.getText(), messages)));
+		}
+		
+		// Groups Members
+		Set<String> groups_members = region.getMembers().getGroups();
+		if (!groups_members.isEmpty()) {
+			List<Text> messages = new ArrayList<Text>();
+			for (String member : groups_members) {
+				messages.add(Text.builder(member)
+					.onShiftClick(TextActions.insertText(member))
+					.onClick(TextActions.suggestCommand(
+							"/" + this.getParentName() + " removemember -w \"" + world.getName() + "\" \"" + region.getIdentifier() + "\" -g \"" + member + "\""))
+					.build());
+			}
+			
+			this.addLine(list, EWMessages.REGION_INFO_ONE_GROUP_MEMBERS.getFormat()
+					.toText("<members>", Text.joinWith(EWMessages.REGION_INFO_ONE_GROUP_MEMBERS_JOIN.getText(), messages)));
+		}
+		
+		// Flags
+		Map<Flag<?>, FlagValue<?>> flags = region.getFlags();
+		if (!flags.isEmpty()) {
+			TreeMap<String, Text> flags_default = new TreeMap<String, Text>();
+			TreeMap<String, Text> flags_member = new TreeMap<String, Text>();
+			TreeMap<String, Text> flags_owner = new TreeMap<String, Text>();
+			
+			flags.forEach((flag, values) -> {
+				Flag<T> key = (Flag<T>) flag;
+				values.getAll().forEach((association, value) ->  {
+					String value_string = key.serialize((T) value);
+					Text message = EWMessages.REGION_INFO_ONE_FLAGS_LINE.getFormat()
+							.toText("<flag>",  flag.getNameFormat().toBuilder()
+													.onShiftClick(TextActions.insertText(flag.getIdentifier()))
+													.build(),
+									"<value>", Text.builder(value_string)
+													.onShiftClick(TextActions.insertText(value_string))
+													.onClick(TextActions.suggestCommand(
+						"/" + this.getParentName() + "flag -w \"" + world.getName() + "\" \"" + region.getIdentifier() + "\" \"" + flag.getName() + "\" \"" + value_string + "\""))
+													);
+					if (association.equals(Association.DEFAULT)) {
+						flags_default.put(flag.getName(), message);
+					} else if (association.equals(Association.MEMBER)) {
+						flags_member.put(flag.getName(), message);
+					} else if (association.equals(Association.OWNER)) {
+						flags_owner.put(flag.getName(), message);
+					}
+				});
+			});
+			
+			this.addLine(list, EWMessages.REGION_INFO_ONE_FLAGS.getText());
+			
+			if (!flags_default.isEmpty()) {
+				this.addLine(list, EWMessages.REGION_INFO_ONE_FLAGS_DEFAULT.getText());
+				this.addLine(list, Text.joinWith(Text.of("\n"), flags_default.values()));
+			}
+			
+			if (!flags_default.isEmpty()) {
+				this.addLine(list, EWMessages.REGION_INFO_ONE_FLAGS_MEMBER.getText());
+				this.addLine(list, Text.joinWith(Text.of("\n"), flags_member.values()));
+			}
+			
+			if (!flags_owner.isEmpty()) {
+				this.addLine(list, EWMessages.REGION_INFO_ONE_FLAGS_OWNER.getText());
+				this.addLine(list, Text.joinWith(Text.of("\n"), flags_owner.values()));
+			}
+		}
+		
+		// Flags Heritage
+		if (parents != null && !parents.isEmpty()) {
+			// TODO
+		}
 		
 		this.plugin.getEverAPI().getManagerService().getEPagination().sendTo(
 				EWMessages.REGION_INFO_ONE_TITLE.getFormat()
@@ -217,5 +428,11 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 				list, player);
 		
 		return true;
+	}
+	
+	private void addLine(List<Text> list, Text line) {
+		if (!line.isEmpty()) {
+			list.add(line);
+		}
 	}
 }
