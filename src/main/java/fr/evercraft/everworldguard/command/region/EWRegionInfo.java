@@ -183,6 +183,29 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 	}
 	
 	private boolean commandRegionInfo(final CommandSource player, final Set<ProtectedRegion> regions, final World world) {
+		List<Text> list = new ArrayList<Text>();
+		
+		for (ProtectedRegion region : regions) {
+			this.addLine(list, EWMessages.REGION_INFO_LIST_LINE.getFormat()
+					.toText("<region>", Text.builder(region.getIdentifier())
+								.onShiftClick(TextActions.insertText(region.getIdentifier()))
+								.onClick(TextActions.suggestCommand(
+									"/" + this.getName() + " -w \"" + world.getName() + "\" \"" + region.getIdentifier() + "\""))
+								.build(),
+							"<type>", region.getType().getNameFormat(),
+							"<priority>", Text.builder(String.valueOf(region.getPriority()))
+								.onClick(TextActions.suggestCommand(
+									"/" + this.getParentName() + " setpriority -w \"" + world.getName() + "\" \"" + region.getIdentifier() + "\" " + region.getPriority()))
+								.build()));
+		}
+		
+		this.plugin.getEverAPI().getManagerService().getEPagination().sendTo(
+				EWMessages.REGION_INFO_LIST_TITLE.getFormat()
+					.toText("<region>", world.getName())
+					.toBuilder()
+					.onClick(TextActions.runCommand("/" + this.getName() + " -w \"" + world.getName() + "\""))
+					.build(), 
+				list, player);		
 		return true;
 	}
 
@@ -265,12 +288,12 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 				
 				Text padding = EWMessages.REGION_INFO_ONE_HERITAGE_PADDING.getText();
 				for (int cpt=0; cpt < parents.size(); cpt++) {
-					Text message = Text.of("");
+					Text message = Text.EMPTY;
 					for (int cpt2=0; cpt2 < cpt; cpt2++) {
 						message = message.concat(padding);
 					}
 					
-					ProtectedRegion curParent = parents.get(parents.size()-1-cpt);
+					ProtectedRegion curParent = parents.get(cpt);
 					message = message.concat(EWMessages.REGION_INFO_ONE_HERITAGE_LINE.getFormat()
 						.toText("<region>", Text.builder(curParent.getIdentifier())
 									.onShiftClick(TextActions.insertText(curParent.getIdentifier()))
@@ -368,10 +391,10 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 		
 		// Flags
 		Map<Flag<?>, FlagValue<?>> flags = region.getFlags();
+		TreeMap<String, Text> flags_default = new TreeMap<String, Text>();
+		TreeMap<String, Text> flags_member = new TreeMap<String, Text>();
+		TreeMap<String, Text> flags_owner = new TreeMap<String, Text>();
 		if (!flags.isEmpty()) {
-			TreeMap<String, Text> flags_default = new TreeMap<String, Text>();
-			TreeMap<String, Text> flags_member = new TreeMap<String, Text>();
-			TreeMap<String, Text> flags_owner = new TreeMap<String, Text>();
 			
 			flags.forEach((flag, values) -> {
 				Flag<T> key = (Flag<T>) flag;
@@ -384,14 +407,14 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 									"<value>", Text.builder(value_string)
 													.onShiftClick(TextActions.insertText(value_string))
 													.onClick(TextActions.suggestCommand(
-						"/" + this.getParentName() + "flag -w \"" + world.getName() + "\" \"" + region.getIdentifier() + "\" \"" + flag.getName() + "\" \"" + value_string + "\""))
+						"/" + this.getParentName() + " flag -w \"" + world.getName() + "\" \"" + region.getIdentifier() + "\" \"" + flag.getName() + "\" \"" + value_string + "\""))
 													);
 					if (association.equals(Association.DEFAULT)) {
-						flags_default.put(flag.getName(), message);
+						flags_default.put(flag.getIdentifier(), message);
 					} else if (association.equals(Association.MEMBER)) {
-						flags_member.put(flag.getName(), message);
+						flags_member.put(flag.getIdentifier(), message);
 					} else if (association.equals(Association.OWNER)) {
-						flags_owner.put(flag.getName(), message);
+						flags_owner.put(flag.getIdentifier(), message);
 					}
 				});
 			});
@@ -416,7 +439,54 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 		
 		// Flags Heritage
 		if (parents != null && !parents.isEmpty()) {
-			// TODO
+			TreeMap<String, Text> heritage_flags_default = new TreeMap<String, Text>();
+			TreeMap<String, Text> heritage_flags_member = new TreeMap<String, Text>();
+			TreeMap<String, Text> heritage_flags_owner = new TreeMap<String, Text>();
+			
+			for (ProtectedRegion curParent : parents) {
+				Map<Flag<?>, FlagValue<?>> curFlags = curParent.getFlags();
+				curFlags.forEach((flag, values) -> {
+					Flag<T> key = (Flag<T>) flag;
+					values.getAll().forEach((association, value) ->  {
+						if (association.equals(Association.DEFAULT)) {
+							if (!flags_default.containsKey(key.getIdentifier()) && 
+									!heritage_flags_default.containsKey(key.getIdentifier())) {
+								heritage_flags_default.put(key.getIdentifier(), this.getTextHeritageFlagsLine(key, (T) value, curParent, world));
+							}
+						} else if (association.equals(Association.MEMBER)) {
+							if (!flags_member.containsKey(key.getIdentifier()) && 
+									!heritage_flags_member.containsKey(key.getIdentifier())) {
+								heritage_flags_member.put(key.getIdentifier(), this.getTextHeritageFlagsLine(key, (T) value, curParent, world));
+							}
+						} else if (association.equals(Association.OWNER)) {
+							if (!flags_owner.containsKey(key.getIdentifier()) && 
+									!heritage_flags_owner.containsKey(key.getIdentifier())) {
+								heritage_flags_owner.put(key.getIdentifier(), this.getTextHeritageFlagsLine(key, (T) value, curParent, world));
+							}
+						}
+					});
+				});
+				
+			}
+			
+			if (!heritage_flags_default.isEmpty() || !heritage_flags_member.isEmpty() || !heritage_flags_owner.isEmpty()) {
+				this.addLine(list, EWMessages.REGION_INFO_ONE_HERITAGE_FLAGS.getText());
+				
+				if (!heritage_flags_default.isEmpty()) {
+					this.addLine(list, EWMessages.REGION_INFO_ONE_HERITAGE_FLAGS_DEFAULT.getText());
+					this.addLine(list, Text.joinWith(Text.of("\n"), flags_default.values()));
+				}
+				
+				if (!heritage_flags_member.isEmpty()) {
+					this.addLine(list, EWMessages.REGION_INFO_ONE_HERITAGE_FLAGS_MEMBER.getText());
+					this.addLine(list, Text.joinWith(Text.of("\n"), flags_member.values()));
+				}
+				
+				if (!heritage_flags_owner.isEmpty()) {
+					this.addLine(list, EWMessages.REGION_INFO_ONE_HERITAGE_FLAGS_OWNER.getText());
+					this.addLine(list, Text.joinWith(Text.of("\n"), flags_owner.values()));
+				}
+			}
 		}
 		
 		this.plugin.getEverAPI().getManagerService().getEPagination().sendTo(
@@ -434,5 +504,18 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 		if (!line.isEmpty()) {
 			list.add(line);
 		}
+	}
+	
+	private <T> Text getTextHeritageFlagsLine(final Flag<T> flag, final T value, final ProtectedRegion curParent, final World world) {
+		String value_string = flag.serialize(value);
+		return EWMessages.REGION_INFO_ONE_HERITAGE_FLAGS_LINE.getFormat()
+				.toText("<flag>",  flag.getNameFormat().toBuilder()
+										.onShiftClick(TextActions.insertText(flag.getIdentifier()))
+										.build(),
+						"<value>", Text.builder(value_string)
+										.onShiftClick(TextActions.insertText(value_string))
+										.onClick(TextActions.suggestCommand(
+			"/" + this.getParentName() + " flag -w \"" + world.getName() + "\" \"" + curParent.getIdentifier() + "\" \"" + flag.getName() + "\" \"" + value_string + "\"")));
+		
 	}
 }
