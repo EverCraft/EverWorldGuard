@@ -50,6 +50,7 @@ import fr.evercraft.everapi.services.worldguard.regions.ProtectedRegion;
 import fr.evercraft.everapi.services.worldguard.regions.RegionType;
 import fr.evercraft.everapi.services.worldguard.regions.SetProtectedRegion;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
+import fr.evercraft.everworldguard.EWPermissions;
 import fr.evercraft.everworldguard.EverWorldGuard;
 
 public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
@@ -84,7 +85,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 	
 	@Override
 	public boolean testPermission(final CommandSource source) {
-		return true;
+		return source.hasPermission(EWPermissions.REGION_INFO.get());
 	}
 
 	@Override

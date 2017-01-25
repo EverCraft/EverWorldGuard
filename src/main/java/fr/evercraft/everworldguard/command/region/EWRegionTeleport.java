@@ -16,14 +16,11 @@
  */
 package fr.evercraft.everworldguard.command.region;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
@@ -36,38 +33,22 @@ import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EWPermissions;
 import fr.evercraft.everworldguard.EverWorldGuard;
 
-public class EWRegionList extends ESubCommand<EverWorldGuard> {
+public class EWRegionTeleport extends ESubCommand<EverWorldGuard> {
 	
-	public static final String MARKER_WORLD = "-w";
-	public static final String MARKER_PLAYER = "-p";
-	public static final String MARKER_GROUP = "-g";
+	public static final String MARKER_SPAWN = "-s";
 	
 	private final Args.Builder pattern;
 	
-	public EWRegionList(final EverWorldGuard plugin, final EWRegion command) {
+	public EWRegionTeleport(final EverWorldGuard plugin, final EWRegion command) {
         super(plugin, command, "list");
         
         this.pattern = Args.builder()
-    			.value(MARKER_WORLD, (source, args) -> this.getAllWorlds())
-    			.value(MARKER_PLAYER, (source, args) -> this.getAllPlayers())
-    			.value(MARKER_GROUP, (source, args) ->  {
-    				List<String> suggests = new ArrayList<String>();
-    				Optional<String> optWorld = args.getValue(MARKER_WORLD);
-    				
-    				if (optWorld.isPresent()) {
-    					this.plugin.getEServer().getWorld(optWorld.get()).ifPresent(world -> 
-    						suggests.addAll(this.getAllGroups(world)));
-    				} else if (source instanceof Player) {
-    					suggests.addAll(this.getAllGroups(((Player) source).getWorld()));
-    				}
-    				
-    				return suggests;
-    			});
+    			.empty(MARKER_SPAWN);
     }
 	
 	@Override
 	public boolean testPermission(final CommandSource source) {
-		return source.hasPermission(EWPermissions.REGION_INFO.get());
+		return source.hasPermission(EWPermissions.REGION_LIST.get());
 	}
 
 	@Override
@@ -77,8 +58,8 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 
 	@Override
 	public Text help(final CommandSource source) {
-		return Text.builder("/" + this.getName() + " [-w " + EAMessages.ARGS_WORLD.getString() + "]"
-												 + " [-p" + EAMessages.ARGS_PLAYER.getString() + " | -g" + EAMessages.ARGS_GROUP.getString() + "]")
+		return Text.builder("/" + this.getName() + " [" + MARKER_SPAWN + "]"
+												 + " <" + EAMessages.ARGS_REGION.getString() + ">")
 				.onClick(TextActions.suggestCommand("/" + this.getName() + " "))
 				.color(TextColors.RED)
 				.build();

@@ -56,10 +56,12 @@ public enum EWPermissions implements EnumPermission {
 	
 	REGION("region.command"),
 	
+	REGION_INFO("region.info.command"),
 	REGION_INFO_OWN("region.info.owner"),
 	REGION_INFO_MEMBER("region.info.member"),
 	REGION_INFO_REGION("region.info.region"),
 	
+	REGION_LIST("region.list.command"),
 	REGION_LIST_OWNER("region.list.owner"),
 	REGION_LIST_MEMBER("region.list.member");
 	
