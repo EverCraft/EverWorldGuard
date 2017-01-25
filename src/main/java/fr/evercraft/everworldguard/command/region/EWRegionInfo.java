@@ -54,14 +54,15 @@ import fr.evercraft.everworldguard.EverWorldGuard;
 
 public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 	
-	private final String MARKER_WORLD = "-w";
+	private static final String MARKER_WORLD = "-w";
+	
 	private final Args.Builder pattern;
 	
 	public EWRegionInfo(final EverWorldGuard plugin, final EWRegion command) {
         super(plugin, command, "info");
         
         this.pattern = Args.builder()
-			.value(MARKER_WORLD, (source, args) -> command.getAllWorlds())
+			.value(MARKER_WORLD, (source, args) -> this.getAllWorlds())
 			.arg((source, args) -> {
 				List<String> suggests = new ArrayList<String>();
 				Optional<String> optWorld = args.getValue(MARKER_WORLD);

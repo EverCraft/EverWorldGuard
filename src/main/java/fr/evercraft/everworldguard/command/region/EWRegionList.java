@@ -19,14 +19,17 @@ package fr.evercraft.everworldguard.command.region;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 
 import fr.evercraft.everapi.EAMessage.EAMessages;
+import fr.evercraft.everapi.plugin.command.Args;
 import fr.evercraft.everapi.plugin.command.ESubCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
@@ -34,8 +37,31 @@ import fr.evercraft.everworldguard.EverWorldGuard;
 
 public class EWRegionList extends ESubCommand<EverWorldGuard> {
 	
+	public static final String MARKER_WORLD = "-w";
+	public static final String MARKER_PLAYER = "-p";
+	public static final String MARKER_GROUP = "-g";
+	
+	private final Args.Builder pattern;
+	
 	public EWRegionList(final EverWorldGuard plugin, final EWRegion command) {
         super(plugin, command, "list");
+        
+        this.pattern = Args.builder()
+    			.value(MARKER_WORLD, (source, args) -> this.getAllWorlds())
+    			.value(MARKER_PLAYER, (source, args) -> this.getAllPlayers())
+    			.value(MARKER_GROUP, (source, args) ->  {
+    				List<String> suggests = new ArrayList<String>();
+    				Optional<String> optWorld = args.getValue(MARKER_WORLD);
+    				
+    				if (optWorld.isPresent()) {
+    					this.plugin.getEServer().getWorld(optWorld.get()).ifPresent(world -> 
+    						suggests.addAll(this.getAllGroups(world)));
+    				} else if (source instanceof Player) {
+    					suggests.addAll(this.getAllGroups(((Player) source).getWorld()));
+    				}
+    				
+    				return suggests;
+    			});
     }
 	
 	@Override
@@ -45,21 +71,21 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 
 	@Override
 	public Text description(final CommandSource source) {
-		return EWMessages.SELECT_CLEAR_DESCRIPTION.getText();
+		return EWMessages.REGION_LIST_DESCRIPTION.getText();
 	}
 
 	@Override
 	public Text help(final CommandSource source) {
-		return Text.builder("/" + this.getName())
-				.onClick(TextActions.suggestCommand("/" + this.getName()))
+		return Text.builder("/" + this.getName() + " [-w " + EAMessages.ARGS_WORLD.getString() + "]"
+												 + " [-p" + EAMessages.ARGS_PLAYER.getString() + " | -g" + EAMessages.ARGS_GROUP.getString() + "]")
+				.onClick(TextActions.suggestCommand("/" + this.getName() + " "))
 				.color(TextColors.RED)
 				.build();
 	}
 	
 	@Override
 	public Collection<String> subTabCompleter(final CommandSource source, final List<String> args) throws CommandException {
-		List<String> suggest = new ArrayList<String>();
-		return suggest;
+		return this.pattern.suggest(source, args);
 	}
 	
 	@Override
