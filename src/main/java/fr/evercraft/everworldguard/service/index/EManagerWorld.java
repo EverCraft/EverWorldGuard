@@ -70,7 +70,7 @@ public class EManagerWorld {
 		this.plugin.getLogger().info("Region data changes made in '" + this.world.getName() + "' have been background saved.");
 	}
 	
-	public Set<EProtectedRegion> getAll() {
+	public Set<ProtectedRegion> getAll() {
 		return ImmutableSet.copyOf(this.regions.values());
 	}
 	
