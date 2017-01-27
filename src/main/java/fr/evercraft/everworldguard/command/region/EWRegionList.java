@@ -18,10 +18,8 @@ package fr.evercraft.everworldguard.command.region;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandSource;
@@ -34,6 +32,7 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.World;
 
 import fr.evercraft.everapi.EAMessage.EAMessages;
+import fr.evercraft.everapi.message.format.EFormat;
 import fr.evercraft.everapi.plugin.command.Args;
 import fr.evercraft.everapi.plugin.command.ESubCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
@@ -42,7 +41,6 @@ import fr.evercraft.everapi.services.worldguard.regions.ProtectedRegion;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EWPermissions;
 import fr.evercraft.everworldguard.EverWorldGuard;
-import fr.evercraft.everworldguard.regions.EProtectedRegion;
 
 public class EWRegionList extends ESubCommand<EverWorldGuard> {
 	
@@ -57,7 +55,7 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
         
         this.pattern = Args.builder()
     			.value(MARKER_WORLD, (source, args) -> this.getAllWorlds())
-    			.value(MARKER_PLAYER, (source, args) -> this.getAllPlayers())
+    			.value(MARKER_PLAYER, (source, args) -> this.getAllPlayers(source, false))
     			.value(MARKER_GROUP, (source, args) ->  {
     				List<String> suggests = new ArrayList<String>();
     				Optional<String> optWorld = args.getArg(0);
@@ -150,23 +148,55 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 	private boolean commandRegionListPlayer(CommandSource source, World world, String player_string) {
 		Optional<EUser> user = this.plugin.getEServer().getEUser(player_string);
 		// Le joueur est introuvable
-		if (!user.isPresent()){
+		if (!user.isPresent()) {
 			EAMessages.PLAYER_NOT_FOUND.sender()
 				.prefix(EWMessages.PREFIX)
 				.sendTo(source);
 			return false;
 		}
 		
-		return false;
+		List<Text> list = new ArrayList<Text>();
+		for (ProtectedRegion region : this.plugin.getService().getOrCreate(world).getAll()) {
+			if (region.isOwnerOrMember(user.get())) {
+				list.add(EWMessages.REGION_LIST_PLAYER_LINE.getFormat()
+						.toText("<region>", Text.builder(region.getIdentifier())
+									.onShiftClick(TextActions.insertText(region.getIdentifier()))
+									.build(),
+								"<type>", region.getType().getNameFormat(),
+								"<priority>", String.valueOf(region.getPriority()))
+						.toBuilder()
+						.onClick(TextActions.suggestCommand(
+								"/" + this.getParentName() + " info -w \"" + world.getName() + "\" \"" + region.getIdentifier() + "\""))
+						.build());
+			}
+		}
+		
+		EFormat title = null;
+		if (user.get().getIdentifier().equalsIgnoreCase(source.getIdentifier())) {
+			title = EWMessages.REGION_LIST_PLAYER_TITLE_EQUALS.getFormat();
+		} else {
+			title = EWMessages.REGION_LIST_PLAYER_TITLE_OTHERS.getFormat();
+		}
+		
+		this.plugin.getEverAPI().getManagerService().getEPagination().sendTo(
+				title
+					.toText("<world>", world.getName(),
+							"<player>", user.get().getName())
+					.toBuilder()
+					.onClick(TextActions.runCommand("/" + this.getName() + " -w \"" + world.getName() + "\" -p \"" + user.get().getIdentifier() + "\""))
+					.build(), 
+				list, source);
+		
+		return true;
 	}
 	
-	private boolean commandRegionListGroup(CommandSource source, World world, String group_string) {
+	private boolean commandRegionListGroup(CommandSource player, World world, String group_string) {
 		Optional<PermissionService> service = this.plugin.getEverAPI().getManagerService().getPermission();
 		// Le joueur est introuvable
 		if (!service.isPresent()){
 			EAMessages.COMMAND_ERROR.sender()
 				.prefix(EWMessages.PREFIX)
-				.sendTo(source);
+				.sendTo(player);
 			return false;
 		}
 		
@@ -175,14 +205,35 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 		if (group == null){
 			EAMessages.PLAYER_NOT_FOUND.sender()
 				.prefix(EWMessages.PREFIX)
-				.sendTo(source);
+				.sendTo(player);
 			return false;
 		}
 		
-		Set<ProtectedRegion> regions = new HashSet<ProtectedRegion>();
+		List<Text> list = new ArrayList<Text>();
 		for (ProtectedRegion region : this.plugin.getService().getOrCreate(world).getAll()) {
+			if (region.isOwnerOrMember(group.getIdentifier())) {
+				list.add(EWMessages.REGION_LIST_GROUP_LINE.getFormat()
+						.toText("<region>", Text.builder(region.getIdentifier())
+									.onShiftClick(TextActions.insertText(region.getIdentifier()))
+									.build(),
+								"<type>", region.getType().getNameFormat(),
+								"<priority>", String.valueOf(region.getPriority()))
+						.toBuilder()
+						.onClick(TextActions.suggestCommand(
+								"/" + this.getParentName() + " info -w \"" + world.getName() + "\" \"" + region.getIdentifier() + "\""))
+						.build());
+			}
 		}
 		
-		return false;
+		this.plugin.getEverAPI().getManagerService().getEPagination().sendTo(
+				EWMessages.REGION_LIST_GROUP_TITLE.getFormat()
+					.toText("<world>", world.getName(),
+							"<group>", group.getIdentifier())
+					.toBuilder()
+					.onClick(TextActions.runCommand("/" + this.getName() + " -w \"" + world.getName() + "\" -g \"" + group.getIdentifier() + "\""))
+					.build(), 
+				list, player);
+		
+		return true;
 	}
 }

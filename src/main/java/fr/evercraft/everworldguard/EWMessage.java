@@ -130,7 +130,12 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		REGION_INFO_NO_PERMISSION("region.info.noPermission",												"&cErreur : Vous n'avez accès aux informations de la région &6<region>&c."),
 		REGION_INFO_EMPTY("region.info.empty",																"&cErreur : Vous n'avez accès aux informations sur ces régions."),
 		
-		REGION_LIST_DESCRIPTION("region.list.description",		"Permet de voir la liste des régions dans le monde");
+		REGION_LIST_DESCRIPTION("region.list.description",							"Permet de voir la liste des régions dans le monde"),
+		REGION_LIST_PLAYER_TITLE_EQUALS("region.list.playerTitleEquals",			""),
+		REGION_LIST_PLAYER_TITLE_OTHERS("region.list.playerTitleOthers",			""),
+		REGION_LIST_PLAYER_LINE("region.list.playerLine",							""),
+		REGION_LIST_GROUP_TITLE("region.list.groupTitle",							""),
+		REGION_LIST_GROUP_LINE("region.list.groupLine",								"");
 		
 		private final String path;
 	    private final EMessageBuilder french;

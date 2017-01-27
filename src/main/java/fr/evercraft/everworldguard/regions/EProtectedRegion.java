@@ -23,7 +23,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 
 import fr.evercraft.everapi.java.UtilsString;
-import fr.evercraft.everapi.server.player.EPlayer;
+import fr.evercraft.everapi.server.user.EUser;
 import fr.evercraft.everapi.services.worldguard.exception.CircularInheritanceException;
 import fr.evercraft.everapi.services.worldguard.flag.Flag;
 import fr.evercraft.everapi.services.worldguard.flag.FlagValue;
@@ -234,7 +234,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 	
 	@Override
-	public boolean isOwner(EPlayer player) {
+	public boolean isOwner(EUser player) {
 		Preconditions.checkNotNull(player);
 
 		if (this.owners.contains(player)) {
@@ -254,7 +254,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 	
 	@Override
-	public boolean isMember(EPlayer player) {
+	public boolean isMember(EUser player) {
 		Preconditions.checkNotNull(player);
 
 		if (this.members.contains(player)) {
@@ -274,7 +274,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 	
 	@Override
-	public boolean isOwnerOrMember(EPlayer player) {
+	public boolean isOwnerOrMember(EUser player) {
 		Preconditions.checkNotNull(player);
 
 		if (this.isOwner(player)) {

@@ -20,9 +20,9 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 
 import fr.evercraft.everapi.server.player.EPlayer;
+import fr.evercraft.everapi.server.user.EUser;
 import fr.evercraft.everapi.services.worldguard.regions.Domain;
 
-import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.context.Context;
 import org.spongepowered.api.service.permission.Subject;
 
@@ -176,7 +176,7 @@ public class EDomain implements Domain {
 	}
 
 	@Override
-	public boolean contains(Player player, Set<Context> contexts) {
+	public boolean contains(EUser player, Set<Context> contexts) {
 		Preconditions.checkNotNull(player);
 		Preconditions.checkNotNull(contexts);
 		
