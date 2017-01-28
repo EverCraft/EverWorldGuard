@@ -131,11 +131,16 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		REGION_INFO_EMPTY("region.info.empty",																"&cErreur : Vous n'avez accès aux informations sur ces régions."),
 		
 		REGION_LIST_DESCRIPTION("region.list.description",							"Permet de voir la liste des régions dans le monde"),
-		REGION_LIST_PLAYER_TITLE_EQUALS("region.list.playerTitleEquals",			""),
-		REGION_LIST_PLAYER_TITLE_OTHERS("region.list.playerTitleOthers",			""),
-		REGION_LIST_PLAYER_LINE("region.list.playerLine",							""),
-		REGION_LIST_GROUP_TITLE("region.list.groupTitle",							""),
-		REGION_LIST_GROUP_LINE("region.list.groupLine",								"");
+		REGION_LIST_ALL_TITLE("region.list.allTitle",								"&aLa liste des régions : &6<world>"),
+		REGION_LIST_ALL_LINE("region.list.allLine",									"    &6&l➤  &6<region> : [RT]            &7(Type : &a<type>&7, Priorité : &a<priority>&7)"),
+		REGION_LIST_ALL_EMPTY("region.list.allEmpty",								"    &7Aucune région"),
+		REGION_LIST_PLAYER_TITLE_EQUALS("region.list.playerTitleEquals",			"&aLa liste de vos régions : &6<world>"),
+		REGION_LIST_PLAYER_TITLE_OTHERS("region.list.playerTitleOthers",			"&aListe des régions : &6<world>"),
+		REGION_LIST_PLAYER_LINE("region.list.playerLine",							"    &6&l➤  &6<region> : [RT]            &7(Type : &a<type>&7, Priorité : &a<priority>&7)"),
+		REGION_LIST_PLAYER_EMPTY("region.list.playerEmpty",							"    &7Aucune région"),
+		REGION_LIST_GROUP_TITLE("region.list.groupTitle",							"&aLa liste des régions du groupe &6<group> &7: &6<world>"),
+		REGION_LIST_GROUP_LINE("region.list.groupLine",								"    &6&l➤  &6<region> : [RT]            &7(Type : &a<type>&7, Priorité : &a<priority>&7)"),
+		REGION_LIST_GROUP_EMPTY("region.list.groupLine",							"    &7Aucune région");
 		
 		private final String path;
 	    private final EMessageBuilder french;

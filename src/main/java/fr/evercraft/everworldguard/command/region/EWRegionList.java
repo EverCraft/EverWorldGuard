@@ -83,8 +83,8 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 
 	@Override
 	public Text help(final CommandSource source) {
-		return Text.builder("/" + this.getName() + " [-w" + EAMessages.ARGS_WORLD.getString() + "]"
-												 + " [-p" + EAMessages.ARGS_PLAYER.getString() + " | -g" + EAMessages.ARGS_GROUP.getString() + "]")
+		return Text.builder("/" + this.getName() + " [-w " + EAMessages.ARGS_WORLD.getString() + "]"
+												 + " [-p " + EAMessages.ARGS_PLAYER.getString() + " | -g " + EAMessages.ARGS_GROUP.getString() + "]")
 				.onClick(TextActions.suggestCommand("/" + this.getName() + " "))
 				.color(TextColors.RED)
 				.build();
@@ -99,7 +99,7 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 	public boolean subExecute(final CommandSource source, final List<String> args_list) throws CommandException {
 		Args args = this.pattern.build(args_list);
 		
-		if (args.getArgs().size() == 0) {
+		if (args.getArgs().size() > 0) {
 			source.sendMessage(this.help(source));
 			return false;
 		}
@@ -141,17 +141,43 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 		}
 	}
 
-	private boolean commandRegionList(CommandSource source, World world) {
-		return false;
+	private boolean commandRegionList(CommandSource player, World world) {
+		List<Text> list = new ArrayList<Text>();
+		for (ProtectedRegion region : this.plugin.getService().getOrCreate(world).getAll()) {
+			list.add(EWMessages.REGION_LIST_ALL_LINE.getFormat()
+					.toText("<region>", Text.builder(region.getIdentifier())
+								.onShiftClick(TextActions.insertText(region.getIdentifier()))
+								.build(),
+							"<type>", region.getType().getNameFormat(),
+							"<priority>", String.valueOf(region.getPriority()))
+					.toBuilder()
+					.onClick(TextActions.suggestCommand(
+							"/" + this.getParentName() + " info -w \"" + world.getName() + "\" \"" + region.getIdentifier() + "\""))
+					.build());
+		}
+		
+		if (list.isEmpty()) {
+			list.add(EWMessages.REGION_LIST_ALL_EMPTY.getText());
+		}
+		
+		this.plugin.getEverAPI().getManagerService().getEPagination().sendTo(
+				EWMessages.REGION_LIST_ALL_TITLE.getFormat()
+					.toText("<world>", world.getName())
+					.toBuilder()
+					.onClick(TextActions.runCommand("/" + this.getName() + " -w \"" + world.getName() + "\""))
+					.build(), 
+				list, player);
+		
+		return true;
 	}
 
-	private boolean commandRegionListPlayer(CommandSource source, World world, String player_string) {
+	private boolean commandRegionListPlayer(CommandSource staff, World world, String player_string) {
 		Optional<EUser> user = this.plugin.getEServer().getEUser(player_string);
 		// Le joueur est introuvable
 		if (!user.isPresent()) {
 			EAMessages.PLAYER_NOT_FOUND.sender()
 				.prefix(EWMessages.PREFIX)
-				.sendTo(source);
+				.sendTo(staff);
 			return false;
 		}
 		
@@ -171,8 +197,12 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 			}
 		}
 		
+		if (list.isEmpty()) {
+			list.add(EWMessages.REGION_LIST_PLAYER_EMPTY.getText());
+		}
+		
 		EFormat title = null;
-		if (user.get().getIdentifier().equalsIgnoreCase(source.getIdentifier())) {
+		if (user.get().getIdentifier().equalsIgnoreCase(staff.getIdentifier())) {
 			title = EWMessages.REGION_LIST_PLAYER_TITLE_EQUALS.getFormat();
 		} else {
 			title = EWMessages.REGION_LIST_PLAYER_TITLE_OTHERS.getFormat();
@@ -185,7 +215,7 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 					.toBuilder()
 					.onClick(TextActions.runCommand("/" + this.getName() + " -w \"" + world.getName() + "\" -p \"" + user.get().getIdentifier() + "\""))
 					.build(), 
-				list, source);
+				list, staff);
 		
 		return true;
 	}
@@ -223,6 +253,10 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 								"/" + this.getParentName() + " info -w \"" + world.getName() + "\" \"" + region.getIdentifier() + "\""))
 						.build());
 			}
+		}
+		
+		if (list.isEmpty()) {
+			list.add(EWMessages.REGION_LIST_GROUP_EMPTY.getText());
 		}
 		
 		this.plugin.getEverAPI().getManagerService().getEPagination().sendTo(
