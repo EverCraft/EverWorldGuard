@@ -16,7 +16,7 @@
  */
 package fr.evercraft.everworldguard.command.select;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -61,7 +61,7 @@ public class EWSelectRemove extends ESubCommand<EverWorldGuard> {
 	
 	@Override
 	public Collection<String> subTabCompleter(final CommandSource source, final List<String> args) throws CommandException {
-		return new ArrayList<String>();
+		return Arrays.asList();
 	}
 	
 	@Override

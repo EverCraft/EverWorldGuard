@@ -17,6 +17,7 @@
 package fr.evercraft.everworldguard.command.select;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -70,13 +71,14 @@ public class EWSelectType extends ESubCommand<EverWorldGuard> {
 	
 	@Override
 	public Collection<String> subTabCompleter(final CommandSource source, final List<String> args) throws CommandException {
-		List<String> suggests = new ArrayList<String>();
 		if (args.size() == 1) {
+			List<String> suggests = new ArrayList<String>();
 			for (SelectType type : SelectType.values()){
 				suggests.add(type.getName());
 			}
+			return suggests;
 		}
-		return suggests;
+		return Arrays.asList();
 	}
 	
 	@Override
