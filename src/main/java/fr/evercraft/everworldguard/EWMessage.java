@@ -140,7 +140,10 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		REGION_LIST_PLAYER_EMPTY("region.list.playerEmpty",							"    &7Aucune région"),
 		REGION_LIST_GROUP_TITLE("region.list.groupTitle",							"&aLa liste des régions du groupe &6<group> &7: &6<world>"),
 		REGION_LIST_GROUP_LINE("region.list.groupLine",								"    &6&l➤  &6<region> : [RT]            &7(Type : &a<type>&7, Priorité : &a<priority>&7)"),
-		REGION_LIST_GROUP_EMPTY("region.list.groupLine",							"    &7Aucune région");
+		REGION_LIST_GROUP_EMPTY("region.list.groupLine",							"    &7Aucune région"),
+		
+		REGION_DEFINE_DESCRIPTION("region.define.description",						"Permet de définir une nouvelle région"),
+		REGION_DEFINE_ERROR_NAME("region.define.errorName",							"&cErreur : Il y a déjà une région qui porte le nom &6<region>&c.");
 		
 		private final String path;
 	    private final EMessageBuilder french;

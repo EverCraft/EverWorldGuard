@@ -132,12 +132,41 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 		if (arg_player.isPresent() && arg_group.isPresent()) {
 			source.sendMessage(this.help(source));
 			return false;
+		
+		// Commande pour les régions d'un joueurs
 		} else if (arg_player.isPresent()) {
-			return this.commandRegionListPlayer(source, world, arg_player.get());
+			if (source.hasPermission(EWPermissions.REGION_LIST_OWN.get())) {
+				return this.commandRegionListPlayer(source, world, arg_player.get());
+			} else {
+				EAMessages.NO_PERMISSION.sender()
+					.prefix(EWMessages.PREFIX)
+					.sendTo(source);
+				return false;
+			}
+		
+		// Commande pour les régions d'un groupe
 		} else if (arg_group.isPresent()) {
-			return this.commandRegionListGroup(source, world, arg_group.get());
+			if (source.hasPermission(EWPermissions.REGION_LIST_OWN.get())) {
+				return this.commandRegionListGroup(source, world, arg_group.get());
+			} else {
+				EAMessages.NO_PERMISSION.sender()
+					.prefix(EWMessages.PREFIX)
+					.sendTo(source);
+				return false;
+			}
+		
+		// Commande pour toutes les régions
 		} else {
-			return this.commandRegionList(source, world);
+			if (source.hasPermission(EWPermissions.REGION_LIST_OWN.get())) {
+				return this.commandRegionList(source, world);
+			} else if(source instanceof EPlayer) {
+				return this.commandRegionListPlayer(source, world, (EPlayer) source);
+			} else {
+				EAMessages.COMMAND_ERROR_FOR_PLAYER.sender()
+					.prefix(EWMessages.PREFIX)
+					.sendTo(source);
+				return false;
+			}
 		}
 	}
 
@@ -181,9 +210,13 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 			return false;
 		}
 		
+		return this.commandRegionListPlayer(staff, world, user.get());
+	}
+	
+	private boolean commandRegionListPlayer(CommandSource staff, World world, EUser user) {
 		List<Text> list = new ArrayList<Text>();
 		for (ProtectedRegion region : this.plugin.getService().getOrCreate(world).getAll()) {
-			if (region.isOwnerOrMember(user.get())) {
+			if (region.isOwnerOrMember(user)) {
 				list.add(EWMessages.REGION_LIST_PLAYER_LINE.getFormat()
 						.toText("<region>", Text.builder(region.getIdentifier())
 									.onShiftClick(TextActions.insertText(region.getIdentifier()))
@@ -202,7 +235,7 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 		}
 		
 		EFormat title = null;
-		if (user.get().getIdentifier().equalsIgnoreCase(staff.getIdentifier())) {
+		if (user.getIdentifier().equalsIgnoreCase(staff.getIdentifier())) {
 			title = EWMessages.REGION_LIST_PLAYER_TITLE_EQUALS.getFormat();
 		} else {
 			title = EWMessages.REGION_LIST_PLAYER_TITLE_OTHERS.getFormat();
@@ -211,9 +244,9 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 		this.plugin.getEverAPI().getManagerService().getEPagination().sendTo(
 				title
 					.toText("<world>", world.getName(),
-							"<player>", user.get().getName())
+							"<player>", user.getName())
 					.toBuilder()
-					.onClick(TextActions.runCommand("/" + this.getName() + " -w \"" + world.getName() + "\" -p \"" + user.get().getIdentifier() + "\""))
+					.onClick(TextActions.runCommand("/" + this.getName() + " -w \"" + world.getName() + "\" -p \"" + user.getIdentifier() + "\""))
 					.build(), 
 				list, staff);
 		
