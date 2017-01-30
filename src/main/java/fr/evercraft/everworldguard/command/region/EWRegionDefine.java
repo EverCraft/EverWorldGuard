@@ -31,11 +31,15 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 
+import com.flowpowered.math.vector.Vector3i;
+
 import fr.evercraft.everapi.EAMessage.EAMessages;
 import fr.evercraft.everapi.plugin.command.Args;
 import fr.evercraft.everapi.plugin.command.ESubCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everapi.server.user.EUser;
+import fr.evercraft.everapi.services.worldguard.SelectType;
+import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EWPermissions;
 import fr.evercraft.everworldguard.EverWorldGuard;
@@ -95,7 +99,7 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 		
 		Args args = this.pattern.build(args_list);
 		Optional<String> region_id = args.getArg(0);
-		if (args.getArgs().size() != 1 && region_id.isPresent()) {
+		if (args.getArgs().size() != 1 || !region_id.isPresent()) {
 			source.sendMessage(this.help(source));
 			return false;
 		}
@@ -156,12 +160,87 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 	}
 	
 	private boolean commandRegionDefine(final EPlayer player, final String region_id, final Set<EUser> players, final Set<Subject> groups) {
+		if (player.getSelectType().equals(SelectType.CUBOID)) {
+			return this.commandRegionDefineCuboid(player, region_id, players, groups);
+		} else if (player.getSelectType().equals(SelectType.POLYGONAL)) {
+			return this.commandRegionDefinePolygonal(player, region_id, players, groups);
+		} else {
+			EWMessages.REGION_DEFINE_ERROR_SELECT_TYPE.sender()
+				.replace("<region>", region_id)
+				.replace("<type>", player.getSelectType().getName())
+				.sendTo(player);
+			return false;
+		}
+	}
+	
+	private boolean commandRegionDefineCuboid(final EPlayer player, final String region_id, final Set<EUser> players, final Set<Subject> groups) {
+		Optional<Vector3i> pos1 = player.getSelectPos1();
+		Optional<Vector3i> pos2 = player.getSelectPos2();
+		if (!pos1.isPresent() || !pos2.isPresent()) {
+			EWMessages.REGION_DEFINE_CUBOID_ERROR_POSITION.sender()
+				.replace("<region>", region_id)
+				.replace("<type>", ProtectedRegion.Type.CUBOID.getNameFormat())
+				.sendTo(player);
+			return false;
+		}
 		
+		ProtectedRegion.Cuboid region = this.plugin.getService().getOrCreate(player.getWorld()).createRegionCuboid(region_id, pos1.get(), pos2.get());
+		region.addOwner(players);
+		region.addOwnerGroup(groups);
+		
+		Vector3i min = region.getMinimumPoint();
+		Vector3i max = region.getMaximumPoint();
+		EWMessages.REGION_DEFINE_CUBOID_CREATE.sender()
+			.replace("<region>", region_id)
+			.replace("<type>", player.getSelectType().getName())
+			.replace("<min_x>", String.valueOf(min.getX()))
+			.replace("<min_y>", String.valueOf(min.getY()))
+			.replace("<min_z>", String.valueOf(min.getZ()))
+			.replace("<min_x>", String.valueOf(max.getX()))
+			.replace("<min_y>", String.valueOf(max.getY()))
+			.replace("<min_z>", String.valueOf(max.getZ()))
+			.sendTo(player);
+		return true;
+	}
+	
+	private boolean commandRegionDefinePolygonal(final EPlayer player, final String region_id, final Set<EUser> players, final Set<Subject> groups) {
+		List<Vector3i> positions = player.getSelectPoints();
+		if (positions.size() < 3) {
+			EWMessages.REGION_DEFINE_POLYGONAL_ERROR_POSITION.sender()
+				.replace("<region>", region_id)
+				.replace("<type>", ProtectedRegion.Type.POLYGONAL.getNameFormat())
+				.sendTo(player);
+			return false;
+		}
+		
+		ProtectedRegion.Polygonal region = this.plugin.getService().getOrCreate(player.getWorld()).createRegionPolygonal(region_id, positions);
+		region.addOwner(players);
+		region.addOwnerGroup(groups);
+		
+		Vector3i min = region.getMinimumPoint();
+		Vector3i max = region.getMaximumPoint();		
+		EWMessages.REGION_DEFINE_POLYGONAL_CREATE.sender()
+			.replace("<region>", region_id)
+			.replace("<type>", player.getSelectType().getName())
+			.replace("<min_x>", String.valueOf(min.getX()))
+			.replace("<min_y>", String.valueOf(min.getY()))
+			.replace("<min_z>", String.valueOf(min.getZ()))
+			.replace("<min_x>", String.valueOf(max.getX()))
+			.replace("<min_y>", String.valueOf(max.getY()))
+			.replace("<min_z>", String.valueOf(max.getZ()))
+			.sendTo(player);
 		return true;
 	}
 	
 	private boolean commandRegionDefineTemplate(final EPlayer player, final String region_id, final Set<EUser> players, final Set<Subject> groups) {
-		//this.plugin.getService().getOrCreate(player.getWorld()).createTemplate(region_id);
+		ProtectedRegion.Template region = this.plugin.getService().getOrCreate(player.getWorld()).createRegionTemplate(region_id);
+		region.addOwner(players);
+		region.addOwnerGroup(groups);
+		
+		EWMessages.REGION_DEFINE_TEMPLATE_CREATE.sender()
+			.replace("<region>", region_id)
+			.replace("<type>", player.getSelectType().getName())
+			.sendTo(player);
 		return true;
 	}
 }

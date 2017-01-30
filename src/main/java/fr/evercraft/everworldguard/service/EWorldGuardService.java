@@ -25,9 +25,9 @@ import org.spongepowered.api.world.World;
 import fr.evercraft.everapi.services.worldguard.SubjectWorldGuard;
 import fr.evercraft.everapi.services.worldguard.WorldGuardService;
 import fr.evercraft.everapi.services.worldguard.flag.Flag;
-import fr.evercraft.everapi.services.worldguard.regions.ProtectedRegion;
+import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everworldguard.EverWorldGuard;
-import fr.evercraft.everworldguard.service.index.EManagerWorld;
+import fr.evercraft.everworldguard.service.index.EWWorld;
 
 public class EWorldGuardService implements WorldGuardService {
 	
@@ -71,7 +71,7 @@ public class EWorldGuardService implements WorldGuardService {
 	 * World
 	 */
 	
-	public EManagerWorld getOrCreate(World world) {
+	public EWWorld getOrCreate(World world) {
 		return this.worlds.getOrCreate(world);
 	}
 	
@@ -79,7 +79,7 @@ public class EWorldGuardService implements WorldGuardService {
 		this.worlds.unLoad(world);
 	}
 	
-	public Set<EManagerWorld> getAll() {
+	public Set<EWWorld> getAll() {
 		return this.worlds.getAll();
 	}
 	

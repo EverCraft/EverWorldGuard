@@ -90,7 +90,7 @@ public class EWSelectPos2 extends ESubCommand<EverWorldGuard> {
 		
 		if (player.getSelectType().equals(SelectType.CUBOID)) {
 			return this.commandSelectPos2Cuboid(player, position);
-		} else if (player.getSelectType().equals(SelectType.POLY)) {
+		} else if (player.getSelectType().equals(SelectType.POLYGONAL)) {
 			return this.commandSelectPos2Poly(player, position);
 		} else if (player.getSelectType().equals(SelectType.CYLINDER)) {
 			return this.commandSelectPos2Cylinder(player, position);

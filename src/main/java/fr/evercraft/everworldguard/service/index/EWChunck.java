@@ -16,14 +16,14 @@ import fr.evercraft.everapi.util.Chronometer;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.regions.EProtectedRegion;
 
-public class EManagerChunk {
+public class EWChunck {
 	
 	private final EverWorldGuard plugin;
 
 	private final Set<EProtectedRegion> regions;
 	private final LoadingCache<Vector3i, ESetProtectedRegion> cache;
 	
-	public EManagerChunk(EverWorldGuard plugin, Vector3i vector, ConcurrentHashMap<String, EProtectedRegion> regions) {
+	public EWChunck(EverWorldGuard plugin, Vector3i vector, ConcurrentHashMap<String, EProtectedRegion> regions) {
 		this.plugin = plugin;
 		Builder<EProtectedRegion> builder = ImmutableSet.builder();
 		regions.forEach((id, region) -> {
@@ -41,9 +41,9 @@ public class EManagerChunk {
 					        public ESetProtectedRegion load(Vector3i position){
 					        	Chronometer chronometer = new Chronometer();
 					        	
-					        	ESetProtectedRegion regions = new ESetProtectedRegion(position, EManagerChunk.this.regions);
+					        	ESetProtectedRegion regions = new ESetProtectedRegion(position, EWChunck.this.regions);
 					        	
-					        	EManagerChunk.this.plugin.getLogger().debug("Loading bloc (x:" + vector.getX() + ";y:" + vector.getY() + ";z:" + vector.getY() + ") in " +  chronometer.getMilliseconds().toString() + " ms");
+					        	EWChunck.this.plugin.getLogger().debug("Loading bloc (x:" + vector.getX() + ";y:" + vector.getY() + ";z:" + vector.getY() + ") in " +  chronometer.getMilliseconds().toString() + " ms");
 					            return regions;
 					        }
 					    });
@@ -53,7 +53,7 @@ public class EManagerChunk {
 		try {
 			return this.cache.get(position);
 		} catch (ExecutionException e) {
-			return new ESetProtectedRegion(position, EManagerChunk.this.regions);
+			return new ESetProtectedRegion(position, EWChunck.this.regions);
 		}
 	}
 	

@@ -33,8 +33,8 @@ import com.google.common.collect.ImmutableList.Builder;
 import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everapi.services.worldguard.SelectType;
 import fr.evercraft.everapi.services.worldguard.SubjectWorldGuard;
+import fr.evercraft.everapi.services.worldguard.region.SetProtectedRegion;
 import fr.evercraft.everapi.services.worldguard.regions.Region;
-import fr.evercraft.everapi.services.worldguard.regions.SetProtectedRegion;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.service.index.ESetProtectedRegion;
 

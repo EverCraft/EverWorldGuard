@@ -37,7 +37,7 @@ import fr.evercraft.everapi.plugin.command.Args;
 import fr.evercraft.everapi.plugin.command.ESubCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everapi.server.user.EUser;
-import fr.evercraft.everapi.services.worldguard.regions.ProtectedRegion;
+import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EWPermissions;
 import fr.evercraft.everworldguard.EverWorldGuard;
@@ -274,7 +274,7 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 		
 		List<Text> list = new ArrayList<Text>();
 		for (ProtectedRegion region : this.plugin.getService().getOrCreate(world).getAll()) {
-			if (region.isOwnerOrMember(group.getIdentifier())) {
+			if (region.isOwnerOrMember(group)) {
 				list.add(EWMessages.REGION_LIST_GROUP_LINE.getFormat()
 						.toText("<region>", Text.builder(region.getIdentifier())
 									.onShiftClick(TextActions.insertText(region.getIdentifier()))

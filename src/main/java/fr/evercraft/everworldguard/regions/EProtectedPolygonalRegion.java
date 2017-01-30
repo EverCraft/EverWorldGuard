@@ -30,18 +30,15 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 import com.google.common.math.LongMath;
 
-public class EProtectedCuboidRegion extends EProtectedRegion implements ProtectedRegion.Cuboid {
+public class EProtectedPolygonalRegion extends EProtectedRegion implements ProtectedRegion.Polygonal {
 	
-	public EProtectedCuboidRegion(String id, Vector3i pos1, Vector3i pos2) {
-		this(id, false, pos1, pos2);
+	public EProtectedPolygonalRegion(String id, List<Vector3i> positions) {
+		this(id, positions, false);
 	}
 	
-	public EProtectedCuboidRegion(String id, boolean transientRegion, Vector3i pos1, Vector3i pos2) {
+	public EProtectedPolygonalRegion(String id, List<Vector3i> positions, boolean transientRegion) {
 		super(id, transientRegion);
-		Preconditions.checkNotNull(pos1, "pos1");
-		Preconditions.checkNotNull(pos2, "pos2");
-		
-		this.setMinMaxPoints(pos1, pos2);
+		Preconditions.checkNotNull(positions, "positions");
 	}
 	
 	private void setMinMaxPoints(Vector3i pos1, Vector3i pos2) {
@@ -110,7 +107,7 @@ public class EProtectedCuboidRegion extends EProtectedRegion implements Protecte
 
     @Override
     protected boolean intersects(ProtectedRegion region, Area thisArea) {
-        if (region instanceof EProtectedCuboidRegion) {
+        if (region instanceof EProtectedPolygonalRegion) {
             return this.intersectsBoundingBox(region);
         } else {
             return super.intersects(region, thisArea);

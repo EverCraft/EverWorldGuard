@@ -19,7 +19,6 @@ package fr.evercraft.everworldguard.domains;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 
-import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everapi.server.user.EUser;
 import fr.evercraft.everapi.services.worldguard.regions.Domain;
 
@@ -78,14 +77,14 @@ public class EDomain implements Domain {
 	}
 	
 	@Override
-	public void addPlayer(EPlayer player) {
+	public void addPlayer(EUser player) {
 		Preconditions.checkNotNull(player);
 		
 		this.players.add(player.getUniqueId());
 	}
 	
 	@Override
-	public void removePlayer(EPlayer player) {
+	public void removePlayer(EUser player) {
 		Preconditions.checkNotNull(player);
 		
 		this.players.remove(player.getUniqueId());

@@ -28,33 +28,33 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 
 import fr.evercraft.everworldguard.EverWorldGuard;
-import fr.evercraft.everworldguard.service.index.EManagerWorld;
+import fr.evercraft.everworldguard.service.index.EWWorld;
 
 public class EWorldList {
 	
 	private final EverWorldGuard plugin;
 	
-	private final ConcurrentMap<UUID, EManagerWorld> worlds;
+	private final ConcurrentMap<UUID, EWWorld> worlds;
 	
 	
 	public EWorldList(final EverWorldGuard plugin) {		
 		this.plugin = plugin;
 		
-		this.worlds = new ConcurrentHashMap<UUID, EManagerWorld>();
+		this.worlds = new ConcurrentHashMap<UUID, EWWorld>();
 	}
 	
-	public Optional<EManagerWorld> get(World world) {
+	public Optional<EWWorld> get(World world) {
 		Preconditions.checkNotNull(world, "world");
 		
 		return Optional.ofNullable(this.worlds.get(world.getUniqueId()));
 	}
 	
-	public EManagerWorld getOrCreate(World world) {
+	public EWWorld getOrCreate(World world) {
 		Preconditions.checkNotNull(world, "world");
 		
-		EManagerWorld value = this.worlds.get(world.getUniqueId());
+		EWWorld value = this.worlds.get(world.getUniqueId());
 		if (value == null) {
-			value = new EManagerWorld(this.plugin, world);
+			value = new EWWorld(this.plugin, world);
 			this.worlds.put(world.getUniqueId(), value);
 		}
 		return value;
@@ -70,7 +70,7 @@ public class EWorldList {
 		this.worlds.forEach((uuid, world) -> world.reload());
 	}
 	
-	public Set<EManagerWorld> getAll() {
+	public Set<EWWorld> getAll() {
 		return ImmutableSet.copyOf(this.worlds.values());
 	}
 

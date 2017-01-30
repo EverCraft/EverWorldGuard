@@ -27,13 +27,14 @@ import fr.evercraft.everapi.server.user.EUser;
 import fr.evercraft.everapi.services.worldguard.exception.CircularInheritanceException;
 import fr.evercraft.everapi.services.worldguard.flag.Flag;
 import fr.evercraft.everapi.services.worldguard.flag.FlagValue;
+import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everapi.services.worldguard.regions.Association;
 import fr.evercraft.everapi.services.worldguard.regions.Domain;
-import fr.evercraft.everapi.services.worldguard.regions.ProtectedRegion;
-import fr.evercraft.everapi.services.worldguard.regions.RegionType;
 import fr.evercraft.everworldguard.domains.EDomain;
 
 import javax.annotation.Nullable;
+
+import org.spongepowered.api.service.permission.Subject;
 
 import java.awt.geom.Area;
 import java.awt.geom.Line2D;
@@ -95,9 +96,6 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	
 	@Override
 	public abstract int getVolume();
-	
-	@Override
-	public abstract RegionType getType();
 	
 	@Override
 	public abstract List<Vector3i> getPoints();
@@ -218,19 +216,13 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 		this.parent = parent;
 	}
 	
+	/*
+	 * Owner
+	 */
+	
 	@Override
 	public Domain getOwners() {
 		return this.owners;
-	}
-	
-	@Override
-	public Domain getMembers() {
-		return this.members;
-	}
-	
-	@Override
-	public boolean hasMembersOrOwners() {
-		return this.owners.size() > 0 || this.members.size() > 0;
 	}
 	
 	@Override
@@ -254,6 +246,55 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 	
 	@Override
+	public void addOwner(Set<EUser> players) {
+		players.forEach(player -> this.owners.addGroup(player));
+	}
+
+	@Override
+	public void removeOwner(Set<EUser> players) {
+		players.forEach(player -> this.owners.removePlayer(player));
+	}
+	
+	@Override
+	public boolean isOwner(Subject group) {
+		Preconditions.checkNotNull(group);
+
+		if (this.owners.containsGroups(group.getIdentifier())) {
+			return true;
+		}
+
+		ProtectedRegion curParent = this.parent;
+		while (curParent != null) {
+			if (curParent.getOwners().containsGroups(group.getIdentifier())) {
+				return true;
+			}
+
+			curParent = curParent.getParent().orElse(null);
+		}
+
+		return false;
+	}
+	
+	@Override
+	public void addOwnerGroup(Set<Subject> groups) {
+		groups.forEach(subject -> this.owners.addGroup(subject));
+	}
+
+	@Override
+	public void removeOwnerGroup(Set<Subject> groups) {
+		groups.forEach(subject -> this.owners.removeGroup(subject));
+	}
+	
+	/*
+	 * Member
+	 */
+	
+	@Override
+	public Domain getMembers() {
+		return this.members;
+	}
+	
+	@Override
 	public boolean isMember(EUser player) {
 		Preconditions.checkNotNull(player);
 
@@ -271,6 +312,51 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 		}
 
 		return false;
+	}
+
+	@Override
+	public void addMember(Set<EUser> players) {
+		players.forEach(player -> this.owners.addGroup(player));
+	}
+
+	@Override
+	public void removeMember(Set<EUser> players) {
+		players.forEach(player -> this.owners.removeGroup(player));
+	}
+
+	@Override
+	public boolean isMember(Subject group) {
+		Preconditions.checkNotNull(group);
+
+		if (this.members.containsGroups(group.getIdentifier())) {
+			return true;
+		}
+
+		ProtectedRegion curParent = this.parent;
+		while (curParent != null) {
+			if (curParent.getMembers().containsGroups(group.getIdentifier())) {
+				return true;
+			}
+
+			curParent = curParent.getParent().orElse(null);
+		}
+
+		return false;
+	}
+	
+	@Override
+	public void addMemberGroup(Set<Subject> groups) {
+		groups.forEach(subject -> this.owners.addGroup(subject));
+	}
+
+	@Override
+	public void removeMemberGroup(Set<Subject> groups) {
+		groups.forEach(subject -> this.owners.removeGroup(subject));
+	}
+	
+	@Override
+	public boolean hasMembersOrOwners() {
+		return this.owners.size() > 0 || this.members.size() > 0;
 	}
 	
 	@Override
@@ -302,64 +388,24 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 	
 	@Override
-	public boolean isOwner(String group) {
+	public boolean isOwnerOrMember(Subject group) {
 		Preconditions.checkNotNull(group);
 
-		if (this.owners.containsGroups(group)) {
+		if (this.owners.containsGroups(group.getIdentifier())) {
+			return true;
+		}
+
+		if (this.members.containsGroups(group.getIdentifier())) {
 			return true;
 		}
 
 		ProtectedRegion curParent = this.parent;
 		while (curParent != null) {
-			if (curParent.getOwners().containsGroups(group)) {
-				return true;
-			}
-
-			curParent = curParent.getParent().orElse(null);
-		}
-
-		return false;
-	}
-	
-	@Override
-	public boolean isMember(String group) {
-		Preconditions.checkNotNull(group);
-
-		if (this.members.containsGroups(group)) {
-			return true;
-		}
-
-		ProtectedRegion curParent = this.parent;
-		while (curParent != null) {
-			if (curParent.getMembers().containsGroups(group)) {
-				return true;
-			}
-
-			curParent = curParent.getParent().orElse(null);
-		}
-
-		return false;
-	}
-	
-	@Override
-	public boolean isOwnerOrMember(String group) {
-		Preconditions.checkNotNull(group);
-
-		if (this.owners.containsGroups(group)) {
-			return true;
-		}
-
-		if (this.members.containsGroups(group)) {
-			return true;
-		}
-
-		ProtectedRegion curParent = this.parent;
-		while (curParent != null) {
-			if (curParent.getOwners().containsGroups(group)) {
+			if (curParent.getOwners().containsGroups(group.getIdentifier())) {
 				return true;
 			}
 			
-			if (curParent.getMembers().containsGroups(group)) {
+			if (curParent.getMembers().containsGroups(group.getIdentifier())) {
 				return true;
 			}
 

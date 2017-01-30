@@ -116,7 +116,7 @@ public class EWSelectPos1 extends ESubCommand<EverWorldGuard> {
 					.replace("<area>", player.getSelectArea().orElse(0).toString())
 					.sendTo(player);
 			}
-		} else if (player.getSelectType().equals(SelectType.POLY)) {
+		} else if (player.getSelectType().equals(SelectType.POLYGONAL)) {
 			player.setSelectPos2(null);
 			player.clearSelectPoints();
 			EWMessages.SELECT_POS1_POLY.sender()

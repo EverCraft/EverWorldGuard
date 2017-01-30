@@ -79,7 +79,7 @@ public class EWSelect extends EParentCommand<EverWorldGuard> {
 	private boolean commandSelect(final EPlayer player) {
 		if (player.getSelectType().equals(SelectType.CUBOID)) {
 			return this.commandSelectCuboid(player);
-		} else if (player.getSelectType().equals(SelectType.POLY)) {
+		} else if (player.getSelectType().equals(SelectType.POLYGONAL)) {
 			return this.commandSelectPoly(player);
 		} else if (player.getSelectType().equals(SelectType.CYLINDER)) {
 			return this.commandSelectCylinder(player);
@@ -199,7 +199,7 @@ public class EWSelect extends EParentCommand<EverWorldGuard> {
 					.replace("<area>", player.getSelectArea().orElse(0).toString())
 					.sendTo(player);
 			}
-		} else if (player.getSelectType().equals(SelectType.POLY)) {
+		} else if (player.getSelectType().equals(SelectType.POLYGONAL)) {
 			player.setSelectPos2(null);
 			player.clearSelectPoints();
 			EWMessages.SELECT_POS1_POLY.sender()
@@ -234,7 +234,7 @@ public class EWSelect extends EParentCommand<EverWorldGuard> {
 					.replace("<area>", player.getSelectArea().orElse(0).toString())
 					.sendTo(player);
 			}
-		} else if (player.getSelectType().equals(SelectType.POLY)) {
+		} else if (player.getSelectType().equals(SelectType.POLYGONAL)) {
 			if (!player.addSelectPoint(position)) {
 				return true;
 			}

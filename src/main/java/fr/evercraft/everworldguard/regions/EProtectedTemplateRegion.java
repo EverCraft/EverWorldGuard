@@ -16,9 +16,7 @@
  */
 package fr.evercraft.everworldguard.regions;
 
-import fr.evercraft.everapi.services.worldguard.regions.ProtectedRegion;
-import fr.evercraft.everapi.services.worldguard.regions.RegionType;
-
+import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import java.awt.geom.Area;
 import java.util.Collection;
 import java.util.Collections;
@@ -28,7 +26,7 @@ import java.util.Optional;
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.collect.ImmutableList;
 
-public class EProtectedTemplateRegion extends EProtectedRegion {
+public class EProtectedTemplateRegion extends EProtectedRegion implements ProtectedRegion.Template {
 	
 	public EProtectedTemplateRegion(String id) {
 		this(id, false);
@@ -54,11 +52,6 @@ public class EProtectedTemplateRegion extends EProtectedRegion {
 	@Override
 	public boolean containsPosition(Vector3i pos) {
 		return false;
-	}
-
-	@Override
-	public RegionType getType() {
-		return RegionType.TEMPLATE;
 	}
 
 	@Override

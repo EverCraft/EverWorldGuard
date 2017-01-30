@@ -46,10 +46,9 @@ import fr.evercraft.everapi.server.user.EUser;
 import fr.evercraft.everapi.services.worldguard.exception.CircularInheritanceException;
 import fr.evercraft.everapi.services.worldguard.flag.Flag;
 import fr.evercraft.everapi.services.worldguard.flag.FlagValue;
+import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
+import fr.evercraft.everapi.services.worldguard.region.SetProtectedRegion;
 import fr.evercraft.everapi.services.worldguard.regions.Association;
-import fr.evercraft.everapi.services.worldguard.regions.ProtectedRegion;
-import fr.evercraft.everapi.services.worldguard.regions.RegionType;
-import fr.evercraft.everapi.services.worldguard.regions.SetProtectedRegion;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EWPermissions;
 import fr.evercraft.everworldguard.EverWorldGuard;
@@ -262,7 +261,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 					.build()));
 		
 		// Points
-		if (region.getType().equals(RegionType.CUBOID) || region.getType().equals(RegionType.POLYGONAL)) {
+		if (region.getType().equals(ProtectedRegion.Type.CUBOID) || region.getType().equals(ProtectedRegion.Type.POLYGONAL)) {
 			Vector3i min = region.getMinimumPoint();
 			Vector3i max = region.getMinimumPoint();
 			Map<String, EReplace<?>> replaces = new HashMap<String, EReplace<?>>();
@@ -274,14 +273,14 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 			replaces.put("<max_z>", EReplace.of(String.valueOf(max.getZ())));
 			
 			
-			if (region.getType().equals(RegionType.CUBOID)) {
+			if (region.getType().equals(ProtectedRegion.Type.CUBOID)) {
 				this.addLine(list, EWMessages.REGION_INFO_ONE_POINTS.getFormat()
 						.toText("<position>",  EWMessages.REGION_INFO_ONE_POINTS_CUBOID.getFormat()
 								.toText(replaces).toBuilder()
 								.onHover(TextActions.showText(EWMessages.REGION_INFO_ONE_POINTS_CUBOID.getFormat()
 										.toText(replaces)))
 								.build()));
-			} else if (region.getType().equals(RegionType.POLYGONAL)) {
+			} else if (region.getType().equals(ProtectedRegion.Type.POLYGONAL)) {
 				List<Text> positions = new ArrayList<Text>();
 				for(Vector3i pos : region.getPoints()) {
 					positions.add(EWMessages.REGION_INFO_ONE_POINTS_POLYGONAL_HOVER_POSITIONS.getFormat()

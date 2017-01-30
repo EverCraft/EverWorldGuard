@@ -130,20 +130,26 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		REGION_INFO_NO_PERMISSION("region.info.noPermission",												"&cErreur : Vous n'avez accès aux informations de la région &6<region>&c."),
 		REGION_INFO_EMPTY("region.info.empty",																"&cErreur : Vous n'avez accès aux informations sur ces régions."),
 		
-		REGION_LIST_DESCRIPTION("region.list.description",							"Permet de voir la liste des régions dans le monde"),
-		REGION_LIST_ALL_TITLE("region.list.allTitle",								"&aLa liste des régions : &6<world>"),
-		REGION_LIST_ALL_LINE("region.list.allLine",									"    &6&l➤  &6<region> : [RT]            &7(Type : &a<type>&7, Priorité : &a<priority>&7)"),
-		REGION_LIST_ALL_EMPTY("region.list.allEmpty",								"    &7Aucune région"),
-		REGION_LIST_PLAYER_TITLE_EQUALS("region.list.playerTitleEquals",			"&aLa liste de vos régions : &6<world>"),
-		REGION_LIST_PLAYER_TITLE_OTHERS("region.list.playerTitleOthers",			"&aListe des régions : &6<world>"),
-		REGION_LIST_PLAYER_LINE("region.list.playerLine",							"    &6&l➤  &6<region> : [RT]            &7(Type : &a<type>&7, Priorité : &a<priority>&7)"),
-		REGION_LIST_PLAYER_EMPTY("region.list.playerEmpty",							"    &7Aucune région"),
-		REGION_LIST_GROUP_TITLE("region.list.groupTitle",							"&aLa liste des régions du groupe &6<group> &7: &6<world>"),
-		REGION_LIST_GROUP_LINE("region.list.groupLine",								"    &6&l➤  &6<region> : [RT]            &7(Type : &a<type>&7, Priorité : &a<priority>&7)"),
-		REGION_LIST_GROUP_EMPTY("region.list.groupLine",							"    &7Aucune région"),
+		REGION_LIST_DESCRIPTION("region.list.description",								"Permet de voir la liste des régions dans le monde"),
+		REGION_LIST_ALL_TITLE("region.list.allTitle",									"&aLa liste des régions : &6<world>"),
+		REGION_LIST_ALL_LINE("region.list.allLine",										"    &6&l➤  &6<region> : [RT]            &7(Type : &a<type>&7, Priorité : &a<priority>&7)"),
+		REGION_LIST_ALL_EMPTY("region.list.allEmpty",									"    &7Aucune région"),
+		REGION_LIST_PLAYER_TITLE_EQUALS("region.list.playerTitleEquals",				"&aLa liste de vos régions : &6<world>"),
+		REGION_LIST_PLAYER_TITLE_OTHERS("region.list.playerTitleOthers",				"&aListe des régions : &6<world>"),
+		REGION_LIST_PLAYER_LINE("region.list.playerLine",								"    &6&l➤  &6<region> : [RT]            &7(Type : &a<type>&7, Priorité : &a<priority>&7)"),
+		REGION_LIST_PLAYER_EMPTY("region.list.playerEmpty",								"    &7Aucune région"),
+		REGION_LIST_GROUP_TITLE("region.list.groupTitle",								"&aLa liste des régions du groupe &6<group> &7: &6<world>"),
+		REGION_LIST_GROUP_LINE("region.list.groupLine",									"    &6&l➤  &6<region> : [RT]            &7(Type : &a<type>&7, Priorité : &a<priority>&7)"),
+		REGION_LIST_GROUP_EMPTY("region.list.groupLine",								"    &7Aucune région"),
 		
-		REGION_DEFINE_DESCRIPTION("region.define.description",						"Permet de définir une nouvelle région"),
-		REGION_DEFINE_ERROR_NAME("region.define.errorName",							"&cErreur : Il y a déjà une région qui porte le nom &6<region>&c.");
+		REGION_DEFINE_DESCRIPTION("region.define.description",							"Permet de définir une nouvelle région"),
+		REGION_DEFINE_CUBOID_CREATE("region.define.cuboid.create",						"&7Création de la région &6<region> &7de type &6<type>."),
+		REGION_DEFINE_CUBOID_ERROR_POSITION("region.define.cuboid.errorPosition",		"&cErreur : Vous devez sélectionner 2 positions pour définir une région &6<type>&c."),
+		REGION_DEFINE_POLYGONAL_CREATE("region.define.polygonal.create",				"&7Création de la région &6<region> &7de type &6<type>."),
+		REGION_DEFINE_POLYGONAL_ERROR_POSITION("region.define.polygonal.errorPosition",	"&cErreur : Vous devez sélectionner au moins 3 positions pour définir une région &6<type>&c."),
+		REGION_DEFINE_TEMPLATE_CREATE("region.define.template.create",					"&7Création de la région &6<region> &7de type &6<type>."),
+		REGION_DEFINE_ERROR_NAME("region.define.errorName",								"&cErreur : Il y a déjà une région qui porte le nom &6<region>&c."),
+		REGION_DEFINE_ERROR_SELECT_TYPE("region.define.errorSelectType",				"&cErreur : Il posible de créer une région de type &6<type>&c.");
 		
 		private final String path;
 	    private final EMessageBuilder french;

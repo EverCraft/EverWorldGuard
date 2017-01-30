@@ -17,8 +17,8 @@ import fr.evercraft.everapi.plugin.file.EConfig;
 import fr.evercraft.everapi.services.worldguard.exception.StorageException;
 import fr.evercraft.everapi.services.worldguard.flag.Flag;
 import fr.evercraft.everapi.services.worldguard.flag.FlagValue;
+import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everapi.services.worldguard.regions.Association;
-import fr.evercraft.everapi.services.worldguard.regions.RegionType;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.regions.EProtectedCuboidRegion;
 import fr.evercraft.everworldguard.regions.EProtectedGlobalRegion;
@@ -87,12 +87,12 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 	public <T> Optional<EProtectedRegion> get(String id, ConfigurationNode config) {
 		// Type
 		String type_string = config.getNode("type").getString("");
-		Optional<RegionType> optType = RegionType.of(type_string);
+		Optional<ProtectedRegion.Type> optType = ProtectedRegion.Type.of(type_string);
 		if (!optType.isPresent()) {
 			this.plugin.getLogger().warn("Type incorrect : " + type_string + " (id:'" + id + "')");
 			return Optional.empty();
 		}
-		RegionType type = optType.get();
+		ProtectedRegion.Type type = optType.get();
 		
 		int priority = config.getNode("priority").getInt(0);
 		
@@ -179,9 +179,9 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 		}
 		
 		EProtectedRegion region = null;
-		if (type.equals(RegionType.GLOBAL)) {
+		if (type.equals(ProtectedRegion.Type.GLOBAL)) {
 			region = new EProtectedGlobalRegion(id);
-		} else if (type.equals(RegionType.CUBOID)) {
+		} else if (type.equals(ProtectedRegion.Type.CUBOID)) {
 			Vector3i min, max;
 			try {
 				min = config.getNode("min").getValue(TypeToken.of(Vector3i.class));
@@ -196,9 +196,9 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 				return Optional.empty();
 			}
 			region = new EProtectedCuboidRegion(id, min, max);
-		} else if (type.equals(RegionType.TEMPLATE)) {
+		} else if (type.equals(ProtectedRegion.Type.TEMPLATE)) {
 			region = new EProtectedTemplateRegion(id);
-		} else if (type.equals(RegionType.POLYGONAL)) {
+		} else if (type.equals(ProtectedRegion.Type.POLYGONAL)) {
 			region = new EProtectedGlobalRegion(id);
 		} else {
 			return Optional.empty();
@@ -271,10 +271,10 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 		}
 		
 		// Points
-		if (region.getType().equals(RegionType.CUBOID)) {
+		if (region.getType().equals(ProtectedRegion.Type.CUBOID)) {
 			config.getNode("min").setValue(region.getMinimumPoint());
 			config.getNode("max").setValue(region.getMaximumPoint());
-		} else if (region.getType().equals(RegionType.POLYGONAL)) {
+		} else if (region.getType().equals(ProtectedRegion.Type.POLYGONAL)) {
 			
 		}
 	}

@@ -85,7 +85,7 @@ public class EWSelectRemove extends ESubCommand<EverWorldGuard> {
 	}
 
 	private boolean commandSelectRemove(final EPlayer player) {		
-		if (!player.getSelectType().equals(SelectType.POLY)) {
+		if (!player.getSelectType().equals(SelectType.POLYGONAL)) {
 			EWMessages.SELECT_REMOVE_ERROR.sendTo(player);
 			return false;
 		}
