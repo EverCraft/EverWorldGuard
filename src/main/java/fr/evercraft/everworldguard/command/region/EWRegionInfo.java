@@ -44,7 +44,7 @@ import fr.evercraft.everapi.plugin.command.ESubCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everapi.server.user.EUser;
 import fr.evercraft.everapi.services.worldguard.exception.CircularInheritanceException;
-import fr.evercraft.everapi.services.worldguard.flag.Flag;
+import fr.evercraft.everapi.services.worldguard.flag.EFlag;
 import fr.evercraft.everapi.services.worldguard.flag.FlagValue;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everapi.services.worldguard.region.SetProtectedRegion;
@@ -153,7 +153,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 				.sendTo(player);
 			return false;
 		}
-		
+				
 		if (setregions.getAll().size() == 1) {
 			ProtectedRegion region = setregions.getAll().iterator().next();
 			if (!EWRegionInfo.hasPermission(player, region)) {
@@ -164,8 +164,8 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 			return this.commandRegionInfo(player, region, world);
 		} else {
 			Set<ProtectedRegion> regions = new HashSet<ProtectedRegion>();
-			for (ProtectedRegion region : regions) {
-				if (EWRegionInfo.hasPermission(player, region)) {
+			for (ProtectedRegion region : setregions.getAll()) {
+				if (!region.getType().equals(ProtectedRegion.Type.GLOBAL) && EWRegionInfo.hasPermission(player, region)) {
 					regions.add(region);
 				}
 			}
@@ -173,9 +173,12 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 			if (regions.isEmpty()) {
 				EWMessages.REGION_INFO_EMPTY.sendTo(player);
 				return false;
+			} else if (regions.size() == 1) {
+				ProtectedRegion region = setregions.getAll().iterator().next();
+				return this.commandRegionInfo(player, region, world);
+			} else {
+				return this.commandRegionInfo(player, regions, world);
 			}
-			
-			return this.commandRegionInfo(player, regions, world);
 		}
 	}	
 	
@@ -263,7 +266,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 		// Points
 		if (region.getType().equals(ProtectedRegion.Type.CUBOID) || region.getType().equals(ProtectedRegion.Type.POLYGONAL)) {
 			Vector3i min = region.getMinimumPoint();
-			Vector3i max = region.getMinimumPoint();
+			Vector3i max = region.getMaximumPoint();
 			Map<String, EReplace<?>> replaces = new HashMap<String, EReplace<?>>();
 			replaces.put("<min_x>", EReplace.of(String.valueOf(min.getX())));
 			replaces.put("<min_y>", EReplace.of(String.valueOf(min.getY())));
@@ -275,7 +278,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 			
 			if (region.getType().equals(ProtectedRegion.Type.CUBOID)) {
 				this.addLine(list, EWMessages.REGION_INFO_ONE_POINTS.getFormat()
-						.toText("<position>",  EWMessages.REGION_INFO_ONE_POINTS_CUBOID.getFormat()
+						.toText("<positions>",  EWMessages.REGION_INFO_ONE_POINTS_CUBOID.getFormat()
 								.toText(replaces).toBuilder()
 								.onHover(TextActions.showText(EWMessages.REGION_INFO_ONE_POINTS_CUBOID.getFormat()
 										.toText(replaces)))
@@ -422,14 +425,14 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 		}
 		
 		// Flags
-		Map<Flag<?>, FlagValue<?>> flags = region.getFlags();
+		Map<EFlag<?>, FlagValue<?>> flags = region.getFlags();
 		TreeMap<String, Text> flags_default = new TreeMap<String, Text>();
 		TreeMap<String, Text> flags_member = new TreeMap<String, Text>();
 		TreeMap<String, Text> flags_owner = new TreeMap<String, Text>();
 		if (!flags.isEmpty()) {
 			
 			flags.forEach((flag, values) -> {
-				Flag<T> key = (Flag<T>) flag;
+				EFlag<T> key = (EFlag<T>) flag;
 				values.getAll().forEach((association, value) ->  {
 					String value_string = key.serialize((T) value);
 					Text message = EWMessages.REGION_INFO_ONE_FLAGS_LINE.getFormat()
@@ -476,9 +479,9 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 			TreeMap<String, Text> heritage_flags_owner = new TreeMap<String, Text>();
 			
 			for (ProtectedRegion curParent : parents) {
-				Map<Flag<?>, FlagValue<?>> curFlags = curParent.getFlags();
+				Map<EFlag<?>, FlagValue<?>> curFlags = curParent.getFlags();
 				curFlags.forEach((flag, values) -> {
-					Flag<T> key = (Flag<T>) flag;
+					EFlag<T> key = (EFlag<T>) flag;
 					values.getAll().forEach((association, value) ->  {
 						if (association.equals(Association.DEFAULT)) {
 							if (!flags_default.containsKey(key.getIdentifier()) && 
@@ -538,7 +541,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 		}
 	}
 	
-	private <T> Text getTextHeritageFlagsLine(final Flag<T> flag, final T value, final ProtectedRegion curParent, final World world) {
+	private <T> Text getTextHeritageFlagsLine(final EFlag<T> flag, final T value, final ProtectedRegion curParent, final World world) {
 		String value_string = flag.serialize(value);
 		return EWMessages.REGION_INFO_ONE_HERITAGE_FLAGS_LINE.getFormat()
 				.toText("<flag>",  flag.getNameFormat().toBuilder()
@@ -554,7 +557,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 	public static boolean hasPermission(final CommandSource source, final ProtectedRegion region) {
 		if (source instanceof EPlayer) {
 			EPlayer player = (EPlayer) source;
-			if (region.isMember(player)) {
+			if (region.isOwnerOrMember(player)) {
 				return true;
 			}
 		}

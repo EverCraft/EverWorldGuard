@@ -15,7 +15,7 @@ import com.google.common.reflect.TypeToken;
 
 import fr.evercraft.everapi.plugin.file.EConfig;
 import fr.evercraft.everapi.services.worldguard.exception.StorageException;
-import fr.evercraft.everapi.services.worldguard.flag.Flag;
+import fr.evercraft.everapi.services.worldguard.flag.EFlag;
 import fr.evercraft.everapi.services.worldguard.flag.FlagValue;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everapi.services.worldguard.regions.Association;
@@ -131,13 +131,13 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 		}
 		
 		// Flags
-		Map<Flag<?>, FlagValue<?>> flags = new HashMap<Flag<?>, FlagValue<?>>();
+		Map<EFlag<?>, FlagValue<?>> flags = new HashMap<EFlag<?>, FlagValue<?>>();
 		
 		for (Entry<Object, ? extends ConfigurationNode> config_flags : config.getNode("flags-default").getChildrenMap().entrySet()) {
 			if (config_flags.getKey() instanceof String) {
-				Optional<Flag<?>> optFlag = this.plugin.getService().getFlag((String) config_flags.getKey());
+				Optional<EFlag<?>> optFlag = this.plugin.getService().getFlag((String) config_flags.getKey());
 				if (optFlag.isPresent()) {
-					Flag<T> flag = (Flag<T>) optFlag.get();
+					EFlag<T> flag = (EFlag<T>) optFlag.get();
 					T value = flag.deserialize(config_flags.getValue().getString(""));
 					flags.put(flag, this.putFlags((FlagValue<T>) flags.get(flag), Association.DEFAULT, value));
 				} else {
@@ -150,9 +150,9 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 		
 		for (Entry<Object, ? extends ConfigurationNode> config_flags : config.getNode("flags-member").getChildrenMap().entrySet()) {
 			if (config_flags.getKey() instanceof String) {
-				Optional<Flag<?>> optFlag = this.plugin.getService().getFlag((String) config_flags.getKey());
+				Optional<EFlag<?>> optFlag = this.plugin.getService().getFlag((String) config_flags.getKey());
 				if (optFlag.isPresent()) {
-					Flag<T> flag = (Flag<T>) optFlag.get();
+					EFlag<T> flag = (EFlag<T>) optFlag.get();
 					T value = flag.deserialize(config_flags.getValue().getString(""));
 					flags.put(flag, this.putFlags((FlagValue<T>) flags.get(flag), Association.MEMBER, value));
 				} else {
@@ -165,9 +165,9 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 		
 		for (Entry<Object, ? extends ConfigurationNode> config_flags : config.getNode("flags-owner").getChildrenMap().entrySet()) {
 			if (config_flags.getKey() instanceof String) {
-				Optional<Flag<?>> optFlag = this.plugin.getService().getFlag((String) config_flags.getKey());
+				Optional<EFlag<?>> optFlag = this.plugin.getService().getFlag((String) config_flags.getKey());
 				if (optFlag.isPresent()) {
-					Flag<T> flag = (Flag<T>) optFlag.get();
+					EFlag<T> flag = (EFlag<T>) optFlag.get();
 					T value = flag.deserialize(config_flags.getValue().getString(""));
 					flags.put(flag, this.putFlags((FlagValue<T>) flags.get(flag), Association.OWNER, value));
 				} else {
@@ -246,8 +246,8 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 		Map<String, String> flags_member = new HashMap<String, String>();
 		Map<String, String> flags_default = new HashMap<String, String>();
 		
-		for (Entry<Flag<?>, FlagValue<?>> flag : region.getFlags().entrySet()) {
-			Flag<T> key = (Flag<T>) flag.getKey();
+		for (Entry<EFlag<?>, FlagValue<?>> flag : region.getFlags().entrySet()) {
+			EFlag<T> key = (EFlag<T>) flag.getKey();
 			for (Entry<Association, ?> value : flag.getValue().getAll().entrySet()) {
 				T val = (T) value.getValue();
 				if (value.getKey().equals(Association.DEFAULT)) {

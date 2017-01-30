@@ -5,12 +5,14 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.world.World;
 
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 
+import fr.evercraft.everapi.server.user.EUser;
 import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everapi.sponge.UtilsChunk;
@@ -60,6 +62,7 @@ public class EWWorld implements WorldWorldGuard {
 		}
 		
 		this.start();
+		this.rebuild();
 	}
 	
 	public void start() {
@@ -79,8 +82,15 @@ public class EWWorld implements WorldWorldGuard {
 		return ImmutableSet.copyOf(this.regions.values());
 	}
 	
-	public void clearCache() {
-		
+	public void rebuild() {
+		this.cache.values().forEach(region -> {
+			Vector3i position = region.getPosition();
+			EWChunck chunck = new EWChunck(this.plugin, position, this.regions);
+			if (chunck.getAll().size() >= 2) {
+				this.plugin.getLogger().warn("position : " + position + "; size :" + chunck.getAll().size());
+			}
+			this.cache.put(position.getX(), position.getZ(), chunck);
+		});
 	}
 	
 	/*
@@ -91,6 +101,7 @@ public class EWWorld implements WorldWorldGuard {
 	}
 	
 	public EWChunck getChunk(final int x, final int z) {
+		this.plugin.getLogger().warn("x : " + x + ";z :"+ z);
 		EWChunck value = this.cache.get(x, z);
 		if (value == null) {
 			value = new EWChunck(this.plugin, Vector3i.from(x, 0, z), this.regions);
@@ -116,7 +127,8 @@ public class EWWorld implements WorldWorldGuard {
 	 */
 	
 	public ESetProtectedRegion getRegions(final Vector3i position) {
-		return this.getChunk(position.getX() >> UtilsChunk.CHUNK_SHIFTS, position.getX() >> UtilsChunk.CHUNK_SHIFTS).getPosition(position);
+		this.plugin.getLogger().warn("size : " + this.getChunk(position.getX() >> UtilsChunk.CHUNK_SHIFTS, position.getZ() >> UtilsChunk.CHUNK_SHIFTS).getRegion(position).getAll().size());
+		return this.getChunk(position.getX() >> UtilsChunk.CHUNK_SHIFTS, position.getZ() >> UtilsChunk.CHUNK_SHIFTS).getRegion(position);
 	}
 
 	/*
@@ -124,37 +136,54 @@ public class EWWorld implements WorldWorldGuard {
 	 */
 	
 	@Override
-	public Optional<ProtectedRegion> getRegion(String region) {
-		return Optional.ofNullable(this.regions.get(region));
+	public Optional<ProtectedRegion> getRegion(String region_id) {
+		Preconditions.checkNotNull(region_id, "region_id");
+		
+		return Optional.ofNullable(this.regions.get(region_id));
 	}
 
 	@Override
-	public ProtectedRegion.Cuboid createRegionCuboid(String region_id, Vector3i pos1, Vector3i pos2) {
+	public ProtectedRegion.Cuboid createRegionCuboid(String region_id, Vector3i pos1, Vector3i pos2, Set<EUser> owner_players, Set<Subject> owner_groups) {
+		Preconditions.checkNotNull(region_id, "region_id");
+		Preconditions.checkNotNull(pos1, "pos1");
+		Preconditions.checkNotNull(pos2, "pos2");
+		Preconditions.checkNotNull(owner_players, "owner_players");
+		Preconditions.checkNotNull(owner_groups, "owner_groups");
+		
 		EProtectedCuboidRegion region = new EProtectedCuboidRegion(region_id, pos1, pos2);
 		this.regions.put(region_id.toLowerCase(), region);
-		this.clearCache();
+		this.rebuild();
 		return region;
 	}
 
 	@Override
-	public ProtectedRegion.Polygonal createRegionPolygonal(String region_id, List<Vector3i> positions) {
+	public ProtectedRegion.Polygonal createRegionPolygonal(String region_id, List<Vector3i> positions, Set<EUser> owner_players, Set<Subject> owner_groups) {
+		Preconditions.checkNotNull(region_id, "region_id");
+		Preconditions.checkNotNull(positions, "positions");
+		Preconditions.checkNotNull(owner_players, "owner_players");
+		Preconditions.checkNotNull(owner_groups, "owner_groups");
+		
 		EProtectedPolygonalRegion region = new EProtectedPolygonalRegion(region_id, positions);
 		this.regions.put(region_id.toLowerCase(), region);
-		this.clearCache();
+		this.rebuild();
 		return region;
 	}
 
 	@Override
-	public ProtectedRegion.Template createRegionTemplate(String region_id) {
+	public ProtectedRegion.Template createRegionTemplate(String region_id, Set<EUser> owner_players, Set<Subject> owner_groups) {
+		Preconditions.checkNotNull(region_id, "region_id");
+		Preconditions.checkNotNull(owner_players, "owner_players");
+		Preconditions.checkNotNull(owner_groups, "owner_groups");
+		
 		EProtectedTemplateRegion region = new EProtectedTemplateRegion(region_id);
 		this.regions.put(region_id.toLowerCase(), region);
-		this.clearCache();
+		this.rebuild();
 		return region;
 	}
 	
 	@Override
 	public Optional<ProtectedRegion> removeRegion(String region_id, ProtectedRegion.RemoveType type) {
-		this.clearCache();
+		this.rebuild();
 		return Optional.empty();
 	}
 }

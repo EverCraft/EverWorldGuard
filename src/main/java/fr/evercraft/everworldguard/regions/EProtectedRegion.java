@@ -25,7 +25,7 @@ import com.google.common.collect.ImmutableList.Builder;
 import fr.evercraft.everapi.java.UtilsString;
 import fr.evercraft.everapi.server.user.EUser;
 import fr.evercraft.everapi.services.worldguard.exception.CircularInheritanceException;
-import fr.evercraft.everapi.services.worldguard.flag.Flag;
+import fr.evercraft.everapi.services.worldguard.flag.EFlag;
 import fr.evercraft.everapi.services.worldguard.flag.FlagValue;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everapi.services.worldguard.regions.Association;
@@ -34,7 +34,9 @@ import fr.evercraft.everworldguard.domains.EDomain;
 
 import javax.annotation.Nullable;
 
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.service.permission.Subject;
+import org.spongepowered.api.text.Text;
 
 import java.awt.geom.Area;
 import java.awt.geom.Line2D;
@@ -61,7 +63,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	private final EDomain owners;
 	private final EDomain members;
 	
-	private final ConcurrentMap<Flag<?>, FlagValue<?>> flags;
+	private final ConcurrentMap<EFlag<?>, FlagValue<?>> flags;
 	
 	public EProtectedRegion(String id, boolean transientRegion) {
 		Preconditions.checkNotNull(id);
@@ -71,7 +73,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 		this.owners = new EDomain();
 		this.members = new EDomain();
 		
-		this.flags = new ConcurrentHashMap<Flag<?>, FlagValue<?>>();
+		this.flags = new ConcurrentHashMap<EFlag<?>, FlagValue<?>>();
 		
 		this.transientRegion = transientRegion;
 	}
@@ -81,7 +83,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 	
 	public void init(int priority, Set<UUID> owners, Set<String> group_owners, 
-			Set<UUID> members, Set<String> group_members, Map<Flag<?>, FlagValue<?>> flags) {
+			Set<UUID> members, Set<String> group_members, Map<EFlag<?>, FlagValue<?>> flags) {
 		this.flags.clear();
 		
 		this.priority = priority;
@@ -421,7 +423,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public <T extends Flag<V>, V> FlagValue<V> getFlag(T flag) {
+	public <T extends EFlag<V>, V> FlagValue<V> getFlag(T flag) {
 		Preconditions.checkNotNull(flag);
 
 		Object obj = this.flags.get(flag);
@@ -438,7 +440,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public <T extends Flag<V>, V> void setFlag(T flag, Association association, @Nullable V value) {
+	public <T extends EFlag<V>, V> void setFlag(T flag, Association association, @Nullable V value) {
 		Preconditions.checkNotNull(flag);
 
 		if (value == null) {
@@ -456,12 +458,12 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 	
 	@Override
-	public Map<Flag<?>, FlagValue<?>> getFlags() {
+	public Map<EFlag<?>, FlagValue<?>> getFlags() {
 		return this.flags;
 	}
 	
 	@Override
-	public void setFlags(Map<Flag<?>, FlagValue<?>> flags) {
+	public void setFlags(Map<EFlag<?>, FlagValue<?>> flags) {
 		Preconditions.checkNotNull(flags);
 		
 		this.flags.clear();
@@ -490,10 +492,22 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 	
 	@Override
-	public boolean containsChunk(Vector3i position) {
+	public boolean containsChunck(Vector3i position) {
 		Preconditions.checkNotNull(position);
 		
-		return this.containsPosition(new Vector3i(position.getX(), this.getMinimumPoint().getY(), position.getZ()));
+		Vector3i min = position.mul(16);
+		min = Vector3i.from(min.getX(), 0, min.getZ());
+		Vector3i max = position.add(1, 0, 1).mul(16);
+		max = Vector3i.from(max.getX(), Integer.MAX_VALUE, max.getZ());
+		
+		Sponge.getServer().getBroadcastChannel().send(Text.of("id : " + this.getIdentifier()));
+		Sponge.getServer().getBroadcastChannel().send(Text.of("containsChunck : " + !this.getIntersecting(new EProtectedCuboidRegion("_", true, min , max)).isEmpty()));
+        Sponge.getServer().getBroadcastChannel().send(Text.of("Chunck min : " + min));
+        Sponge.getServer().getBroadcastChannel().send(Text.of("Chunck max : " + max));
+        Sponge.getServer().getBroadcastChannel().send(Text.of("min : " + this.getMinimumPoint()));
+        Sponge.getServer().getBroadcastChannel().send(Text.of("max : " + this.getMaximumPoint()));
+		
+		return !this.getIntersecting(new EProtectedCuboidRegion("_", true, min , max)).isEmpty();
 	}
 	
 	@Override

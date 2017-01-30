@@ -24,6 +24,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.text.Text;
+
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
@@ -89,9 +92,15 @@ public class EProtectedCuboidRegion extends EProtectedRegion implements Protecte
         final double x = pos.getX();
         final double y = pos.getY();
         final double z = pos.getZ();
-        return x >= this.getMinimumPoint().getX() && x < this.getMaximumPoint().getX()+1
-                && y >= this.getMinimumPoint().getY() && y < this.getMaximumPoint().getY()+1
-                && z >= this.getMinimumPoint().getZ() && z < this.getMaximumPoint().getZ()+1;
+        Sponge.getServer().getBroadcastChannel().send(Text.of("containsPosition : " + (x >= this.getMinimumPoint().getX() && x <= this.getMaximumPoint().getX()
+                && y >= this.getMinimumPoint().getY() && y <= this.getMaximumPoint().getY()
+                && z >= this.getMinimumPoint().getZ() && z <= this.getMaximumPoint().getZ())));
+        Sponge.getServer().getBroadcastChannel().send(Text.of("pos : " + pos));
+        Sponge.getServer().getBroadcastChannel().send(Text.of("min : " + this.getMinimumPoint()));
+        Sponge.getServer().getBroadcastChannel().send(Text.of("max : " + this.getMaximumPoint()));
+        return x >= this.getMinimumPoint().getX() && x <= this.getMaximumPoint().getX()
+                && y >= this.getMinimumPoint().getY() && y <= this.getMaximumPoint().getY()
+                && z >= this.getMinimumPoint().getZ() && z <= this.getMaximumPoint().getZ();
     }
 
     @Override

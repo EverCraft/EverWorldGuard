@@ -24,7 +24,7 @@ import org.spongepowered.api.world.World;
 
 import fr.evercraft.everapi.services.worldguard.SubjectWorldGuard;
 import fr.evercraft.everapi.services.worldguard.WorldGuardService;
-import fr.evercraft.everapi.services.worldguard.flag.Flag;
+import fr.evercraft.everapi.services.worldguard.flag.EFlag;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.service.index.EWWorld;
@@ -88,22 +88,22 @@ public class EWorldGuardService implements WorldGuardService {
 	 */
 
 	@Override
-	public Optional<Flag<?>> getFlag(String name) {
+	public Optional<EFlag<?>> getFlag(String name) {
 		return this.flags.get(name);
 	}
 
 	@Override
-	public void registerFlag(Flag<?> flag) {
+	public void registerFlag(EFlag<?> flag) {
 		this.flags.register(flag);
 	}
 	
 	@Override
-	public void registerFlag(Set<Flag<?>> flags) {
+	public void registerFlag(Set<EFlag<?>> flags) {
 		this.flags.register(flags);
 	}
 
 	@Override
-	public boolean hasRegisteredFlag(Flag<?> flag) {
+	public boolean hasRegisteredFlag(EFlag<?> flag) {
 		return this.flags.hasRegistered(flag);
 	}
 

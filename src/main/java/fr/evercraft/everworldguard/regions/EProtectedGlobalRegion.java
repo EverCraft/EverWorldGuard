@@ -54,6 +54,11 @@ public class EProtectedGlobalRegion extends EProtectedRegion implements Protecte
 	public boolean containsPosition(Vector3i pos) {
 		return true;
 	}
+	
+	@Override
+	public boolean containsChunck(Vector3i pos) {
+		return true;
+	}
 
 	@Override
 	public Optional<Area> toArea() {

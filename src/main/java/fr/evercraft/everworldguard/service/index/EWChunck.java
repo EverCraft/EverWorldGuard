@@ -20,14 +20,16 @@ public class EWChunck {
 	
 	private final EverWorldGuard plugin;
 
+	private final Vector3i position_chunck;
 	private final Set<EProtectedRegion> regions;
 	private final LoadingCache<Vector3i, ESetProtectedRegion> cache;
 	
-	public EWChunck(EverWorldGuard plugin, Vector3i vector, ConcurrentHashMap<String, EProtectedRegion> regions) {
+	public EWChunck(EverWorldGuard plugin, Vector3i position, ConcurrentHashMap<String, EProtectedRegion> regions) {
 		this.plugin = plugin;
+		this.position_chunck = position;
 		Builder<EProtectedRegion> builder = ImmutableSet.builder();
 		regions.forEach((id, region) -> {
-			if (region.containsPosition(vector)) {
+			if (region.containsChunck(position)) {
 				builder.add(region);
 			}
 		});
@@ -43,13 +45,17 @@ public class EWChunck {
 					        	
 					        	ESetProtectedRegion regions = new ESetProtectedRegion(position, EWChunck.this.regions);
 					        	
-					        	EWChunck.this.plugin.getLogger().debug("Loading bloc (x:" + vector.getX() + ";y:" + vector.getY() + ";z:" + vector.getY() + ") in " +  chronometer.getMilliseconds().toString() + " ms");
+					        	EWChunck.this.plugin.getLogger().debug("Loading bloc (x:" + position.getX() + ";y:" + position.getY() + ";z:" + position.getY() + ") in " +  chronometer.getMilliseconds().toString() + " ms");
 					            return regions;
 					        }
 					    });
 	}
 	
-	public ESetProtectedRegion getPosition(final Vector3i position) {
+	public Vector3i getPosition() {
+		return this.position_chunck;
+	}
+	
+	public ESetProtectedRegion getRegion(final Vector3i position) {
 		try {
 			return this.cache.get(position);
 		} catch (ExecutionException e) {
@@ -59,6 +65,10 @@ public class EWChunck {
 	
 	public void clear() {
 		this.cache.cleanUp();
+	}
+	
+	public Set<EProtectedRegion> getAll() {
+		return this.regions;
 	}
 
 }

@@ -142,14 +142,22 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		REGION_LIST_GROUP_LINE("region.list.groupLine",									"    &6&l➤  &6<region> : [RT]            &7(Type : &a<type>&7, Priorité : &a<priority>&7)"),
 		REGION_LIST_GROUP_EMPTY("region.list.groupLine",								"    &7Aucune région"),
 		
-		REGION_DEFINE_DESCRIPTION("region.define.description",							"Permet de définir une nouvelle région"),
-		REGION_DEFINE_CUBOID_CREATE("region.define.cuboid.create",						"&7Création de la région &6<region> &7de type &6<type>."),
-		REGION_DEFINE_CUBOID_ERROR_POSITION("region.define.cuboid.errorPosition",		"&cErreur : Vous devez sélectionner 2 positions pour définir une région &6<type>&c."),
-		REGION_DEFINE_POLYGONAL_CREATE("region.define.polygonal.create",				"&7Création de la région &6<region> &7de type &6<type>."),
-		REGION_DEFINE_POLYGONAL_ERROR_POSITION("region.define.polygonal.errorPosition",	"&cErreur : Vous devez sélectionner au moins 3 positions pour définir une région &6<type>&c."),
-		REGION_DEFINE_TEMPLATE_CREATE("region.define.template.create",					"&7Création de la région &6<region> &7de type &6<type>."),
-		REGION_DEFINE_ERROR_NAME("region.define.errorName",								"&cErreur : Il y a déjà une région qui porte le nom &6<region>&c."),
-		REGION_DEFINE_ERROR_SELECT_TYPE("region.define.errorSelectType",				"&cErreur : Il posible de créer une région de type &6<type>&c.");
+		REGION_DEFINE_DESCRIPTION("region.define.description",									"Permet de définir une nouvelle région"),
+		REGION_DEFINE_CUBOID_CREATE("region.define.cuboid.create",								"&7Création de la région &6<region> &7de type &6<type>."),
+		REGION_DEFINE_CUBOID_POINTS("region.define.cuboid.points",								"&6(&c<min_x>&6, &c<min_y>&6, &c<min_z>&6) (&c<max_x>&6, &c<max_y>&6, &c<max_z>&6)"),
+		REGION_DEFINE_CUBOID_POINTS_HOVER("region.define.cuboid.pointsHover",					"&6Min : (&c<min_x>&6, &c<min_y>&6, &c<min_z>&6)[RT]&6Max : (&c<max_x>&6, &c<max_y>&6, &c<max_z>&6)"),
+		REGION_DEFINE_CUBOID_ERROR_POSITION("region.define.cuboid.errorPosition",				"&cErreur : Vous devez sélectionner 2 positions pour définir une région &6<type>&c."),
+		REGION_DEFINE_POLYGONAL_CREATE("region.define.polygonal.create",						"&7Création de la région &6<region> &7de type &6<type>."),
+		REGION_DEFINE_POLYGONAL_POINTS("region.define.polygonal.points",						"&6(&c<min_x>&6, &c<min_y>&6, &c<min_z>&6) (&c<max_x>&6, &c<max_y>&6, &c<max_z>&6)"),
+		REGION_DEFINE_POLYGONAL_POINTS_HOVER("region.define.polygonal.pointsHover",				"&6Les positions : [RT]<positions"),
+		REGION_DEFINE_POLYGONAL_POINTS_HOVER_LINE("region.define.polygonal.pointsHoverLine",	"&6#<num> : (&c<x>&6, &c<y>&6, &c<z>&6)"),
+		REGION_DEFINE_POLYGONAL_POINTS_HOVER_JOIN("region.define.polygonal.pointsHoverJoin",	"[RT]"),
+		REGION_DEFINE_POLYGONAL_ERROR_POSITION("region.define.polygonal.errorPosition",			"&cErreur : Vous devez sélectionner au moins 3 positions pour définir une région &6<type>&c."),
+		REGION_DEFINE_TEMPLATE_CREATE("region.define.template.create",							"&7Création de la région &6<region> &7de type &6<type>."),
+		REGION_DEFINE_ERROR_NAME("region.define.errorName",										"&cErreur : Il y a déjà une région qui porte le nom &6<region>&c."),
+		REGION_DEFINE_ERROR_SELECT_TYPE("region.define.errorSelectType",						"&cErreur : Il posible de créer une région de type &6<type>&c."),
+		
+		FLAG_BUILD("flag.build",						"flag.build");
 		
 		private final String path;
 	    private final EMessageBuilder french;
