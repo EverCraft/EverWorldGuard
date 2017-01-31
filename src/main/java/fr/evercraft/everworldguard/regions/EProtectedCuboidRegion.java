@@ -92,12 +92,6 @@ public class EProtectedCuboidRegion extends EProtectedRegion implements Protecte
         final double x = pos.getX();
         final double y = pos.getY();
         final double z = pos.getZ();
-        Sponge.getServer().getBroadcastChannel().send(Text.of("containsPosition : " + (x >= this.getMinimumPoint().getX() && x <= this.getMaximumPoint().getX()
-                && y >= this.getMinimumPoint().getY() && y <= this.getMaximumPoint().getY()
-                && z >= this.getMinimumPoint().getZ() && z <= this.getMaximumPoint().getZ())));
-        Sponge.getServer().getBroadcastChannel().send(Text.of("pos : " + pos));
-        Sponge.getServer().getBroadcastChannel().send(Text.of("min : " + this.getMinimumPoint()));
-        Sponge.getServer().getBroadcastChannel().send(Text.of("max : " + this.getMaximumPoint()));
         return x >= this.getMinimumPoint().getX() && x <= this.getMaximumPoint().getX()
                 && y >= this.getMinimumPoint().getY() && y <= this.getMaximumPoint().getY()
                 && z >= this.getMinimumPoint().getZ() && z <= this.getMaximumPoint().getZ();

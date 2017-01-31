@@ -498,15 +498,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 		Vector3i min = position.mul(16);
 		min = Vector3i.from(min.getX(), 0, min.getZ());
 		Vector3i max = position.add(1, 0, 1).mul(16);
-		max = Vector3i.from(max.getX(), Integer.MAX_VALUE, max.getZ());
-		
-		Sponge.getServer().getBroadcastChannel().send(Text.of("id : " + this.getIdentifier()));
-		Sponge.getServer().getBroadcastChannel().send(Text.of("containsChunck : " + !this.getIntersecting(new EProtectedCuboidRegion("_", true, min , max)).isEmpty()));
-        Sponge.getServer().getBroadcastChannel().send(Text.of("Chunck min : " + min));
-        Sponge.getServer().getBroadcastChannel().send(Text.of("Chunck max : " + max));
-        Sponge.getServer().getBroadcastChannel().send(Text.of("min : " + this.getMinimumPoint()));
-        Sponge.getServer().getBroadcastChannel().send(Text.of("max : " + this.getMaximumPoint()));
-		
+		max = Vector3i.from(max.getX(), Integer.MAX_VALUE, max.getZ());		
 		return !this.getIntersecting(new EProtectedCuboidRegion("_", true, min , max)).isEmpty();
 	}
 	
