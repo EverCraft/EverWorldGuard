@@ -157,7 +157,9 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		REGION_DEFINE_ERROR_NAME("region.define.errorName",										"&cErreur : Il y a déjà une région qui porte le nom &6<region>&c."),
 		REGION_DEFINE_ERROR_SELECT_TYPE("region.define.errorSelectType",						"&cErreur : Il posible de créer une région de type &6<type>&c."),
 		
-		FLAG_BUILD("flag.build",						"flag.build");
+		FLAG_BUILD("flag.build",						"flag.build"),
+		FLAG_TELEPORT("flag.teleport",					"flag.teleport"),
+		FLAG_SPAWN("flag.spawn",						"flag.spawn");
 		
 		private final String path;
 	    private final EMessageBuilder french;

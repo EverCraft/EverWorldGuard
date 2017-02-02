@@ -3,10 +3,6 @@ package fr.evercraft.everworldguard.flag.type;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.spongepowered.api.entity.Transform;
-import org.spongepowered.api.world.World;
-
-import com.flowpowered.math.vector.Vector3d;
 import com.google.common.reflect.TypeToken;
 
 import fr.evercraft.everapi.server.location.VirtualLocation;

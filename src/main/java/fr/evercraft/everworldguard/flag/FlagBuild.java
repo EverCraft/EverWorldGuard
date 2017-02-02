@@ -19,8 +19,4 @@ public class FlagBuild extends StateFlag {
 	public State getDefault() {
 		return State.ALLOW;
 	}
-	
-	public void getEvents() {
-		
-	}
 }
