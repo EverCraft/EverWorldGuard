@@ -32,6 +32,7 @@ import com.flowpowered.math.vector.Vector3i;
 import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.command.select.EWSelect;
+import fr.evercraft.everworldguard.listeners.player.PlayerListener;
 import fr.evercraft.everworldguard.listeners.world.ChunkListener;
 import fr.evercraft.everworldguard.listeners.world.WorldListener;
 
@@ -47,6 +48,7 @@ public class EWListener {
 	public void load() {
 		this.register(new WorldListener(this.plugin));
 		this.register(new ChunkListener(this.plugin));
+		this.register(new PlayerListener(this.plugin));
 	}
 	
 	public void register(Object listener) {

@@ -1,8 +1,7 @@
-package fr.evercraft.everworldguard.flag;
+package fr.evercraft.everworldguard.flags;
 
-import fr.evercraft.everapi.services.worldguard.flag.State;
+import fr.evercraft.everapi.services.worldguard.flag.type.StateFlag;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
-import fr.evercraft.everworldguard.flag.type.StateFlag;
 
 public class FlagBuild extends StateFlag {
 

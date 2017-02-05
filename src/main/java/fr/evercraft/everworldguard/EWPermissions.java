@@ -57,10 +57,22 @@ public enum EWPermissions implements EnumPermission {
 	REGION("region.command"),
 	
 	REGION_INFO("region.info.command"),
-	REGION_INFO_REGION("region.info.region"),
+	REGION_INFO_REGIONS("region.info.regions"),
 	
 	REGION_LIST("region.list.command"),
-	REGION_LIST_OWN("region.list.others");
+	REGION_LIST_OWN("region.list.others"),
+	
+	REGION_FLAG_ADD("region.flag.add.command"),
+	REGION_FLAG_ADD_OWNER("region.flag.add.owner"),
+	REGION_FLAG_ADD_MEMBER("region.flag.add.member"),
+	REGION_FLAG_ADD_REGIONS("region.flag.add.regions"),
+	
+	REGION_FLAG_REMOVE("region.flag.remove.command"),
+	REGION_FLAG_REMOVE_OWNER("region.flag.remove.owner"),
+	REGION_FLAG_REMOVE_MEMBER("region.flag.remove.member"),
+	REGION_FLAG_REMOVE_REGIONS("region.flag.remove.regions"),
+	
+	FLAGS("flags");
 	
 	private final static String prefix = "everworldguard";
 	

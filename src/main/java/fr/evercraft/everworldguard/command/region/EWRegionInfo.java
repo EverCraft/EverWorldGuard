@@ -44,11 +44,11 @@ import fr.evercraft.everapi.plugin.command.ESubCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everapi.server.user.EUser;
 import fr.evercraft.everapi.services.worldguard.exception.CircularInheritanceException;
-import fr.evercraft.everapi.services.worldguard.flag.EFlag;
+import fr.evercraft.everapi.services.worldguard.flag.Flag;
 import fr.evercraft.everapi.services.worldguard.flag.FlagValue;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
+import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion.Group;
 import fr.evercraft.everapi.services.worldguard.region.SetProtectedRegion;
-import fr.evercraft.everapi.services.worldguard.regions.Association;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EWPermissions;
 import fr.evercraft.everworldguard.EverWorldGuard;
@@ -425,14 +425,14 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 		}
 		
 		// Flags
-		Map<EFlag<?>, FlagValue<?>> flags = region.getFlags();
+		Map<Flag<?>, FlagValue<?>> flags = region.getFlags();
 		TreeMap<String, Text> flags_default = new TreeMap<String, Text>();
 		TreeMap<String, Text> flags_member = new TreeMap<String, Text>();
 		TreeMap<String, Text> flags_owner = new TreeMap<String, Text>();
 		if (!flags.isEmpty()) {
 			
 			flags.forEach((flag, values) -> {
-				EFlag<T> key = (EFlag<T>) flag;
+				Flag<T> key = (Flag<T>) flag;
 				values.getAll().forEach((association, value) ->  {
 					String value_string = key.serialize((T) value);
 					Text message = EWMessages.REGION_INFO_ONE_FLAGS_LINE.getFormat()
@@ -443,12 +443,12 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 													.onShiftClick(TextActions.insertText(value_string))
 													.onClick(TextActions.suggestCommand(
 						"/" + this.getParentName() + " flag -w \"" + world.getName() + "\" \"" + region.getIdentifier() + "\" \"" + flag.getName() + "\" \"" + value_string + "\""))
-													);
-					if (association.equals(Association.DEFAULT)) {
+													.build());
+					if (association.equals(Group.DEFAULT)) {
 						flags_default.put(flag.getIdentifier(), message);
-					} else if (association.equals(Association.MEMBER)) {
+					} else if (association.equals(Group.MEMBER)) {
 						flags_member.put(flag.getIdentifier(), message);
-					} else if (association.equals(Association.OWNER)) {
+					} else if (association.equals(Group.OWNER)) {
 						flags_owner.put(flag.getIdentifier(), message);
 					}
 				});
@@ -479,24 +479,24 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 			TreeMap<String, Text> heritage_flags_owner = new TreeMap<String, Text>();
 			
 			for (ProtectedRegion curParent : parents) {
-				Map<EFlag<?>, FlagValue<?>> curFlags = curParent.getFlags();
+				Map<Flag<?>, FlagValue<?>> curFlags = curParent.getFlags();
 				curFlags.forEach((flag, values) -> {
-					EFlag<T> key = (EFlag<T>) flag;
+					Flag<T> key = (Flag<T>) flag;
 					values.getAll().forEach((association, value) ->  {
-						if (association.equals(Association.DEFAULT)) {
+						if (association.equals(Group.DEFAULT)) {
 							if (!flags_default.containsKey(key.getIdentifier()) && 
 									!heritage_flags_default.containsKey(key.getIdentifier())) {
-								heritage_flags_default.put(key.getIdentifier(), this.getTextHeritageFlagsLine(key, (T) value, curParent, world));
+								heritage_flags_default.put(key.getIdentifier(), this.getTextHeritagFlagsLine(key, (T) value, curParent, world));
 							}
-						} else if (association.equals(Association.MEMBER)) {
+						} else if (association.equals(Group.MEMBER)) {
 							if (!flags_member.containsKey(key.getIdentifier()) && 
 									!heritage_flags_member.containsKey(key.getIdentifier())) {
-								heritage_flags_member.put(key.getIdentifier(), this.getTextHeritageFlagsLine(key, (T) value, curParent, world));
+								heritage_flags_member.put(key.getIdentifier(), this.getTextHeritagFlagsLine(key, (T) value, curParent, world));
 							}
-						} else if (association.equals(Association.OWNER)) {
+						} else if (association.equals(Group.OWNER)) {
 							if (!flags_owner.containsKey(key.getIdentifier()) && 
 									!heritage_flags_owner.containsKey(key.getIdentifier())) {
-								heritage_flags_owner.put(key.getIdentifier(), this.getTextHeritageFlagsLine(key, (T) value, curParent, world));
+								heritage_flags_owner.put(key.getIdentifier(), this.getTextHeritagFlagsLine(key, (T) value, curParent, world));
 							}
 						}
 					});
@@ -541,7 +541,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 		}
 	}
 	
-	private <T> Text getTextHeritageFlagsLine(final EFlag<T> flag, final T value, final ProtectedRegion curParent, final World world) {
+	private <T> Text getTextHeritagFlagsLine(final Flag<T> flag, final T value, final ProtectedRegion curParent, final World world) {
 		String value_string = flag.serialize(value);
 		return EWMessages.REGION_INFO_ONE_HERITAGE_FLAGS_LINE.getFormat()
 				.toText("<flag>",  flag.getNameFormat().toBuilder()
@@ -550,7 +550,8 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 						"<value>", Text.builder(value_string)
 										.onShiftClick(TextActions.insertText(value_string))
 										.onClick(TextActions.suggestCommand(
-			"/" + this.getParentName() + " flag -w \"" + world.getName() + "\" \"" + curParent.getIdentifier() + "\" \"" + flag.getName() + "\" \"" + value_string + "\"")));
+			"/" + this.getParentName() + " flag -w \"" + world.getName() + "\" \"" + curParent.getIdentifier() + "\" \"" + flag.getName() + "\" \"" + value_string + "\""))
+										.build());
 		
 	}
 	
@@ -562,7 +563,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 			}
 		}
 		
-		if (source.hasPermission(EWPermissions.REGION_INFO_REGION.get() + "." + region.getIdentifier().toLowerCase())) {
+		if (source.hasPermission(EWPermissions.REGION_INFO_REGIONS.get() + "." + region.getIdentifier().toLowerCase())) {
 			return true;
 		}
 		

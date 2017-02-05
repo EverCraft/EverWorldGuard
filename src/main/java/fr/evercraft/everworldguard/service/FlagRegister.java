@@ -29,12 +29,12 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
 
 import fr.evercraft.everapi.services.worldguard.exception.FlagRegisterException;
-import fr.evercraft.everapi.services.worldguard.flag.EFlag;
+import fr.evercraft.everapi.services.worldguard.flag.Flag;
 
 
 public class FlagRegister {
 	
-	private final ConcurrentMap<String, EFlag<?>> flags;
+	private final ConcurrentMap<String, Flag<?>> flags;
 	private boolean initialized;
 	
 	// MultiThreading
@@ -43,7 +43,7 @@ public class FlagRegister {
 	private final Lock read_lock;
 	
 	public FlagRegister() {
-		this.flags = new ConcurrentHashMap<String, EFlag<?>>();
+		this.flags = new ConcurrentHashMap<String, Flag<?>>();
 		this.initialized = false;
 		
 		// MultiThreading
@@ -52,7 +52,7 @@ public class FlagRegister {
 		this.read_lock = this.lock.readLock();
 	}
 
-	public void register(EFlag<?> flag) throws FlagRegisterException {
+	public void register(Flag<?> flag) throws FlagRegisterException {
 		Preconditions.checkNotNull(flag, "flag");
 		
 		this.write_lock.lock();
@@ -71,12 +71,12 @@ public class FlagRegister {
 		}
 	}
 	
-	public void register(Set<EFlag<?>> flags) throws FlagRegisterException {
+	public void register(Set<Flag<?>> flags) throws FlagRegisterException {
 		Preconditions.checkNotNull(flags, "flags");
 		
 		this.write_lock.lock();
 		try {
-			for (EFlag<?> flag : flags) {
+			for (Flag<?> flag : flags) {
 				this.register(flag);
 			}
 		} finally {
@@ -84,9 +84,9 @@ public class FlagRegister {
 		}
 	}
 	
-	public Optional<EFlag<?>> get(String name) {
+	public Optional<Flag<?>> get(String name) {
 		Preconditions.checkNotNull(name, "name");
-		EFlag<?> flag;
+		Flag<?> flag;
 		
 		this.read_lock.lock();
 		try {
@@ -98,7 +98,7 @@ public class FlagRegister {
 		return Optional.ofNullable(flag);
 	}
 
-	public <T> boolean hasRegistered(EFlag<T> flag) {
+	public <T> boolean hasRegistered(Flag<T> flag) {
 		Preconditions.checkNotNull(flag, "flag");
 		
 		boolean registered = false;
@@ -113,8 +113,8 @@ public class FlagRegister {
 		return registered;
 	}
 	
-	public Set<EFlag<?>> getAll() {
-		Builder<EFlag<?>> builder = ImmutableSet.builder();
+	public Set<Flag<?>> getAll() {
+		Builder<Flag<?>> builder = ImmutableSet.builder();
 		
 		this.read_lock.lock();
 		try {

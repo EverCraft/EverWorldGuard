@@ -25,18 +25,15 @@ import com.google.common.collect.ImmutableList.Builder;
 import fr.evercraft.everapi.java.UtilsString;
 import fr.evercraft.everapi.server.user.EUser;
 import fr.evercraft.everapi.services.worldguard.exception.CircularInheritanceException;
-import fr.evercraft.everapi.services.worldguard.flag.EFlag;
+import fr.evercraft.everapi.services.worldguard.flag.Flag;
 import fr.evercraft.everapi.services.worldguard.flag.FlagValue;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
-import fr.evercraft.everapi.services.worldguard.regions.Association;
 import fr.evercraft.everapi.services.worldguard.regions.Domain;
 import fr.evercraft.everworldguard.domains.EDomain;
 
 import javax.annotation.Nullable;
 
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.service.permission.Subject;
-import org.spongepowered.api.text.Text;
 
 import java.awt.geom.Area;
 import java.awt.geom.Line2D;
@@ -63,7 +60,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	private final EDomain owners;
 	private final EDomain members;
 	
-	private final ConcurrentMap<EFlag<?>, FlagValue<?>> flags;
+	private final ConcurrentMap<Flag<?>, FlagValue<?>> flags;
 	
 	public EProtectedRegion(String id, boolean transientRegion) {
 		Preconditions.checkNotNull(id);
@@ -73,7 +70,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 		this.owners = new EDomain();
 		this.members = new EDomain();
 		
-		this.flags = new ConcurrentHashMap<EFlag<?>, FlagValue<?>>();
+		this.flags = new ConcurrentHashMap<Flag<?>, FlagValue<?>>();
 		
 		this.transientRegion = transientRegion;
 	}
@@ -83,7 +80,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 	
 	public void init(int priority, Set<UUID> owners, Set<String> group_owners, 
-			Set<UUID> members, Set<String> group_members, Map<EFlag<?>, FlagValue<?>> flags) {
+			Set<UUID> members, Set<String> group_members, Map<Flag<?>, FlagValue<?>> flags) {
 		this.flags.clear();
 		
 		this.priority = priority;
@@ -423,7 +420,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public <T extends EFlag<V>, V> FlagValue<V> getFlag(T flag) {
+	public <V> FlagValue<V> getFlag(Flag<V> flag) {
 		Preconditions.checkNotNull(flag);
 
 		Object obj = this.flags.get(flag);
@@ -440,30 +437,28 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public <T extends EFlag<V>, V> void setFlag(T flag, Association association, @Nullable V value) {
+	public <V> void setFlag(Flag<V> flag, Group group, @Nullable V value) {
 		Preconditions.checkNotNull(flag);
 
 		if (value == null) {
 			this.flags.remove(flag);
 		} else {
 			FlagValue<V> flag_value = (FlagValue) this.flags.get(flag);
-			if (flag_value != null) {
-				flag_value.set(association, value);
-			} else {
+			if (flag_value == null) {
 				flag_value = new FlagValue<V>();
-				flag_value.set(association, value);
+				this.flags.put(flag, flag_value);
 			}
-			this.flags.put(flag, flag_value);
+			flag_value.set(group, value);
 		}
 	}
 	
 	@Override
-	public Map<EFlag<?>, FlagValue<?>> getFlags() {
+	public Map<Flag<?>, FlagValue<?>> getFlags() {
 		return this.flags;
 	}
 	
 	@Override
-	public void setFlags(Map<EFlag<?>, FlagValue<?>> flags) {
+	public void setFlags(Map<Flag<?>, FlagValue<?>> flags) {
 		Preconditions.checkNotNull(flags);
 		
 		this.flags.clear();

@@ -10,7 +10,7 @@ import org.spongepowered.api.event.filter.cause.First;
 
 import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everapi.services.worldguard.flag.Flags;
-import fr.evercraft.everapi.services.worldguard.flag.State;
+import fr.evercraft.everapi.services.worldguard.flag.type.StateFlag.State;
 import fr.evercraft.everworldguard.EverWorldGuard;
 
 public class PlayerListener {

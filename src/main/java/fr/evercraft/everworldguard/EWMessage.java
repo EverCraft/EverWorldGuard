@@ -34,6 +34,9 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		PREFIX("prefix", 				"[&4Ever&6&lWG&f] "),
 		DESCRIPTION("description",		"Gestionnaire des régions"), 
 		
+		GROUP_NOT_FOUND("groupNotFound",		"&cErreur : Le group '&6<group>&c' est introuvable."), 
+		FLAG_NOT_FOUND("flagNotFound",			"&cErreur : Le flag '&6<flag>&c' est introuvable."), 
+		
 		SELECT_DESCRIPTION("select.description",					"Permet de sélectionner une région"),
 		
 		SELECT_INFO_POS("select.info.pos",												"&7(&6<x>&7, &6<y>&7, &6<z>&7)"),
@@ -157,9 +160,19 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		REGION_DEFINE_ERROR_NAME("region.define.errorName",										"&cErreur : Il y a déjà une région qui porte le nom &6<region>&c."),
 		REGION_DEFINE_ERROR_SELECT_TYPE("region.define.errorSelectType",						"&cErreur : Il posible de créer une région de type &6<type>&c."),
 		
-		FLAG_BUILD("flag.build",						"flag.build"),
-		FLAG_TELEPORT("flag.teleport",					"flag.teleport"),
-		FLAG_SPAWN("flag.spawn",						"flag.spawn");
+		REGION_FLAG_ADD_DESCRIPTION("region.flag.add.description",								"Permet de définir un flag d'une région"),
+		REGION_FLAG_ADD_PLAYER("region.flag.add.player",										"&7Vous avez défini le flag &6<flag> &7sur la région &6<region> &7dans le monde &6<world> pour le groupe &6<group> &7à la valeur &6<value>&7."),
+		REGION_FLAG_ADD_ERROR("region.flag.add.error",											"&cErreur : La valeur est &6'<value>&6' &7est invalide."),
+		
+		REGION_FLAG_REMOVE_DESCRIPTION("region.flag.remove.description",						"Permet de supprimer un flag d'une région"),
+		REGION_FLAG_REMOVE_UPDATE("region.flag.remove.update",									"&7Vous avez défini le flag &6<flag> &7sur la région &6<region> &7dans le monde &6<world> pour le groupe &6<group> &7à la valeur &6<value>&7."),
+		REGION_FLAG_REMOVE_PLAYER("region.flag.remove.player",									"&7Vous avez défini le flag &6<flag> &7sur la région &6<region> &7dans le monde &6<world> pour le groupe &6<group> &7à la valeur &6<value>&7."),
+		REGION_FLAG_REMOVE_ERROR("region.flag.add.error",										"&cErreur : La valeur est &6'<value>&6' &7est invalide."),
+		
+		FLAG_BUILD("flag.build",						"Permet de désactiver les constructions"),
+		FLAG_PVP("flag.pvp",							"Permet de désactiver le PVP"),
+		FLAG_TELEPORT("flag.teleport",					"Permet de sauvegarde une position pour ce téléporter à la région"),
+		FLAG_SPAWN("flag.spawn",						"Permet de définir un spawn pour la région");
 		
 		private final String path;
 	    private final EMessageBuilder french;

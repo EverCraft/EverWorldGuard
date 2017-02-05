@@ -20,12 +20,14 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.world.World;
 
 import fr.evercraft.everapi.services.worldguard.SubjectWorldGuard;
 import fr.evercraft.everapi.services.worldguard.WorldGuardService;
-import fr.evercraft.everapi.services.worldguard.flag.EFlag;
+import fr.evercraft.everapi.services.worldguard.flag.Flag;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
+import fr.evercraft.everworldguard.EWPermissions;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.service.index.EWWorld;
 
@@ -87,24 +89,32 @@ public class EWorldGuardService implements WorldGuardService {
 	 * Flags
 	 */
 
+	public boolean hasPermissionFlag(Subject subject, Flag<?> flag) {
+		return subject.hasPermission(EWPermissions.FLAGS.get() + "." + flag.getIdentifier());
+	}
+	
 	@Override
-	public Optional<EFlag<?>> getFlag(String name) {
+	public Optional<Flag<?>> getFlag(String name) {
 		return this.flags.get(name);
 	}
 
 	@Override
-	public void registerFlag(EFlag<?> flag) {
+	public void registerFlag(Flag<?> flag) {
 		this.flags.register(flag);
 	}
 	
 	@Override
-	public void registerFlag(Set<EFlag<?>> flags) {
+	public void registerFlag(Set<Flag<?>> flags) {
 		this.flags.register(flags);
 	}
 
 	@Override
-	public boolean hasRegisteredFlag(EFlag<?> flag) {
+	public boolean hasRegisteredFlag(Flag<?> flag) {
 		return this.flags.hasRegistered(flag);
+	}
+	
+	public Set<Flag<?>> getFlags() {
+		return this.flags.getAll();
 	}
 
 	@Override

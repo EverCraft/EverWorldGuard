@@ -1,9 +1,9 @@
-package fr.evercraft.everworldguard.flag;
+package fr.evercraft.everworldguard.flags;
 
 import fr.evercraft.everapi.server.location.VirtualLocation;
+import fr.evercraft.everapi.services.worldguard.flag.type.LocationFlag;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
-import fr.evercraft.everworldguard.flag.type.LocationFlag;
 
 public class FlagSpawn extends LocationFlag {
 

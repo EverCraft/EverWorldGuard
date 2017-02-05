@@ -24,9 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.text.Text;
-
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
