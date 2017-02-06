@@ -19,9 +19,9 @@ package fr.evercraft.everworldguard.domains;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 
-import fr.evercraft.everapi.server.user.EUser;
 import fr.evercraft.everapi.services.worldguard.regions.Domain;
 
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.context.Context;
 import org.spongepowered.api.service.permission.Subject;
 
@@ -77,14 +77,14 @@ public class EDomain implements Domain {
 	}
 	
 	@Override
-	public void addPlayer(EUser player) {
+	public void addPlayer(User player) {
 		Preconditions.checkNotNull(player);
 		
 		this.players.add(player.getUniqueId());
 	}
 	
 	@Override
-	public void removePlayer(EUser player) {
+	public void removePlayer(User player) {
 		Preconditions.checkNotNull(player);
 		
 		this.players.remove(player.getUniqueId());
@@ -175,7 +175,7 @@ public class EDomain implements Domain {
 	}
 
 	@Override
-	public boolean contains(EUser player, Set<Context> contexts) {
+	public boolean contains(User player, Set<Context> contexts) {
 		Preconditions.checkNotNull(player);
 		Preconditions.checkNotNull(contexts);
 		

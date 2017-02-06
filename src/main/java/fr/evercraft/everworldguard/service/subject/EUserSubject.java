@@ -75,7 +75,7 @@ public class EUserSubject implements SubjectWorldGuard {
 	public SetProtectedRegion getRegions() {
 		Optional<EPlayer> player = this.getEPlayer();
 		if (player.isPresent()) {
-			return this.plugin.getService().getOrCreate(player.get().getWorld()).getRegions(player.get().getLocation().getPosition().toInt());
+			return this.plugin.getService().getOrCreateWorld(player.get().getWorld()).getRegions(player.get().getLocation().getPosition().toInt());
 		}
 		this.plugin.getLogger().warn("SetProtectedRegion.empty()");
 		return SetProtectedRegion.empty();

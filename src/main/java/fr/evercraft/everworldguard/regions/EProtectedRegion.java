@@ -23,16 +23,18 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 
 import fr.evercraft.everapi.java.UtilsString;
-import fr.evercraft.everapi.server.user.EUser;
 import fr.evercraft.everapi.services.worldguard.exception.CircularInheritanceException;
 import fr.evercraft.everapi.services.worldguard.flag.Flag;
 import fr.evercraft.everapi.services.worldguard.flag.FlagValue;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everapi.services.worldguard.regions.Domain;
 import fr.evercraft.everworldguard.domains.EDomain;
+import fr.evercraft.everworldguard.flag.EFlagValue;
 
 import javax.annotation.Nullable;
 
+import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.service.context.Context;
 import org.spongepowered.api.service.permission.Subject;
 
 import java.awt.geom.Area;
@@ -60,7 +62,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	private final EDomain owners;
 	private final EDomain members;
 	
-	private final ConcurrentMap<Flag<?>, FlagValue<?>> flags;
+	private final ConcurrentMap<Flag<?>, EFlagValue<?>> flags;
 	
 	public EProtectedRegion(String id, boolean transientRegion) {
 		Preconditions.checkNotNull(id);
@@ -70,7 +72,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 		this.owners = new EDomain();
 		this.members = new EDomain();
 		
-		this.flags = new ConcurrentHashMap<Flag<?>, FlagValue<?>>();
+		this.flags = new ConcurrentHashMap<Flag<?>, EFlagValue<?>>();
 		
 		this.transientRegion = transientRegion;
 	}
@@ -80,7 +82,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 	
 	public void init(int priority, Set<UUID> owners, Set<String> group_owners, 
-			Set<UUID> members, Set<String> group_members, Map<Flag<?>, FlagValue<?>> flags) {
+			Set<UUID> members, Set<String> group_members, Map<Flag<?>, EFlagValue<?>> flags) {
 		this.flags.clear();
 		
 		this.priority = priority;
@@ -225,10 +227,10 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 	
 	@Override
-	public boolean isOwner(EUser player) {
+	public boolean isPlayerOwner(User player, Set<Context> contexts) {
 		Preconditions.checkNotNull(player);
 
-		if (this.owners.contains(player)) {
+		if (this.owners.contains(player, contexts)) {
 			return true;
 		}
 
@@ -245,17 +247,17 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 	
 	@Override
-	public void addOwner(Set<EUser> players) {
+	public void addPlayerOwner(Set<User> players) {
 		players.forEach(player -> this.owners.addGroup(player));
 	}
 
 	@Override
-	public void removeOwner(Set<EUser> players) {
+	public void removePlayerOwner(Set<User> players) {
 		players.forEach(player -> this.owners.removePlayer(player));
 	}
 	
 	@Override
-	public boolean isOwner(Subject group) {
+	public boolean isGroupOwner(Subject group) {
 		Preconditions.checkNotNull(group);
 
 		if (this.owners.containsGroups(group.getIdentifier())) {
@@ -275,12 +277,12 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 	
 	@Override
-	public void addOwnerGroup(Set<Subject> groups) {
+	public void addGroupOwner(Set<Subject> groups) {
 		groups.forEach(subject -> this.owners.addGroup(subject));
 	}
 
 	@Override
-	public void removeOwnerGroup(Set<Subject> groups) {
+	public void removeGroupOwner(Set<Subject> groups) {
 		groups.forEach(subject -> this.owners.removeGroup(subject));
 	}
 	
@@ -294,16 +296,17 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 	
 	@Override
-	public boolean isMember(EUser player) {
+	public boolean isPlayerMember(User player, Set<Context> contexts) {
 		Preconditions.checkNotNull(player);
+		Preconditions.checkNotNull(contexts);
 
-		if (this.members.contains(player)) {
+		if (this.members.contains(player, contexts)) {
 			return true;
 		}
 
 		ProtectedRegion curParent = this.parent;
 		while (curParent != null) {
-			if (curParent.getMembers().contains(player)) {
+			if (curParent.getMembers().contains(player, contexts)) {
 				return true;
 			}
 
@@ -314,17 +317,17 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 
 	@Override
-	public void addMember(Set<EUser> players) {
+	public void addPlayerMember(Set<User> players) {
 		players.forEach(player -> this.owners.addGroup(player));
 	}
 
 	@Override
-	public void removeMember(Set<EUser> players) {
+	public void removePlayerMember(Set<User> players) {
 		players.forEach(player -> this.owners.removeGroup(player));
 	}
 
 	@Override
-	public boolean isMember(Subject group) {
+	public boolean isGroupMember(Subject group) {
 		Preconditions.checkNotNull(group);
 
 		if (this.members.containsGroups(group.getIdentifier())) {
@@ -344,12 +347,12 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 	
 	@Override
-	public void addMemberGroup(Set<Subject> groups) {
+	public void addGroupMember(Set<Subject> groups) {
 		groups.forEach(subject -> this.owners.addGroup(subject));
 	}
 
 	@Override
-	public void removeMemberGroup(Set<Subject> groups) {
+	public void removeGroupMember(Set<Subject> groups) {
 		groups.forEach(subject -> this.owners.removeGroup(subject));
 	}
 	
@@ -359,10 +362,10 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 	
 	@Override
-	public boolean isOwnerOrMember(EUser player) {
+	public boolean isOwnerOrMember(User player, Set<Context> contexts) {
 		Preconditions.checkNotNull(player);
 
-		if (this.isOwner(player)) {
+		if (this.owners.contains(player)) {
 			return true;
 		}
 
@@ -414,6 +417,18 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 		return false;
 	}
 	
+	public ProtectedRegion.Group getGroup(User subject, Set<Context> contexts) {
+		if (this.isPlayerOwner(subject, contexts)) {
+			return ProtectedRegion.Group.OWNER;
+		}
+		
+		if (this.isPlayerMember(subject, contexts)) {
+			return ProtectedRegion.Group.MEMBER;
+		}
+		
+		return ProtectedRegion.Group.DEFAULT;
+	}
+	
 	/*
 	 * Flags
 	 */
@@ -443,26 +458,19 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 		if (value == null) {
 			this.flags.remove(flag);
 		} else {
-			FlagValue<V> flag_value = (FlagValue) this.flags.get(flag);
+			EFlagValue<V> flag_value = (EFlagValue) this.flags.get(flag);
 			if (flag_value == null) {
-				flag_value = new FlagValue<V>();
+				flag_value = new EFlagValue<V>();
 				this.flags.put(flag, flag_value);
 			}
 			flag_value.set(group, value);
 		}
 	}
 	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public Map<Flag<?>, FlagValue<?>> getFlags() {
-		return this.flags;
-	}
-	
-	@Override
-	public void setFlags(Map<Flag<?>, FlagValue<?>> flags) {
-		Preconditions.checkNotNull(flags);
-		
-		this.flags.clear();
-		this.flags.putAll(flags);
+		return (Map) this.flags;
 	}
 	
 	/*
@@ -596,6 +604,12 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 			return 1;
 		}
 
+		if (this.getType().equals(Type.GLOBAL)) {
+			return 1;
+		} else if (this.getType().equals(Type.GLOBAL)) {
+			return -1;
+		}
+		
 		return this.getIdentifier().compareTo(other.getIdentifier());
 	}
 

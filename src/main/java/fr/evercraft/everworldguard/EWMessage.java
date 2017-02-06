@@ -169,6 +169,12 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		REGION_FLAG_REMOVE_PLAYER("region.flag.remove.player",									"&7Vous avez défini le flag &6<flag> &7sur la région &6<region> &7dans le monde &6<world> pour le groupe &6<group> &7à la valeur &6<value>&7."),
 		REGION_FLAG_REMOVE_ERROR("region.flag.add.error",										"&cErreur : La valeur est &6'<value>&6' &7est invalide."),
 		
+		REGION_OWNER_ADD_DESCRIPTION("region.owner.add.description",							"Permet d'ajouter un owner à une région"),
+		REGION_OWNER_ADD_PLAYERS("region.owner.add.players",									""),
+		REGION_OWNER_ADD_PLAYERS_JOIN("region.owner.add.playersJoin",							""),
+		
+		REGION_OWNER_REMOVE_DESCRIPTION("region.owner.remove.description",						"Permet de retirer un owner d'une région"),
+		
 		FLAG_BUILD("flag.build",						"Permet de désactiver les constructions"),
 		FLAG_PVP("flag.pvp",							"Permet de désactiver le PVP"),
 		FLAG_TELEPORT("flag.teleport",					"Permet de sauvegarde une position pour ce téléporter à la région"),

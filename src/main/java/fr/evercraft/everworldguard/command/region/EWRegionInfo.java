@@ -48,6 +48,7 @@ import fr.evercraft.everapi.services.worldguard.flag.Flag;
 import fr.evercraft.everapi.services.worldguard.flag.FlagValue;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion.Group;
+import fr.evercraft.everapi.sponge.UtilsContexts;
 import fr.evercraft.everapi.services.worldguard.region.SetProtectedRegion;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EWPermissions;
@@ -70,11 +71,11 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 				
 				if (optWorld.isPresent()) {
 					this.plugin.getEServer().getWorld(optWorld.get()).ifPresent(world -> 
-						this.plugin.getService().getRegion(world).forEach(region ->
+						this.plugin.getService().getOrCreateWorld(world).getAll().forEach(region ->
 							suggests.add(region.getIdentifier())
 					));
 				} else if (source instanceof Player) {
-					this.plugin.getService().getRegion(((Player) source).getWorld()).forEach(region ->
+					this.plugin.getService().getOrCreateWorld(((Player) source).getWorld()).getAll().forEach(region ->
 						suggests.add(region.getIdentifier())
 					);
 				}
@@ -156,7 +157,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 				
 		if (setregions.getAll().size() == 1) {
 			ProtectedRegion region = setregions.getAll().iterator().next();
-			if (!EWRegionInfo.hasPermission(player, region)) {
+			if (!EWRegionInfo.hasPermission(player, region, world)) {
 				EWMessages.REGION_INFO_EMPTY.sendTo(player);
 				return false;
 			}
@@ -165,7 +166,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 		} else {
 			Set<ProtectedRegion> regions = new HashSet<ProtectedRegion>();
 			for (ProtectedRegion region : setregions.getAll()) {
-				if (!region.getType().equals(ProtectedRegion.Type.GLOBAL) && EWRegionInfo.hasPermission(player, region)) {
+				if (!region.getType().equals(ProtectedRegion.Type.GLOBAL) && EWRegionInfo.hasPermission(player, region, world)) {
 					regions.add(region);
 				}
 			}
@@ -197,7 +198,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 	}
 	
 	private boolean commandRegionInfo(final CommandSource player, final String region_string, final World world) {
-		Optional<ProtectedRegion> region = this.plugin.getService().getOrCreate(world).getRegion(region_string);
+		Optional<ProtectedRegion> region = this.plugin.getService().getOrCreateWorld(world).getRegion(region_string);
 		// Region introuvable
 		if (!region.isPresent()) {
 			EAMessages.REGION_NOT_FOUND.sender()
@@ -207,7 +208,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 			return false;
 		}
 		
-		if (!EWRegionInfo.hasPermission(player, region.get())) {
+		if (!EWRegionInfo.hasPermission(player, region.get(), world)) {
 			EWMessages.REGION_INFO_NO_PERMISSION.sender()
 				.replace("<region>", region.get().getIdentifier())
 				.sendTo(player);
@@ -555,10 +556,10 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 		
 	}
 	
-	public static boolean hasPermission(final CommandSource source, final ProtectedRegion region) {
+	public static boolean hasPermission(final CommandSource source, final ProtectedRegion region, final World world) {
 		if (source instanceof EPlayer) {
 			EPlayer player = (EPlayer) source;
-			if (region.isOwnerOrMember(player)) {
+			if (region.isOwnerOrMember(player, UtilsContexts.get(world.getName()))) {
 				return true;
 			}
 		}

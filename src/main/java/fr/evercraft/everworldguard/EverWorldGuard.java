@@ -24,7 +24,7 @@ import fr.evercraft.everapi.exception.PluginDisableException;
 import fr.evercraft.everapi.plugin.EPlugin;
 import fr.evercraft.everapi.services.worldguard.WorldGuardService;
 import fr.evercraft.everworldguard.command.EWManagerCommands;
-import fr.evercraft.everworldguard.flags.ManagerFlags;
+import fr.evercraft.everworldguard.flag.ManagerFlags;
 import fr.evercraft.everworldguard.listeners.EWListener;
 import fr.evercraft.everworldguard.service.EWorldGuardService;
 import fr.evercraft.everworldguard.service.storage.EWDataBases;

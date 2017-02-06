@@ -38,6 +38,7 @@ import fr.evercraft.everapi.plugin.command.ESubCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everapi.server.user.EUser;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
+import fr.evercraft.everapi.sponge.UtilsContexts;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EWPermissions;
 import fr.evercraft.everworldguard.EverWorldGuard;
@@ -172,7 +173,7 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 
 	private boolean commandRegionList(CommandSource player, World world) {
 		List<Text> list = new ArrayList<Text>();
-		for (ProtectedRegion region : this.plugin.getService().getOrCreate(world).getAll()) {
+		for (ProtectedRegion region : this.plugin.getService().getOrCreateWorld(world).getAll()) {
 			list.add(EWMessages.REGION_LIST_ALL_LINE.getFormat()
 					.toText("<region>", Text.builder(region.getIdentifier())
 								.onShiftClick(TextActions.insertText(region.getIdentifier()))
@@ -215,8 +216,8 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 	
 	private boolean commandRegionListPlayer(CommandSource staff, World world, EUser user) {
 		List<Text> list = new ArrayList<Text>();
-		for (ProtectedRegion region : this.plugin.getService().getOrCreate(world).getAll()) {
-			if (region.isOwnerOrMember(user)) {
+		for (ProtectedRegion region : this.plugin.getService().getOrCreateWorld(world).getAll()) {
+			if (region.isOwnerOrMember(user, UtilsContexts.get(world.getName()))) {
 				list.add(EWMessages.REGION_LIST_PLAYER_LINE.getFormat()
 						.toText("<region>", Text.builder(region.getIdentifier())
 									.onShiftClick(TextActions.insertText(region.getIdentifier()))
@@ -273,7 +274,7 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 		}
 		
 		List<Text> list = new ArrayList<Text>();
-		for (ProtectedRegion region : this.plugin.getService().getOrCreate(world).getAll()) {
+		for (ProtectedRegion region : this.plugin.getService().getOrCreateWorld(world).getAll()) {
 			if (region.isOwnerOrMember(group)) {
 				list.add(EWMessages.REGION_LIST_GROUP_LINE.getFormat()
 						.toText("<region>", Text.builder(region.getIdentifier())

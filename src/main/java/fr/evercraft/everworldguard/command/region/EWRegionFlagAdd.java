@@ -59,22 +59,15 @@ public class EWRegionFlagAdd extends ESubCommand<EverWorldGuard> {
 					
 					if (optWorld.isPresent()) {
 						this.plugin.getEServer().getWorld(optWorld.get()).ifPresent(world -> 
-							this.plugin.getService().getRegion(world).forEach(region ->
+							this.plugin.getService().getOrCreateWorld(world).getAll().forEach(region ->
 								suggests.add(region.getIdentifier())
 						));
 					} else if (source instanceof Player) {
-						this.plugin.getService().getRegion(((Player) source).getWorld()).forEach(region ->
+						this.plugin.getService().getOrCreateWorld(((Player) source).getWorld()).getAll().forEach(region ->
 							suggests.add(region.getIdentifier())
 						);
 					}
 					
-					return suggests;
-				})
-				.arg((source, args) -> {
-					List<String> suggests = new ArrayList<String>();
-					for(Group group : Group.values()) {
-						suggests.add(group.name());
-					}
 					return suggests;
 				})
 				.arg((source, args) -> {
@@ -83,7 +76,24 @@ public class EWRegionFlagAdd extends ESubCommand<EverWorldGuard> {
 							.collect(Collectors.toSet());
 				})
 				.arg((source, args) -> {
-					Optional<String> flag_string = args.getArg(2);
+					Optional<String> flag_string = args.getArg(1);
+					if (!flag_string.isPresent()) {
+						return Arrays.asList();
+					}
+					
+					Optional<Flag<?>> flag = this.plugin.getService().getFlag(flag_string.get());
+					if (!flag_string.isPresent()) {
+						return Arrays.asList();
+					}
+					
+					List<String> suggests = new ArrayList<String>();
+					for(Group group : flag.get().getGroups()) {
+						suggests.add(group.name());
+					}
+					return suggests;
+				})
+				.args((source, args) -> {
+					Optional<String> flag_string = args.getArg(1);
 					if (!flag_string.isPresent()) {
 						return Arrays.asList();
 					}
@@ -111,8 +121,8 @@ public class EWRegionFlagAdd extends ESubCommand<EverWorldGuard> {
 	public Text help(final CommandSource source) {
 		return Text.builder("/" + this.getName() + " [" + MARKER_WORLD + " " + EAMessages.ARGS_WORLD.getString() + "]"
 												 + " <" + EAMessages.ARGS_REGION.getString() + ">"
-												 + " <" + EAMessages.ARGS_REGION_GROUP.getString() + ">"
 												 + " <" + EAMessages.ARGS_FLAG.getString() + ">"
+												 + " <" + EAMessages.ARGS_REGION_GROUP.getString() + ">"
 												 + " <" + EAMessages.ARGS_FLAG_VALUE.getString() + "...>")
 				.onClick(TextActions.suggestCommand("/" + this.getName() + " "))
 				.color(TextColors.RED)
@@ -156,7 +166,7 @@ public class EWRegionFlagAdd extends ESubCommand<EverWorldGuard> {
 			return false;
 		}
 		
-		Optional<ProtectedRegion> region = this.plugin.getService().getOrCreate(world).getRegion(args_string.get(0));
+		Optional<ProtectedRegion> region = this.plugin.getService().getOrCreateWorld(world).getRegion(args_string.get(0));
 		// Region introuvable
 		if (!region.isPresent()) {
 			EAMessages.REGION_NOT_FOUND.sender()
@@ -166,17 +176,17 @@ public class EWRegionFlagAdd extends ESubCommand<EverWorldGuard> {
 			return false;
 		}
 		
-		Optional<Group> group = Group.get(args_string.get(1));
-		if (!group.isPresent()) {
-			EWMessages.GROUP_NOT_FOUND.sender()
+		Optional<Flag<?>> flag = this.plugin.getService().getFlag(args_string.get(1));
+		if (!flag.isPresent()) {
+			EWMessages.FLAG_NOT_FOUND.sender()
 				.replace("<group>", args_string.get(1))
 				.sendTo(source);
 			return false;
 		}
 		
-		Optional<Flag<?>> flag = this.plugin.getService().getFlag(args_string.get(2));
-		if (!flag.isPresent()) {
-			EWMessages.FLAG_NOT_FOUND.sender()
+		Optional<Group> group = Group.get(args_string.get(2));
+		if (!group.isPresent()) {
+			EWMessages.GROUP_NOT_FOUND.sender()
 				.replace("<group>", args_string.get(2))
 				.sendTo(source);
 			return false;

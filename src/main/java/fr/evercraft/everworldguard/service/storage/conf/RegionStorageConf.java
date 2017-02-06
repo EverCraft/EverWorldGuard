@@ -20,6 +20,7 @@ import fr.evercraft.everapi.services.worldguard.flag.FlagValue;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion.Group;
 import fr.evercraft.everworldguard.EverWorldGuard;
+import fr.evercraft.everworldguard.flag.EFlagValue;
 import fr.evercraft.everworldguard.regions.EProtectedCuboidRegion;
 import fr.evercraft.everworldguard.regions.EProtectedGlobalRegion;
 import fr.evercraft.everworldguard.regions.EProtectedRegion;
@@ -131,7 +132,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 		}
 		
 		// Flags
-		Map<Flag<?>, FlagValue<?>> flags = new HashMap<Flag<?>, FlagValue<?>>();
+		Map<Flag<?>, EFlagValue<?>> flags = new HashMap<Flag<?>, EFlagValue<?>>();
 		
 		for (Entry<Object, ? extends ConfigurationNode> config_flags : config.getNode("flags-default").getChildrenMap().entrySet()) {
 			if (config_flags.getKey() instanceof String) {
@@ -139,7 +140,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 				if (optFlag.isPresent()) {
 					Flag<T> flag = (Flag<T>) optFlag.get();
 					T value = flag.deserialize(config_flags.getValue().getString(""));
-					flags.put(flag, this.putFlags((FlagValue<T>) flags.get(flag), Group.DEFAULT, value));
+					flags.put(flag, this.putFlags((EFlagValue<T>) flags.get(flag), Group.DEFAULT, value));
 				} else {
 					this.plugin.getLogger().warn("FlagDefault no register : " + config_flags.getKey().toString() + " (id:'" + id + "')");
 				}
@@ -154,7 +155,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 				if (optFlag.isPresent()) {
 					Flag<T> flag = (Flag<T>) optFlag.get();
 					T value = flag.deserialize(config_flags.getValue().getString(""));
-					flags.put(flag, this.putFlags((FlagValue<T>) flags.get(flag), Group.MEMBER, value));
+					flags.put(flag, this.putFlags((EFlagValue<T>) flags.get(flag), Group.MEMBER, value));
 				} else {
 					this.plugin.getLogger().warn("FlagMember no register : " + config_flags.getKey().toString() + " (id:'" + id + "')");
 				}
@@ -169,7 +170,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 				if (optFlag.isPresent()) {
 					Flag<T> flag = (Flag<T>) optFlag.get();
 					T value = flag.deserialize(config_flags.getValue().getString(""));
-					flags.put(flag, this.putFlags((FlagValue<T>) flags.get(flag), Group.OWNER, value));
+					flags.put(flag, this.putFlags((EFlagValue<T>) flags.get(flag), Group.OWNER, value));
 				} else {
 					this.plugin.getLogger().warn("FlagOwner no register : " + config_flags.getKey().toString() + " (id:'" + id + "')");
 				}
@@ -209,9 +210,9 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 		return Optional.of(region);
 	}
 	
-	public <T> FlagValue<T> putFlags(FlagValue<T> values, Group association, T value) {
+	public <T> EFlagValue<T> putFlags(EFlagValue<T> values, Group association, T value) {
 		if (values == null) {
-			values = new FlagValue<T>();
+			values = new EFlagValue<T>();
 		}
 		values.set(association, value);
 		return values;

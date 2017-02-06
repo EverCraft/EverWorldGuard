@@ -1,4 +1,4 @@
-package fr.evercraft.everworldguard.flags;
+package fr.evercraft.everworldguard.flag;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -6,6 +6,10 @@ import java.lang.reflect.Modifier;
 import fr.evercraft.everapi.services.worldguard.flag.Flag;
 import fr.evercraft.everapi.services.worldguard.flag.Flags;
 import fr.evercraft.everworldguard.EverWorldGuard;
+import fr.evercraft.everworldguard.flags.FlagBuild;
+import fr.evercraft.everworldguard.flags.FlagPvp;
+import fr.evercraft.everworldguard.flags.FlagSpawn;
+import fr.evercraft.everworldguard.flags.FlagTeleport;
 
 public class ManagerFlags {
 

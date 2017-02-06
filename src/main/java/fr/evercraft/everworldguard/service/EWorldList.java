@@ -27,6 +27,7 @@ import org.spongepowered.api.world.World;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 
+import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.service.index.EWWorld;
 
@@ -70,8 +71,9 @@ public class EWorldList {
 		this.worlds.forEach((uuid, world) -> world.reload());
 	}
 	
-	public Set<EWWorld> getAll() {
-		return ImmutableSet.copyOf(this.worlds.values());
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public Set<WorldWorldGuard> getAll() {
+		return (Set) ImmutableSet.copyOf(this.worlds.values());
 	}
 
 	public void unLoad(World world) {

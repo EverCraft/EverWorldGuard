@@ -78,7 +78,7 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 
 	@Override
 	public Text help(final CommandSource source) {
-		return Text.builder("/" + this.getName() + " [" + MARKER_TEMPLATE + "] <" + EAMessages.ARGS_REGION + "> "
+		return Text.builder("/" + this.getName() + " [" + MARKER_TEMPLATE + "] <" + EAMessages.ARGS_REGION.getString() + "> "
 												  + "[" + MARKER_OWNER_PLAYER + " " + EAMessages.ARGS_OWNER_PLAYER.getString() + "...] "
 												  + "[" + MARKER_OWNER_GROUP + " " + EAMessages.ARGS_OWNER_GROUP.getString() + "...]")
 				.onClick(TextActions.suggestCommand("/" + this.getName() + " "))
@@ -108,7 +108,7 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 			return false;
 		}
 		
-		if (this.plugin.getService().getOrCreate(player.getWorld()).getRegion(region_id.get()).isPresent()) {
+		if (this.plugin.getService().getOrCreateWorld(player.getWorld()).getRegion(region_id.get()).isPresent()) {
 			EWMessages.REGION_DEFINE_ERROR_NAME.sender()
 				.replace("<region>", region_id.get())
 				.sendTo(player);
@@ -189,7 +189,7 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 			return false;
 		}
 		
-		ProtectedRegion.Cuboid region = this.plugin.getService().getOrCreate(player.getWorld()).createRegionCuboid(region_id, pos1.get(), pos2.get(), players, groups);
+		ProtectedRegion.Cuboid region = this.plugin.getService().getOrCreateWorld(player.getWorld()).createRegionCuboid(region_id, pos1.get(), pos2.get(), players, groups);
 		
 		Vector3i min = region.getMinimumPoint();
 		Vector3i max = region.getMaximumPoint();
@@ -223,7 +223,7 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 			return false;
 		}
 		
-		ProtectedRegion.Polygonal region = this.plugin.getService().getOrCreate(player.getWorld()).createRegionPolygonal(region_id, positions, players, groups);
+		ProtectedRegion.Polygonal region = this.plugin.getService().getOrCreateWorld(player.getWorld()).createRegionPolygonal(region_id, positions, players, groups);
 		
 		Vector3i min = region.getMinimumPoint();
 		Vector3i max = region.getMaximumPoint();
@@ -257,7 +257,7 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 	}
 	
 	private boolean commandRegionDefineTemplate(final EPlayer player, final String region_id, final Set<EUser> players, final Set<Subject> groups) {
-		ProtectedRegion.Template region = this.plugin.getService().getOrCreate(player.getWorld()).createRegionTemplate(region_id, players, groups);
+		ProtectedRegion.Template region = this.plugin.getService().getOrCreateWorld(player.getWorld()).createRegionTemplate(region_id, players, groups);
 		
 		EWMessages.REGION_DEFINE_TEMPLATE_CREATE.sender()
 			.replace("<region>", region.getIdentifier())
