@@ -35,8 +35,6 @@ import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.World;
 
-import com.google.common.collect.ImmutableSet;
-
 import fr.evercraft.everapi.EAMessage.EAMessages;
 import fr.evercraft.everapi.plugin.command.Args;
 import fr.evercraft.everapi.plugin.command.ESubCommand;
@@ -47,15 +45,15 @@ import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EWPermissions;
 import fr.evercraft.everworldguard.EverWorldGuard;
 
-public class EWRegionOwnerAdd extends ESubCommand<EverWorldGuard> {
+public class EWRegionOwnerRemove extends ESubCommand<EverWorldGuard> {
 	
 	public static final String MARKER_WORLD = "-w";
 	public static final String MARKER_OWNER_GROUP = "-g";
 	
 	private final Args.Builder pattern;
 	
-	public EWRegionOwnerAdd(final EverWorldGuard plugin, final EWRegion command) {
-        super(plugin, command, "addowner");
+	public EWRegionOwnerRemove(final EverWorldGuard plugin, final EWRegion command) {
+        super(plugin, command, "removeowner");
         
         this.pattern = Args.builder()
 			.empty(MARKER_OWNER_GROUP)
@@ -162,7 +160,7 @@ public class EWRegionOwnerAdd extends ESubCommand<EverWorldGuard> {
 		}
 	}
 	
-	private boolean commandRegionOwnerAddPlayer(final CommandSource source, ProtectedRegion region, List<String> players_string, World world) {		
+	private boolean commandRegionOwnerAddPlayer(final CommandSource source, ProtectedRegion region, List<String> players_string, World world) {
 		Set<User> players = new HashSet<User>();
 		for (String player_string : players_string) {
 			Optional<EUser> user = this.plugin.getEServer().getEUser(player_string);
@@ -177,38 +175,13 @@ public class EWRegionOwnerAdd extends ESubCommand<EverWorldGuard> {
 			}
 		}
 		
-		if (players.size() > 1) {
-			return this.commandRegionOwnerAddPlayer(source, region, players, world);
-		} else {
-			return this.commandRegionOwnerAddPlayer(source, region, players.iterator().next(), world);
-		}
-	}
-	
-	private boolean commandRegionOwnerAddPlayer(final CommandSource source, ProtectedRegion region, Set<User> players, World world) {
 		region.addPlayerOwner(players);
+		
 		EWMessages.REGION_OWNER_ADD_PLAYERS.sender()
 			.replace("<region>", region.getIdentifier())
 			.replace("<world>", world.getName())
-			.replace("<players>", String.join(EWMessages.REGION_OWNER_ADD_PLAYERS_JOIN.getString(), players.stream().map(owner -> owner.getName()).collect(Collectors.toList())))
+			.replace("<owners>", String.join(EWMessages.REGION_OWNER_ADD_PLAYERS_JOIN.getString(), players.stream().map(owner -> owner.getName()).collect(Collectors.toList())))
 			.sendTo(source);
-		return true;
-	}
-	
-	private boolean commandRegionOwnerAddPlayer(final CommandSource source, ProtectedRegion region, User player, World world) {
-		if (region.getOwners().containsPlayer(player)) {
-			EWMessages.REGION_OWNER_ADD_PLAYER_ERROR.sender()
-				.replace("<region>", region.getIdentifier())
-				.replace("<world>", world.getName())
-				.replace("<player>", player.getName())
-				.sendTo(source);
-		} else {
-			region.addPlayerOwner(ImmutableSet.of(player));
-			EWMessages.REGION_OWNER_ADD_PLAYER.sender()
-				.replace("<region>", region.getIdentifier())
-				.replace("<world>", world.getName())
-				.replace("<player>", player.getName())
-				.sendTo(source);
-		}
 		return true;
 	}
 	
@@ -235,39 +208,12 @@ public class EWRegionOwnerAdd extends ESubCommand<EverWorldGuard> {
 			}
 		}
 		
-		if (groups.size() > 1) {
-			return this.commandRegionOwnerAddGroup(source, region, groups, world);
-		} else {
-			return this.commandRegionOwnerAddGroup(source, region, groups.iterator().next(), world);
-		}
-	}
-	
-	private boolean commandRegionOwnerAddGroup(final CommandSource source, ProtectedRegion region, Set<Subject> groups, World world) {
-		region.addGroupOwner(groups);
 		EWMessages.REGION_OWNER_ADD_GROUPS.sender()
 			.replace("<region>", region.getIdentifier())
 			.replace("<world>", world.getName())
-			.replace("<players>", String.join(EWMessages.REGION_OWNER_ADD_GROUPS_JOIN.getString(), groups.stream().map(owner -> owner.getIdentifier()).collect(Collectors.toList())))
+			.replace("<owners>", String.join(EWMessages.REGION_OWNER_ADD_GROUPS_JOIN.getString(), groups.stream().map(owner -> owner.getIdentifier()).collect(Collectors.toList())))
 			.sendTo(source);
-		return true;
-	}
-	
-	private boolean commandRegionOwnerAddGroup(final CommandSource source, ProtectedRegion region, Subject group, World world) {
-		if (region.getOwners().containsGroup(group)) {
-			EWMessages.REGION_OWNER_ADD_GROUP_ERROR.sender()
-				.replace("<region>", region.getIdentifier())
-				.replace("<world>", world.getName())
-				.replace("<group>", group.getIdentifier())
-				.sendTo(source);
-			return false;
-		}
-			
-		region.addGroupOwner(ImmutableSet.of(group));
-		EWMessages.REGION_OWNER_ADD_GROUP.sender()
-			.replace("<region>", region.getIdentifier())
-			.replace("<world>", world.getName())
-			.replace("<player>", group.getIdentifier())
-			.sendTo(source);
-		return true;
+		
+		return false;
 	}
 }

@@ -96,10 +96,17 @@ public class EDomain implements Domain {
 	}
 	
 	@Override
-	public boolean containsPlayers(UUID uniqueId) {
+	public boolean containsPlayer(UUID uniqueId) {
 		Preconditions.checkNotNull(uniqueId);
 		
 		return this.players.contains(uniqueId);
+	}
+	
+	@Override
+	public boolean containsPlayer(User player) {
+		Preconditions.checkNotNull(player);
+		
+		return this.players.contains(player.getUniqueId());
 	}
 	
 	/*
@@ -140,10 +147,17 @@ public class EDomain implements Domain {
 	}
 	
 	@Override
-	public boolean containsGroups(String group) {
+	public boolean containsGroup(String group) {
 		Preconditions.checkNotNull(group);
 		
 		return this.groups.contains(group);
+	}
+	
+	@Override
+	public boolean containsGroup(Subject subject) {
+		Preconditions.checkNotNull(subject);
+		
+		return this.groups.contains(subject);
 	}
 	
 	/*
@@ -179,7 +193,7 @@ public class EDomain implements Domain {
 		Preconditions.checkNotNull(player);
 		Preconditions.checkNotNull(contexts);
 		
-		if (this.containsPlayers(player.getUniqueId())) {
+		if (this.containsPlayer(player)) {
 			return true;
 		}
 		

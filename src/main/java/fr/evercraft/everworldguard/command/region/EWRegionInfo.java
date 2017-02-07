@@ -369,7 +369,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 		}
 		
 		// Groups Owner
-		Set<String> groups_owners = region.getMembers().getGroups();
+		Set<String> groups_owners = region.getOwners().getGroups();
 		if (!groups_owners.isEmpty()) {
 			List<Text> messages = new ArrayList<Text>();
 			for (String owner : groups_owners) {
@@ -380,8 +380,8 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 					.build());
 			}
 			
-			this.addLine(list, EWMessages.REGION_INFO_ONE_GROUP_MEMBERS.getFormat()
-					.toText("<members>", Text.joinWith(EWMessages.REGION_INFO_ONE_GROUP_MEMBERS_JOIN.getText(), messages)));
+			this.addLine(list, EWMessages.REGION_INFO_ONE_GROUP_OWNERS.getFormat()
+					.toText("<members>", Text.joinWith(EWMessages.REGION_INFO_ONE_GROUP_OWNERS_JOIN.getText(), messages)));
 		}
 		
 		// Members

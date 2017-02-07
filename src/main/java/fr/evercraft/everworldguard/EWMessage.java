@@ -161,17 +161,34 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		REGION_DEFINE_ERROR_SELECT_TYPE("region.define.errorSelectType",						"&cErreur : Il posible de créer une région de type &6<type>&c."),
 		
 		REGION_FLAG_ADD_DESCRIPTION("region.flag.add.description",								"Permet de définir un flag d'une région"),
-		REGION_FLAG_ADD_PLAYER("region.flag.add.player",										"&7Vous avez défini le flag &6<flag> &7sur la région &6<region> &7dans le monde &6<world> pour le groupe &6<group> &7à la valeur &6<value>&7."),
+		REGION_FLAG_ADD_PLAYER("region.flag.add.player",										"&7Vous avez défini le flag &6<flag> &7sur la région &6<region> &7dans le monde &6<world> &7pour le groupe &6<group> &7à la valeur &6<value>&7."),
 		REGION_FLAG_ADD_ERROR("region.flag.add.error",											"&cErreur : La valeur est &6'<value>&6' &7est invalide."),
 		
 		REGION_FLAG_REMOVE_DESCRIPTION("region.flag.remove.description",						"Permet de supprimer un flag d'une région"),
-		REGION_FLAG_REMOVE_UPDATE("region.flag.remove.update",									"&7Vous avez défini le flag &6<flag> &7sur la région &6<region> &7dans le monde &6<world> pour le groupe &6<group> &7à la valeur &6<value>&7."),
-		REGION_FLAG_REMOVE_PLAYER("region.flag.remove.player",									"&7Vous avez défini le flag &6<flag> &7sur la région &6<region> &7dans le monde &6<world> pour le groupe &6<group> &7à la valeur &6<value>&7."),
+		REGION_FLAG_REMOVE_UPDATE("region.flag.remove.update",									"&7Vous avez défini le flag &6<flag> &7sur la région &6<region> &7dans le monde &6<world> &7pour le groupe &6<group> &7à la valeur &6<value>&7."),
+		REGION_FLAG_REMOVE_PLAYER("region.flag.remove.player",									"&7Vous avez défini le flag &6<flag> &7sur la région &6<region> &7dans le monde &6<world> &7pour le groupe &6<group> &7à la valeur &6<value>&7."),
 		REGION_FLAG_REMOVE_ERROR("region.flag.add.error",										"&cErreur : La valeur est &6'<value>&6' &7est invalide."),
 		
 		REGION_OWNER_ADD_DESCRIPTION("region.owner.add.description",							"Permet d'ajouter un owner à une région"),
-		REGION_OWNER_ADD_PLAYERS("region.owner.add.players",									""),
-		REGION_OWNER_ADD_PLAYERS_JOIN("region.owner.add.playersJoin",							""),
+		REGION_OWNER_ADD_PLAYER("region.owner.add.player",										"&7Vous avez ajouté le joueur &6<player> &7en tant que &6OWNER &7de la région &6<region>&7."),
+		REGION_OWNER_ADD_PLAYER_ERROR("region.owner.add.playerError",							"&cErreur : Le joueur &6<player> &cest déjà &6OWNER &cde la région &6<region>&c."),
+		REGION_OWNER_ADD_PLAYERS("region.owner.add.players",									"&7Vous avez ajouté les joueur(s) &6<players> &7en tant que &6OWNER &7de la région &6<region>&7."),
+		REGION_OWNER_ADD_PLAYERS_JOIN("region.owner.add.playersJoin",							"&7, &6"),
+		REGION_OWNER_ADD_GROUP("region.owner.add.group",										"&7Vous avez ajouté le groupe &6<group> &7en tant que &6OWNER &7de la région &6<region>&7."),
+		REGION_OWNER_ADD_GROUP_ERROR("region.owner.add.groupError",								"&cErreur : Le groupe &6<group> &cest déjà &6OWNER &cde la région &6<region>&c."),
+		REGION_OWNER_ADD_GROUPS("region.owner.add.groups",										"&7Vous avez ajouté les groupes &6<groups> &7en tant que &6OWNER &7de la région &6<region>&7."),
+		REGION_OWNER_ADD_GROUPS_JOIN("region.owner.add.groupsJoin",								"&7, &6"),
+		
+
+		REGION_MEMBER_ADD_DESCRIPTION("region.member.add.description",							"Permet d'ajouter un member à une région"),
+		REGION_MEMBER_ADD_PLAYER("region.member.add.player",									"&7Vous avez ajouté le joueur &6<player> &7en tant que &6MEMBER &7de la région &6<region>&7."),
+		REGION_MEMBER_ADD_PLAYER_ERROR("region.member.add.playerError",							"&cErreur : Le joueur &6<player> &cest déjà &6MEMBER &cde la région &6<region>&c."),
+		REGION_MEMBER_ADD_PLAYERS("region.member.add.players",									"&7Vous avez ajouté les joueur(s) &6<players> &7en tant que &6MEMBER &7de la région &6<region>&7."),
+		REGION_MEMBER_ADD_PLAYERS_JOIN("region.member.add.playersJoin",							"&7, &6"),
+		REGION_MEMBER_ADD_GROUP("region.member.add.group",										"&7Vous avez ajouté le groupe &6<group> &7en tant que &6MEMBER &7de la région &6<region>&7."),
+		REGION_MEMBER_ADD_GROUP_ERROR("region.member.add.groupError",							"&cErreur : Le groupe &6<group> &cest déjà &6MEMBER &cde la région &6<region>&c."),
+		REGION_MEMBER_ADD_GROUPS("region.member.add.groups",									"&7Vous avez ajouté les groupes &6<groups> &7en tant que &6MEMBER &7de la région &6<region>&7."),
+		REGION_MEMBER_ADD_GROUPS_JOIN("region.member.add.groupsJoin",							"&7, &6"),
 		
 		REGION_OWNER_REMOVE_DESCRIPTION("region.owner.remove.description",						"Permet de retirer un owner d'une région"),
 		

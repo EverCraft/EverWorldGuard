@@ -248,7 +248,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	
 	@Override
 	public void addPlayerOwner(Set<User> players) {
-		players.forEach(player -> this.owners.addGroup(player));
+		players.forEach(player -> this.owners.addPlayer(player));
 	}
 
 	@Override
@@ -260,13 +260,13 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	public boolean isGroupOwner(Subject group) {
 		Preconditions.checkNotNull(group);
 
-		if (this.owners.containsGroups(group.getIdentifier())) {
+		if (this.owners.containsGroup(group.getIdentifier())) {
 			return true;
 		}
 
 		ProtectedRegion curParent = this.parent;
 		while (curParent != null) {
-			if (curParent.getOwners().containsGroups(group.getIdentifier())) {
+			if (curParent.getOwners().containsGroup(group.getIdentifier())) {
 				return true;
 			}
 
@@ -318,25 +318,25 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 
 	@Override
 	public void addPlayerMember(Set<User> players) {
-		players.forEach(player -> this.owners.addGroup(player));
+		players.forEach(player -> this.members.addPlayer(player));
 	}
 
 	@Override
 	public void removePlayerMember(Set<User> players) {
-		players.forEach(player -> this.owners.removeGroup(player));
+		players.forEach(player -> this.members.removePlayer(player));
 	}
 
 	@Override
 	public boolean isGroupMember(Subject group) {
 		Preconditions.checkNotNull(group);
 
-		if (this.members.containsGroups(group.getIdentifier())) {
+		if (this.members.containsGroup(group.getIdentifier())) {
 			return true;
 		}
 
 		ProtectedRegion curParent = this.parent;
 		while (curParent != null) {
-			if (curParent.getMembers().containsGroups(group.getIdentifier())) {
+			if (curParent.getMembers().containsGroup(group.getIdentifier())) {
 				return true;
 			}
 
@@ -348,12 +348,12 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	
 	@Override
 	public void addGroupMember(Set<Subject> groups) {
-		groups.forEach(subject -> this.owners.addGroup(subject));
+		groups.forEach(subject -> this.members.addGroup(subject));
 	}
 
 	@Override
 	public void removeGroupMember(Set<Subject> groups) {
-		groups.forEach(subject -> this.owners.removeGroup(subject));
+		groups.forEach(subject -> this.members.removeGroup(subject));
 	}
 	
 	@Override
@@ -393,21 +393,21 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	public boolean isOwnerOrMember(Subject group) {
 		Preconditions.checkNotNull(group);
 
-		if (this.owners.containsGroups(group.getIdentifier())) {
+		if (this.owners.containsGroup(group.getIdentifier())) {
 			return true;
 		}
 
-		if (this.members.containsGroups(group.getIdentifier())) {
+		if (this.members.containsGroup(group.getIdentifier())) {
 			return true;
 		}
 
 		ProtectedRegion curParent = this.parent;
 		while (curParent != null) {
-			if (curParent.getOwners().containsGroups(group.getIdentifier())) {
+			if (curParent.getOwners().containsGroup(group.getIdentifier())) {
 				return true;
 			}
 			
-			if (curParent.getMembers().containsGroups(group.getIdentifier())) {
+			if (curParent.getMembers().containsGroup(group.getIdentifier())) {
 				return true;
 			}
 
