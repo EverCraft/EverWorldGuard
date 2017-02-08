@@ -450,6 +450,21 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 		return value;
 	}
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
+	public <V> FlagValue<V> getFlagInherit(Flag<V> flag) {
+		Preconditions.checkNotNull(flag);
+
+		Object obj = this.flags.get(flag);
+		if (obj != null) {
+			return (FlagValue) obj;
+		} if (this.parent != null) {
+			return this.parent.getFlagInherit(flag);
+		} else {
+			return FlagValue.empty();
+		}
+	}
+	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public <V> void setFlag(Flag<V> flag, Group group, @Nullable V value) {

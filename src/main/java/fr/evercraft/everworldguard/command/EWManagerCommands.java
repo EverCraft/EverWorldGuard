@@ -62,6 +62,7 @@ public class EWManagerCommands extends HashSet<ECommand<EverWorldGuard>> {
 		region.add(new EWRegionOwnerRemove(this.plugin, region));
 		region.add(new EWRegionMemberAdd(this.plugin, region));
 		region.add(new EWRegionMemberRemove(this.plugin, region));
+		region.add(new EWRegionParent(this.plugin, region));
 		register(region);
 	}
 	

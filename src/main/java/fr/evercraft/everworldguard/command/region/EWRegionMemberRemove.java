@@ -16,12 +16,13 @@
  */
 package fr.evercraft.everworldguard.command.region;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import org.spongepowered.api.command.CommandException;
@@ -34,6 +35,8 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.World;
+
+import com.google.common.collect.ImmutableSet;
 
 import fr.evercraft.everapi.EAMessage.EAMessages;
 import fr.evercraft.everapi.plugin.command.Args;
@@ -48,59 +51,81 @@ import fr.evercraft.everworldguard.EverWorldGuard;
 public class EWRegionMemberRemove extends ESubCommand<EverWorldGuard> {
 	
 	public static final String MARKER_WORLD = "-w";
-	public static final String MARKER_OWNER_GROUP = "-g";
+	public static final String MARKER_MEMBER_GROUP = "-g";
 	
 	private final Args.Builder pattern;
 	
 	public EWRegionMemberRemove(final EverWorldGuard plugin, final EWRegion command) {
         super(plugin, command, "removemember");
         
-        this.pattern = Args.builder()
-			.empty(MARKER_OWNER_GROUP)
+		BiFunction<CommandSource, Args, Optional<World>> world = (source, args) -> {
+			Optional<String> optWorld = args.getValue(MARKER_WORLD);
+			
+			if (optWorld.isPresent()) {
+				return this.plugin.getEServer().getWorld(optWorld.get());
+			} else if (source instanceof Player) {
+				return Optional.of(((Player) source).getWorld());
+			}
+			return Optional.empty();
+		};
+		
+		this.pattern = Args.builder()
+			.empty(MARKER_MEMBER_GROUP)
 			.value(MARKER_WORLD, (source, args) -> this.getAllWorlds())
 			.arg((source, args) -> {
-				List<String> suggests = new ArrayList<String>();
-				Optional<String> optWorld = args.getValue(MARKER_WORLD);
-				
-				if (optWorld.isPresent()) {
-					this.plugin.getEServer().getWorld(optWorld.get()).ifPresent(world -> 
-						this.plugin.getService().getOrCreateWorld(world).getAll().forEach(region ->
-							suggests.add(region.getIdentifier())
-					));
-				} else if (source instanceof Player) {
-					this.plugin.getService().getOrCreateWorld(((Player) source).getWorld()).getAll().forEach(region ->
-						suggests.add(region.getIdentifier())
-					);
+				Optional<World> optWorld = world.apply(source, args);
+				if (!optWorld.isPresent()) {
+					return Arrays.asList();
 				}
 				
-				return suggests;
+				return this.plugin.getService().getOrCreateWorld(optWorld.get()).getAll().stream()
+					.map(region -> region.getIdentifier())
+					.collect(Collectors.toSet());
 			})
 			.args((source, args) -> {
-				if (args.isOption(MARKER_OWNER_GROUP)) {
-					return this.getAllGroups();
+				Optional<World> optWorld = world.apply(source, args);
+				if (!optWorld.isPresent()) {
+					return Arrays.asList();
+				}
+		
+				Optional<ProtectedRegion> optRegion = this.plugin.getService().getOrCreateEWorld(optWorld.get()).getRegion(args.getArg(0).get());
+				if (!optRegion.isPresent()) {
+					return Arrays.asList();
+				}
+		
+				if (args.isOption(MARKER_MEMBER_GROUP)) {
+					return optRegion.get().getMembers().getGroups();
 				} else {
-					List<String> list = args.getArgs();
-					return this.getAllUsers(list.get(list.size()-1));
+					return optRegion.get().getMembers().getPlayers().stream()
+						.map(player -> {
+							Optional<EUser> user = this.plugin.getEServer().getEUser(player);
+							if (user.isPresent()) {
+								return user.get().getName();
+							} else {
+								return "";
+							}
+						})
+						.collect(Collectors.toSet());
 				}
 			});
     }
 	
 	@Override
 	public boolean testPermission(final CommandSource source) {
-		return source.hasPermission(EWPermissions.REGION_OWNER_ADD.get());
+		return source.hasPermission(EWPermissions.REGION_MEMBER_REMOVE.get());
 	}
 
 	@Override
 	public Text description(final CommandSource source) {
-		return EWMessages.REGION_OWNER_ADD_DESCRIPTION.getText();
+		return EWMessages.REGION_MEMBER_REMOVE_DESCRIPTION.getText();
 	}
 
 	@Override
 	public Text help(final CommandSource source) {
 		return Text.builder("/" + this.getName() + " [" + MARKER_WORLD + " " + EAMessages.ARGS_WORLD.getString() + "] "
 												  + "<" + EAMessages.ARGS_REGION.getString() + "> "
-												  + "[" + MARKER_OWNER_GROUP + "] "
-												  + "<" + EAMessages.ARGS_OWNER.getString() + "...>")
+												  + "[" + MARKER_MEMBER_GROUP + "] "
+												  + "<" + EAMessages.ARGS_MEMBER.getString() + "...>")
 				.onClick(TextActions.suggestCommand("/" + this.getName() + " "))
 				.color(TextColors.RED)
 				.build();
@@ -153,14 +178,14 @@ public class EWRegionMemberRemove extends ESubCommand<EverWorldGuard> {
 			return false;
 		}
 		
-		if (args.isOption(MARKER_OWNER_GROUP)) {
-			return this.commandRegionOwnerAddGroup(source, region.get(), args.getArgs(1), world);
+		if (args.isOption(MARKER_MEMBER_GROUP)) {
+			return this.commandRegionMemberRemoveGroup(source, region.get(), args.getArgs(1), world);
 		} else {
-			return this.commandRegionOwnerAddPlayer(source, region.get(), args.getArgs(1), world);
+			return this.commandRegionMemberRemovePlayer(source, region.get(), args.getArgs(1), world);
 		}
 	}
 	
-	private boolean commandRegionOwnerAddPlayer(final CommandSource source, ProtectedRegion region, List<String> players_string, World world) {
+	private boolean commandRegionMemberRemovePlayer(final CommandSource source, ProtectedRegion region, List<String> players_string, World world) {		
 		Set<User> players = new HashSet<User>();
 		for (String player_string : players_string) {
 			Optional<EUser> user = this.plugin.getEServer().getEUser(player_string);
@@ -175,17 +200,42 @@ public class EWRegionMemberRemove extends ESubCommand<EverWorldGuard> {
 			}
 		}
 		
-		region.addPlayerOwner(players);
-		
-		EWMessages.REGION_OWNER_ADD_PLAYERS.sender()
+		if (players.size() == 1) {
+			return this.commandRegionMemberRemovePlayer(source, region, players, world);
+		} else {
+			return this.commandRegionMemberRemovePlayer(source, region, players.iterator().next(), world);
+		}
+	}
+	
+	private boolean commandRegionMemberRemovePlayer(final CommandSource source, ProtectedRegion region, Set<User> players, World world) {
+		region.removePlayerMember(players);
+		EWMessages.REGION_MEMBER_REMOVE_PLAYERS.sender()
 			.replace("<region>", region.getIdentifier())
 			.replace("<world>", world.getName())
-			.replace("<owners>", String.join(EWMessages.REGION_OWNER_ADD_PLAYERS_JOIN.getString(), players.stream().map(owner -> owner.getName()).collect(Collectors.toList())))
+			.replace("<players>", String.join(EWMessages.REGION_MEMBER_REMOVE_PLAYERS_JOIN.getString(), players.stream().map(owner -> owner.getName()).collect(Collectors.toList())))
 			.sendTo(source);
 		return true;
 	}
 	
-	private boolean commandRegionOwnerAddGroup(final CommandSource source, ProtectedRegion region, List<String> groups_string, World world) {
+	private boolean commandRegionMemberRemovePlayer(final CommandSource source, ProtectedRegion region, User player, World world) {
+		if (region.getMembers().containsPlayer(player)) {
+			EWMessages.REGION_MEMBER_REMOVE_PLAYER_ERROR.sender()
+				.replace("<region>", region.getIdentifier())
+				.replace("<world>", world.getName())
+				.replace("<player>", player.getName())
+				.sendTo(source);
+		} else {
+			region.removePlayerMember(ImmutableSet.of(player));
+			EWMessages.REGION_MEMBER_REMOVE_PLAYER.sender()
+				.replace("<region>", region.getIdentifier())
+				.replace("<world>", world.getName())
+				.replace("<player>", player.getName())
+				.sendTo(source);
+		}
+		return true;
+	}
+	
+	private boolean commandRegionMemberRemoveGroup(final CommandSource source, ProtectedRegion region, List<String> groups_string, World world) {
 		Optional<PermissionService> service = this.plugin.getEverAPI().getManagerService().getPermission();
 		if (!service.isPresent()) {
 			EAMessages.COMMAND_ERROR.sender()
@@ -208,12 +258,39 @@ public class EWRegionMemberRemove extends ESubCommand<EverWorldGuard> {
 			}
 		}
 		
-		EWMessages.REGION_OWNER_ADD_GROUPS.sender()
+		if (groups.size() == 1) {
+			return this.commandRegionMemberRemoveGroup(source, region, groups, world);
+		} else {
+			return this.commandRegionMemberRemoveGroup(source, region, groups.iterator().next(), world);
+		}
+	}
+	
+	private boolean commandRegionMemberRemoveGroup(final CommandSource source, ProtectedRegion region, Set<Subject> groups, World world) {
+		region.removeGroupMember(groups);
+		EWMessages.REGION_MEMBER_REMOVE_GROUPS.sender()
 			.replace("<region>", region.getIdentifier())
 			.replace("<world>", world.getName())
-			.replace("<owners>", String.join(EWMessages.REGION_OWNER_ADD_GROUPS_JOIN.getString(), groups.stream().map(owner -> owner.getIdentifier()).collect(Collectors.toList())))
+			.replace("<players>", String.join(EWMessages.REGION_MEMBER_REMOVE_GROUPS_JOIN.getString(), groups.stream().map(owner -> owner.getIdentifier()).collect(Collectors.toList())))
 			.sendTo(source);
-		
-		return false;
+		return true;
+	}
+	
+	private boolean commandRegionMemberRemoveGroup(final CommandSource source, ProtectedRegion region, Subject group, World world) {
+		if (region.getMembers().containsGroup(group)) {
+			EWMessages.REGION_MEMBER_REMOVE_GROUP_ERROR.sender()
+				.replace("<region>", region.getIdentifier())
+				.replace("<world>", world.getName())
+				.replace("<group>", group.getIdentifier())
+				.sendTo(source);
+			return false;
+		}
+			
+		region.removeGroupMember(ImmutableSet.of(group));
+		EWMessages.REGION_MEMBER_REMOVE_GROUP.sender()
+			.replace("<region>", region.getIdentifier())
+			.replace("<world>", world.getName())
+			.replace("<player>", group.getIdentifier())
+			.sendTo(source);
+		return true;
 	}
 }

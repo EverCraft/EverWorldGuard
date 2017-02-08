@@ -36,7 +36,7 @@ public class ESetProtectedRegion implements SetProtectedRegion {
 	@Override
 	public <V> V getFlag(User user, Set<Context> context, Flag<V> flag) {
 		for (ProtectedRegion region : this.regions) {
-			FlagValue<V> flag_value = region.getFlag(flag);
+			FlagValue<V> flag_value = region.getFlagInherit(flag);
 			if (!flag_value.isEmpty()) {
 				Optional<V> optValue = flag_value.contains(region.getGroup(user, context));
 				if (optValue.isPresent()) {

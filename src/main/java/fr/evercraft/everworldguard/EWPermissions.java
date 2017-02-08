@@ -28,27 +28,6 @@ public enum EWPermissions implements EnumPermission {
 	HELP("help"),
 	RELOAD("reload"),
 	
-	DEFINE("region.define"),
-	
-	REDEFINE_OWN("redefine.own"),
-	REDEFINE_MEMBER("redefine.member"),
-	
-	ADD_OWNER_OWN("addowner.own"),
-	ADD_OWNER_MEMBER("addowner.member"),
-	ADD_OWNER_ALL("addowner"),
-	
-	REMOVE_OWNER_OWN("removeowner.own"),
-	REMOVE_OWNER_MEMBER("removeowner.member"),
-	REMOVE_OWNER_ALL("removeowner"),
-	
-	ADD_MEMBER_OWN("addmember.own"),
-	ADD_MEMBER_MEMBER("addmember.member"),
-	ADD_MEMBER_ALL("addmember"),
-	
-	REMOVE_MEMBER_OWN("removemember.own"),
-	REMOVE_MEMBER_MEMBER("removemember.member"),
-	REMOVE_MEMBER_ALL("removemember"),
-	
 	SELECT("select.command"),
 	SELECT_WAND("select.wand"),
 	SELECT_POS("select.pos"),
@@ -56,11 +35,25 @@ public enum EWPermissions implements EnumPermission {
 	
 	REGION("region.command"),
 	
+
 	REGION_INFO("region.info.command"),
 	REGION_INFO_REGIONS("region.info.regions"),
 	
 	REGION_LIST("region.list.command"),
-	REGION_LIST_OWN("region.list.others"),
+	REGION_LIST_OTHERS("region.list.others"),
+	
+	REGION_DEFINE("region.define.command"),
+	REGION_DEFINE_TEMPLATE("region.define.template"),
+	
+	REGION_REMOVE("region.remove.command"),
+	REGION_REMOVE_OWNER("region.remove.owner"),
+	REGION_REMOVE_MEMBER("region.remove.member"),
+	REGION_REMOVE_REGIONS("region.remove.regions"),
+	
+	REGION_REDEFINE("region.redefine.command"),
+	REGION_REDEFINE_OWNER("region.redefine.owner"),
+	REGION_REDEFINE_MEMBER("region.redefine.member"),
+	REGION_REDEFINE_REGIONS("region.redefine.regions"),
 	
 	REGION_FLAG_ADD("region.flag.add.command"),
 	REGION_FLAG_ADD_OWNER("region.flag.add.owner"),
@@ -81,6 +74,34 @@ public enum EWPermissions implements EnumPermission {
 	REGION_OWNER_REMOVE_OWNER("region.owner.remove.owner"),
 	REGION_OWNER_REMOVE_MEMBER("region.owner.remove.member"),
 	REGION_OWNER_REMOVE_REGIONS("region.owner.remove.regions"),
+	
+	REGION_MEMBER_ADD("region.member.add.command"),
+	REGION_MEMBER_ADD_OWNER("region.member.add.owner"),
+	REGION_MEMBER_ADD_MEMBER("region.member.add.member"),
+	REGION_MEMBER_ADD_REGIONS("region.member.add.regions"),
+	
+	REGION_MEMBER_REMOVE("region.member.remove.command"),
+	REGION_MEMBER_REMOVE_OWNER("region.member.remove.owner"),
+	REGION_MEMBER_REMOVE_MEMBER("region.member.remove.member"),
+	REGION_MEMBER_REMOVE_REGIONS("region.member.remove.regions"),
+	
+	REGION_PARENT("region.setparent.command"),
+	REGION_PARENT_OWNER("region.setparent.owner"),
+	REGION_PARENT_MEMBER("region.setparent.member"),
+	REGION_PARENT_REGIONS("region.setparent.regions"),
+	
+	REGION_PRIORITY("region.setpriority.command"),
+	REGION_PRIORITY_OWNER("region.setpriority.owner"),
+	REGION_PRIORITY_MEMBER("region.setpriority.member"),
+	REGION_PRIORITY_REGIONS("region.setpriority.regions"),
+	
+	REGION_TELEPORT("region.teleport.command"),
+	REGION_TELEPORT_SPAWN("region.teleport.spawn"),
+	REGION_TELEPORT_OWNER("region.teleport.owner"),
+	REGION_TELEPORT_MEMBER("region.teleport.member"),
+	REGION_TELEPORT_REGIONS("region.teleport.regions"),
+	
+	REGION_SELECT("region.select.command"),
 	
 	FLAGS("flags");
 	

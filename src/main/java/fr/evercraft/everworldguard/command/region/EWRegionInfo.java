@@ -462,7 +462,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 				this.addLine(list, Text.joinWith(Text.of("\n"), flags_default.values()));
 			}
 			
-			if (!flags_default.isEmpty()) {
+			if (!flags_member.isEmpty()) {
 				this.addLine(list, EWMessages.REGION_INFO_ONE_FLAGS_MEMBER.getText());
 				this.addLine(list, Text.joinWith(Text.of("\n"), flags_member.values()));
 			}
@@ -510,17 +510,17 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 				
 				if (!heritage_flags_default.isEmpty()) {
 					this.addLine(list, EWMessages.REGION_INFO_ONE_HERITAGE_FLAGS_DEFAULT.getText());
-					this.addLine(list, Text.joinWith(Text.of("\n"), flags_default.values()));
+					this.addLine(list, Text.joinWith(Text.of("\n"), heritage_flags_default.values()));
 				}
 				
 				if (!heritage_flags_member.isEmpty()) {
 					this.addLine(list, EWMessages.REGION_INFO_ONE_HERITAGE_FLAGS_MEMBER.getText());
-					this.addLine(list, Text.joinWith(Text.of("\n"), flags_member.values()));
+					this.addLine(list, Text.joinWith(Text.of("\n"), heritage_flags_member.values()));
 				}
 				
 				if (!heritage_flags_owner.isEmpty()) {
 					this.addLine(list, EWMessages.REGION_INFO_ONE_HERITAGE_FLAGS_OWNER.getText());
-					this.addLine(list, Text.joinWith(Text.of("\n"), flags_owner.values()));
+					this.addLine(list, Text.joinWith(Text.of("\n"), heritage_flags_owner.values()));
 				}
 			}
 		}

@@ -157,7 +157,10 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 			}
 		}
 		
+		this.plugin.getLogger().warn("MARKER_TEMPLATE : " + args.isOption(MARKER_TEMPLATE));
+		
 		if (args.isOption(MARKER_TEMPLATE)) {
+			this.plugin.getLogger().warn("MARKER_TEMPLATE");
 			return this.commandRegionDefineTemplate(player, region_id.get(), players, groups);
 		} else {
 			return this.commandRegionDefine(player, region_id.get(), players, groups);
@@ -246,7 +249,7 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 		
 		EWMessages.REGION_DEFINE_POLYGONAL_CREATE.sender()
 			.replace("<region>", region.getIdentifier())
-			.replace("<type>", player.getSelectType().getName())
+			.replace("<type>", region.getType().getNameFormat())
 			.replace("<positions>", EWMessages.REGION_DEFINE_POLYGONAL_POINTS.getFormat()
 					.toText(replaces).toBuilder()
 					.onHover(TextActions.showText(EWMessages.REGION_DEFINE_POLYGONAL_POINTS_HOVER.getFormat()
@@ -257,11 +260,12 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 	}
 	
 	private boolean commandRegionDefineTemplate(final EPlayer player, final String region_id, final Set<EUser> players, final Set<Subject> groups) {
+		this.plugin.getLogger().warn("commandRegionDefineTemplate");
 		ProtectedRegion.Template region = this.plugin.getService().getOrCreateWorld(player.getWorld()).createRegionTemplate(region_id, players, groups);
 		
 		EWMessages.REGION_DEFINE_TEMPLATE_CREATE.sender()
 			.replace("<region>", region.getIdentifier())
-			.replace("<type>", player.getSelectType().getName())
+			.replace("<type>", region.getType().getNameFormat())
 			.sendTo(player);
 		return true;
 	}

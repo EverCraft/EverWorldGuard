@@ -175,6 +175,7 @@ public class EWWorld implements WorldWorldGuard {
 		Preconditions.checkNotNull(owner_players, "owner_players");
 		Preconditions.checkNotNull(owner_groups, "owner_groups");
 		
+		this.plugin.getLogger().warn("EProtectedTemplateRegion");
 		EProtectedTemplateRegion region = new EProtectedTemplateRegion(region_id);
 		this.regions.put(region_id.toLowerCase(), region);
 		this.rebuild();

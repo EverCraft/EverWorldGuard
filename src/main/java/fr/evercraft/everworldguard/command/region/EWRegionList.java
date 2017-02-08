@@ -136,7 +136,7 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 		
 		// Commande pour les régions d'un joueurs
 		} else if (arg_player.isPresent()) {
-			if (source.hasPermission(EWPermissions.REGION_LIST_OWN.get())) {
+			if (source.hasPermission(EWPermissions.REGION_LIST_OTHERS.get())) {
 				return this.commandRegionListPlayer(source, world, arg_player.get());
 			} else {
 				EAMessages.NO_PERMISSION.sender()
@@ -147,7 +147,7 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 		
 		// Commande pour les régions d'un groupe
 		} else if (arg_group.isPresent()) {
-			if (source.hasPermission(EWPermissions.REGION_LIST_OWN.get())) {
+			if (source.hasPermission(EWPermissions.REGION_LIST_OTHERS.get())) {
 				return this.commandRegionListGroup(source, world, arg_group.get());
 			} else {
 				EAMessages.NO_PERMISSION.sender()
@@ -158,7 +158,7 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 		
 		// Commande pour toutes les régions
 		} else {
-			if (source.hasPermission(EWPermissions.REGION_LIST_OWN.get())) {
+			if (source.hasPermission(EWPermissions.REGION_LIST_OTHERS.get())) {
 				return this.commandRegionList(source, world);
 			} else if(source instanceof EPlayer) {
 				return this.commandRegionListPlayer(source, world, (EPlayer) source);

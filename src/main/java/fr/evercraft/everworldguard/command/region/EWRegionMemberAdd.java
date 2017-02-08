@@ -55,9 +55,9 @@ public class EWRegionMemberAdd extends ESubCommand<EverWorldGuard> {
 	private final Args.Builder pattern;
 	
 	public EWRegionMemberAdd(final EverWorldGuard plugin, final EWRegion command) {
-        super(plugin, command, "addmember");
-        
-        this.pattern = Args.builder()
+		super(plugin, command, "addmember");
+		
+		this.pattern = Args.builder()
 			.empty(MARKER_MEMBER_GROUP)
 			.value(MARKER_WORLD, (source, args) -> this.getAllWorlds())
 			.arg((source, args) -> {
@@ -79,22 +79,26 @@ public class EWRegionMemberAdd extends ESubCommand<EverWorldGuard> {
 			})
 			.args((source, args) -> {
 				if (args.isOption(MARKER_MEMBER_GROUP)) {
-					return this.getAllGroups();
+					Set<String> suggests = this.getAllGroups();
+					suggests.removeAll(args.getArgs(1));
+					return suggests;
 				} else {
 					List<String> list = args.getArgs();
-					return this.getAllUsers(list.get(list.size()-1));
+					Set<String> suggests = this.getAllUsers(list.get(list.size()-1));
+					suggests.removeAll(args.getArgs(1));
+					return suggests;
 				}
 			});
-    }
+	}
 	
 	@Override
 	public boolean testPermission(final CommandSource source) {
-		return source.hasPermission(EWPermissions.REGION_OWNER_ADD.get());
+		return source.hasPermission(EWPermissions.REGION_MEMBER_ADD.get());
 	}
 
 	@Override
 	public Text description(final CommandSource source) {
-		return EWMessages.REGION_OWNER_ADD_DESCRIPTION.getText();
+		return EWMessages.REGION_MEMBER_ADD_DESCRIPTION.getText();
 	}
 
 	@Override
