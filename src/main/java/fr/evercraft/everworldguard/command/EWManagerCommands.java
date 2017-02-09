@@ -18,7 +18,8 @@ package fr.evercraft.everworldguard.command;
 
 import java.util.HashSet;
 
-import fr.evercraft.everapi.plugin.command.*;
+import fr.evercraft.everapi.plugin.command.ECommand;
+import fr.evercraft.everapi.plugin.command.EReloadCommand;
 import fr.evercraft.everworldguard.EWCommand;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.command.region.*;
@@ -56,6 +57,7 @@ public class EWManagerCommands extends HashSet<ECommand<EverWorldGuard>> {
 		region.add(new EWRegionInfo(this.plugin, region));
 		region.add(new EWRegionList(this.plugin, region));
 		region.add(new EWRegionDefine(this.plugin, region));
+		region.add(new EWRegionRemove(this.plugin, region));
 		region.add(new EWRegionFlagAdd(this.plugin, region));
 		region.add(new EWRegionFlagRemove(this.plugin, region));
 		region.add(new EWRegionOwnerAdd(this.plugin, region));
@@ -63,6 +65,7 @@ public class EWManagerCommands extends HashSet<ECommand<EverWorldGuard>> {
 		region.add(new EWRegionMemberAdd(this.plugin, region));
 		region.add(new EWRegionMemberRemove(this.plugin, region));
 		region.add(new EWRegionParent(this.plugin, region));
+		region.add(new EWRegionPriority(this.plugin, region));
 		register(region);
 	}
 	

@@ -209,16 +209,28 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		REGION_MEMBER_REMOVE_GROUPS("region.removemember.groups",								"&7Vous avez retiré les groupes &6<groups> &7en tant que &6MEMBER &7de la région &6<region>&7."),
 		REGION_MEMBER_REMOVE_GROUPS_JOIN("region.removemember.groupsJoin",						"&7, &6"),
 		
-		REGION_PARENT_DESCRIPTION("region.parent.description",									"Permet de définir une région parent"),
+		REGION_PARENT_DESCRIPTION("region.parent.description",									"Permet de définir le parent d'une région"),
 		REGION_PARENT_SET("region.parent.set",													"&7Vous avez défini la région &6<parent> &7en tant que région parent de &7<region>"),
 		REGION_PARENT_SET_HERITAGE("region.parent.setHeritage",									"&7Vous avez défini la région &6<parent> &7en tant que région parent de &6<region> : [RT]<heritage>"),
 		REGION_PARENT_SET_HERITAGE_LINE("region.parent.setHeritageLine",						"    &c└ <region> : &7<type>"),
 		REGION_PARENT_SET_HERITAGE_PADDING("region.parent.setHeritagePadding",					"  "),
-		REGION_PARENT_SET_CIRCULAR("region.parent.setCircular",									""),
-		REGION_PARENT_SET_EQUALS("region.parent.setEquals",										""),
-		REGION_PARENT_SET_EQUALS_PARENT("region.parent.setEqualsParent",						""),
-		REGION_PARENT_REMOVE("region.parent.remove",											""),
-		REGION_PARENT_REMOVE_EMPTY("region.parent.removeEmpty",									""),
+		REGION_PARENT_SET_CIRCULAR("region.parent.setCircular",									"&cErreur : Impossible de définir la région &6<parent> &cen tant que parent de &6<region>&c."),
+		REGION_PARENT_SET_EQUALS("region.parent.setEquals",										"&cErreur : Impossible de définir une région parent d'elle même"),
+		REGION_PARENT_SET_EQUALS_PARENT("region.parent.setEqualsParent",						"&cErreur : La région &6<parent> &cest déjà la région parent de &6<region>&c."),
+		REGION_PARENT_REMOVE("region.parent.remove",											"&7Vous avez supprimé le parent de la région &6<region>&7."),
+		REGION_PARENT_REMOVE_EMPTY("region.parent.removeEmpty",									"&cErreur : La région &6<region> &cn'a déjà aucun parent."),
+		
+		REGION_PRIORITY_DESCRIPTION("region.priority.description",								"Permet de définir la priorité d'une région"),
+		REGION_PRIORITY_SET("region.priority.set",												"&7Vous avez défini la priorité de la région &6<region> &7à &6<priority>&7."),
+		
+		REGION_REMOVE_DESCRIPTION("region.remove.description",									"Permet de supprimer une région"),
+		REGION_REMOVE_REGION("region.remove.region",											"&7Vous avez supprimé la région &6<region> &7dans le monde &6<world>&7."),
+		REGION_REMOVE_CHILDREN_REMOVE("region.remove.childrenRemove",							"&7Vous avez supprimé la région &6<region> &7et ces enfants &7dans le monde &6<world>&7."),
+		REGION_REMOVE_CHILDREN_UNSET("region.remove.childrenUnset",								"&7Vous avez supprimé la région &6<region> &7et gardé ces enfants &7dans le monde &6<world>&7."),
+		REGION_REMOVE_ERROR_GLOBAL("region.remove.errorGlobal",									"&cErreur : Impossible de supprimé la région &6<region> &ccar elle est de type &6<type>&c."),
+		REGION_REMOVE_ERROR_CHILDREN("region.remove.errorChildren",								"&cErreur : La région &6<region> &ca au moins une région enfant :[RT]"
+																							  + "    -f : Permet de supprimer aussi les régions enfants[RT]"
+																							  + "    -u : Permet de supprimer uniquement la région parent"),
 		
 		FLAG_BUILD("flag.build",						"Permet de désactiver les constructions"),
 		FLAG_PVP("flag.pvp",							"Permet de désactiver le PVP"),

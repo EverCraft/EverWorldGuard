@@ -196,6 +196,11 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 	
 	@Override
+	public void clearParent() {
+		this.parent = null;
+	}
+	
+	@Override
 	public void setParent(@Nullable ProtectedRegion parent) throws CircularInheritanceException {
 		if (parent == null) {
 			this.parent = null;

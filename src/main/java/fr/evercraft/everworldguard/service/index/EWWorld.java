@@ -139,7 +139,7 @@ public class EWWorld implements WorldWorldGuard {
 	public Optional<ProtectedRegion> getRegion(String region_id) {
 		Preconditions.checkNotNull(region_id, "region_id");
 		
-		return Optional.ofNullable(this.regions.get(region_id));
+		return Optional.ofNullable(this.regions.get(region_id.toLowerCase()));
 	}
 
 	@Override
@@ -152,6 +152,9 @@ public class EWWorld implements WorldWorldGuard {
 		
 		EProtectedCuboidRegion region = new EProtectedCuboidRegion(region_id, pos1, pos2);
 		this.regions.put(region_id.toLowerCase(), region);
+		
+		// TODO save
+		
 		this.rebuild();
 		return region;
 	}
@@ -165,6 +168,9 @@ public class EWWorld implements WorldWorldGuard {
 		
 		EProtectedPolygonalRegion region = new EProtectedPolygonalRegion(region_id, positions);
 		this.regions.put(region_id.toLowerCase(), region);
+		
+		// TODO save
+		
 		this.rebuild();
 		return region;
 	}
@@ -178,13 +184,47 @@ public class EWWorld implements WorldWorldGuard {
 		this.plugin.getLogger().warn("EProtectedTemplateRegion");
 		EProtectedTemplateRegion region = new EProtectedTemplateRegion(region_id);
 		this.regions.put(region_id.toLowerCase(), region);
+		
+		// TODO save
+		
 		this.rebuild();
 		return region;
 	}
 	
 	@Override
 	public Optional<ProtectedRegion> removeRegion(String region_id, ProtectedRegion.RemoveType type) {
+		EProtectedRegion region = this.regions.get(region_id.toLowerCase());
+		if (region == null) {
+			return Optional.empty();
+		}
+		
+		if (type.equals(ProtectedRegion.RemoveType.REMOVE_CHILDREN)) {
+			this.removeRegionChildren(region);
+		} else if (type.equals(ProtectedRegion.RemoveType.UNSET_PARENT_IN_CHILDREN)) {
+			this.regions.remove(region_id.toLowerCase());
+			
+			for (EProtectedRegion children : this.regions.values()) {
+				Optional<ProtectedRegion> parent = children.getParent();
+				if (parent.isPresent() && parent.get().equals(region)) {
+					children.clearParent();
+				}
+			}
+		}
+		
+		// TODO save
+		
 		this.rebuild();
-		return Optional.empty();
+		return Optional.of(region);
+	}
+	
+	private void removeRegionChildren(EProtectedRegion region) {
+		this.regions.remove(region.getIdentifier());
+		
+		for (EProtectedRegion children : this.regions.values()) {
+			Optional<ProtectedRegion> parent = children.getParent();
+			if (parent.isPresent() && parent.get().equals(region)) {
+				this.removeRegionChildren(children);
+			}
+		}
 	}
 }

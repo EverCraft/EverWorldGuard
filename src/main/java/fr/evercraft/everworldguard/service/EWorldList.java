@@ -79,6 +79,6 @@ public class EWorldList {
 	public void unLoad(World world) {
 		Preconditions.checkNotNull(world, "world");
 		
-		this.worlds.remove(world).stop();
+		this.worlds.remove(world.getUniqueId()).stop();
 	}
 }
