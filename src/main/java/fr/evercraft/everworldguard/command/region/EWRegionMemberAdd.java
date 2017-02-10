@@ -16,7 +16,7 @@
  */
 package fr.evercraft.everworldguard.command.region;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.service.permission.Subject;
@@ -61,21 +60,14 @@ public class EWRegionMemberAdd extends ESubCommand<EverWorldGuard> {
 			.empty(MARKER_MEMBER_GROUP)
 			.value(MARKER_WORLD, (source, args) -> this.getAllWorlds())
 			.arg((source, args) -> {
-				List<String> suggests = new ArrayList<String>();
-				Optional<String> optWorld = args.getValue(MARKER_WORLD);
-				
-				if (optWorld.isPresent()) {
-					this.plugin.getEServer().getWorld(optWorld.get()).ifPresent(world -> 
-						this.plugin.getService().getOrCreateWorld(world).getAll().forEach(region ->
-							suggests.add(region.getIdentifier())
-					));
-				} else if (source instanceof Player) {
-					this.plugin.getService().getOrCreateWorld(((Player) source).getWorld()).getAll().forEach(region ->
-						suggests.add(region.getIdentifier())
-					);
+				Optional<World> world = EWRegion.getWorld(this.plugin, source, args, MARKER_WORLD);
+				if (!world.isPresent()) {
+					return Arrays.asList();
 				}
 				
-				return suggests;
+				return this.plugin.getService().getOrCreateWorld(world.get()).getAll().stream()
+							.map(region -> region.getIdentifier())
+							.collect(Collectors.toSet());
 			})
 			.args((source, args) -> {
 				if (args.isOption(MARKER_MEMBER_GROUP)) {

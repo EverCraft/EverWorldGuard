@@ -223,7 +223,11 @@ public class EWWorld implements WorldWorldGuard {
 		for (EProtectedRegion children : this.regions.values()) {
 			Optional<ProtectedRegion> parent = children.getParent();
 			if (parent.isPresent() && parent.get().equals(region)) {
-				this.removeRegionChildren(children);
+				if (children.getType().equals(ProtectedRegion.Type.GLOBAL)) {
+					children.clearParent();
+				} else {
+					this.removeRegionChildren(children);
+				}
 			}
 		}
 	}

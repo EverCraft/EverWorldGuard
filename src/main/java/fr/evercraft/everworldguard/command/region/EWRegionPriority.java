@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
@@ -34,6 +33,7 @@ import fr.evercraft.everapi.EAMessage.EAMessages;
 import fr.evercraft.everapi.java.UtilsInteger;
 import fr.evercraft.everapi.plugin.command.Args;
 import fr.evercraft.everapi.plugin.command.ESubCommand;
+import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
@@ -52,27 +52,16 @@ public class EWRegionPriority extends ESubCommand<EverWorldGuard> {
 		this.pattern = Args.builder()
 			.value(MARKER_WORLD, (source, args) -> this.getAllWorlds())
 			.arg((source, args) -> {
-				Optional<World> optWorld = this.getWorld(source, args);
-				if (!optWorld.isPresent()) {
+				Optional<World> world = EWRegion.getWorld(this.plugin, source, args, MARKER_WORLD);
+				if (!world.isPresent()) {
 					return Arrays.asList();
 				}
 				
-				return this.plugin.getService().getOrCreateWorld(optWorld.get()).getAll().stream()
-					.map(region -> region.getIdentifier())
-					.collect(Collectors.toSet());
+				return this.plugin.getService().getOrCreateWorld(world.get()).getAll().stream()
+							.map(region -> region.getIdentifier())
+							.collect(Collectors.toSet());
 			})
 			.args((source, args) -> Arrays.asList("0", "1", "2", "3"));
-	}
-	
-	private Optional<World> getWorld(CommandSource source, Args args) {
-		Optional<String> optWorld = args.getValue(MARKER_WORLD);
-		
-		if (optWorld.isPresent()) {
-			return this.plugin.getEServer().getWorld(optWorld.get());
-		} else if (source instanceof Player) {
-			return Optional.of(((Player) source).getWorld());
-		}
-		return Optional.empty();
 	}
 	
 	@Override
@@ -110,15 +99,29 @@ public class EWRegionPriority extends ESubCommand<EverWorldGuard> {
 		}
 		List<String> args_string = args.getArgs();
 		
-		Optional<World> optWorld = this.getWorld(source, args);
-		if (!optWorld.isPresent()) {
+		World world = null;
+		Optional<String> world_arg = args.getValue(MARKER_WORLD);
+		if (world_arg.isPresent()) {
+			Optional<World> optWorld = this.plugin.getEServer().getWorld(world_arg.get());
+			if (optWorld.isPresent()) {
+				world = optWorld.get();
+			} else {
+				EAMessages.WORLD_NOT_FOUND.sender()
+					.prefix(EWMessages.PREFIX)
+					.replace("<world>", world_arg.get())
+					.sendTo(source);
+				return false;
+			}
+		} else if (source instanceof EPlayer) {
+			world = ((EPlayer) source).getWorld();
+		} else {
 			EAMessages.COMMAND_ERROR_FOR_PLAYER.sender()
 				.prefix(EWMessages.PREFIX)
 				.sendTo(source);
 			return false;
 		}
 		
-		WorldWorldGuard manager = this.plugin.getService().getOrCreateWorld(optWorld.get());
+		WorldWorldGuard manager = this.plugin.getService().getOrCreateWorld(world);
 		
 		Optional<ProtectedRegion> region = manager.getRegion(args_string.get(0));
 		// Region introuvable
@@ -139,7 +142,7 @@ public class EWRegionPriority extends ESubCommand<EverWorldGuard> {
 			return false;
 		}
 		
-		return this.commandRegionSetPriority(source, region.get(), priority.get(), optWorld.get());
+		return this.commandRegionSetPriority(source, region.get(), priority.get(), world);
 	}
 
 	private boolean commandRegionSetPriority(final CommandSource source, ProtectedRegion region, Integer priority, World world) {

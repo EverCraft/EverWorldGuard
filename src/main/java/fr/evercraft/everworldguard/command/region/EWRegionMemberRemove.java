@@ -22,12 +22,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.service.permission.Subject;
@@ -57,38 +55,27 @@ public class EWRegionMemberRemove extends ESubCommand<EverWorldGuard> {
 	
 	public EWRegionMemberRemove(final EverWorldGuard plugin, final EWRegion command) {
         super(plugin, command, "removemember");
-        
-		BiFunction<CommandSource, Args, Optional<World>> world = (source, args) -> {
-			Optional<String> optWorld = args.getValue(MARKER_WORLD);
-			
-			if (optWorld.isPresent()) {
-				return this.plugin.getEServer().getWorld(optWorld.get());
-			} else if (source instanceof Player) {
-				return Optional.of(((Player) source).getWorld());
-			}
-			return Optional.empty();
-		};
-		
+
 		this.pattern = Args.builder()
 			.empty(MARKER_MEMBER_GROUP)
 			.value(MARKER_WORLD, (source, args) -> this.getAllWorlds())
 			.arg((source, args) -> {
-				Optional<World> optWorld = world.apply(source, args);
-				if (!optWorld.isPresent()) {
+				Optional<World> world = EWRegion.getWorld(this.plugin, source, args, MARKER_WORLD);
+				if (!world.isPresent()) {
 					return Arrays.asList();
 				}
 				
-				return this.plugin.getService().getOrCreateWorld(optWorld.get()).getAll().stream()
-					.map(region -> region.getIdentifier())
-					.collect(Collectors.toSet());
+				return this.plugin.getService().getOrCreateWorld(world.get()).getAll().stream()
+							.map(region -> region.getIdentifier())
+							.collect(Collectors.toSet());
 			})
 			.args((source, args) -> {
-				Optional<World> optWorld = world.apply(source, args);
-				if (!optWorld.isPresent()) {
+				Optional<World> world = EWRegion.getWorld(this.plugin, source, args, MARKER_WORLD);
+				if (!world.isPresent()) {
 					return Arrays.asList();
 				}
 		
-				Optional<ProtectedRegion> optRegion = this.plugin.getService().getOrCreateEWorld(optWorld.get()).getRegion(args.getArg(0).get());
+				Optional<ProtectedRegion> optRegion = this.plugin.getService().getOrCreateEWorld(world.get()).getRegion(args.getArg(0).get());
 				if (!optRegion.isPresent()) {
 					return Arrays.asList();
 				}

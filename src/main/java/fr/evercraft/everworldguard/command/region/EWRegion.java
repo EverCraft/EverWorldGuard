@@ -16,9 +16,14 @@
  */
 package fr.evercraft.everworldguard.command.region;
 
-import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.text.Text;
+import java.util.Optional;
 
+import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.world.World;
+
+import fr.evercraft.everapi.plugin.command.Args;
 import fr.evercraft.everapi.plugin.command.EParentCommand;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EWPermissions;
@@ -43,5 +48,16 @@ public class EWRegion extends EParentCommand<EverWorldGuard> {
 	@Override
 	public boolean testPermissionHelp(final CommandSource source) {
 		return true;
+	}
+	
+	public static Optional<World> getWorld(EverWorldGuard plugin, CommandSource source, Args args, String marker) {
+		Optional<String> optWorld = args.getValue(marker);
+		
+		if (optWorld.isPresent()) {
+			return plugin.getEServer().getWorld(optWorld.get());
+		} else if (source instanceof Player) {
+			return Optional.of(((Player) source).getWorld());
+		}
+		return Optional.empty();
 	}
 }
