@@ -38,7 +38,7 @@ public class ESetProtectedRegion implements SetProtectedRegion {
 		for (ProtectedRegion region : this.regions) {
 			FlagValue<V> flag_value = region.getFlagInherit(flag);
 			if (!flag_value.isEmpty()) {
-				Optional<V> optValue = flag_value.contains(region.getGroup(user, context));
+				Optional<V> optValue = flag_value.getInherit(region.getGroup(user, context));
 				if (optValue.isPresent()) {
 					return optValue.get();
 				}

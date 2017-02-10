@@ -14,6 +14,7 @@ import com.google.common.collect.ImmutableSet;
 
 import fr.evercraft.everapi.server.user.EUser;
 import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
+import fr.evercraft.everapi.services.worldguard.exception.RegionIdentifierException;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everapi.sponge.UtilsChunk;
 import fr.evercraft.everapi.util.LongHashTable;
@@ -143,12 +144,13 @@ public class EWWorld implements WorldWorldGuard {
 	}
 
 	@Override
-	public ProtectedRegion.Cuboid createRegionCuboid(String region_id, Vector3i pos1, Vector3i pos2, Set<EUser> owner_players, Set<Subject> owner_groups) {
+	public ProtectedRegion.Cuboid createRegionCuboid(String region_id, Vector3i pos1, Vector3i pos2, Set<EUser> owner_players, Set<Subject> owner_groups) throws RegionIdentifierException {
 		Preconditions.checkNotNull(region_id, "region_id");
 		Preconditions.checkNotNull(pos1, "pos1");
 		Preconditions.checkNotNull(pos2, "pos2");
 		Preconditions.checkNotNull(owner_players, "owner_players");
 		Preconditions.checkNotNull(owner_groups, "owner_groups");
+		if (this.regions.containsKey(region_id)) throw new RegionIdentifierException();
 		
 		EProtectedCuboidRegion region = new EProtectedCuboidRegion(region_id, pos1, pos2);
 		this.regions.put(region_id.toLowerCase(), region);
@@ -160,11 +162,13 @@ public class EWWorld implements WorldWorldGuard {
 	}
 
 	@Override
-	public ProtectedRegion.Polygonal createRegionPolygonal(String region_id, List<Vector3i> positions, Set<EUser> owner_players, Set<Subject> owner_groups) {
+	public ProtectedRegion.Polygonal createRegionPolygonal(String region_id, List<Vector3i> positions, Set<EUser> owner_players, Set<Subject> owner_groups) throws RegionIdentifierException {
 		Preconditions.checkNotNull(region_id, "region_id");
 		Preconditions.checkNotNull(positions, "positions");
 		Preconditions.checkNotNull(owner_players, "owner_players");
 		Preconditions.checkNotNull(owner_groups, "owner_groups");
+		if (this.regions.containsKey(region_id)) throw new RegionIdentifierException();
+		
 		
 		EProtectedPolygonalRegion region = new EProtectedPolygonalRegion(region_id, positions);
 		this.regions.put(region_id.toLowerCase(), region);
@@ -176,12 +180,12 @@ public class EWWorld implements WorldWorldGuard {
 	}
 
 	@Override
-	public ProtectedRegion.Template createRegionTemplate(String region_id, Set<EUser> owner_players, Set<Subject> owner_groups) {
+	public ProtectedRegion.Template createRegionTemplate(String region_id, Set<EUser> owner_players, Set<Subject> owner_groups) throws RegionIdentifierException {
 		Preconditions.checkNotNull(region_id, "region_id");
 		Preconditions.checkNotNull(owner_players, "owner_players");
 		Preconditions.checkNotNull(owner_groups, "owner_groups");
+		if (this.regions.containsKey(region_id)) throw new RegionIdentifierException();
 		
-		this.plugin.getLogger().warn("EProtectedTemplateRegion");
 		EProtectedTemplateRegion region = new EProtectedTemplateRegion(region_id);
 		this.regions.put(region_id.toLowerCase(), region);
 		
@@ -189,6 +193,24 @@ public class EWWorld implements WorldWorldGuard {
 		
 		this.rebuild();
 		return region;
+	}
+	
+	@Override
+	public Optional<ProtectedRegion.Cuboid> redefineRegionCuboid(ProtectedRegion region, Vector3i pos1, Vector3i pos2) {
+		// TODO
+		return Optional.empty();
+	}
+
+	@Override
+	public Optional<ProtectedRegion.Polygonal> redefineRegionPolygonal(ProtectedRegion region, List<Vector3i> positions) {
+		// TODO 
+		return Optional.empty();
+	}
+
+	@Override
+	public Optional<ProtectedRegion.Template> redefineRegionTemplate(ProtectedRegion region) {
+		// TODO 
+		return Optional.empty();
 	}
 	
 	@Override

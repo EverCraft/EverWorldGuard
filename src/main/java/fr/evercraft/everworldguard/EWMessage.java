@@ -157,7 +157,8 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		REGION_DEFINE_POLYGONAL_POINTS_HOVER_JOIN("region.define.polygonal.pointsHoverJoin",	"[RT]"),
 		REGION_DEFINE_POLYGONAL_ERROR_POSITION("region.define.polygonal.errorPosition",			"&cErreur : Vous devez sélectionner au moins 3 positions pour définir une région &6<type>&c."),
 		REGION_DEFINE_TEMPLATE_CREATE("region.define.template.create",							"&7Vous venez de créer la région &6<region> &7de type &6<type>."),
-		REGION_DEFINE_ERROR_NAME("region.define.errorName",										"&cErreur : Il y a déjà une région qui porte le nom &6<region>&c."),
+		REGION_DEFINE_ERROR_IDENTIFIER_EQUALS("region.define.errorIdentifierEquals",			"&cErreur : Il y a déjà une région qui porte le nom &6<region>&c."),
+		REGION_DEFINE_ERROR_IDENTIFIER_INVALID("region.define.cuboid.errorIdentifierInvalid",	"&cErreur : Le nom de région &6'<region>' &cest invalide."),
 		REGION_DEFINE_ERROR_SELECT_TYPE("region.define.errorSelectType",						"&cErreur : Il posible de créer une région de type &6<type>&c."),
 		
 		REGION_REDEFINE_DESCRIPTION("region.redefine.description",									"Permet de redéfinir une région"),
@@ -174,6 +175,12 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		REGION_REDEFINE_TEMPLATE_CREATE("region.redefine.template.create",							"&7Création de la région &6<region> &7de type &6<type>."),
 		REGION_REDEFINE_ERROR_NAME("region.redefine.errorName",										"&cErreur : Il y a déjà une région qui porte le nom &6<region>&c."),
 		REGION_REDEFINE_ERROR_SELECT_TYPE("region.redefine.errorSelectType",						"&cErreur : Il posible de créer une région de type &6<type>&c."),
+		
+		REGION_RENAME_DESCRIPTION("region.rename.description",									"Permet de renommer une région"),
+		REGION_RENAME_SET("region.rename.set",													"&7Vous avez renommer la région &6<region> &7en &6<identifier> &7dans le monde &6<world>&7."),
+		REGION_RENAME_ERROR_IDENTIFIER_EQUALS("region.rename.errorIdentifierEquals",			"&cErreur : Impossible de renommer la région &6<region> &cen &6<identifier> &ccar une autre région porte déjà ce nom."),
+		REGION_RENAME_ERROR_IDENTIFIER_INVALID("region.rename.errorIdentifierInvalid",			"&cErreur : Impossible de renommer la région &6<region> &cen &6<identifier> &ccar le nom est invalide."),
+		REGION_RENAME_ERROR_GLOBAL("region.rename.errorGlobal",									"&cErreur : Impossible de renommer la région &6<region> &de type &6<type>&c."),
 		
 		REGION_FLAG_ADD_DESCRIPTION("region.addflag.description",								"Permet de définir un flag d'une région"),
 		REGION_FLAG_ADD_PLAYER("region.addflag.player",											"&7Vous avez défini le flag &6<flag> &7sur la région &6<region> &7dans le monde &6<world> &7pour le groupe &6<group> &7à la valeur &6<value>&7."),
@@ -246,6 +253,18 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		REGION_REMOVE_ERROR_CHILDREN("region.remove.errorChildren",								"&cErreur : La région &6<region> &ca au moins une région enfant :[RT]"
 																							  + "    -f : Permet de supprimer aussi les régions enfants[RT]"
 																							  + "    -u : Permet de supprimer uniquement la région parent"),
+		
+		REGION_TELEPORT_DESCRIPTION("region.teleport.description",								"Permet de ce téléporter à une région"),
+		REGION_TELEPORT_TELEPORT("region.teleport.teleport",									"&7Vous avez été <position> &7à la région &6<region>&7."),
+		REGION_TELEPORT_TELEPORT_POSITION("region.teleport.teleportPosition",					"&6téléporté"),
+		REGION_TELEPORT_TELEPORT_POSITION_HOVER("region.teleport.teleportPositionHover",		"&7World : &6<world>[RT]&7X : &6<x>[RT]&7Y : &6<y>[RT]&7Z : &6<z>"),
+		REGION_TELEPORT_TELEPORT_ERROR("region.teleport.teleportError",							"&cErreur : La position de téléportation de la région &6<region> &cest invalide."),
+		REGION_TELEPORT_SPAWN("region.teleport.spawn",											"&7Vous avez été téléporté <position> &7de la région &6<region>&7."),
+		REGION_TELEPORT_SPAWN_POSITION("region.teleport.spawnPosition",							"&6spawn"),
+		REGION_TELEPORT_SPAWN_POSITION_HOVER("region.teleport.spawnPositionHover",				"&7World : &6<world>[RT]&7X : &6<x>[RT]&7Y : &6<y>[RT]&7Z : &6<z>"),
+		REGION_TELEPORT_SPAWN_ERROR("region.teleport.spawnError",								"&cErreur : La position du spawn de la région &6<region> &cest invalide."),
+		REGION_TELEPORT_SPAWN_EMPTY("region.teleport.spawnEmpty",								"&cErreur : La région &6<region> &cn'a aucun spawn."),
+		
 		
 		FLAG_BUILD("flag.build",						"Permet de désactiver les constructions"),
 		FLAG_PVP("flag.pvp",							"Permet de désactiver le PVP"),

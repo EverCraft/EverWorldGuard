@@ -48,7 +48,7 @@ public class EFlagValue<T> implements FlagValue<T> {
 	}
 	
 	@Override
-	public Optional<T> contains(Group group) {
+	public Optional<T> getInherit(Group group) {
 		T value = null;
 		switch (group) {
 			case OWNER :

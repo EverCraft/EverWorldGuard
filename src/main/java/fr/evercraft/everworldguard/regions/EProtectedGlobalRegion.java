@@ -16,6 +16,7 @@
  */
 package fr.evercraft.everworldguard.regions;
 
+import fr.evercraft.everapi.services.worldguard.exception.RegionIdentifierException;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 
 import java.awt.geom.Area;
@@ -29,11 +30,11 @@ import com.google.common.collect.ImmutableList;
 
 public class EProtectedGlobalRegion extends EProtectedRegion implements ProtectedRegion.Global {
 	
-	public EProtectedGlobalRegion(String id) {
+	public EProtectedGlobalRegion(String id) throws RegionIdentifierException {
 		this(id, false);
 	}
 	
-	public EProtectedGlobalRegion(String id, boolean transientRegion) {
+	public EProtectedGlobalRegion(String id, boolean transientRegion) throws RegionIdentifierException {
 		super(id, transientRegion);
 		
 		 this.min = Vector3i.ZERO;

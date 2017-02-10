@@ -43,6 +43,7 @@ import fr.evercraft.everapi.plugin.command.ESubCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everapi.server.user.EUser;
 import fr.evercraft.everapi.services.worldguard.SelectType;
+import fr.evercraft.everapi.services.worldguard.exception.RegionIdentifierException;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EWPermissions;
@@ -109,7 +110,7 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 		}
 		
 		if (this.plugin.getService().getOrCreateWorld(player.getWorld()).getRegion(region_id.get()).isPresent()) {
-			EWMessages.REGION_DEFINE_ERROR_NAME.sender()
+			EWMessages.REGION_DEFINE_ERROR_IDENTIFIER_EQUALS.sender()
 				.replace("<region>", region_id.get())
 				.sendTo(player);
 			return false;
@@ -189,7 +190,16 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 			return false;
 		}
 		
-		ProtectedRegion.Cuboid region = this.plugin.getService().getOrCreateWorld(player.getWorld()).createRegionCuboid(region_id, pos1.get(), pos2.get(), players, groups);
+		ProtectedRegion.Cuboid region = null;
+		try {
+			region = this.plugin.getService().getOrCreateWorld(player.getWorld()).createRegionCuboid(region_id, pos1.get(), pos2.get(), players, groups);
+		} catch (RegionIdentifierException e) {
+			EWMessages.REGION_DEFINE_ERROR_IDENTIFIER_INVALID.sender()
+				.replace("<region>", region_id)
+				.replace("<type>", ProtectedRegion.Type.CUBOID.getNameFormat())
+				.sendTo(player);
+			return false;
+		}
 		
 		Vector3i min = region.getMinimumPoint();
 		Vector3i max = region.getMaximumPoint();
@@ -203,7 +213,7 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 		
 		EWMessages.REGION_DEFINE_CUBOID_CREATE.sender()
 			.replace("<region>", region.getIdentifier())
-			.replace("<type>", player.getSelectType().getName())
+			.replace("<type>", region.getType().getNameFormat())
 			.replace("<positions>", EWMessages.REGION_DEFINE_CUBOID_POINTS.getFormat()
 					.toText(replaces).toBuilder()
 					.onHover(TextActions.showText(EWMessages.REGION_DEFINE_CUBOID_POINTS_HOVER.getFormat()
@@ -223,7 +233,16 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 			return false;
 		}
 		
-		ProtectedRegion.Polygonal region = this.plugin.getService().getOrCreateWorld(player.getWorld()).createRegionPolygonal(region_id, positions, players, groups);
+		ProtectedRegion.Polygonal region = null;
+		try {
+			region = this.plugin.getService().getOrCreateWorld(player.getWorld()).createRegionPolygonal(region_id, positions, players, groups);
+		} catch (RegionIdentifierException e) {
+			EWMessages.REGION_DEFINE_ERROR_IDENTIFIER_INVALID.sender()
+				.replace("<region>", region_id)
+				.replace("<type>", ProtectedRegion.Type.POLYGONAL.getNameFormat())
+				.sendTo(player);
+			return false;
+		}
 		
 		Vector3i min = region.getMinimumPoint();
 		Vector3i max = region.getMaximumPoint();
@@ -257,7 +276,16 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 	}
 	
 	private boolean commandRegionDefineTemplate(final EPlayer player, final String region_id, final Set<EUser> players, final Set<Subject> groups) {
-		ProtectedRegion.Template region = this.plugin.getService().getOrCreateWorld(player.getWorld()).createRegionTemplate(region_id, players, groups);
+		ProtectedRegion.Template region = null;
+		try {
+			region = this.plugin.getService().getOrCreateWorld(player.getWorld()).createRegionTemplate(region_id, players, groups);
+		} catch (RegionIdentifierException e) {
+			EWMessages.REGION_DEFINE_ERROR_IDENTIFIER_INVALID.sender()
+				.replace("<region>", region_id)
+				.replace("<type>", ProtectedRegion.Type.TEMPLATE.getNameFormat())
+				.sendTo(player);
+			return false;
+		}
 		
 		EWMessages.REGION_DEFINE_TEMPLATE_CREATE.sender()
 			.replace("<region>", region.getIdentifier())

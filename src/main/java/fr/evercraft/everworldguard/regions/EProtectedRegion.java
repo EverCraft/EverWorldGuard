@@ -24,6 +24,7 @@ import com.google.common.collect.ImmutableList.Builder;
 
 import fr.evercraft.everapi.java.UtilsString;
 import fr.evercraft.everapi.services.worldguard.exception.CircularInheritanceException;
+import fr.evercraft.everapi.services.worldguard.exception.RegionIdentifierException;
 import fr.evercraft.everapi.services.worldguard.flag.Flag;
 import fr.evercraft.everapi.services.worldguard.flag.FlagValue;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
@@ -64,9 +65,9 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	
 	private final ConcurrentMap<Flag<?>, EFlagValue<?>> flags;
 	
-	public EProtectedRegion(String id, boolean transientRegion) {
+	public EProtectedRegion(String id, boolean transientRegion) throws RegionIdentifierException {
 		Preconditions.checkNotNull(id);
-		Preconditions.checkArgument(ProtectedRegion.isValidId(id), "Invalid region ID: " + id);
+		ProtectedRegion.isValidId(id);
 
 		this.id = UtilsString.normalize(id);
 		this.owners = new EDomain();
@@ -117,6 +118,11 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	@Override
 	public String getIdentifier() {
 		return this.id;
+	}
+	
+	@Override
+	public void setIdentifier(String identifier) {
+		// TODO
 	}
 	
 	@Override
@@ -522,7 +528,11 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 		min = Vector3i.from(min.getX(), 0, min.getZ());
 		Vector3i max = position.add(1, 0, 1).mul(16);
 		max = Vector3i.from(max.getX(), Integer.MAX_VALUE, max.getZ());		
-		return !this.getIntersecting(new EProtectedCuboidRegion("_", true, min , max)).isEmpty();
+		try {
+			return !this.getIntersecting(new EProtectedCuboidRegion("_", true, min , max)).isEmpty();
+		} catch (RegionIdentifierException e) {
+			return false;
+		}
 	}
 	
 	@Override

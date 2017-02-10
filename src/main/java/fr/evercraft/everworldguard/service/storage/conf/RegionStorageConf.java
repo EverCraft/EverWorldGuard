@@ -14,6 +14,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.reflect.TypeToken;
 
 import fr.evercraft.everapi.plugin.file.EConfig;
+import fr.evercraft.everapi.services.worldguard.exception.RegionIdentifierException;
 import fr.evercraft.everapi.services.worldguard.exception.StorageException;
 import fr.evercraft.everapi.services.worldguard.flag.Flag;
 import fr.evercraft.everapi.services.worldguard.flag.FlagValue;
@@ -45,10 +46,12 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 	
 	@Override
 	protected void loadDefault() {
-		EProtectedRegion global = new EProtectedGlobalRegion(EWorldGuardService.GLOBAL_REGION);
-		if (this.getNode().getNode(global.getIdentifier()).isVirtual()) {
-			this.add(global);
-		}
+		try {
+			EProtectedRegion global = new EProtectedGlobalRegion(EWorldGuardService.GLOBAL_REGION);
+			if (this.getNode().getNode(global.getIdentifier()).isVirtual()) {
+				this.add(global);
+			}
+		} catch (RegionIdentifierException e) {}
 	}
 
 	@Override
@@ -180,34 +183,39 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 		}
 		
 		EProtectedRegion region = null;
-		if (type.equals(ProtectedRegion.Type.GLOBAL)) {
-			region = new EProtectedGlobalRegion(id);
-		} else if (type.equals(ProtectedRegion.Type.CUBOID)) {
-			Vector3i min, max;
-			try {
-				min = config.getNode("min").getValue(TypeToken.of(Vector3i.class));
-			} catch (ObjectMappingException e1) {
-				this.plugin.getLogger().warn("Min incorrect (id:'" + id + "')");
+		try {
+			if (type.equals(ProtectedRegion.Type.GLOBAL)) {
+				region = new EProtectedGlobalRegion(id);
+			} else if (type.equals(ProtectedRegion.Type.CUBOID)) {
+				Vector3i min, max;
+				try {
+					min = config.getNode("min").getValue(TypeToken.of(Vector3i.class));
+				} catch (ObjectMappingException e1) {
+					this.plugin.getLogger().warn("Min incorrect (id:'" + id + "')");
+					return Optional.empty();
+				}
+				try {
+					max = config.getNode("max").getValue(TypeToken.of(Vector3i.class));
+				} catch (ObjectMappingException e) {
+					this.plugin.getLogger().warn("Max incorrect (id:'" + id + "')");
+					return Optional.empty();
+				}
+				region = new EProtectedCuboidRegion(id, min, max);
+			} else if (type.equals(ProtectedRegion.Type.TEMPLATE)) {
+				region = new EProtectedTemplateRegion(id);
+			} else if (type.equals(ProtectedRegion.Type.POLYGONAL)) {
+				region = new EProtectedGlobalRegion(id);
+			} else {
 				return Optional.empty();
 			}
-			try {
-				max = config.getNode("max").getValue(TypeToken.of(Vector3i.class));
-			} catch (ObjectMappingException e) {
-				this.plugin.getLogger().warn("Max incorrect (id:'" + id + "')");
-				return Optional.empty();
-			}
-			region = new EProtectedCuboidRegion(id, min, max);
-		} else if (type.equals(ProtectedRegion.Type.TEMPLATE)) {
-			region = new EProtectedTemplateRegion(id);
-		} else if (type.equals(ProtectedRegion.Type.POLYGONAL)) {
-			region = new EProtectedGlobalRegion(id);
-		} else {
+		
+			region.init(priority, owners, group_owners, members, group_members, flags);
+			return Optional.of(region);
+			
+		} catch (RegionIdentifierException e) {
+			this.plugin.getLogger().warn("Identifier invalid (id:'" + id + "')");
 			return Optional.empty();
 		}
-		
-		region.init(priority, owners, group_owners, members, group_members, flags);
-		
-		return Optional.of(region);
 	}
 	
 	public <T> EFlagValue<T> putFlags(EFlagValue<T> values, Group association, T value) {

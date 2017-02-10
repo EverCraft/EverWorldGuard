@@ -55,6 +55,16 @@ public enum EWPermissions implements EnumPermission {
 	REGION_REDEFINE_MEMBER("region.redefine.member"),
 	REGION_REDEFINE_REGIONS("region.redefine.regions"),
 	
+	REGION_RENAME("region.rename.command"),
+	REGION_RENAME_OWNER("region.rename.owner"),
+	REGION_RENAME_MEMBER("region.rename.member"),
+	REGION_RENAME_REGIONS("region.rename.regions"),
+	
+	REGION_SELECT("region.select.command"),
+	REGION_SELECT_OWNER("region.select.owner"),
+	REGION_SELECT_MEMBER("region.select.member"),
+	REGION_SELECT_REGIONS("region.select.regions"),
+	
 	REGION_FLAG_ADD("region.flag.add.command"),
 	REGION_FLAG_ADD_OWNER("region.flag.add.owner"),
 	REGION_FLAG_ADD_MEMBER("region.flag.add.member"),
@@ -100,8 +110,6 @@ public enum EWPermissions implements EnumPermission {
 	REGION_TELEPORT_OWNER("region.teleport.owner"),
 	REGION_TELEPORT_MEMBER("region.teleport.member"),
 	REGION_TELEPORT_REGIONS("region.teleport.regions"),
-	
-	REGION_SELECT("region.select.command"),
 	
 	FLAGS("flags");
 	

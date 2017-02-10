@@ -188,7 +188,7 @@ public class EWRegionRedefine extends ESubCommand<EverWorldGuard> {
 			return false;
 		}
 		
-		//ProtectedRegion.Polygonal region_new = this.plugin.getService().getOrCreateWorld(player.getWorld()).createRegionPolygonal(region_id, positions);
+		//Optional<ProtectedRegion.Polygonal> region_new = this.plugin.getService().getOrCreateWorld(player.getWorld()).redefineRegionPolygonal(region, positions);
 		
 		Vector3i min = region.getMinimumPoint();
 		Vector3i max = region.getMaximumPoint();

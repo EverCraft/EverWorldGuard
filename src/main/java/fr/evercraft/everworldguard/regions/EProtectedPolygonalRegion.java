@@ -16,6 +16,7 @@
  */
 package fr.evercraft.everworldguard.regions;
 
+import fr.evercraft.everapi.services.worldguard.exception.RegionIdentifierException;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 
 import java.awt.Rectangle;
@@ -32,11 +33,12 @@ import com.google.common.math.LongMath;
 
 public class EProtectedPolygonalRegion extends EProtectedRegion implements ProtectedRegion.Polygonal {
 	
-	public EProtectedPolygonalRegion(String id, List<Vector3i> positions) {
+	public EProtectedPolygonalRegion(String id, List<Vector3i> positions) throws RegionIdentifierException {
 		this(id, positions, false);
 	}
 	
-	public EProtectedPolygonalRegion(String id, List<Vector3i> positions, boolean transientRegion) {
+	public EProtectedPolygonalRegion(String id, List<Vector3i> positions, boolean transientRegion) 
+			throws RegionIdentifierException {
 		super(id, transientRegion);
 		Preconditions.checkNotNull(positions, "positions");
 	}
