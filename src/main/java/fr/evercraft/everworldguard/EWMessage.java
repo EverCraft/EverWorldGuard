@@ -173,6 +173,7 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		REGION_REDEFINE_POLYGONAL_POINTS_HOVER_JOIN("region.redefine.polygonal.pointsHoverJoin",	"[RT]"),
 		REGION_REDEFINE_POLYGONAL_ERROR_POSITION("region.redefine.polygonal.errorPosition",			"&cErreur : Vous devez sélectionner au moins 3 positions pour définir une région &6<type>&c."),
 		REGION_REDEFINE_TEMPLATE_CREATE("region.redefine.template.create",							"&7Création de la région &6<region> &7de type &6<type>."),
+		REGION_REDEFINE_ERROR_GLOBAL("region.redefine.errorGlobal",									"&cErreur : Impossible de redéfinir la région &6<region> &ccar elle est de type &6<type>&c."),
 		REGION_REDEFINE_ERROR_NAME("region.redefine.errorName",										"&cErreur : Il y a déjà une région qui porte le nom &6<region>&c."),
 		REGION_REDEFINE_ERROR_SELECT_TYPE("region.redefine.errorSelectType",						"&cErreur : Il posible de créer une région de type &6<type>&c."),
 		
@@ -180,7 +181,7 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		REGION_RENAME_SET("region.rename.set",													"&7Vous avez renommer la région &6<region> &7en &6<identifier> &7dans le monde &6<world>&7."),
 		REGION_RENAME_ERROR_IDENTIFIER_EQUALS("region.rename.errorIdentifierEquals",			"&cErreur : Impossible de renommer la région &6<region> &cen &6<identifier> &ccar une autre région porte déjà ce nom."),
 		REGION_RENAME_ERROR_IDENTIFIER_INVALID("region.rename.errorIdentifierInvalid",			"&cErreur : Impossible de renommer la région &6<region> &cen &6<identifier> &ccar le nom est invalide."),
-		REGION_RENAME_ERROR_GLOBAL("region.rename.errorGlobal",									"&cErreur : Impossible de renommer la région &6<region> &de type &6<type>&c."),
+		REGION_RENAME_ERROR_GLOBAL("region.rename.errorGlobal",									"&cErreur : Impossible de renommer la région &6<region> &cde type &6<type>&c."),
 		
 		REGION_FLAG_ADD_DESCRIPTION("region.addflag.description",								"Permet de définir un flag d'une région"),
 		REGION_FLAG_ADD_PLAYER("region.addflag.player",											"&7Vous avez défini le flag &6<flag> &7sur la région &6<region> &7dans le monde &6<world> &7pour le groupe &6<group> &7à la valeur &6<value>&7."),

@@ -622,6 +622,24 @@ public abstract class EProtectedRegion implements ProtectedRegion {
         return false;
     }
 	
+	@Override
+	public Optional<ProtectedRegion.Cuboid> redefineCuboid(Vector3i pos1, Vector3i pos2) {
+		// TODO
+		return Optional.empty();
+	}
+
+	@Override
+	public Optional<ProtectedRegion.Polygonal> redefinePolygonal(List<Vector3i> positions) {
+		// TODO 
+		return Optional.empty();
+	}
+
+	@Override
+	public Optional<ProtectedRegion.Template> redefineTemplate() {
+		// TODO 
+		return Optional.empty();
+	}
+	
 	/*
 	 * Java
 	 */

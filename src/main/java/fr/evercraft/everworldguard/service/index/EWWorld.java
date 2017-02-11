@@ -196,24 +196,6 @@ public class EWWorld implements WorldWorldGuard {
 	}
 	
 	@Override
-	public Optional<ProtectedRegion.Cuboid> redefineRegionCuboid(ProtectedRegion region, Vector3i pos1, Vector3i pos2) {
-		// TODO
-		return Optional.empty();
-	}
-
-	@Override
-	public Optional<ProtectedRegion.Polygonal> redefineRegionPolygonal(ProtectedRegion region, List<Vector3i> positions) {
-		// TODO 
-		return Optional.empty();
-	}
-
-	@Override
-	public Optional<ProtectedRegion.Template> redefineRegionTemplate(ProtectedRegion region) {
-		// TODO 
-		return Optional.empty();
-	}
-	
-	@Override
 	public Optional<ProtectedRegion> removeRegion(String region_id, ProtectedRegion.RemoveType type) {
 		EProtectedRegion region = this.regions.get(region_id.toLowerCase());
 		if (region == null) {
