@@ -276,6 +276,13 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 	}
 	
 	private boolean commandRegionDefineTemplate(final EPlayer player, final String region_id, final Set<EUser> players, final Set<Subject> groups) {
+		if (player.hasPermission(EWPermissions.REGION_DEFINE_TEMPLATE.get())) {
+			EAMessages.NO_PERMISSION.sender()
+				.prefix(EWMessages.PREFIX)
+				.sendTo(player);
+		}
+		
+		
 		ProtectedRegion.Template region = null;
 		try {
 			region = this.plugin.getService().getOrCreateWorld(player.getWorld()).createRegionTemplate(region_id, players, groups);

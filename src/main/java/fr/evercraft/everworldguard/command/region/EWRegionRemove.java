@@ -35,6 +35,7 @@ import fr.evercraft.everapi.plugin.command.ESubCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion.RemoveType;
+import fr.evercraft.everapi.sponge.UtilsContexts;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EWPermissions;
 import fr.evercraft.everworldguard.EverWorldGuard;
@@ -53,7 +54,9 @@ public class EWRegionRemove extends ESubCommand<EverWorldGuard> {
         this.pattern = Args.builder()
         	.empty(MARKER_FORCE)
         	.empty(MARKER_UNSET_PARENT_IN_CHILDREN)
-			.value(MARKER_WORLD, (source, args) -> this.getAllWorlds())
+        	.value(MARKER_WORLD, 
+					(source, args) -> this.getAllWorlds(),
+					(source, args) -> args.getArgs().size() <= 1)
 			.arg((source, args) -> {
 				Optional<World> world = EWRegion.getWorld(this.plugin, source, args, MARKER_WORLD);
 				if (!world.isPresent()) {
@@ -133,6 +136,13 @@ public class EWRegionRemove extends ESubCommand<EverWorldGuard> {
 			return false;
 		}
 		
+		if (!this.hasPermission(source, region.get(), world)) {
+			EWMessages.REGION_NO_PERMISSION.sender()
+				.replace("<region>", region.get().getIdentifier())
+				.sendTo(source);
+			return false;
+		}
+		
 		if (region.get().getType().equals(ProtectedRegion.Type.GLOBAL)) {
 			EWMessages.REGION_REMOVE_ERROR_GLOBAL.sender()
 				.replace("<region>", region.get().getIdentifier())
@@ -192,6 +202,25 @@ public class EWRegionRemove extends ESubCommand<EverWorldGuard> {
 			.replace("<region>", region.getIdentifier())
 			.replace("<world>", world.getName())
 			.sendTo(player);
+		return false;
+	}
+	
+	private boolean hasPermission(final CommandSource source, final ProtectedRegion region, final World world) {
+		if (source.hasPermission(EWPermissions.REGION_REMOVE_REGIONS.get() + "." + region.getIdentifier().toLowerCase())) {
+			return true;
+		}
+		
+		if (!(source instanceof EPlayer)) {
+			EPlayer player = (EPlayer) source;
+			
+			if (region.isPlayerOwner(player, UtilsContexts.get(world.getName())) && source.hasPermission(EWPermissions.REGION_REMOVE_OWNER.get())) {
+				return true;
+			}
+			
+			if (region.isPlayerMember(player, UtilsContexts.get(world.getName())) && source.hasPermission(EWPermissions.REGION_REMOVE_MEMBER.get())) {
+				return true;
+			}
+		}
 		return false;
 	}
 }

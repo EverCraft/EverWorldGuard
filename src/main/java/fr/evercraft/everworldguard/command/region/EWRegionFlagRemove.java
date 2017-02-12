@@ -37,6 +37,7 @@ import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everapi.services.worldguard.flag.Flag;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion.Group;
+import fr.evercraft.everapi.sponge.UtilsContexts;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EWPermissions;
 import fr.evercraft.everworldguard.EverWorldGuard;
@@ -51,47 +52,49 @@ public class EWRegionFlagRemove extends ESubCommand<EverWorldGuard> {
         super(plugin, command, "removeflag");
         
         this.pattern = Args.builder()
-				.value(MARKER_WORLD, (source, args) -> this.getAllWorlds())
-				.arg((source, args) -> {
-					Optional<World> world = EWRegion.getWorld(this.plugin, source, args, MARKER_WORLD);
-					if (!world.isPresent()) {
-						return Arrays.asList();
-					}
-					
-					return this.plugin.getService().getOrCreateWorld(world.get()).getAll().stream()
-								.map(region -> region.getIdentifier())
-								.collect(Collectors.toSet());
-				})
-				.arg((source, args) -> {
-					return this.plugin.getService().getFlags().stream()
-							.map(flag -> flag.getName())
+    		.value(MARKER_WORLD, 
+					(source, args) -> this.getAllWorlds(),
+					(source, args) -> args.getArgs().size() <= 1)
+			.arg((source, args) -> {
+				Optional<World> world = EWRegion.getWorld(this.plugin, source, args, MARKER_WORLD);
+				if (!world.isPresent()) {
+					return Arrays.asList();
+				}
+				
+				return this.plugin.getService().getOrCreateWorld(world.get()).getAll().stream()
+							.map(region -> region.getIdentifier())
 							.collect(Collectors.toSet());
-				})
-				.arg((source, args) -> {
-					Optional<String> flag_string = args.getArg(1);
-					if (!flag_string.isPresent()) {
-						return Arrays.asList();
-					}
-					
-					List<String> suggests = new ArrayList<String>();
-					for(Group group : Group.values()) {
-						suggests.add(group.name());
-					}
-					return suggests;
-				})
-				.args((source, args) -> {
-					Optional<String> flag_string = args.getArg(1);
-					if (!flag_string.isPresent()) {
-						return Arrays.asList();
-					}
-					
-					Optional<Flag<?>> flag = this.plugin.getService().getFlag(flag_string.get());
-					if (!flag_string.isPresent()) {
-						return Arrays.asList();
-					}
-					
-					return flag.get().getSuggestRemove(args.getArgs(3));
-				});
+			})
+			.arg((source, args) -> {
+				return this.plugin.getService().getFlags().stream()
+						.map(flag -> flag.getName())
+						.collect(Collectors.toSet());
+			})
+			.arg((source, args) -> {
+				Optional<String> flag_string = args.getArg(1);
+				if (!flag_string.isPresent()) {
+					return Arrays.asList();
+				}
+				
+				List<String> suggests = new ArrayList<String>();
+				for(Group group : Group.values()) {
+					suggests.add(group.name());
+				}
+				return suggests;
+			})
+			.args((source, args) -> {
+				Optional<String> flag_string = args.getArg(1);
+				if (!flag_string.isPresent()) {
+					return Arrays.asList();
+				}
+				
+				Optional<Flag<?>> flag = this.plugin.getService().getFlag(flag_string.get());
+				if (!flag_string.isPresent()) {
+					return Arrays.asList();
+				}
+				
+				return flag.get().getSuggestRemove(args.getArgs(3));
+			});
     }
 	
 	@Override
@@ -163,6 +166,13 @@ public class EWRegionFlagRemove extends ESubCommand<EverWorldGuard> {
 			return false;
 		}
 		
+		if (!this.hasPermission(source, region.get(), world)) {
+			EWMessages.REGION_NO_PERMISSION.sender()
+				.replace("<region>", region.get().getIdentifier())
+				.sendTo(source);
+			return false;
+		}
+		
 		Optional<Flag<?>> flag = this.plugin.getService().getFlag(args_string.get(1));
 		if (!flag.isPresent()) {
 			EWMessages.FLAG_NOT_FOUND.sender()
@@ -179,10 +189,10 @@ public class EWRegionFlagRemove extends ESubCommand<EverWorldGuard> {
 			return false;
 		}
 		
-		return this.commandRegionFlagAdd(source, region.get(), group.get(), flag.get(), args.getArgs(3), world);
+		return this.commandRegionFlagRemove(source, region.get(), group.get(), flag.get(), args.getArgs(3), world);
 	}
 
-	private <T> boolean commandRegionFlagAdd(final CommandSource source, ProtectedRegion region, Group group, Flag<T> flag, List<String> values, World world) {
+	private <T> boolean commandRegionFlagRemove(final CommandSource source, ProtectedRegion region, Group group, Flag<T> flag, List<String> values, World world) {
 		Optional<T> value = null;
 		try {
 			value = flag.parseRemove(source, region, group, values);
@@ -216,5 +226,24 @@ public class EWRegionFlagRemove extends ESubCommand<EverWorldGuard> {
 				.sendTo(source);
 		}
 		return true;
+	}
+	
+	private boolean hasPermission(final CommandSource source, final ProtectedRegion region, final World world) {
+		if (source.hasPermission(EWPermissions.REGION_FLAG_REMOVE_REGIONS.get() + "." + region.getIdentifier().toLowerCase())) {
+			return true;
+		}
+		
+		if (!(source instanceof EPlayer)) {
+			EPlayer player = (EPlayer) source;
+			
+			if (region.isPlayerOwner(player, UtilsContexts.get(world.getName())) && source.hasPermission(EWPermissions.REGION_FLAG_REMOVE_OWNER.get())) {
+				return true;
+			}
+			
+			if (region.isPlayerMember(player, UtilsContexts.get(world.getName())) && source.hasPermission(EWPermissions.REGION_FLAG_REMOVE_MEMBER.get())) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

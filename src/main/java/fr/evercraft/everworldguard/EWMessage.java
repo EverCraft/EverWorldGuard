@@ -93,6 +93,7 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		SELECT_TYPE_CANCEL("select.type.cancel",				"&cErreur : Impossible de changer de type de sélection pour le moment."),
 		
 		REGION_DESCRIPTION("region.description",				"Permet de gérer les régions protéger"),
+		REGION_NO_PERMISSION("region.noPermission",				"&cErreur : Vous n'avez pas la permission pour cette région &6<region>&c."),
 		
 		REGION_INFO_DESCRIPTION("region.info.description",													"Permet de voir la liste des régions sur votre position"),
 		REGION_INFO_ONE_TITLE("region.info.one.title",														"&aRégion Info : &6<region>"),
@@ -130,7 +131,6 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		REGION_INFO_ONE_HERITAGE_FLAGS_OWNER("region.info.one.heritageFlagsOwner",							"        &6&l●   &6Owner:"),
 		REGION_INFO_LIST_TITLE("region.info.list.title",													"&aListe des régions"),
 		REGION_INFO_LIST_LINE("region.info.list.line",														"    &6&l➤  &6<region> : (Type : &7<type>&6, Priorité : &7<priority>&6)"),
-		REGION_INFO_NO_PERMISSION("region.info.noPermission",												"&cErreur : Vous n'avez accès aux informations de la région &6<region>&c."),
 		REGION_INFO_EMPTY("region.info.empty",																"&cErreur : Vous n'avez accès aux informations sur ces régions."),
 		
 		REGION_LIST_DESCRIPTION("region.list.description",										"Permet de voir la liste des régions dans le monde"),

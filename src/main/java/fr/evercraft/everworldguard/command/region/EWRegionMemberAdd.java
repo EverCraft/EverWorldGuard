@@ -42,6 +42,7 @@ import fr.evercraft.everapi.plugin.command.ESubCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everapi.server.user.EUser;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
+import fr.evercraft.everapi.sponge.UtilsContexts;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EWPermissions;
 import fr.evercraft.everworldguard.EverWorldGuard;
@@ -58,7 +59,9 @@ public class EWRegionMemberAdd extends ESubCommand<EverWorldGuard> {
 		
 		this.pattern = Args.builder()
 			.empty(MARKER_MEMBER_GROUP)
-			.value(MARKER_WORLD, (source, args) -> this.getAllWorlds())
+			.value(MARKER_WORLD, 
+					(source, args) -> this.getAllWorlds(),
+					(source, args) -> args.getArgs().size() <= 1)
 			.arg((source, args) -> {
 				Optional<World> world = EWRegion.getWorld(this.plugin, source, args, MARKER_WORLD);
 				if (!world.isPresent()) {
@@ -147,6 +150,13 @@ public class EWRegionMemberAdd extends ESubCommand<EverWorldGuard> {
 			EAMessages.REGION_NOT_FOUND.sender()
 				.prefix(EWMessages.PREFIX)
 				.replace("<region>", args_string.get(0))
+				.sendTo(source);
+			return false;
+		}
+		
+		if (!this.hasPermission(source, region.get(), world)) {
+			EWMessages.REGION_NO_PERMISSION.sender()
+				.replace("<region>", region.get().getIdentifier())
 				.sendTo(source);
 			return false;
 		}
@@ -265,5 +275,24 @@ public class EWRegionMemberAdd extends ESubCommand<EverWorldGuard> {
 			.replace("<player>", group.getIdentifier())
 			.sendTo(source);
 		return true;
+	}
+	
+	private boolean hasPermission(final CommandSource source, final ProtectedRegion region, final World world) {
+		if (source.hasPermission(EWPermissions.REGION_MEMBER_ADD_REGIONS.get() + "." + region.getIdentifier().toLowerCase())) {
+			return true;
+		}
+		
+		if (!(source instanceof EPlayer)) {
+			EPlayer player = (EPlayer) source;
+			
+			if (region.isPlayerOwner(player, UtilsContexts.get(world.getName())) && source.hasPermission(EWPermissions.REGION_MEMBER_ADD_OWNER.get())) {
+				return true;
+			}
+			
+			if (region.isPlayerMember(player, UtilsContexts.get(world.getName())) && source.hasPermission(EWPermissions.REGION_MEMBER_ADD_MEMBER.get())) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

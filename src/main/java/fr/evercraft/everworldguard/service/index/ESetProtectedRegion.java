@@ -15,6 +15,7 @@ import fr.evercraft.everapi.services.worldguard.flag.Flag;
 import fr.evercraft.everapi.services.worldguard.flag.FlagValue;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everapi.services.worldguard.region.SetProtectedRegion;
+import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion.Group;
 import fr.evercraft.everworldguard.regions.EProtectedRegion;
 
 public class ESetProtectedRegion implements SetProtectedRegion {
@@ -39,6 +40,20 @@ public class ESetProtectedRegion implements SetProtectedRegion {
 			FlagValue<V> flag_value = region.getFlagInherit(flag);
 			if (!flag_value.isEmpty()) {
 				Optional<V> optValue = flag_value.getInherit(region.getGroup(user, context));
+				if (optValue.isPresent()) {
+					return optValue.get();
+				}
+			}
+		}
+		return flag.getDefault();
+	}
+
+	@Override
+	public <V> V getFlagDefault(Flag<V> flag) {
+		for (ProtectedRegion region : this.regions) {
+			FlagValue<V> flag_value = region.getFlagInherit(flag);
+			if (!flag_value.isEmpty()) {
+				Optional<V> optValue = flag_value.getInherit(Group.DEFAULT);
 				if (optValue.isPresent()) {
 					return optValue.get();
 				}

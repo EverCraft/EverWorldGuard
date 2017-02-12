@@ -65,7 +65,9 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
         super(plugin, command, "info");
         
         this.pattern = Args.builder()
-			.value(MARKER_WORLD, (source, args) -> this.getAllWorlds())
+    		.value(MARKER_WORLD, 
+					(source, args) -> this.getAllWorlds(),
+					(source, args) -> args.getArgs().size() <= 1)
 			.arg((source, args) -> {
 				Optional<World> world = EWRegion.getWorld(this.plugin, source, args, MARKER_WORLD);
 				if (!world.isPresent()) {
@@ -151,7 +153,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 				
 		if (setregions.getAll().size() == 1) {
 			ProtectedRegion region = setregions.getAll().iterator().next();
-			if (!EWRegionInfo.hasPermission(player, region, world)) {
+			if (!this.hasPermission(player, region, world)) {
 				EWMessages.REGION_INFO_EMPTY.sendTo(player);
 				return false;
 			}
@@ -160,7 +162,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 		} else {
 			Set<ProtectedRegion> regions = new HashSet<ProtectedRegion>();
 			for (ProtectedRegion region : setregions.getAll()) {
-				if (!region.getType().equals(ProtectedRegion.Type.GLOBAL) && EWRegionInfo.hasPermission(player, region, world)) {
+				if (!region.getType().equals(ProtectedRegion.Type.GLOBAL) && this.hasPermission(player, region, world)) {
 					regions.add(region);
 				}
 			}
@@ -202,8 +204,8 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 			return false;
 		}
 		
-		if (!EWRegionInfo.hasPermission(player, region.get(), world)) {
-			EWMessages.REGION_INFO_NO_PERMISSION.sender()
+		if (!this.hasPermission(player, region.get(), world)) {
+			EWMessages.REGION_NO_PERMISSION.sender()
 				.replace("<region>", region.get().getIdentifier())
 				.sendTo(player);
 			return false;
@@ -550,18 +552,22 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 		
 	}
 	
-	public static boolean hasPermission(final CommandSource source, final ProtectedRegion region, final World world) {
-		if (source instanceof EPlayer) {
-			EPlayer player = (EPlayer) source;
-			if (region.isOwnerOrMember(player, UtilsContexts.get(world.getName()))) {
-				return true;
-			}
-		}
-		
+	private boolean hasPermission(final CommandSource source, final ProtectedRegion region, final World world) {
 		if (source.hasPermission(EWPermissions.REGION_INFO_REGIONS.get() + "." + region.getIdentifier().toLowerCase())) {
 			return true;
 		}
 		
+		if (!(source instanceof EPlayer)) {
+			EPlayer player = (EPlayer) source;
+			
+			if (region.isPlayerOwner(player, UtilsContexts.get(world.getName())) && source.hasPermission(EWPermissions.REGION_INFO_OWNER.get())) {
+				return true;
+			}
+			
+			if (region.isPlayerMember(player, UtilsContexts.get(world.getName())) && source.hasPermission(EWPermissions.REGION_INFO_MEMBER.get())) {
+				return true;
+			}
+		}
 		return false;
 	}
 }

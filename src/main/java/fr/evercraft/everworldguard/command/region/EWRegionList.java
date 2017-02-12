@@ -55,21 +55,23 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
         super(plugin, command, "list");
         
         this.pattern = Args.builder()
-    			.value(MARKER_WORLD, (source, args) -> this.getAllWorlds())
-    			.value(MARKER_PLAYER, (source, args) -> this.getAllPlayers(source, false))
-    			.value(MARKER_GROUP, (source, args) ->  {
-    				List<String> suggests = new ArrayList<String>();
-    				Optional<String> optWorld = args.getArg(0);
-    				
-    				if (optWorld.isPresent()) {
-    					this.plugin.getEServer().getWorld(optWorld.get()).ifPresent(world -> 
-    						suggests.addAll(this.getAllGroups(world)));
-    				} else if (source instanceof Player) {
-    					suggests.addAll(this.getAllGroups(((Player) source).getWorld()));
-    				}
-    				
-    				return suggests;
-    			});
+    		.value(MARKER_WORLD, 
+					(source, args) -> this.getAllWorlds(),
+					(source, args) -> args.getArgs().size() <= 1)
+			.value(MARKER_PLAYER, (source, args) -> this.getAllPlayers(source, false))
+			.value(MARKER_GROUP, (source, args) ->  {
+				List<String> suggests = new ArrayList<String>();
+				Optional<String> optWorld = args.getArg(0);
+				
+				if (optWorld.isPresent()) {
+					this.plugin.getEServer().getWorld(optWorld.get()).ifPresent(world -> 
+						suggests.addAll(this.getAllGroups(world)));
+				} else if (source instanceof Player) {
+					suggests.addAll(this.getAllGroups(((Player) source).getWorld()));
+				}
+				
+				return suggests;
+			});
     }
 	
 	@Override
