@@ -58,24 +58,24 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		SELECT_POS1_CUBOID_TWO("select.pos1.cuboidTwo",				"&7Sélection de la première position : <pos> &7(&6<area>&7)."),
 		SELECT_POS1_POLY("select.pos1.poly",						"&7Sélection de la première position : <pos>."),
 		SELECT_POS1_CYLINDER_CENTER("select.pos1.cylinderCentor",	"&7Sélection du centre : <pos>."),
-		SELECT_POS1_EQUALS("select.pos1.equals",					"&cErreur : Vous avez déjà sélectionné une position."),
+		SELECT_POS1_EQUALS("select.pos1.equals",					"&cErreur : Vous avez déjà sélectionnée une position."),
 		SELECT_POS1_CANCEL("select.pos1.cancel",					"&cErreur : Impossible de sélectionner une position pour le moment."),
 		
 		SELECT_POS2_DESCRIPTION("select.pos2.description",			"Defini la deuxième position"),
 		SELECT_POS2_CUBOID_ONE("select.pos2.cuboidOne",				"&7Sélection de la deuxième position : <pos>."),
 		SELECT_POS2_CUBOID_TWO("select.pos2.cuboidTwo",				"&7Sélection de la deuxième position : <pos> &7(&6<area>&7)."),
-		SELECT_POS2_POLY_ONE("select.pos2.polyOne",					"&7Ajoute de la position &6#<num> &7: <pos>."),
-		SELECT_POS2_POLY_ALL("select.pos2.polyAll",					"&7Ajoute de la position &6#<num> &7: <pos> &7(&6<area>&7)."),
+		SELECT_POS2_POLY_ONE("select.pos2.polyOne",					"&7Ajout de la position &6#<num> &7: <pos>."),
+		SELECT_POS2_POLY_ALL("select.pos2.polyAll",					"&7Ajout de la position &6#<num> &7: <pos> &7(&6<area>&7)."),
 		SELECT_POS2_RADIUS("select.pos2.radius",					"&7Sélection d'un rayon de <radius> &7block(s) : <pos>."),
 		SELECT_POS2_NO_CENTER("select.pos2.noCenter",				"&cErreur : Aucune position centrale selectionnée."),
 		SELECT_POS2_EQUALS("select.pos2.equals",					"&cErreur : Vous avez déjà selectionnée une position."),
 		SELECT_POS2_CANCEL("select.pos2.cancel",					"&cErreur : Impossible de sélectionner une position pour le moment."),
 		
-		SELECT_CLEAR_DESCRIPTION("select.clear.description",		"Supprime toutes les positions selectionnée"),
-		SELECT_CLEAR_PLAYER("select.clear.player",					"&7Vous n'avez plus aucune position sélectionnée."),
+		SELECT_CLEAR_DESCRIPTION("select.clear.description",		"Supprime toutes les positions selectionnées"),
+		SELECT_CLEAR_PLAYER("select.clear.player",					"&7Vous n'avez plus aucune position."),
 		
 		SELECT_REMOVE_DESCRIPTION("select.remove.description",		"Supprime la denière position sélectionnée d'un polygone"),
-		SELECT_REMOVE_PLAYER("select.remove.player",				"&7Vous avez supprimé la position : <pos>."),
+		SELECT_REMOVE_PLAYER("select.remove.player",				"&7Vous avez supprimée la position : <pos>."),
 		SELECT_REMOVE_EMPTY("select.remove.empty",					"&4Erreur : Vous n'avez aucune position sélectionnée."),
 		SELECT_REMOVE_ERROR("select.remove.error",					"&4Erreur : Uniquement pour le type &62D Polygonal&c."),
 		
@@ -83,8 +83,9 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		SELECT_EXPAND_DESCRIPTION("select.expand.description",	"Etend la zone sur toute la hauteur voulue"),
 		
 		SELECT_TYPE_DESCRIPTION("select.type.description",		"&7Change le type de selection"),
-		SELECT_TYPE_CUBOID("select.type.cuboid",				"&7Cuboid : clique gauche pour définir le point 1 et clique droit pour définir le point 2.",
-																"&7Cuboid: left click for point 1, right for point 2."),
+		
+		SELECT_TYPE_CUBOID("select.type.cuboid",				"&7Cuboid : clique gauche pour définir le point N°1 et clique droit pour définir le point N°2.",
+																"&7Cuboid : left click for point 1, right for point 2."),
 		SELECT_TYPE_POLYGONAL("select.type.poly",				"&72D Polygonal : clique gauche pour définir le premier point et clique droit pour définir les points suivants.",
 																"&72D polygon selector: Left/right click to add a point."),
 		SELECT_TYPE_CYLINDER("select.type.cylinder",			"&7Cylindrique : clique gauche pour définir le centre, clique droit pour définir le rayon.",
@@ -92,7 +93,7 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		SELECT_TYPE_EQUALS("select.type.equals",				"&cErreur : Sélection &6<type> &cdéjà activée"),
 		SELECT_TYPE_CANCEL("select.type.cancel",				"&cErreur : Impossible de changer de type de sélection pour le moment."),
 		
-		REGION_DESCRIPTION("region.description",				"Permet de gérer les régions protéger"),
+		REGION_DESCRIPTION("region.description",				"Gère les régions protégée"),
 		REGION_NO_PERMISSION("region.noPermission",				"&cErreur : Vous n'avez pas la permission pour cette région &6<region>&c."),
 		
 		REGION_INFO_DESCRIPTION("region.info.description",													"Permet de voir la liste des régions sur votre position"),
@@ -157,9 +158,9 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		REGION_DEFINE_POLYGONAL_POINTS_HOVER_JOIN("region.define.polygonal.pointsHoverJoin",	"[RT]"),
 		REGION_DEFINE_POLYGONAL_ERROR_POSITION("region.define.polygonal.errorPosition",			"&cErreur : Vous devez sélectionner au moins 3 positions pour définir une région &6<type>&c."),
 		REGION_DEFINE_TEMPLATE_CREATE("region.define.template.create",							"&7Vous venez de créer la région &6<region> &7de type &6<type>."),
-		REGION_DEFINE_ERROR_IDENTIFIER_EQUALS("region.define.errorIdentifierEquals",			"&cErreur : Il y a déjà une région qui porte le nom &6<region>&c."),
+		REGION_DEFINE_ERROR_IDENTIFIER_EQUALS("region.define.errorIdentifierEquals",			"&cErreur : &6<region> &cexiste déjà."),
 		REGION_DEFINE_ERROR_IDENTIFIER_INVALID("region.define.cuboid.errorIdentifierInvalid",	"&cErreur : Le nom de région &6'<region>' &cest invalide."),
-		REGION_DEFINE_ERROR_SELECT_TYPE("region.define.errorSelectType",						"&cErreur : Il posible de créer une région de type &6<type>&c."),
+		REGION_DEFINE_ERROR_SELECT_TYPE("region.define.errorSelectType",						"&cErreur : Impossible de créer une région de type &6<type>&c."),
 		
 		REGION_REDEFINE_DESCRIPTION("region.redefine.description",									"Permet de redéfinir une région"),
 		REGION_REDEFINE_CUBOID_CREATE("region.redefine.cuboid.create",								"&7Création de la région &6<region> &7de type &6<type>."),
@@ -174,25 +175,25 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		REGION_REDEFINE_POLYGONAL_ERROR_POSITION("region.redefine.polygonal.errorPosition",			"&cErreur : Vous devez sélectionner au moins 3 positions pour définir une région &6<type>&c."),
 		REGION_REDEFINE_TEMPLATE_CREATE("region.redefine.template.create",							"&7Création de la région &6<region> &7de type &6<type>."),
 		REGION_REDEFINE_ERROR_GLOBAL("region.redefine.errorGlobal",									"&cErreur : Impossible de redéfinir la région &6<region> &ccar elle est de type &6<type>&c."),
-		REGION_REDEFINE_ERROR_NAME("region.redefine.errorName",										"&cErreur : Il y a déjà une région qui porte le nom &6<region>&c."),
-		REGION_REDEFINE_ERROR_SELECT_TYPE("region.redefine.errorSelectType",						"&cErreur : Il posible de créer une région de type &6<type>&c."),
+		REGION_REDEFINE_ERROR_NAME("region.redefine.errorName",										"&cErreur : &6<region> &cexiste déjà."),
+		REGION_REDEFINE_ERROR_SELECT_TYPE("region.redefine.errorSelectType",						"&cErreur : Impossible de créer une région de type &6<type>&c."),
 		
-		REGION_RENAME_DESCRIPTION("region.rename.description",									"Permet de renommer une région"),
-		REGION_RENAME_SET("region.rename.set",													"&7Vous avez renommer la région &6<region> &7en &6<identifier> &7dans le monde &6<world>&7."),
+		REGION_RENAME_DESCRIPTION("region.rename.description",									"Renomme une région"),
+		REGION_RENAME_SET("region.rename.set",													"&7Vous avez renommée la région &6<region> &7en &6<identifier> &7dans le monde &6<world>&7."),
 		REGION_RENAME_ERROR_IDENTIFIER_EQUALS("region.rename.errorIdentifierEquals",			"&cErreur : Impossible de renommer la région &6<region> &cen &6<identifier> &ccar une autre région porte déjà ce nom."),
 		REGION_RENAME_ERROR_IDENTIFIER_INVALID("region.rename.errorIdentifierInvalid",			"&cErreur : Impossible de renommer la région &6<region> &cen &6<identifier> &ccar le nom est invalide."),
 		REGION_RENAME_ERROR_GLOBAL("region.rename.errorGlobal",									"&cErreur : Impossible de renommer la région &6<region> &cde type &6<type>&c."),
 		
-		REGION_FLAG_ADD_DESCRIPTION("region.addflag.description",								"Permet de définir un flag d'une région"),
-		REGION_FLAG_ADD_PLAYER("region.addflag.player",											"&7Vous avez défini le flag &6<flag> &7sur la région &6<region> &7dans le monde &6<world> &7pour le groupe &6<group> &7à la valeur &6<value>&7."),
+		REGION_FLAG_ADD_DESCRIPTION("region.addflag.description",								"Défini un flag d'une région"),
+		REGION_FLAG_ADD_PLAYER("region.addflag.player",											"&7Vous avez défini le flag &6<flag> &7sur la région &6<region> &7dans le monde &6<world> &7pour le groupe &6<group> &7avec la valeur &6<value>&7."),
 		REGION_FLAG_ADD_ERROR("region.addflag.error",											"&cErreur : La valeur est &6'<value>&6' &cest invalide."),
 		
-		REGION_FLAG_REMOVE_DESCRIPTION("region.removeflag.description",							"Permet de supprimer un flag d'une région"),
-		REGION_FLAG_REMOVE_UPDATE("region.removeflag.update",									"&7Vous avez défini le flag &6<flag> &7sur la région &6<region> &7dans le monde &6<world> &7pour le groupe &6<group> &7à la valeur &6<value>&7."),
-		REGION_FLAG_REMOVE_PLAYER("region.removeflag.player",									"&7Vous avez défini le flag &6<flag> &7sur la région &6<region> &7dans le monde &6<world> &7pour le groupe &6<group> &7à la valeur &6<value>&7."),
+		REGION_FLAG_REMOVE_DESCRIPTION("region.removeflag.description",							"Supprime un flag d'une région"),
+		REGION_FLAG_REMOVE_UPDATE("region.removeflag.update",									"&7Vous avez défini le flag &6<flag> &7sur la région &6<region> &7dans le monde &6<world> &7pour le groupe &6<group> &7avec la valeur &6<value>&7."),
+		REGION_FLAG_REMOVE_PLAYER("region.removeflag.player",									"&7Vous avez défini le flag &6<flag> &7sur la région &6<region> &7dans le monde &6<world> &7pour le groupe &6<group> &7avec la valeur &6<value>&7."),
 		REGION_FLAG_REMOVE_ERROR("region.removeflag.error",										"&cErreur : La valeur est &6'<value>&6' &cest invalide."),
 		
-		REGION_OWNER_ADD_DESCRIPTION("region.addowner.description",								"Permet d'ajouter un owner à une région"),
+		REGION_OWNER_ADD_DESCRIPTION("region.addowner.description",								"Ajoute un owner à une région"),
 		REGION_OWNER_ADD_PLAYER("region.addowner.player",										"&7Vous avez ajouté le joueur &6<player> &7en tant que &6OWNER &7de la région &6<region>&7."),
 		REGION_OWNER_ADD_PLAYER_ERROR("region.addowner.playerError",							"&cErreur : Le joueur &6<player> &cest déjà &6OWNER &cde la région &6<region>&c."),
 		REGION_OWNER_ADD_PLAYERS("region.addowner.players",										"&7Vous avez ajouté les joueur(s) &6<players> &7en tant que &6OWNER &7de la région &6<region>&7."),
@@ -202,17 +203,17 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		REGION_OWNER_ADD_GROUPS("region.addowner.groups",										"&7Vous avez ajouté les groupes &6<groups> &7en tant que &6OWNER &7de la région &6<region>&7."),
 		REGION_OWNER_ADD_GROUPS_JOIN("region.addowner.groupsJoin",								"&7, &6"),
 		
-		REGION_OWNER_REMOVE_DESCRIPTION("region.removeowner.description",						"Permet de retirer un owner à une région"),
-		REGION_OWNER_REMOVE_PLAYER("region.removeowner.player",									"&7Vous avez retiré le joueur &6<player> &7en tant que &6OWNER &7de la région &6<region>&7."),
+		REGION_OWNER_REMOVE_DESCRIPTION("region.removeowner.description",						"Supprime un owner à une région"),
+		REGION_OWNER_REMOVE_PLAYER("region.removeowner.player",									"&7Vous avez supprimé le joueur &6<player> &7en tant que &6OWNER &7de la région &6<region>&7."),
 		REGION_OWNER_REMOVE_PLAYER_ERROR("region.removeowner.playerError",						"&cErreur : Le joueur &6<player> &cn'est pas &6OWNER &cde la région &6<region>&c."),
-		REGION_OWNER_REMOVE_PLAYERS("region.removeowner.players",								"&7Vous avez retiré les joueur(s) &6<players> &7en tant que &6OWNER &7de la région &6<region>&7."),
+		REGION_OWNER_REMOVE_PLAYERS("region.removeowner.players",								"&7Vous avez supprimé les joueur(s) &6<players> &7en tant que &6OWNER &7de la région &6<region>&7."),
 		REGION_OWNER_REMOVE_PLAYERS_JOIN("region.removeowner.playersJoin",						"&7, &6"),
-		REGION_OWNER_REMOVE_GROUP("region.removeowner.group",									"&7Vous avez retiré le groupe &6<group> &7en tant que &6OWNER &7de la région &6<region>&7."),
+		REGION_OWNER_REMOVE_GROUP("region.removeowner.group",									"&7Vous avez supprimé le groupe &6<group> &7en tant que &6OWNER &7de la région &6<region>&7."),
 		REGION_OWNER_REMOVE_GROUP_ERROR("region.removeowner.groupError",						"&cErreur : Le groupe &6<group> &cn'est pas &6OWNER &cde la région &6<region>&c."),
-		REGION_OWNER_REMOVE_GROUPS("region.removeowner.groups",									"&7Vous avez retiré les groupes &6<groups> &7en tant que &6OWNER &7de la région &6<region>&7."),
+		REGION_OWNER_REMOVE_GROUPS("region.removeowner.groups",									"&7Vous avez supprimé les groupes &6<groups> &7en tant que &6OWNER &7de la région &6<region>&7."),
 		REGION_OWNER_REMOVE_GROUPS_JOIN("region.removeowner.groupsJoin",						"&7, &6"),
 
-		REGION_MEMBER_ADD_DESCRIPTION("region.addmember.description",							"Permet d'ajouter un member à une région"),
+		REGION_MEMBER_ADD_DESCRIPTION("region.addmember.description",							"Ajoute un member à une région"),
 		REGION_MEMBER_ADD_PLAYER("region.addmember.player",										"&7Vous avez ajouté le joueur &6<player> &7en tant que &6MEMBER &7de la région &6<region>&7."),
 		REGION_MEMBER_ADD_PLAYER_ERROR("region.addmember.playerError",							"&cErreur : Le joueur &6<player> &cest déjà &6MEMBER &cde la région &6<region>&c."),
 		REGION_MEMBER_ADD_PLAYERS("region.addmember.players",									"&7Vous avez ajouté les joueur(s) &6<players> &7en tant que &6MEMBER &7de la région &6<region>&7."),
@@ -222,31 +223,31 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		REGION_MEMBER_ADD_GROUPS("region.addmember.groups",										"&7Vous avez ajouté les groupes &6<groups> &7en tant que &6MEMBER &7de la région &6<region>&7."),
 		REGION_MEMBER_ADD_GROUPS_JOIN("region.addmember.groupsJoin",							"&7, &6"),
 		
-		REGION_MEMBER_REMOVE_DESCRIPTION("region.removemember.description",						"Permet de retirer un member à une région"),
-		REGION_MEMBER_REMOVE_PLAYER("region.removemember.player",								"&7Vous avez retiré le joueur &6<player> &7en tant que &6MEMBER &7de la région &6<region>&7."),
+		REGION_MEMBER_REMOVE_DESCRIPTION("region.removemember.description",						"Supprime un member à une région"),
+		REGION_MEMBER_REMOVE_PLAYER("region.removemember.player",								"&7Vous avez supprimé le joueur &6<player> &7en tant que &6MEMBER &7de la région &6<region>&7."),
 		REGION_MEMBER_REMOVE_PLAYER_ERROR("region.removemember.playerError",					"&cErreur : Le joueur &6<player> &cn'est pas &6MEMBER &cde la région &6<region>&c."),
-		REGION_MEMBER_REMOVE_PLAYERS("region.removemember.players",								"&7Vous avez retiré les joueur(s) &6<players> &7en tant que &6MEMBER &7de la région &6<region>&7."),
+		REGION_MEMBER_REMOVE_PLAYERS("region.removemember.players",								"&7Vous avez supprimé les joueur(s) &6<players> &7en tant que &6MEMBER &7de la région &6<region>&7."),
 		REGION_MEMBER_REMOVE_PLAYERS_JOIN("region.removemember.playersJoin",					"&7, &6"),
-		REGION_MEMBER_REMOVE_GROUP("region.removemember.group",									"&7Vous avez retiré le groupe &6<group> &7en tant que &6MEMBER &7de la région &6<region>&7."),
+		REGION_MEMBER_REMOVE_GROUP("region.removemember.group",									"&7Vous avez supprimé le groupe &6<group> &7en tant que &6MEMBER &7de la région &6<region>&7."),
 		REGION_MEMBER_REMOVE_GROUP_ERROR("region.removemember.groupError",						"&cErreur : Le groupe &6<group> &cn'est pas &6MEMBER &cde la région &6<region>&c."),
-		REGION_MEMBER_REMOVE_GROUPS("region.removemember.groups",								"&7Vous avez retiré les groupes &6<groups> &7en tant que &6MEMBER &7de la région &6<region>&7."),
+		REGION_MEMBER_REMOVE_GROUPS("region.removemember.groups",								"&7Vous avez supprimé les groupes &6<groups> &7en tant que &6MEMBER &7de la région &6<region>&7."),
 		REGION_MEMBER_REMOVE_GROUPS_JOIN("region.removemember.groupsJoin",						"&7, &6"),
 		
-		REGION_PARENT_DESCRIPTION("region.parent.description",									"Permet de définir le parent d'une région"),
+		REGION_PARENT_DESCRIPTION("region.parent.description",									"Défini le parent d'une région"),
 		REGION_PARENT_SET("region.parent.set",													"&7Vous avez défini la région &6<parent> &7en tant que région parent de &7<region>"),
 		REGION_PARENT_SET_HERITAGE("region.parent.setHeritage",									"&7Vous avez défini la région &6<parent> &7en tant que région parent de &6<region> : [RT]<heritage>"),
 		REGION_PARENT_SET_HERITAGE_LINE("region.parent.setHeritageLine",						"    &c└ <region> : &7<type>"),
 		REGION_PARENT_SET_HERITAGE_PADDING("region.parent.setHeritagePadding",					"  "),
 		REGION_PARENT_SET_CIRCULAR("region.parent.setCircular",									"&cErreur : Impossible de définir la région &6<parent> &cen tant que parent de &6<region>&c."),
-		REGION_PARENT_SET_EQUALS("region.parent.setEquals",										"&cErreur : Impossible de définir une région parent d'elle même"),
+		REGION_PARENT_SET_EQUALS("region.parent.setEquals",										"&cErreur : Impossible de définir une région parent."),
 		REGION_PARENT_SET_EQUALS_PARENT("region.parent.setEqualsParent",						"&cErreur : La région &6<parent> &cest déjà la région parent de &6<region>&c."),
 		REGION_PARENT_REMOVE("region.parent.remove",											"&7Vous avez supprimé le parent de la région &6<region>&7."),
 		REGION_PARENT_REMOVE_EMPTY("region.parent.removeEmpty",									"&cErreur : La région &6<region> &cn'a déjà aucun parent."),
 		
-		REGION_PRIORITY_DESCRIPTION("region.priority.description",								"Permet de définir la priorité d'une région"),
+		REGION_PRIORITY_DESCRIPTION("region.priority.description",								"Défini la priorité d'une région"),
 		REGION_PRIORITY_SET("region.priority.set",												"&7Vous avez défini la priorité de la région &6<region> &7à &6<priority>&7."),
 		
-		REGION_REMOVE_DESCRIPTION("region.remove.description",									"Permet de supprimer une région"),
+		REGION_REMOVE_DESCRIPTION("region.remove.description",									"Supprime une région"),
 		REGION_REMOVE_REGION("region.remove.region",											"&7Vous avez supprimé la région &6<region> &7dans le monde &6<world>&7."),
 		REGION_REMOVE_CHILDREN_REMOVE("region.remove.childrenRemove",							"&7Vous avez supprimé la région &6<region> &7et ces enfants &7dans le monde &6<world>&7."),
 		REGION_REMOVE_CHILDREN_UNSET("region.remove.childrenUnset",								"&7Vous avez supprimé la région &6<region> &7et gardé ces enfants &7dans le monde &6<world>&7."),
@@ -255,7 +256,7 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 																							  + "    -f : Permet de supprimer aussi les régions enfants[RT]"
 																							  + "    -u : Permet de supprimer uniquement la région parent"),
 		
-		REGION_TELEPORT_DESCRIPTION("region.teleport.description",								"Permet de ce téléporter à une région"),
+		REGION_TELEPORT_DESCRIPTION("region.teleport.description",								"Téléporte à une région"),
 		REGION_TELEPORT_TELEPORT("region.teleport.teleport",									"&7Vous avez été <position> &7à la région &6<region>&7."),
 		REGION_TELEPORT_TELEPORT_POSITION("region.teleport.teleportPosition",					"&6téléporté"),
 		REGION_TELEPORT_TELEPORT_POSITION_HOVER("region.teleport.teleportPositionHover",		"&7World : &6<world>[RT]&7X : &6<x>[RT]&7Y : &6<y>[RT]&7Z : &6<z>"),
@@ -267,10 +268,10 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		REGION_TELEPORT_SPAWN_EMPTY("region.teleport.spawnEmpty",								"&cErreur : La région &6<region> &cn'a aucun spawn."),
 		
 		
-		FLAG_BUILD("flag.build",						"Permet de désactiver les constructions"),
-		FLAG_PVP("flag.pvp",							"Permet de désactiver le PVP"),
-		FLAG_TELEPORT("flag.teleport",					"Permet de sauvegarde une position pour ce téléporter à la région"),
-		FLAG_SPAWN("flag.spawn",						"Permet de définir un spawn pour la région");
+		FLAG_BUILD("flag.build",						"Désactive/Active les constructions"),
+		FLAG_PVP("flag.pvp",							"Désactive/Active le PVP"),
+		FLAG_TELEPORT("flag.teleport",					"Sauvegarde une position pour se téléporter à la région"),
+		FLAG_SPAWN("flag.spawn",						"Défini un spawn pour la région");
 		
 		private final String path;
 	    private final EMessageBuilder french;
