@@ -54,18 +54,22 @@ public class EWManagerCommands extends HashSet<ECommand<EverWorldGuard>> {
 		register(select);
 		
 		EWRegion region = new EWRegion(this.plugin);
-		region.add(new EWRegionInfo(this.plugin, region));
-		region.add(new EWRegionList(this.plugin, region));
 		region.add(new EWRegionDefine(this.plugin, region));
-		region.add(new EWRegionRemove(this.plugin, region));
 		region.add(new EWRegionFlagAdd(this.plugin, region));
 		region.add(new EWRegionFlagRemove(this.plugin, region));
-		region.add(new EWRegionOwnerAdd(this.plugin, region));
-		region.add(new EWRegionOwnerRemove(this.plugin, region));
+		region.add(new EWRegionInfo(this.plugin, region));
+		region.add(new EWRegionList(this.plugin, region));
 		region.add(new EWRegionMemberAdd(this.plugin, region));
 		region.add(new EWRegionMemberRemove(this.plugin, region));
+		region.add(new EWRegionOwnerAdd(this.plugin, region));
+		region.add(new EWRegionOwnerRemove(this.plugin, region));
 		region.add(new EWRegionParent(this.plugin, region));
 		region.add(new EWRegionPriority(this.plugin, region));
+		region.add(new EWRegionRedefine(this.plugin, region));
+		region.add(new EWRegionRemove(this.plugin, region));
+		region.add(new EWRegionRename(this.plugin, region));
+		region.add(new EWRegionSelect(this.plugin, region));
+		region.add(new EWRegionTeleport(this.plugin, region));
 		register(region);
 	}
 	

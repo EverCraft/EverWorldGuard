@@ -134,6 +134,15 @@ public class EUserSubject implements SubjectWorldGuard {
 		this.points.add(pos);
 		return true;
 	}
+	
+	@Override
+	public boolean setSelectPoints(List<Vector3i> pos) {
+		Preconditions.checkNotNull(pos, "pos");
+		
+		this.points.clear();
+		this.points.addAll(pos);
+		return true;
+	}
 
 	@Override
 	public boolean removeSelectPoint(Vector3i pos) {

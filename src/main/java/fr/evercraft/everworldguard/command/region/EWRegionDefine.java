@@ -209,11 +209,12 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 		replaces.put("<min_z>", EReplace.of(String.valueOf(min.getZ())));
 		replaces.put("<max_x>", EReplace.of(String.valueOf(max.getX())));
 		replaces.put("<max_y>", EReplace.of(String.valueOf(max.getY())));
-		replaces.put("<max_z>", EReplace.of(String.valueOf(max.getZ())));		
+		replaces.put("<max_z>", EReplace.of(String.valueOf(max.getZ())));
+		replaces.put("<region>", EReplace.of(region.getIdentifier()));
+		replaces.put("<type>", EReplace.of(region.getType().getNameFormat()));
 		
 		EWMessages.REGION_DEFINE_CUBOID_CREATE.sender()
-			.replace("<region>", region.getIdentifier())
-			.replace("<type>", region.getType().getNameFormat())
+			.replace(replaces)
 			.replace("<positions>", EWMessages.REGION_DEFINE_CUBOID_POINTS.getFormat()
 					.toText(replaces).toBuilder()
 					.onHover(TextActions.showText(EWMessages.REGION_DEFINE_CUBOID_POINTS_HOVER.getFormat()
@@ -254,6 +255,8 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 		replaces.put("<max_x>", EReplace.of(String.valueOf(max.getX())));
 		replaces.put("<max_y>", EReplace.of(String.valueOf(max.getY())));
 		replaces.put("<max_z>", EReplace.of(String.valueOf(max.getZ())));
+		replaces.put("<region>", EReplace.of(region.getIdentifier()));
+		replaces.put("<type>", EReplace.of(region.getType().getNameFormat()));
 		
 		for(Vector3i pos : region.getPoints()) {
 			positions_text.add(EWMessages.REGION_DEFINE_POLYGONAL_POINTS_HOVER_LINE.getFormat()
@@ -264,8 +267,7 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 		replaces.put("<positions>", EReplace.of(Text.joinWith(EWMessages.REGION_DEFINE_POLYGONAL_POINTS_HOVER_JOIN.getText(), positions_text)));
 		
 		EWMessages.REGION_DEFINE_POLYGONAL_CREATE.sender()
-			.replace("<region>", region.getIdentifier())
-			.replace("<type>", region.getType().getNameFormat())
+			.replace(replaces)
 			.replace("<positions>", EWMessages.REGION_DEFINE_POLYGONAL_POINTS.getFormat()
 					.toText(replaces).toBuilder()
 					.onHover(TextActions.showText(EWMessages.REGION_DEFINE_POLYGONAL_POINTS_HOVER.getFormat()
