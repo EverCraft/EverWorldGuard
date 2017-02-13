@@ -6,6 +6,9 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
+import org.spongepowered.api.event.cause.entity.damage.source.EntityDamageSource;
+import org.spongepowered.api.event.entity.DamageEntityEvent;
+import org.spongepowered.api.event.entity.HealEntityEvent;
 
 import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
 import fr.evercraft.everapi.services.worldguard.flag.Flags;
@@ -42,5 +45,39 @@ public class PlayerListener {
 		WorldWorldGuard world = this.plugin.getService().getOrCreateWorld(event.getTargetWorld());
 		 
 		event.filter(location -> world.getRegions(location.getPosition()).getFlagDefault(Flags.BUILD).equals(State.ALLOW));
+	}
+	
+	@Listener(order=Order.FIRST)
+	public void onPlayerHeal(HealEntityEvent event) {
+		if (event.isCancelled()) return;
+		
+		WorldWorldGuard world = this.plugin.getService().getOrCreateWorld(event.getTargetEntity().getWorld());
+		
+		if (event.getTargetEntity() instanceof Player && event.getBaseHealAmount() > event.getFinalHealAmount()) {
+			Player player = (Player) event.getTargetEntity();
+			
+			if (world.getRegions(player.getLocation().getPosition()).getFlag(player, Flags.INVINCIBILITY).equals(State.ALLOW)) {
+				event.setCancelled(true);
+			}
+		}
+	}
+	
+	@Listener
+	public void onPlayerDamage(DamageEntityEvent event) {
+		if (event.isCancelled()) return;
+		
+		WorldWorldGuard world = this.plugin.getService().getOrCreateWorld(event.getTargetEntity().getWorld());
+		
+		if (event.getTargetEntity() instanceof Player) {
+			Player player = (Player) event.getTargetEntity();
+			
+			Optional<EntityDamageSource> optDamageSource = event.getCause().first(EntityDamageSource.class);
+			if (optDamageSource.isPresent() && optDamageSource.get().getSource() instanceof Player) {
+				
+				if (world.getRegions(player.getLocation().getPosition()).getFlag(player, Flags.PVP).equals(State.DENY)) {
+					event.setCancelled(true);
+				}
+			}
+		}
 	}
 }

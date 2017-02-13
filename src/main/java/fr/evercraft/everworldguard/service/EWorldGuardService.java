@@ -30,6 +30,7 @@ import fr.evercraft.everapi.services.worldguard.flag.Flag;
 import fr.evercraft.everworldguard.EWPermissions;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.service.index.EWWorld;
+import fr.evercraft.everworldguard.service.subject.EUserSubject;
 
 public class EWorldGuardService implements WorldGuardService {
 	
@@ -62,6 +63,10 @@ public class EWorldGuardService implements WorldGuardService {
 	@Override
 	public Optional<SubjectWorldGuard> get(UUID uuid) {
 		return this.subjects.get(uuid);
+	}
+	
+	public Optional<EUserSubject> getSubject(UUID uuid) {
+		return this.subjects.getSubject(uuid);
 	}
 	
 	@Override

@@ -21,7 +21,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -31,6 +33,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 
 import fr.evercraft.everapi.server.player.EPlayer;
+import fr.evercraft.everapi.services.worldguard.MoveType;
 import fr.evercraft.everapi.services.worldguard.SelectType;
 import fr.evercraft.everapi.services.worldguard.SubjectWorldGuard;
 import fr.evercraft.everapi.services.worldguard.region.SetProtectedRegion;
@@ -50,7 +53,7 @@ public class EUserSubject implements SubjectWorldGuard {
 	private SelectType type;
 	
 	private Location<World> lastPos;
-	private ESetProtectedRegion lastRegionSet;
+	private SetProtectedRegion lastRegions;
 
 	public EUserSubject(final EverWorldGuard plugin, final UUID identifier) {
 		Preconditions.checkNotNull(plugin, "plugin");
@@ -60,7 +63,7 @@ public class EUserSubject implements SubjectWorldGuard {
 		this.identifier = identifier;
 		this.points = new ArrayList<Vector3i>();
 		
-		this.lastRegionSet = null;
+		this.lastRegions = SetProtectedRegion.empty();
 	}
 	
 	/*
@@ -68,19 +71,23 @@ public class EUserSubject implements SubjectWorldGuard {
 	 */
 	
 	public void initialize(Player player) {
-		this.lastPos = player.getLocation();
+		this.moveTo(player, player.getLocation(), MoveType.OTHER_NON_CANCELLABLE);
 	}
 	
 	@Override
 	public SetProtectedRegion getRegions() {
-		Optional<EPlayer> player = this.getEPlayer();
-		if (player.isPresent()) {
-			return this.plugin.getService().getOrCreateWorld(player.get().getWorld()).getRegions(player.get().getLocation().getPosition().toInt());
-		}
-		this.plugin.getLogger().warn("SetProtectedRegion.empty()");
-		return SetProtectedRegion.empty();
+		return this.lastRegions;
 	}
 	
+	@Override
+	public Optional<Location<World>> canMoveTo(EPlayer player, Location<World> toTransform, MoveType move, Cause cause) {
+		return Optional.empty();
+	}
+	
+	public void moveTo(Player player, Location<World> location, MoveType move) {
+		this.lastPos = location;
+		this.lastRegions = this.plugin.getService().getOrCreateWorld(location.getExtent()).getRegions(location.getPosition().toInt());
+	}
 	
 	/*
 	 * Select
@@ -215,7 +222,6 @@ public class EUserSubject implements SubjectWorldGuard {
 		return this.identifier;
 	}
 	
-	@SuppressWarnings("unused")
 	private Optional<EPlayer> getEPlayer() {
 		return this.plugin.getEServer().getEPlayer(this.getUniqueId());
 	}

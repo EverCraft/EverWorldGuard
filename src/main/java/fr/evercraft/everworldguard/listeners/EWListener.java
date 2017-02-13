@@ -57,12 +57,8 @@ public class EWListener {
 	
 	@Listener(order=Order.FIRST)
 	public void onPlayerInteractEntity(InteractItemEvent.Primary event, @First Player player_sponge) {
-		Optional<EPlayer> optPlayer = this.plugin.getEverAPI().getEServer().getEPlayer(player_sponge); 
-		if (!optPlayer.isPresent()) {
-			return;
-		}
-		
-		EPlayer player = optPlayer.get();
+		EPlayer player = this.plugin.getEverAPI().getEServer().getEPlayer(player_sponge); 
+
 		Optional<ItemStack> optItemInHand = player.getItemInHand(event.getHandType());
 		Optional<Vector3d> optPosition = event.getInteractionPoint();
 		
@@ -83,12 +79,8 @@ public class EWListener {
 	
 	@Listener(order=Order.FIRST)
 	public void onPlayerInteractEntity(InteractItemEvent.Secondary event, @First Player player_sponge) {
-		Optional<EPlayer> optPlayer = this.plugin.getEverAPI().getEServer().getEPlayer(player_sponge); 
-		if (!optPlayer.isPresent()) {
-			return;
-		}
+		EPlayer player = this.plugin.getEverAPI().getEServer().getEPlayer(player_sponge); 
 		
-		EPlayer player = optPlayer.get();
 		Optional<ItemStack> optItemInHand = player.getItemInHand(event.getHandType());
 		Optional<Vector3d> optPosition = event.getInteractionPoint();
 		
