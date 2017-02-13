@@ -29,6 +29,10 @@ public class ESetProtectedRegion implements SetProtectedRegion {
 			.forEach(region -> this.regions.add(region));
 	}
 	
+	public ESetProtectedRegion(Set<ProtectedRegion> setView) {
+		this.regions = new TreeSet<ProtectedRegion>(setView);
+	}
+	
 	@Override
 	public Set<ProtectedRegion> getAll() {
 		return ImmutableSet.copyOf(this.regions);

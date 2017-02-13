@@ -9,11 +9,13 @@ import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.cause.entity.damage.source.EntityDamageSource;
 import org.spongepowered.api.event.entity.DamageEntityEvent;
 import org.spongepowered.api.event.entity.HealEntityEvent;
+import org.spongepowered.api.event.network.ClientConnectionEvent;
 
 import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
 import fr.evercraft.everapi.services.worldguard.flag.Flags;
 import fr.evercraft.everapi.services.worldguard.flag.type.StateFlag.State;
 import fr.evercraft.everworldguard.EverWorldGuard;
+import fr.evercraft.everworldguard.service.subject.EUserSubject;
 
 public class PlayerListener {
 	
@@ -21,6 +23,22 @@ public class PlayerListener {
 
 	public PlayerListener(EverWorldGuard plugin) {
 		this.plugin = plugin;
+	}
+	
+	@Listener
+	public void onClientConnectionEvent(final ClientConnectionEvent.Auth event) {
+		this.plugin.getService().getSubjectList().get(event.getProfile().getUniqueId());
+	}
+	
+	@Listener
+	public void onClientConnectionEvent(final ClientConnectionEvent.Join event) {
+		EUserSubject player = this.plugin.getService().getSubjectList().registerPlayer(event.getTargetEntity().getUniqueId());
+		player.initialize(event.getTargetEntity());
+	}
+
+	@Listener
+	public void onClientConnectionEvent(final ClientConnectionEvent.Disconnect event) {
+		this.plugin.getService().getSubjectList().removePlayer(event.getTargetEntity().getUniqueId());
 	}
 	
 	@Listener(order=Order.FIRST)

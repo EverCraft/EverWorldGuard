@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.event.Event;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
@@ -30,14 +30,17 @@ import org.spongepowered.api.world.World;
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Sets;
 import com.google.common.collect.ImmutableList.Builder;
 
+import fr.evercraft.everapi.event.ESpongeEventFactory;
 import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everapi.services.worldguard.MoveType;
 import fr.evercraft.everapi.services.worldguard.SelectType;
 import fr.evercraft.everapi.services.worldguard.SubjectWorldGuard;
 import fr.evercraft.everapi.services.worldguard.region.SetProtectedRegion;
 import fr.evercraft.everapi.services.worldguard.regions.Region;
+import fr.evercraft.everapi.sponge.UtilsLocation;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.service.index.ESetProtectedRegion;
 
@@ -52,7 +55,7 @@ public class EUserSubject implements SubjectWorldGuard {
 	private List<Vector3i> points;
 	private SelectType type;
 	
-	private Location<World> lastPos;
+	private Location<World> lastLocation;
 	private SetProtectedRegion lastRegions;
 
 	public EUserSubject(final EverWorldGuard plugin, final UUID identifier) {
@@ -71,7 +74,8 @@ public class EUserSubject implements SubjectWorldGuard {
 	 */
 	
 	public void initialize(Player player) {
-		this.moveTo(player, player.getLocation(), MoveType.OTHER_NON_CANCELLABLE);
+		this.lastLocation = player.getLocation();
+		this.moveToPost(player, this.lastLocation, MoveType.OTHER_NON_CANCELLABLE, Cause.source(this.plugin).build(), true);
 	}
 	
 	@Override
@@ -79,14 +83,47 @@ public class EUserSubject implements SubjectWorldGuard {
 		return this.lastRegions;
 	}
 	
-	@Override
-	public Optional<Location<World>> canMoveTo(EPlayer player, Location<World> toTransform, MoveType move, Cause cause) {
+	public Optional<Location<World>> moveToPre(Player player_sponge, Location<World> toLocation, MoveType move, Cause cause) {
+		if (!UtilsLocation.isDifferentBlock(this.lastLocation, toLocation)) return Optional.empty();
+		
+		EPlayer player = this.plugin.getEServer().getEPlayer(player_sponge);
+		SetProtectedRegion toRegions = this.plugin.getService().getOrCreateWorld(toLocation.getExtent()).getRegions(toLocation.getPosition());
+		SetProtectedRegion entered = new ESetProtectedRegion(Sets.difference(toRegions.getAll(), this.lastRegions.getAll()));
+        SetProtectedRegion exited = new ESetProtectedRegion(Sets.difference(this.lastRegions.getAll(), toRegions.getAll()));
+		
+        Event event = null;
+		if (move.isCancellable()) {
+			event = ESpongeEventFactory.createMoveRegionEventPreCancellable(player, this.lastLocation, toLocation, this.lastRegions, toRegions, entered, exited, cause);
+		} else {
+			event = ESpongeEventFactory.createMoveRegionEventPre(player, this.lastLocation, toLocation, this.lastRegions, toRegions, entered, exited, cause);
+		}
+		
+		if (this.plugin.getGame().getEventManager().post(event)) {
+			return Optional.ofNullable(this.lastLocation);
+		}
 		return Optional.empty();
 	}
 	
-	public void moveTo(Player player, Location<World> location, MoveType move) {
-		this.lastPos = location;
-		this.lastRegions = this.plugin.getService().getOrCreateWorld(location.getExtent()).getRegions(location.getPosition().toInt());
+	public void moveToPost(Player player_sponge, Location<World> toLocation, MoveType move, Cause cause) {
+		this.moveToPost(player_sponge, toLocation, move, cause, false);
+	}
+	
+	public void moveToPost(Player player_sponge, Location<World> toLocation, MoveType move, Cause cause, boolean force) {
+		if (!force && !UtilsLocation.isDifferentBlock(this.lastLocation, toLocation)) return;
+
+		EPlayer player = this.plugin.getEServer().getEPlayer(player_sponge);
+		SetProtectedRegion toRegions = this.plugin.getService().getOrCreateWorld(toLocation.getExtent()).getRegions(toLocation.getPosition());
+		SetProtectedRegion entered = new ESetProtectedRegion(Sets.difference(toRegions.getAll(), this.lastRegions.getAll()));
+        SetProtectedRegion exited = new ESetProtectedRegion(Sets.difference(this.lastRegions.getAll(), toRegions.getAll()));
+        
+        
+        Location<World> lastLocation = this.lastLocation;
+		SetProtectedRegion lastRegions = this.lastRegions;
+        this.lastLocation = toLocation;
+		this.lastRegions = toRegions;
+		
+		this.plugin.getGame().getEventManager().post(
+				ESpongeEventFactory.createMoveRegionEventPost(player, lastLocation, toLocation, lastRegions, toRegions, entered, exited, cause));
 	}
 	
 	/*
@@ -222,6 +259,7 @@ public class EUserSubject implements SubjectWorldGuard {
 		return this.identifier;
 	}
 	
+	@SuppressWarnings("unused")
 	private Optional<EPlayer> getEPlayer() {
 		return this.plugin.getEServer().getEPlayer(this.getUniqueId());
 	}

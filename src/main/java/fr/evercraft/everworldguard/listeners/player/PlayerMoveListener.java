@@ -10,14 +10,13 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEvent;
+import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 import com.flowpowered.math.vector.Vector3d;
 
-import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everapi.services.worldguard.MoveType;
-import fr.evercraft.everapi.services.worldguard.SubjectWorldGuard;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.service.subject.EUserSubject;
 
@@ -29,32 +28,39 @@ public class PlayerMoveListener {
 		this.plugin = plugin;
 	}
 	
-	@Listener(order=Order.POST)
-	public void onRespawnPlayer(RespawnPlayerEvent event) {
+	@Listener(order=Order.PRE)
+	public void onRespawnPlayerPre(RespawnPlayerEvent event) {
 		Optional<EUserSubject> optSubject = this.plugin.getService().getSubject(event.getOriginalPlayer().getUniqueId());
 		if (!optSubject.isPresent()) return;
 		EUserSubject subject = optSubject.get();
 		
-		//subject.canMoveTo(event.getTargetEntity(), event.getToTransform().getLocation(), MoveType.RESPAWN, event.getCause());
-		//subject.moveTo(event.getTargetEntity(), event.getToTransform().getLocation(), MoveType.RESPAWN, event.getCause());
+		subject.moveToPre(event.getTargetEntity(), event.getToTransform().getLocation(), MoveType.RESPAWN, event.getCause());
+	}
+	
+	@Listener(order=Order.BEFORE_POST, beforeModifications=true)
+	public void onRespawnPlayerPost(RespawnPlayerEvent event) {
+		Optional<EUserSubject> optSubject = this.plugin.getService().getSubject(event.getOriginalPlayer().getUniqueId());
+		if (!optSubject.isPresent()) return;
+		EUserSubject subject = optSubject.get();
+		
+		subject.moveToPost(event.getTargetEntity(), event.getToTransform().getLocation(), MoveType.RESPAWN, event.getCause());
 	}
 	
 	@Listener(order=Order.FIRST)
-	public void onMoveEntityFirst(MoveEntityEvent event) {
+	public void onMoveEntityFirst(MoveEntityEvent event, @Getter("getTargetEntity") Player player_sponge) {
 		if (event.isCancelled()) return;
+			
+		Optional<EUserSubject> optSubject = this.plugin.getService().getSubject(player_sponge.getUniqueId());
+		if (!optSubject.isPresent()) return;
 		
-		if (!(event.getTargetEntity() instanceof Player)) return;		
-		EPlayer player = this.plugin.getEServer().getEPlayer(event.getTargetEntity().getUniqueId()).orElse(null);
-		if (player == null) return;
-		
-		Location<World> location = player.canMoveTo(player, event.getToTransform().getLocation(), MoveType.MOVE, event.getCause()).orElse(null);
+		Location<World> location = optSubject.get().moveToPre(player_sponge, event.getToTransform().getLocation(), MoveType.MOVE, event.getCause()).orElse(null);
 		if (location != null) {
 			Transform<World> transform = event.getFromTransform()
 					.setLocation(location)
 					.addTranslation(Vector3d.from(0.5, 0, 0.5));
 			event.setToTransform(transform);
 			
-			Entity vehicle = player.getVehicle().orElse(null);
+			Entity vehicle = player_sponge.getVehicle().orElse(null);
 			if (vehicle != null) {
 				
 				while (vehicle != null) {
@@ -69,22 +75,19 @@ public class PlayerMoveListener {
 					
 					vehicle = vehicle.getVehicle().orElse(null);
 				}
+				event.setCancelled(true);
+				player_sponge.setTransform(transform.addTranslation(Vector3d.from(0, 1, 0)));
 			}
-			
-			event.setCancelled(true);
-			player.setTransform(transform.addTranslation(Vector3d.from(0, 1, 0)));
 		}
 	}
 	
-	@Listener(beforeModifications=true)
-	public void onMoveEntityPost(MoveEntityEvent event) {
+	@Listener(order=Order.BEFORE_POST, beforeModifications=true)
+	public void onMoveEntityPost(MoveEntityEvent event, @Getter("getTargetEntity") Player player_sponge) {
 		if (event.isCancelled()) return;
 		
-		if (!(event.getTargetEntity() instanceof Player)) return;
-		Player player = (Player) event.getTargetEntity();
-		
-		Optional<EUserSubject> optSubject = this.plugin.getService().getSubject(player.getUniqueId());
+		Optional<EUserSubject> optSubject = this.plugin.getService().getSubject(player_sponge.getUniqueId());
 		if (!optSubject.isPresent()) return;
-		optSubject.get().moveTo(player, event.getToTransform().getLocation(), MoveType.MOVE);
+		
+		optSubject.get().moveToPost(player_sponge, event.getToTransform().getLocation(), MoveType.MOVE, event.getCause());
 	}
 }

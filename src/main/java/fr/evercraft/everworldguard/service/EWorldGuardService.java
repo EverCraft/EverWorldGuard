@@ -59,6 +59,10 @@ public class EWorldGuardService implements WorldGuardService {
 	/*
 	 * Subjects
 	 */
+	
+	public EUserSubjectList getSubjectList() {
+		return this.subjects;
+	}
 
 	@Override
 	public Optional<SubjectWorldGuard> get(UUID uuid) {

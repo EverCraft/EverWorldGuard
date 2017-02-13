@@ -108,8 +108,9 @@ public class EUserSubjectList {
 	/**
 	 * Ajoute un joueur à la liste
 	 * @param identifier L'UUID du joueur
+	 * @return 
 	 */
-	public void registerPlayer(UUID uuid) {
+	public EUserSubject registerPlayer(UUID uuid) {
 		Preconditions.checkNotNull(uuid, "uuid");
 		
 		EUserSubject player = this.cache.getIfPresent(uuid);
@@ -124,6 +125,7 @@ public class EUserSubjectList {
 			this.subjects.putIfAbsent(uuid, player);
 			this.plugin.getLogger().debug("Loading player '" + uuid.toString() + "' in " +  chronometer.getMilliseconds().toString() + " ms");
 		}
+		return player;
 	}
 	
 	/**

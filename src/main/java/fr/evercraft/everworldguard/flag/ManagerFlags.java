@@ -6,11 +6,7 @@ import java.lang.reflect.Modifier;
 import fr.evercraft.everapi.services.worldguard.flag.Flag;
 import fr.evercraft.everapi.services.worldguard.flag.Flags;
 import fr.evercraft.everworldguard.EverWorldGuard;
-import fr.evercraft.everworldguard.flags.FlagBuild;
-import fr.evercraft.everworldguard.flags.FlagInvincibility;
-import fr.evercraft.everworldguard.flags.FlagPvp;
-import fr.evercraft.everworldguard.flags.FlagSpawn;
-import fr.evercraft.everworldguard.flags.FlagTeleport;
+import fr.evercraft.everworldguard.flags.*;
 
 public class ManagerFlags {
 
@@ -25,6 +21,8 @@ public class ManagerFlags {
 
 	private void load() {
 		Flags.BUILD = new FlagBuild();
+		Flags.ENTRY = new FlagEntry();
+		Flags.EXIT = new FlagExit();
 		Flags.INVINCIBILITY = new FlagInvincibility();
 		Flags.PVP = new FlagPvp();
 		
@@ -39,6 +37,7 @@ public class ManagerFlags {
 					Object flag = field.get(null);
 					if (flag instanceof Flag) {
 						this.plugin.getService().registerFlag((Flag<?>) flag);
+						this.plugin.getGame().getEventManager().registerListeners(this.plugin, flag);
 					}
 				} catch (Exception e) {
 					e.printStackTrace();

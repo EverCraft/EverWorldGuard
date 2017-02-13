@@ -281,6 +281,8 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		
 		
 		FLAG_BUILD("flag.build",						"Désactive/Active les constructions"),
+		FLAG_ENTRY("flag.entry",						""),
+		FLAG_EXIT("flag.exit",							""),
 		FLAG_INVINCIBILITY("flag.invincibity",			"Désactive/Active l'invincibilité"),
 		FLAG_PVP("flag.pvp",							"Désactive/Active le PVP"),
 		FLAG_TELEPORT("flag.teleport",					"Sauvegarde une position pour se téléporter à la région"),
