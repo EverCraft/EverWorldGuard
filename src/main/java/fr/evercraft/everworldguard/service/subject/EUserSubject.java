@@ -75,6 +75,8 @@ public class EUserSubject implements SubjectWorldGuard {
 	
 	public void initialize(Player player) {
 		this.lastLocation = player.getLocation();
+		this.lastLocation = this.lastLocation.setPosition(this.lastLocation.getBlockPosition().toDouble());
+		
 		this.moveToPost(player, this.lastLocation, MoveType.OTHER_NON_CANCELLABLE, Cause.source(this.plugin).build(), true);
 	}
 	
@@ -119,7 +121,7 @@ public class EUserSubject implements SubjectWorldGuard {
         
         Location<World> lastLocation = this.lastLocation;
 		SetProtectedRegion lastRegions = this.lastRegions;
-        this.lastLocation = toLocation;
+        this.lastLocation = toLocation.setPosition(toLocation.getBlockPosition().toDouble());
 		this.lastRegions = toRegions;
 		
 		this.plugin.getGame().getEventManager().post(

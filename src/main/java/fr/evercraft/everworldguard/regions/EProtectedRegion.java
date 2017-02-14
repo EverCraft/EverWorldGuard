@@ -21,6 +21,7 @@ import com.flowpowered.math.vector.Vector3i;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
+import com.google.common.collect.Sets;
 
 import fr.evercraft.everapi.java.UtilsString;
 import fr.evercraft.everapi.services.worldguard.exception.CircularInheritanceException;
@@ -31,6 +32,7 @@ import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everapi.services.worldguard.regions.Domain;
 import fr.evercraft.everworldguard.domains.EDomain;
 import fr.evercraft.everworldguard.flag.EFlagValue;
+import fr.evercraft.everworldguard.service.index.EWWorld;
 
 import javax.annotation.Nullable;
 
@@ -52,11 +54,12 @@ import java.util.concurrent.ConcurrentMap;
 
 public abstract class EProtectedRegion implements ProtectedRegion {
 
+	private final EWWorld world;
+	
+	private String identifier;
+	private final boolean transientRegion;
 	protected Vector3i min;
 	protected Vector3i max;
-
-	private final String id;
-	private final boolean transientRegion;
 	private int priority = 0;
 	private ProtectedRegion parent;
 	
@@ -65,11 +68,13 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	
 	private final ConcurrentMap<Flag<?>, EFlagValue<?>> flags;
 	
-	public EProtectedRegion(String id, boolean transientRegion) throws RegionIdentifierException {
-		Preconditions.checkNotNull(id);
-		ProtectedRegion.isValidId(id);
+	public EProtectedRegion(EWWorld world, String identifier, boolean transientRegion) throws RegionIdentifierException {
+		Preconditions.checkNotNull(world);
+		Preconditions.checkNotNull(identifier);
+		if (!ProtectedRegion.isValidId(identifier)) throw new RegionIdentifierException();
 
-		this.id = UtilsString.normalize(id);
+		this.world = world;
+		this.identifier = UtilsString.normalize(identifier);
 		this.owners = new EDomain();
 		this.members = new EDomain();
 		
@@ -112,32 +117,17 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	public abstract boolean isPhysicalArea();
 	
 	/*
-	 * Accesseurs
+	 * Setters
 	 */
 	
 	@Override
-	public String getIdentifier() {
-		return this.id;
-	}
-	
-	@Override
-	public void setIdentifier(String identifier) {
-		// TODO
-	}
-	
-	@Override
-	public boolean isTransient() {
-		return this.transientRegion;
-	}	
-	
-	@Override
-	public Vector3i getMinimumPoint() {
-		return this.min;
-	}
-	
-	@Override
-	public Vector3i getMaximumPoint() {
-		return this.max;
+	public void setIdentifier(String identifier) throws RegionIdentifierException {
+		if (this.identifier.equals(identifier)) return;
+		if (!ProtectedRegion.isValidId(identifier)) throw new RegionIdentifierException();
+		if (!this.world.setIdentifier(this, identifier)) throw new RegionIdentifierException();
+		
+		this.world.getStorage().saveIdentifier(this, identifier);
+		this.identifier = identifier;
 	}
 	
 	protected void setMinMaxPoints(List<Vector3i> points) {
@@ -167,13 +157,177 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 	
 	@Override
-	public int getPriority() {
-		return this.priority;
+	public void setPriority(int priority) {
+		if (this.priority == priority) return;
+		
+		this.world.getStorage().savePriority(this, priority);
+		this.priority = priority;
+
 	}
 	
 	@Override
-	public void setPriority(int priority) {
-		this.priority = priority;
+	public void clearParent() {
+		if (this.parent == null) return;
+		
+		this.world.getStorage().saveParent(this, null);
+		this.parent = null;
+	}
+	
+	@Override
+	public void setParent(@Nullable ProtectedRegion parent) throws CircularInheritanceException {
+		if (this.parent.equals(parent)) return;
+		if (parent == null) this.clearParent();
+		if (parent == this) throw new CircularInheritanceException();
+
+		ProtectedRegion curParent = this.parent;
+		while (curParent != null) {
+			if (curParent == this) throw new CircularInheritanceException();
+			curParent = curParent.getParent().orElse(null);
+		}
+
+		this.world.getStorage().saveParent(this, parent);
+		this.parent = parent;
+	}
+	
+	@Override
+	public void addPlayerOwner(Set<UUID> players) {
+		Set<UUID> differences = Sets.difference(players, this.getOwners().getPlayers());
+		if (differences.isEmpty()) return;
+		
+		this.world.getStorage().saveAddOwnerPlayer(this, differences);
+		differences.forEach(player -> this.owners.addPlayer(player));
+	}
+
+	@Override
+	public void removePlayerOwner(Set<UUID> players) {
+		Set<UUID> differences = Sets.difference(players, this.getOwners().getPlayers());
+		if (differences.isEmpty()) return;
+		
+		this.world.getStorage().saveRemoveOwnerPlayer(this, differences);
+		differences.forEach(player -> this.owners.removePlayer(player));
+	}
+	
+	@Override
+	public void addGroupOwner(Set<String> groups) {
+		Set<String> differences = Sets.difference(groups, this.getOwners().getGroups());
+		if (differences.isEmpty()) return;
+		
+		this.world.getStorage().saveAddOwnerGroup(this, groups);
+		groups.forEach(subject -> this.owners.addGroup(subject));
+	}
+
+	@Override
+	public void removeGroupOwner(Set<String> groups) {
+		Set<String> differences = Sets.difference(groups, this.getOwners().getGroups());
+		if (differences.isEmpty()) return;
+		
+		this.world.getStorage().saveRemoveOwnerGroup(this, groups);
+		groups.forEach(subject -> this.owners.removeGroup(subject));
+	}
+	
+	@Override
+	public void addPlayerMember(Set<UUID> players) {
+		Set<UUID> differences = Sets.difference(players, this.getMembers().getPlayers());
+		if (differences.isEmpty()) return;
+		
+		this.world.getStorage().saveAddMemberPlayer(this, differences);
+		differences.forEach(player -> this.members.addPlayer(player));
+	}
+
+	@Override
+	public void removePlayerMember(Set<UUID> players) {
+		Set<UUID> differences = Sets.difference(players, this.getMembers().getPlayers());
+		if (differences.isEmpty()) return;
+		
+		this.world.getStorage().saveRemoveMemberPlayer(this, differences);
+		differences.forEach(player -> this.members.removePlayer(player));
+	}
+	
+	@Override
+	public void addGroupMember(Set<String> groups) {
+		Set<String> differences = Sets.difference(groups, this.getMembers().getGroups());
+		if (differences.isEmpty()) return;
+		
+		this.world.getStorage().saveAddMemberGroup(this, groups);
+		groups.forEach(subject -> this.members.addGroup(subject));
+	}
+
+	@Override
+	public void removeGroupMember(Set<String> groups) {
+		Set<String> differences = Sets.difference(groups, this.getMembers().getGroups());
+		if (differences.isEmpty()) return;
+		
+		this.world.getStorage().saveRemoveMemberGroup(this, groups);
+		groups.forEach(subject -> this.members.removeGroup(subject));
+	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
+	public <V> void setFlag(Flag<V> flag, Group group, @Nullable V value) {
+		Preconditions.checkNotNull(flag);
+		
+		EFlagValue<V> flag_value = (EFlagValue) this.flags.get(flag);
+		if (flag_value == null && value == null) return;
+		
+		this.world.getStorage().saveFlag(this, flag, group, value);
+		
+		if (flag_value == null) {	
+			flag_value = new EFlagValue<V>();
+			flag_value.set(group, value);
+			this.flags.put(flag, flag_value);
+		} else {
+			flag_value.set(group, value);
+			if (flag_value.isEmpty()) {
+				this.flags.remove(flag);
+			}
+		}
+	}
+	
+	
+	@Override
+	public Optional<ProtectedRegion.Cuboid> redefineCuboid(Vector3i pos1, Vector3i pos2) {
+		// TODO
+		return Optional.empty();
+	}
+
+	@Override
+	public Optional<ProtectedRegion.Polygonal> redefinePolygonal(List<Vector3i> positions) {
+		// TODO 
+		return Optional.empty();
+	}
+
+	@Override
+	public Optional<ProtectedRegion.Template> redefineTemplate() {
+		// TODO 
+		return Optional.empty();
+	}
+	/*
+	 * Getters
+	 */
+	
+	@Override
+	public String getIdentifier() {
+		return this.identifier;
+	}
+	
+	@Override
+	public boolean isTransient() {
+		return this.transientRegion;
+	}	
+	
+	@Override
+	public Vector3i getMinimumPoint() {
+		return this.min;
+	}
+	
+	@Override
+	public Vector3i getMaximumPoint() {
+		return this.max;
+	}
+	
+	@Override
+	public int getPriority() {
+		return this.priority;
 	}
 
 	@Override
@@ -183,9 +337,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	
 	@Override
 	public List<ProtectedRegion> getHeritage() throws CircularInheritanceException {
-		if (this.parent == null) {
-			return ImmutableList.of();
-		}
+		if (this.parent == null) return ImmutableList.of();
 		
 		Builder<ProtectedRegion> parents = ImmutableList.builder();
 		
@@ -201,33 +353,6 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 		return parents.build();
 	}
 	
-	@Override
-	public void clearParent() {
-		this.parent = null;
-	}
-	
-	@Override
-	public void setParent(@Nullable ProtectedRegion parent) throws CircularInheritanceException {
-		if (parent == null) {
-			this.parent = null;
-			return;
-		}
-
-		if (parent == this) {
-			throw new CircularInheritanceException();
-		}
-
-		ProtectedRegion curParent = this.parent;
-		while (curParent != null) {
-			if (curParent == this) {
-				throw new CircularInheritanceException();
-			}
-			curParent = curParent.getParent().orElse(null);
-		}
-
-		this.parent = parent;
-	}
-	
 	/*
 	 * Owner
 	 */
@@ -241,60 +366,32 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	public boolean isPlayerOwner(User player, Set<Context> contexts) {
 		Preconditions.checkNotNull(player);
 
-		if (this.owners.contains(player, contexts)) {
-			return true;
-		}
+		if (this.owners.contains(player, contexts)) return true;
 
 		ProtectedRegion curParent = this.parent;
 		while (curParent != null) {
-			if (curParent.getOwners().contains(player)) {
-				return true;
-			}
+			if (curParent.getOwners().contains(player)) return true;
 
 			curParent = curParent.getParent().orElse(null);
 		}
 
 		return false;
-	}
-	
-	@Override
-	public void addPlayerOwner(Set<User> players) {
-		players.forEach(player -> this.owners.addPlayer(player));
-	}
-
-	@Override
-	public void removePlayerOwner(Set<User> players) {
-		players.forEach(player -> this.owners.removePlayer(player));
 	}
 	
 	@Override
 	public boolean isGroupOwner(Subject group) {
 		Preconditions.checkNotNull(group);
 
-		if (this.owners.containsGroup(group.getIdentifier())) {
-			return true;
-		}
+		if (this.owners.containsGroup(group.getIdentifier())) return true;
 
 		ProtectedRegion curParent = this.parent;
 		while (curParent != null) {
-			if (curParent.getOwners().containsGroup(group.getIdentifier())) {
-				return true;
-			}
+			if (curParent.getOwners().containsGroup(group.getIdentifier())) return true;
 
 			curParent = curParent.getParent().orElse(null);
 		}
 
 		return false;
-	}
-	
-	@Override
-	public void addGroupOwner(Set<Subject> groups) {
-		groups.forEach(subject -> this.owners.addGroup(subject));
-	}
-
-	@Override
-	public void removeGroupOwner(Set<Subject> groups) {
-		groups.forEach(subject -> this.owners.removeGroup(subject));
 	}
 	
 	/*
@@ -311,30 +408,16 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 		Preconditions.checkNotNull(player);
 		Preconditions.checkNotNull(contexts);
 
-		if (this.members.contains(player, contexts)) {
-			return true;
-		}
+		if (this.members.contains(player, contexts)) return true;
 
 		ProtectedRegion curParent = this.parent;
 		while (curParent != null) {
-			if (curParent.getMembers().contains(player, contexts)) {
-				return true;
-			}
+			if (curParent.getMembers().contains(player, contexts)) return true;
 
 			curParent = curParent.getParent().orElse(null);
 		}
 
 		return false;
-	}
-
-	@Override
-	public void addPlayerMember(Set<User> players) {
-		players.forEach(player -> this.members.addPlayer(player));
-	}
-
-	@Override
-	public void removePlayerMember(Set<User> players) {
-		players.forEach(player -> this.members.removePlayer(player));
 	}
 
 	@Override
@@ -358,16 +441,6 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 	
 	@Override
-	public void addGroupMember(Set<Subject> groups) {
-		groups.forEach(subject -> this.members.addGroup(subject));
-	}
-
-	@Override
-	public void removeGroupMember(Set<Subject> groups) {
-		groups.forEach(subject -> this.members.removeGroup(subject));
-	}
-	
-	@Override
 	public boolean hasMembersOrOwners() {
 		return this.owners.size() > 0 || this.members.size() > 0;
 	}
@@ -376,27 +449,16 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	public boolean isOwnerOrMember(User player, Set<Context> contexts) {
 		Preconditions.checkNotNull(player);
 
-		if (this.owners.contains(player)) {
-			return true;
-		}
-
-		if (this.members.contains(player)) {
-			return true;
-		}
+		if (this.owners.contains(player)) return true;
+		if (this.members.contains(player)) return true;
 
 		ProtectedRegion curParent = this.parent;
 		while (curParent != null) {
-			if (curParent.getOwners().contains(player)) {
-				return true;
-			}
-			
-			if (curParent.getMembers().contains(player)) {
-				return true;
-			}
+			if (curParent.getOwners().contains(player)) return true;
+			if (curParent.getMembers().contains(player)) return true;
 
 			curParent = curParent.getParent().orElse(null);
 		}
-
 		return false;
 	}
 	
@@ -404,38 +466,22 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	public boolean isOwnerOrMember(Subject group) {
 		Preconditions.checkNotNull(group);
 
-		if (this.owners.containsGroup(group.getIdentifier())) {
-			return true;
-		}
-
-		if (this.members.containsGroup(group.getIdentifier())) {
-			return true;
-		}
+		if (this.owners.containsGroup(group.getIdentifier())) return true;
+		if (this.members.containsGroup(group.getIdentifier())) return true;
 
 		ProtectedRegion curParent = this.parent;
 		while (curParent != null) {
-			if (curParent.getOwners().containsGroup(group.getIdentifier())) {
-				return true;
-			}
-			
-			if (curParent.getMembers().containsGroup(group.getIdentifier())) {
-				return true;
-			}
+			if (curParent.getOwners().containsGroup(group.getIdentifier())) return true;
+			if (curParent.getMembers().containsGroup(group.getIdentifier())) return true;
 
 			curParent = curParent.getParent().orElse(null);
 		}
-
 		return false;
 	}
 	
 	public ProtectedRegion.Group getGroup(User subject, Set<Context> contexts) {
-		if (this.isPlayerOwner(subject, contexts)) {
-			return ProtectedRegion.Group.OWNER;
-		}
-		
-		if (this.isPlayerMember(subject, contexts)) {
-			return ProtectedRegion.Group.MEMBER;
-		}
+		if (this.isPlayerOwner(subject, contexts)) return ProtectedRegion.Group.OWNER;
+		if (this.isPlayerMember(subject, contexts)) return ProtectedRegion.Group.MEMBER;
 		
 		return ProtectedRegion.Group.DEFAULT;
 	}
@@ -478,23 +524,6 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public <V> void setFlag(Flag<V> flag, Group group, @Nullable V value) {
-		Preconditions.checkNotNull(flag);
-
-		if (value == null) {
-			this.flags.remove(flag);
-		} else {
-			EFlagValue<V> flag_value = (EFlagValue) this.flags.get(flag);
-			if (flag_value == null) {
-				flag_value = new EFlagValue<V>();
-				this.flags.put(flag, flag_value);
-			}
-			flag_value.set(group, value);
-		}
-	}
-	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@Override
 	public Map<Flag<?>, FlagValue<?>> getFlags() {
 		return (Map) this.flags;
 	}
@@ -529,7 +558,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 		Vector3i max = position.add(1, 0, 1).mul(16);
 		max = Vector3i.from(max.getX(), Integer.MAX_VALUE, max.getZ());		
 		try {
-			return !this.getIntersecting(new EProtectedCuboidRegion("_", true, min , max)).isEmpty();
+			return !this.getIntersecting(new EProtectedCuboidRegion(this.world, "_", true, min , max)).isEmpty();
 		} catch (RegionIdentifierException e) {
 			return false;
 		}
@@ -622,24 +651,6 @@ public abstract class EProtectedRegion implements ProtectedRegion {
         return false;
     }
 	
-	@Override
-	public Optional<ProtectedRegion.Cuboid> redefineCuboid(Vector3i pos1, Vector3i pos2) {
-		// TODO
-		return Optional.empty();
-	}
-
-	@Override
-	public Optional<ProtectedRegion.Polygonal> redefinePolygonal(List<Vector3i> positions) {
-		// TODO 
-		return Optional.empty();
-	}
-
-	@Override
-	public Optional<ProtectedRegion.Template> redefineTemplate() {
-		// TODO 
-		return Optional.empty();
-	}
-	
 	/*
 	 * Java
 	 */
@@ -663,7 +674,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 
 	@Override
 	public int hashCode(){
-		return this.id.hashCode();
+		return this.identifier.hashCode();
 	}
 
 	@Override
@@ -678,7 +689,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 
 	@Override
 	public String toString() {
-		return "ProtectedRegion [id=" + this.id + ", type=" + this.getType().name() + ", transient=" + this.transientRegion
+		return "ProtectedRegion [id=" + this.identifier + ", type=" + this.getType().name() + ", transient=" + this.transientRegion
 				+ ", priority=" + this.priority + ", owners=" + this.owners + ", members=" + this.members + "]";
 	}
 }

@@ -11,6 +11,7 @@ import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEvent;
 import org.spongepowered.api.event.filter.Getter;
+import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -54,15 +55,14 @@ public class PlayerMoveListener {
 		if (!optSubject.isPresent()) return;
 		
 		Location<World> location = optSubject.get().moveToPre(player_sponge, event.getToTransform().getLocation(), MoveType.MOVE, event.getCause()).orElse(null);
-		if (location != null) {
+		if (location != null) {			
 			Transform<World> transform = event.getFromTransform()
-					.setLocation(location)
-					.addTranslation(Vector3d.from(0.5, 0, 0.5));
+					.setLocation(location.add(Vector3d.from(0.5, 0, 0.5)));
 			event.setToTransform(transform);
 			
 			Entity vehicle = player_sponge.getVehicle().orElse(null);
 			if (vehicle != null) {
-				
+				player_sponge.sendMessage(Text.of("vehicle"));
 				while (vehicle != null) {
 					vehicle.clearPassengers();
 					vehicle.setVelocity(Vector3d.ZERO);

@@ -205,7 +205,9 @@ public class EWRegionOwnerRemove extends ESubCommand<EverWorldGuard> {
 	}
 	
 	private boolean commandRegionOwnerRemovePlayer(final CommandSource source, ProtectedRegion region, Set<User> players, World world) {
-		region.removePlayerOwner(players);
+		region.removePlayerOwner(players.stream()
+				.map(user -> user.getUniqueId())
+				.collect(Collectors.toSet()));
 		EWMessages.REGION_OWNER_REMOVE_PLAYERS.sender()
 			.replace("<region>", region.getIdentifier())
 			.replace("<world>", world.getName())
@@ -222,7 +224,7 @@ public class EWRegionOwnerRemove extends ESubCommand<EverWorldGuard> {
 				.replace("<player>", player.getName())
 				.sendTo(source);
 		} else {
-			region.removePlayerOwner(ImmutableSet.of(player));
+			region.removePlayerOwner(ImmutableSet.of(player.getUniqueId()));
 			EWMessages.REGION_OWNER_REMOVE_PLAYER.sender()
 				.replace("<region>", region.getIdentifier())
 				.replace("<world>", world.getName())
@@ -263,7 +265,9 @@ public class EWRegionOwnerRemove extends ESubCommand<EverWorldGuard> {
 	}
 	
 	private boolean commandRegionOwnerRemoveGroup(final CommandSource source, ProtectedRegion region, Set<Subject> groups, World world) {
-		region.removeGroupOwner(groups);
+		region.removeGroupOwner(groups.stream()
+				.map(group -> group.getIdentifier())
+				.collect(Collectors.toSet()));
 		EWMessages.REGION_OWNER_REMOVE_GROUPS.sender()
 			.replace("<region>", region.getIdentifier())
 			.replace("<world>", world.getName())
@@ -282,7 +286,7 @@ public class EWRegionOwnerRemove extends ESubCommand<EverWorldGuard> {
 			return false;
 		}
 			
-		region.removeGroupOwner(ImmutableSet.of(group));
+		region.removeGroupOwner(ImmutableSet.of(group.getIdentifier()));
 		EWMessages.REGION_OWNER_REMOVE_GROUP.sender()
 			.replace("<region>", region.getIdentifier())
 			.replace("<world>", world.getName())

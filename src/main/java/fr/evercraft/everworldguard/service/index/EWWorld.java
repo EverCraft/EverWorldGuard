@@ -15,6 +15,7 @@ import com.google.common.collect.ImmutableSet;
 import fr.evercraft.everapi.server.user.EUser;
 import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
 import fr.evercraft.everapi.services.worldguard.exception.RegionIdentifierException;
+import fr.evercraft.everapi.services.worldguard.exception.StorageException;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everapi.sponge.UtilsChunk;
 import fr.evercraft.everapi.util.LongHashTable;
@@ -47,9 +48,9 @@ public class EWWorld implements WorldWorldGuard {
 		this.cache = new LongHashTable<EWChunck>();
 		
 		if (this.plugin.getDataBase().isEnable()) {
-			this.storage = new RegionStorageSql(this.plugin, this.world);
+			this.storage = new RegionStorageSql(this.plugin, this);
 		} else {
-			this.storage = new RegionStorageConf(this.plugin, this.world);
+			this.storage = new RegionStorageConf(this.plugin, this);
 		}
 		
 		this.start();
@@ -57,9 +58,9 @@ public class EWWorld implements WorldWorldGuard {
 
 	public void reload() {
 		if (this.plugin.getDataBase().isEnable() && !(this.storage instanceof RegionStorageSql)) {
-			this.storage = new RegionStorageSql(this.plugin, this.world);
+			this.storage = new RegionStorageSql(this.plugin, this);
 		} else if (!this.plugin.getDataBase().isEnable() && !(this.storage instanceof RegionStorageConf)) {
-			this.storage = new RegionStorageConf(this.plugin, this.world);
+			this.storage = new RegionStorageConf(this.plugin, this);
 		}
 		
 		this.start();
@@ -81,6 +82,14 @@ public class EWWorld implements WorldWorldGuard {
 	
 	public Set<ProtectedRegion> getAll() {
 		return ImmutableSet.copyOf(this.regions.values());
+	}
+	
+	public RegionStorage getStorage() {
+		return this.storage;
+	}
+	
+	public World getWorld() {
+		return this.world;
 	}
 	
 	public void rebuild() {
@@ -152,10 +161,12 @@ public class EWWorld implements WorldWorldGuard {
 		Preconditions.checkNotNull(owner_groups, "owner_groups");
 		if (this.regions.containsKey(region_id)) throw new RegionIdentifierException();
 		
-		EProtectedCuboidRegion region = new EProtectedCuboidRegion(region_id, pos1, pos2);
+		EProtectedCuboidRegion region = new EProtectedCuboidRegion(this, region_id, pos1, pos2);
 		this.regions.put(region_id.toLowerCase(), region);
 		
-		// TODO save
+		try {
+			this.getStorage().add(region);
+		} catch (StorageException e) {}
 		
 		this.rebuild();
 		return region;
@@ -170,10 +181,12 @@ public class EWWorld implements WorldWorldGuard {
 		if (this.regions.containsKey(region_id)) throw new RegionIdentifierException();
 		
 		
-		EProtectedPolygonalRegion region = new EProtectedPolygonalRegion(region_id, positions);
+		EProtectedPolygonalRegion region = new EProtectedPolygonalRegion(this, region_id, positions);
 		this.regions.put(region_id.toLowerCase(), region);
 		
-		// TODO save
+		try {
+			this.getStorage().add(region);
+		} catch (StorageException e) {}
 		
 		this.rebuild();
 		return region;
@@ -186,10 +199,12 @@ public class EWWorld implements WorldWorldGuard {
 		Preconditions.checkNotNull(owner_groups, "owner_groups");
 		if (this.regions.containsKey(region_id)) throw new RegionIdentifierException();
 		
-		EProtectedTemplateRegion region = new EProtectedTemplateRegion(region_id);
+		EProtectedTemplateRegion region = new EProtectedTemplateRegion(this, region_id);
 		this.regions.put(region_id.toLowerCase(), region);
 		
-		// TODO save
+		try {
+			this.getStorage().add(region);
+		} catch (StorageException e) {}
 		
 		this.rebuild();
 		return region;
@@ -234,5 +249,13 @@ public class EWWorld implements WorldWorldGuard {
 				}
 			}
 		}
+	}
+
+	public boolean setIdentifier(EProtectedRegion region, String identifier) {
+		if (this.regions.containsKey(identifier)) return false;
+		
+		this.regions.remove(region.getIdentifier().toLowerCase());
+		this.regions.put(identifier.toLowerCase(), region);
+		return true;
 	}
 }
