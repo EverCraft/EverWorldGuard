@@ -32,7 +32,7 @@ import com.flowpowered.math.vector.Vector3i;
 import fr.evercraft.everapi.EAMessage.EAMessages;
 import fr.evercraft.everapi.plugin.command.ESubCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
-import fr.evercraft.everapi.services.worldguard.SelectType;
+import fr.evercraft.everapi.services.selection.SelectionType;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EverWorldGuard;
 
@@ -87,10 +87,24 @@ public class EWSelectPos1 extends ESubCommand<EverWorldGuard> {
 
 	private boolean commandSelectPos1(final EPlayer player) {
 		Vector3i position = player.getLocation().getPosition().toInt();
-		
 		Optional<Vector3i> pos1 = player.getSelectPos1();
 		Optional<Vector3i> pos2 = player.getSelectPos2();
 		
+		if (player.getSelectType().equals(SelectionType.CUBOID)) {
+			return this.commandSelectPos1Cuboid(player, position, pos1, pos2);
+		} else if (player.getSelectType().equals(SelectionType.POLYGONAL)) {
+			return this.commandSelectPos1Polygonal(player, position, pos1, pos2);
+		} else if (player.getSelectType().equals(SelectionType.CYLINDER)) {
+			return this.commandSelectPos1Cylinder(player, position, pos1, pos2);
+		} else {
+			EAMessages.COMMAND_ERROR.sender()
+				.prefix(EWMessages.PREFIX)
+				.sendTo(player);
+			return false;
+		}
+	}
+	
+	private boolean commandSelectPos1Cuboid(final EPlayer player, Vector3i position, Optional<Vector3i> pos1, Optional<Vector3i> pos2) {
 		if (pos1.isPresent() && pos1.get().equals(position)) {
 			EWMessages.SELECT_POS1_EQUALS.sender()
 				.replace("<pos>", EWSelect.getPositionHover(position))
@@ -105,34 +119,47 @@ public class EWSelectPos1 extends ESubCommand<EverWorldGuard> {
 			return false;
 		}
 		
-		if (player.getSelectType().equals(SelectType.CUBOID)) {
-			if (!pos2.isPresent()) {
-				EWMessages.SELECT_POS1_CUBOID_ONE.sender()
-					.replace("<pos>", EWSelect.getPositionHover(position))
-					.sendTo(player);
-			} else {
-				EWMessages.SELECT_POS1_CUBOID_TWO.sender()
-					.replace("<pos>", EWSelect.getPositionHover(position))
-					.replace("<area>", player.getSelectArea().orElse(0).toString())
-					.sendTo(player);
-			}
-		} else if (player.getSelectType().equals(SelectType.POLYGONAL)) {
-			player.setSelectPos2(null);
-			player.clearSelectPoints();
-			EWMessages.SELECT_POS1_POLY.sender()
-				.replace("<pos>", EWSelect.getPositionHover(position))
-				.sendTo(player);
-		} else if (player.getSelectType().equals(SelectType.CYLINDER)) {
-			player.setSelectPos2(null);
-			EWMessages.SELECT_POS1_CYLINDER_CENTER.sender()
+		if (!pos2.isPresent()) {
+			EWMessages.SELECT_POS1_CUBOID_ONE.sender()
 				.replace("<pos>", EWSelect.getPositionHover(position))
 				.sendTo(player);
 		} else {
-			EAMessages.COMMAND_ERROR.sender()
-				.prefix(EWMessages.PREFIX)
+			EWMessages.SELECT_POS1_CUBOID_TWO.sender()
+				.replace("<pos>", EWSelect.getPositionHover(position))
+				.replace("<area>", player.getSelectArea().orElse(0).toString())
+				.sendTo(player);
+		}
+		return true;
+	}
+	
+	private boolean commandSelectPos1Polygonal(final EPlayer player, Vector3i position, Optional<Vector3i> pos1, Optional<Vector3i> pos2) {
+		if (!player.setSelectPos1(position)) {
+			EWMessages.SELECT_POS1_CANCEL.sender()
+				.replace("<pos>", EWSelect.getPositionHover(position))
 				.sendTo(player);
 			return false;
 		}
+		
+		player.setSelectPos2(null);
+		player.clearSelectPoints();
+		EWMessages.SELECT_POS1_POLY.sender()
+			.replace("<pos>", EWSelect.getPositionHover(position))
+			.sendTo(player);
+		return true;
+	}
+	
+	private boolean commandSelectPos1Cylinder(final EPlayer player, Vector3i position, Optional<Vector3i> pos1, Optional<Vector3i> pos2) {
+		if (!player.setSelectPos1(position)) {
+			EWMessages.SELECT_POS1_CANCEL.sender()
+				.replace("<pos>", EWSelect.getPositionHover(position))
+				.sendTo(player);
+			return false;
+		}
+		
+		player.setSelectPos2(null);
+		EWMessages.SELECT_POS1_CYLINDER_CENTER.sender()
+			.replace("<pos>", EWSelect.getPositionHover(position))
+			.sendTo(player);
 		return true;
 	}
 }

@@ -15,7 +15,7 @@ import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
 import fr.evercraft.everapi.services.worldguard.flag.Flags;
 import fr.evercraft.everapi.services.worldguard.flag.type.StateFlag.State;
 import fr.evercraft.everworldguard.EverWorldGuard;
-import fr.evercraft.everworldguard.service.subject.EUserSubject;
+import fr.evercraft.everworldguard.protection.subject.EUserSubject;
 
 public class PlayerListener {
 	

@@ -24,10 +24,10 @@ import fr.evercraft.everapi.exception.PluginDisableException;
 import fr.evercraft.everapi.plugin.EPlugin;
 import fr.evercraft.everapi.services.worldguard.WorldGuardService;
 import fr.evercraft.everworldguard.command.EWManagerCommands;
-import fr.evercraft.everworldguard.flag.ManagerFlags;
 import fr.evercraft.everworldguard.listeners.EWListener;
-import fr.evercraft.everworldguard.service.EWorldGuardService;
-import fr.evercraft.everworldguard.service.storage.EWDataBases;
+import fr.evercraft.everworldguard.protection.EProtectionService;
+import fr.evercraft.everworldguard.protection.flag.ManagerFlags;
+import fr.evercraft.everworldguard.protection.storage.EWDataBases;
 
 @Plugin(id = "everworldguard", 
 		name = "EverWorldGuard", 
@@ -43,7 +43,7 @@ public class EverWorldGuard extends EPlugin<EverWorldGuard> {
 	private EWConfig configs;
 	private EWMessage messages;
 	
-	private EWorldGuardService service;
+	private EProtectionService service;
 	private EWManagerCommands commands;
 	private EWDataBases database;
 	
@@ -54,7 +54,7 @@ public class EverWorldGuard extends EPlugin<EverWorldGuard> {
 		
 		this.database = new EWDataBases(this);
 		
-		this.service = new EWorldGuardService(this);
+		this.service = new EProtectionService(this);
 		this.getGame().getServiceManager().setProvider(this, WorldGuardService.class, this.service);
 		
 		this.getGame().getEventManager().registerListeners(this, new EWListener(this));
@@ -88,7 +88,7 @@ public class EverWorldGuard extends EPlugin<EverWorldGuard> {
 		return this.configs;
 	}
 	
-	public EWorldGuardService getService() {
+	public EProtectionService getService() {
 		return this.service;
 	}
 	

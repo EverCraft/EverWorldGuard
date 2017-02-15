@@ -31,14 +31,14 @@ import com.flowpowered.math.vector.Vector3i;
 import fr.evercraft.everapi.EAMessage.EAMessages;
 import fr.evercraft.everapi.plugin.command.ESubCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
-import fr.evercraft.everapi.services.worldguard.SelectType;
+import fr.evercraft.everapi.services.selection.SelectionType;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EverWorldGuard;
 
 public class EWSelectRemove extends ESubCommand<EverWorldGuard> {
 	
 	public EWSelectRemove(final EverWorldGuard plugin, final EWSelect command) {
-        super(plugin, command, "type");
+        super(plugin, command, "remove");
     }
 	
 	@Override
@@ -85,7 +85,7 @@ public class EWSelectRemove extends ESubCommand<EverWorldGuard> {
 	}
 
 	private boolean commandSelectRemove(final EPlayer player) {		
-		if (!player.getSelectType().equals(SelectType.POLYGONAL)) {
+		if (!player.getSelectType().equals(SelectionType.POLYGONAL)) {
 			EWMessages.SELECT_REMOVE_ERROR.sendTo(player);
 			return false;
 		}

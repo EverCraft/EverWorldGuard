@@ -42,7 +42,7 @@ import fr.evercraft.everapi.plugin.command.Args;
 import fr.evercraft.everapi.plugin.command.ESubCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everapi.server.user.EUser;
-import fr.evercraft.everapi.services.worldguard.SelectType;
+import fr.evercraft.everapi.services.selection.SelectionType;
 import fr.evercraft.everapi.services.worldguard.exception.RegionIdentifierException;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
@@ -166,9 +166,9 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 	}
 	
 	private boolean commandRegionDefine(final EPlayer player, final String region_id, final Set<EUser> players, final Set<Subject> groups) {
-		if (player.getSelectType().equals(SelectType.CUBOID)) {
+		if (player.getSelectType().equals(SelectionType.CUBOID)) {
 			return this.commandRegionDefineCuboid(player, region_id, players, groups);
-		} else if (player.getSelectType().equals(SelectType.POLYGONAL)) {
+		} else if (player.getSelectType().equals(SelectionType.POLYGONAL)) {
 			return this.commandRegionDefinePolygonal(player, region_id, players, groups);
 		} else {
 			EWMessages.REGION_DEFINE_ERROR_SELECT_TYPE.sender()
@@ -258,11 +258,14 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 		replaces.put("<region>", EReplace.of(region.getIdentifier()));
 		replaces.put("<type>", EReplace.of(region.getType().getNameFormat()));
 		
+		int num = 1;
 		for(Vector3i pos : region.getPoints()) {
 			positions_text.add(EWMessages.REGION_DEFINE_POLYGONAL_POINTS_HOVER_LINE.getFormat()
-					.toText("<x>", String.valueOf(pos.getX()),
+					.toText("<num>", String.valueOf(num),
+							"<x>", String.valueOf(pos.getX()),
 							"<y>", String.valueOf(pos.getY()),
 							"<z>", String.valueOf(pos.getZ())));
+			num++;
 		}				
 		replaces.put("<positions>", EReplace.of(Text.joinWith(EWMessages.REGION_DEFINE_POLYGONAL_POINTS_HOVER_JOIN.getText(), positions_text)));
 		

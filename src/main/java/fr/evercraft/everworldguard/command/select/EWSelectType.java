@@ -32,7 +32,7 @@ import org.spongepowered.api.text.format.TextColors;
 import fr.evercraft.everapi.EAMessage.EAMessages;
 import fr.evercraft.everapi.plugin.command.ESubCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
-import fr.evercraft.everapi.services.worldguard.SelectType;
+import fr.evercraft.everapi.services.selection.SelectionType;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EverWorldGuard;
 
@@ -57,7 +57,7 @@ public class EWSelectType extends ESubCommand<EverWorldGuard> {
 		Builder build = Text.builder("/" + this.getName() + " <");
 		
 		List<Text> populator = new ArrayList<Text>();
-		for (SelectType type : SelectType.values()){
+		for (SelectionType type : SelectionType.values()){
 			populator.add(Text.builder(type.getName())
 								.onClick(TextActions.suggestCommand("/" + this.getName() + " " + type.getName().toUpperCase()))
 								.build());
@@ -73,7 +73,7 @@ public class EWSelectType extends ESubCommand<EverWorldGuard> {
 	public Collection<String> subTabCompleter(final CommandSource source, final List<String> args) throws CommandException {
 		if (args.size() == 1) {
 			List<String> suggests = new ArrayList<String>();
-			for (SelectType type : SelectType.values()){
+			for (SelectionType type : SelectionType.values()){
 				suggests.add(type.getName());
 			}
 			return suggests;
@@ -102,7 +102,7 @@ public class EWSelectType extends ESubCommand<EverWorldGuard> {
 	}
 
 	private boolean commandSelectType(final EPlayer player, final String type_string) {
-		Optional<SelectType> type = SelectType.getSelectType(type_string);
+		Optional<SelectionType> type = SelectionType.getSelectType(type_string);
 		if (!type.isPresent()) {
 			player.sendMessage(this.help(player));
 			return false;
@@ -126,11 +126,11 @@ public class EWSelectType extends ESubCommand<EverWorldGuard> {
 		player.setSelectPos2(null);
 		player.clearSelectPoints();
 		
-		if (player.getSelectType().equals(SelectType.CUBOID)) {
+		if (player.getSelectType().equals(SelectionType.CUBOID)) {
 			EWMessages.SELECT_TYPE_CUBOID.sendTo(player);
-		} else if (player.getSelectType().equals(SelectType.POLYGONAL)) {
+		} else if (player.getSelectType().equals(SelectionType.POLYGONAL)) {
 			EWMessages.SELECT_TYPE_POLYGONAL.sendTo(player);
-		} else if (player.getSelectType().equals(SelectType.CYLINDER)) {
+		} else if (player.getSelectType().equals(SelectionType.CYLINDER)) {
 			EWMessages.SELECT_TYPE_CYLINDER.sendTo(player);
 		} else {
 			player.sendMessage(this.help(player));

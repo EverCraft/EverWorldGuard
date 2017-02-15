@@ -48,7 +48,7 @@ public class EWRegionPriority extends ESubCommand<EverWorldGuard> {
 	private final Args.Builder pattern;
 	
 	public EWRegionPriority(final EverWorldGuard plugin, final EWRegion command) {
-		super(plugin, command, "setparent");
+		super(plugin, command, "setpriority");
 		
 		this.pattern = Args.builder()
 			.value(MARKER_WORLD, 

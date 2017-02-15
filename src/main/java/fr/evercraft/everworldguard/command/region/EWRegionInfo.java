@@ -282,16 +282,19 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 								.build()));
 			} else if (region.getType().equals(ProtectedRegion.Type.POLYGONAL)) {
 				List<Text> positions = new ArrayList<Text>();
+				int num = 1;
 				for(Vector3i pos : region.getPoints()) {
 					positions.add(EWMessages.REGION_INFO_ONE_POINTS_POLYGONAL_HOVER_POSITIONS.getFormat()
-							.toText("<x>", String.valueOf(pos.getX()),
+							.toText("<num>", String.valueOf(num),
+									"<x>", String.valueOf(pos.getX()),
 									"<y>", String.valueOf(pos.getY()),
 									"<z>", String.valueOf(pos.getZ())));
+					num++;
 				}				
 				replaces.put("<positions>", EReplace.of(Text.joinWith(EWMessages.REGION_INFO_ONE_POINTS_POLYGONAL_HOVER_JOIN.getText(), positions)));
 				
 				this.addLine(list, EWMessages.REGION_INFO_ONE_POINTS.getFormat()
-						.toText("<position>",  EWMessages.REGION_INFO_ONE_POINTS_POLYGONAL.getFormat()
+						.toText("<positions>",  EWMessages.REGION_INFO_ONE_POINTS_POLYGONAL.getFormat()
 								.toText(replaces).toBuilder()
 								.onHover(TextActions.showText(EWMessages.REGION_INFO_ONE_POINTS_POLYGONAL_HOVER.getFormat()
 										.toText(replaces)))

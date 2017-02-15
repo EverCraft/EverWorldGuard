@@ -39,7 +39,7 @@ import fr.evercraft.everapi.message.replace.EReplace;
 import fr.evercraft.everapi.plugin.command.Args;
 import fr.evercraft.everapi.plugin.command.ESubCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
-import fr.evercraft.everapi.services.worldguard.SelectType;
+import fr.evercraft.everapi.services.selection.SelectionType;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everapi.sponge.UtilsContexts;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
@@ -149,9 +149,9 @@ public class EWRegionRedefine extends ESubCommand<EverWorldGuard> {
 	}
 	
 	private boolean commandRegionRedefine(final EPlayer player, final ProtectedRegion region) {
-		if (player.getSelectType().equals(SelectType.CUBOID)) {
+		if (player.getSelectType().equals(SelectionType.CUBOID)) {
 			return this.commandRegionRedefineCuboid(player, region);
-		} else if (player.getSelectType().equals(SelectType.POLYGONAL)) {
+		} else if (player.getSelectType().equals(SelectionType.POLYGONAL)) {
 			return this.commandRegionRedefinePolygonal(player, region);
 		} else {
 			EWMessages.REGION_REDEFINE_ERROR_SELECT_TYPE.sender()

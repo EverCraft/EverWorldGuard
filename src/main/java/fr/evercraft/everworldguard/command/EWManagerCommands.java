@@ -51,6 +51,8 @@ public class EWManagerCommands extends HashSet<ECommand<EverWorldGuard>> {
 		select.add(new EWSelectPos1(this.plugin, select));
 		select.add(new EWSelectPos2(this.plugin, select));
 		select.add(new EWSelectType(this.plugin, select));
+		select.add(new EWSelectClear(this.plugin, select));
+		select.add(new EWSelectRemove(this.plugin, select));
 		register(select);
 		
 		EWRegion region = new EWRegion(this.plugin);

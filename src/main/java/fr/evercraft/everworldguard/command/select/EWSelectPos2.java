@@ -32,7 +32,7 @@ import com.flowpowered.math.vector.Vector3i;
 import fr.evercraft.everapi.EAMessage.EAMessages;
 import fr.evercraft.everapi.plugin.command.ESubCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
-import fr.evercraft.everapi.services.worldguard.SelectType;
+import fr.evercraft.everapi.services.selection.SelectionType;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EverWorldGuard;
 
@@ -88,11 +88,11 @@ public class EWSelectPos2 extends ESubCommand<EverWorldGuard> {
 	private boolean commandSelectPos2(final EPlayer player) {		
 		Vector3i position = player.getLocation().getPosition().toInt();
 		
-		if (player.getSelectType().equals(SelectType.CUBOID)) {
+		if (player.getSelectType().equals(SelectionType.CUBOID)) {
 			return this.commandSelectPos2Cuboid(player, position);
-		} else if (player.getSelectType().equals(SelectType.POLYGONAL)) {
+		} else if (player.getSelectType().equals(SelectionType.POLYGONAL)) {
 			return this.commandSelectPos2Poly(player, position);
-		} else if (player.getSelectType().equals(SelectType.CYLINDER)) {
+		} else if (player.getSelectType().equals(SelectionType.CYLINDER)) {
 			return this.commandSelectPos2Cylinder(player, position);
 		}
 		

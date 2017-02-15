@@ -19,7 +19,7 @@ import com.flowpowered.math.vector.Vector3d;
 
 import fr.evercraft.everapi.services.worldguard.MoveType;
 import fr.evercraft.everworldguard.EverWorldGuard;
-import fr.evercraft.everworldguard.service.subject.EUserSubject;
+import fr.evercraft.everworldguard.protection.subject.EUserSubject;
 
 public class PlayerMoveListener {
 	
