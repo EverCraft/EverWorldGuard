@@ -67,7 +67,7 @@ public class EWRegionParent extends ESubCommand<EverWorldGuard> {
 							.map(region -> region.getIdentifier())
 							.collect(Collectors.toSet());
 			})
-			.args((source, args) -> {
+			.arg((source, args) -> {
 				Optional<World> optWorld = EWRegion.getWorld(this.plugin, source, args, MARKER_WORLD);
 				if (!optWorld.isPresent()) {
 					return Arrays.asList();
@@ -181,6 +181,7 @@ public class EWRegionParent extends ESubCommand<EverWorldGuard> {
 		if (region.equals(parent)) {
 			EWMessages.REGION_PARENT_SET_EQUALS.sender()
 				.replace("<region>", region.getIdentifier())
+				.replace("<parent>", parent.getIdentifier())
 				.replace("<world>", world.getName())
 				.sendTo(source);
 			return false;
@@ -190,6 +191,7 @@ public class EWRegionParent extends ESubCommand<EverWorldGuard> {
 		if (region_parent.isPresent() && region_parent.get().equals(parent)) {
 			EWMessages.REGION_PARENT_SET_EQUALS_PARENT.sender()
 				.replace("<region>", region.getIdentifier())
+				.replace("<parent>", parent.getIdentifier())
 				.replace("<world>", world.getName())
 				.sendTo(source);
 			return false;
@@ -200,6 +202,7 @@ public class EWRegionParent extends ESubCommand<EverWorldGuard> {
 		} catch (CircularInheritanceException e) {
 			EWMessages.REGION_PARENT_SET_CIRCULAR.sender()
 				.replace("<region>", region.getIdentifier())
+				.replace("<parent>", parent.getIdentifier())
 				.replace("<world>", world.getName())
 				.sendTo(source);
 			return false;

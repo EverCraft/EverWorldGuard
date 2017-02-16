@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.spongepowered.api.command.CommandException;
@@ -39,6 +40,7 @@ import fr.evercraft.everapi.sponge.UtilsContexts;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EWPermissions;
 import fr.evercraft.everworldguard.EverWorldGuard;
+import fr.evercraft.everworldguard.protection.EProtectionService;
 
 public class EWRegionRemove extends ESubCommand<EverWorldGuard> {
 	
@@ -63,9 +65,11 @@ public class EWRegionRemove extends ESubCommand<EverWorldGuard> {
 					return Arrays.asList();
 				}
 				
-				return this.plugin.getService().getOrCreateWorld(world.get()).getAll().stream()
+				Set<String> suggests = this.plugin.getService().getOrCreateWorld(world.get()).getAll().stream()
 							.map(region -> region.getIdentifier())
 							.collect(Collectors.toSet());
+				suggests.remove(EProtectionService.GLOBAL_REGION);
+				return suggests;
 			});
     }
 	

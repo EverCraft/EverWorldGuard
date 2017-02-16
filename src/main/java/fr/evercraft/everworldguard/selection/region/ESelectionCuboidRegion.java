@@ -17,7 +17,10 @@
 package fr.evercraft.everworldguard.selection.region;
 
 import fr.evercraft.everapi.services.selection.SelectionRegion;
+
 import java.util.List;
+
+import org.spongepowered.api.world.World;
 
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.base.Preconditions;
@@ -26,31 +29,85 @@ import com.google.common.math.LongMath;
 
 public class ESelectionCuboidRegion extends ESelectionRegion implements SelectionRegion.Cuboid {
 	
-	public ESelectionCuboidRegion() {
+	private Vector3i position1;
+	private Vector3i position2;
+	
+	public ESelectionCuboidRegion(World world, Vector3i pos1, Vector3i pos2) {
+		super(world);
+		
+		this.setPosition(pos1, pos2);
+	}
+	
+	public void setPosition(Vector3i pos1, Vector3i pos2) {
+		Preconditions.checkNotNull(pos1, "pos1");
+		Preconditions.checkNotNull(pos2, "pos2");
+		
+		
+		int minY = (world == null) ? 255 : world.getBlockMin().getY();
+		int maxY = (world == null) ? 255 : world.getBlockMax().getY();
+		
+		this.position1 = new Vector3i(
+				pos1.getX(),
+				Math.max(minY, Math.min(maxY, pos1.getY())), 
+				pos1.getZ());
+		this.position2 = new Vector3i(
+				pos2.getX(),
+				Math.max(minY, Math.min(maxY, pos2.getY())), 
+				pos2.getZ());
+	}
+	
+	@Override
+	public Vector3i getMinimumPoint() {
+		return this.position1;
+	}
+
+	@Override
+	public Vector3i getMaximumPoint() {
+		return Vector3i.from(
+				Math.min(this.position1.getX(), this.position2.getX()),
+                Math.min(this.position1.getY(), this.position2.getY()),
+                Math.min(this.position1.getZ(), this.position2.getZ()));
+	}
+	
+	@Override
+	public Vector3i getPrimaryPosition() {
+		return this.position1;
+	}
+	
+	@Override
+	public Vector3i getSecondaryPosition() {
+		return this.position2;
 	}
 	
 	@Override
     public List<Vector3i> getPositions() {
-		return ImmutableList.of(this.min, this.max);
+		return ImmutableList.of(this.position1, this.position2);
     }
 	
 	@Override
     public boolean containsPosition(Vector3i position) {
     	Preconditions.checkNotNull(position, "position");
     	
-        final double x = position.getX();
-        final double y = position.getY();
-        final double z = position.getZ();
-        return x >= this.min.getX() && x <= this.max.getX()
-                && y >= this.min.getY() && y <= this.max.getY()
-                && z >= this.min.getZ() && z <= this.max.getZ();
+        double x = position.getX();
+        double y = position.getY();
+        double z = position.getZ();
+        
+        Vector3i min = this.getMinimumPoint();
+        Vector3i max = this.getMaximumPoint();
+        
+        return x >= min.getX() && x <= max.getX()
+                && y >= min.getY() && y <= max.getY()
+                && z >= min.getZ() && z <= max.getZ();
     }
 	
     @Override
     public int getVolume() {
-        int xLength = this.getMaximumPoint().getX() - this.getMinimumPoint().getX() + 1;
-        int yLength = this.getMaximumPoint().getY() - this.getMinimumPoint().getY() + 1;
-        int zLength = this.getMaximumPoint().getZ() - this.getMinimumPoint().getZ() + 1;
+    	Vector3i min = this.getMinimumPoint();
+        Vector3i max = this.getMaximumPoint();
+    	
+        int xLength = max.getX() - min.getX() + 1;
+        int yLength = max.getY() - min.getY() + 1;
+        int zLength = max.getZ() - min.getZ() + 1;
 
         try {
             long v = LongMath.checkedMultiply(xLength, yLength);
@@ -64,4 +121,115 @@ public class ESelectionCuboidRegion extends ESelectionRegion implements Selectio
             return Integer.MAX_VALUE;
         }
     }
+
+	@Override
+	public boolean expand(Vector3i... changes) {
+		Preconditions.checkNotNull(changes, "changes");
+		
+		for (Vector3i change : changes) {
+            if (change.getX() > 0) {
+                if (Math.max(this.position1.getX(), this.position2.getX()) == this.position1.getX()) {
+                    this.position1 = this.position1.add(Vector3i.from(change.getX(), 0, 0));
+                } else {
+                    this.position2 = this.position2.add(Vector3i.from(change.getX(), 0, 0));
+                }
+            } else {
+                if (Math.min(this.position1.getX(), this.position2.getX()) == this.position1.getX()) {
+                    this.position1 = this.position1.add(Vector3i.from(change.getX(), 0, 0));
+                } else {
+                    this.position2 = this.position2.add(Vector3i.from(change.getX(), 0, 0));
+                }
+            }
+
+            if (change.getY() > 0) {
+                if (Math.max(this.position1.getY(), this.position2.getY()) == this.position1.getY()) {
+                    this.position1 = this.position1.add(Vector3i.from(0, change.getY(), 0));
+                } else {
+                    this.position2 = this.position2.add(Vector3i.from(0, change.getY(), 0));
+                }
+            } else {
+                if (Math.min(this.position1.getY(), this.position2.getY()) == this.position1.getY()) {
+                    this.position1 = this.position1.add(Vector3i.from(0, change.getY(), 0));
+                } else {
+                    this.position2 = this.position2.add(Vector3i.from(0, change.getY(), 0));
+                }
+            }
+
+            if (change.getZ() > 0) {
+                if (Math.max(this.position1.getZ(), this.position2.getZ()) == this.position1.getZ()) {
+                    this.position1 = this.position1.add(Vector3i.from(0, 0, change.getZ()));
+                } else {
+                    this.position2 = this.position2.add(Vector3i.from(0, 0, change.getZ()));
+                }
+            } else {
+                if (Math.min(this.position1.getZ(), this.position2.getZ()) == this.position1.getZ()) {
+                    this.position1 = this.position1.add(Vector3i.from(0, 0, change.getZ()));
+                } else {
+                    this.position2 = this.position2.add(Vector3i.from(0, 0, change.getZ()));
+                }
+            }
+        }
+		return true;
+	}
+
+	@Override
+	public boolean contract(Vector3i... changes) {
+		Preconditions.checkNotNull(changes, "changes");
+		
+		for (Vector3i change : changes) {
+            if (change.getX() < 0) {
+                if (Math.max(this.position1.getX(), this.position2.getX()) == this.position1.getX()) {
+                    this.position1 = this.position1.add(Vector3i.from(change.getX(), 0, 0));
+                } else {
+                    this.position2 = this.position2.add(Vector3i.from(change.getX(), 0, 0));
+                }
+            } else {
+                if (Math.min(this.position1.getX(), this.position2.getX()) == this.position1.getX()) {
+                    this.position1 = this.position1.add(Vector3i.from(change.getX(), 0, 0));
+                } else {
+                    this.position2 = this.position2.add(Vector3i.from(change.getX(), 0, 0));
+                }
+            }
+
+            if (change.getY() < 0) {
+                if (Math.max(this.position1.getY(), this.position2.getY()) == this.position1.getY()) {
+                    this.position1 = this.position1.add(Vector3i.from(0, change.getY(), 0));
+                } else {
+                    this.position2 = this.position2.add(Vector3i.from(0, change.getY(), 0));
+                }
+            } else {
+                if (Math.min(this.position1.getY(), this.position2.getY()) == this.position1.getY()) {
+                    this.position1 = this.position1.add(Vector3i.from(0, change.getY(), 0));
+                } else {
+                    this.position2 = this.position2.add(Vector3i.from(0, change.getY(), 0));
+                }
+            }
+
+            if (change.getZ() < 0) {
+                if (Math.max(this.position1.getZ(), this.position2.getZ()) == this.position1.getZ()) {
+                    this.position1 = this.position1.add(Vector3i.from(0, 0, change.getZ()));
+                } else {
+                    this.position2 = this.position2.add(Vector3i.from(0, 0, change.getZ()));
+                }
+            } else {
+                if (Math.min(this.position1.getZ(), this.position2.getZ()) == this.position1.getZ()) {
+                    this.position1 = this.position1.add(Vector3i.from(0, 0, change.getZ()));
+                } else {
+                    this.position2 = this.position2.add(Vector3i.from(0, 0, change.getZ()));
+                }
+            }
+        }
+		
+		this.setPosition(this.position1, this.position2);
+		return true;
+	}
+
+	@Override
+	public boolean shift(Vector3i change) {
+		this.position1.add(change);
+		this.position2.add(change);
+		
+		this.setPosition(this.position1, this.position2);
+		return true;
+	}
 }

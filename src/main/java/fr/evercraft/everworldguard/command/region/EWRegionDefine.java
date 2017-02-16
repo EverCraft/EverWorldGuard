@@ -42,6 +42,8 @@ import fr.evercraft.everapi.plugin.command.Args;
 import fr.evercraft.everapi.plugin.command.ESubCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everapi.server.user.EUser;
+import fr.evercraft.everapi.services.selection.SelectionRegion;
+import fr.evercraft.everapi.services.selection.SelectionRegion.Cuboid;
 import fr.evercraft.everapi.services.selection.SelectionType;
 import fr.evercraft.everapi.services.worldguard.exception.RegionIdentifierException;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
@@ -166,33 +168,37 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 	}
 	
 	private boolean commandRegionDefine(final EPlayer player, final String region_id, final Set<EUser> players, final Set<Subject> groups) {
-		if (player.getSelectType().equals(SelectionType.CUBOID)) {
+		if (player.getSelectorType().equals(SelectionType.CUBOID)) {
 			return this.commandRegionDefineCuboid(player, region_id, players, groups);
-		} else if (player.getSelectType().equals(SelectionType.POLYGONAL)) {
+		} else if (player.getSelectorType().equals(SelectionType.POLYGONAL)) {
 			return this.commandRegionDefinePolygonal(player, region_id, players, groups);
 		} else {
 			EWMessages.REGION_DEFINE_ERROR_SELECT_TYPE.sender()
 				.replace("<region>", region_id)
-				.replace("<type>", player.getSelectType().getName())
+				.replace("<type>", player.getSelectorType().getName())
 				.sendTo(player);
 			return false;
 		}
 	}
 	
 	private boolean commandRegionDefineCuboid(final EPlayer player, final String region_id, final Set<EUser> players, final Set<Subject> groups) {
-		Optional<Vector3i> pos1 = player.getSelectPos1();
-		Optional<Vector3i> pos2 = player.getSelectPos2();
-		if (!pos1.isPresent() || !pos2.isPresent()) {
+		Optional<SelectionRegion> optSelection = player.getSelector().getRegion();
+		if (!optSelection.isPresent() && optSelection.get() instanceof SelectionRegion.Cuboid) {
 			EWMessages.REGION_DEFINE_CUBOID_ERROR_POSITION.sender()
 				.replace("<region>", region_id)
 				.replace("<type>", ProtectedRegion.Type.CUBOID.getNameFormat())
 				.sendTo(player);
 			return false;
 		}
-		
+		SelectionRegion.Cuboid selection = (SelectionRegion.Cuboid) optSelection.get();
 		ProtectedRegion.Cuboid region = null;
 		try {
-			region = this.plugin.getService().getOrCreateWorld(player.getWorld()).createRegionCuboid(region_id, pos1.get(), pos2.get(), players, groups);
+			region = this.plugin.getService().getOrCreateWorld(player.getWorld()).createRegionCuboid(
+					region_id, 
+					selection.getPrimaryPosition(), 
+					selection.getSecondaryPosition(), 
+					players, 
+					groups);
 		} catch (RegionIdentifierException e) {
 			EWMessages.REGION_DEFINE_ERROR_IDENTIFIER_INVALID.sender()
 				.replace("<region>", region_id)
@@ -225,7 +231,7 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 	}
 	
 	private boolean commandRegionDefinePolygonal(final EPlayer player, final String region_id, final Set<EUser> players, final Set<Subject> groups) {
-		List<Vector3i> positions = player.getSelectPoints();
+		List<Vector3i> positions = player.getSelector().getPositions();
 		if (positions.size() < 3) {
 			EWMessages.REGION_DEFINE_POLYGONAL_ERROR_POSITION.sender()
 				.replace("<region>", region_id)

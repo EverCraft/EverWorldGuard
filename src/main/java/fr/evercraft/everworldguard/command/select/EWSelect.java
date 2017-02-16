@@ -77,11 +77,11 @@ public class EWSelect extends EParentCommand<EverWorldGuard> {
 	}
 	
 	private boolean commandSelect(final EPlayer player) {
-		if (player.getSelectType().equals(SelectionType.CUBOID)) {
+		if (player.getSelectorType().equals(SelectionType.CUBOID)) {
 			return this.commandSelectCuboid(player);
-		} else if (player.getSelectType().equals(SelectionType.POLYGONAL)) {
+		} else if (player.getSelectorType().equals(SelectionType.POLYGONAL)) {
 			return this.commandSelectPoly(player);
-		} else if (player.getSelectType().equals(SelectionType.CYLINDER)) {
+		} else if (player.getSelectorType().equals(SelectionType.CYLINDER)) {
 			return this.commandSelectCylinder(player);
 		} else {
 			EAMessages.COMMAND_ERROR.sender()

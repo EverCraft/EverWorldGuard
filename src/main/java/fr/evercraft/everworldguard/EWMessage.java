@@ -120,7 +120,7 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		REGION_INFO_ONE_MEMBERS_JOIN("region.info.one.membersJoin",											"&6, &c"),
 		REGION_INFO_ONE_GROUP_MEMBERS("region.info.one.groupMembers",										"    &6&l➤  &6Groupes Members : &c<members>"),
 		REGION_INFO_ONE_GROUP_MEMBERS_JOIN("region.info.one.membersJoin",									"&6, &c"),
-		REGION_INFO_ONE_FLAGS("region.info.one.flags",														"    &6&l➤ &6Flag :"),
+		REGION_INFO_ONE_FLAGS("region.info.one.flags",														"    &6&l➤  &6Flag :"),
 		REGION_INFO_ONE_FLAGS_LINE("region.info.one.flagsLine",												"            &a&l- <flag> : &c<value>"),
 		REGION_INFO_ONE_FLAGS_DEFAULT("region.info.one.flagsDefault",										"        &6&l●   &6Default:"),
 		REGION_INFO_ONE_FLAGS_MEMBER("region.info.one.flagsMember",											"        &6&l●   &6Member:"),
@@ -147,11 +147,11 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		REGION_LIST_GROUP_EMPTY("region.list.groupLine",										"    &7Aucune région"),
 		
 		REGION_DEFINE_DESCRIPTION("region.define.description",									"Permet de définir une nouvelle région"),
-		REGION_DEFINE_CUBOID_CREATE("region.define.cuboid.create",								"&7Vous venez de créer la région &6<positions> &7de type &6<type>."),
+		REGION_DEFINE_CUBOID_CREATE("region.define.cuboid.create",								"&7Vous venez de créer la région &6<positions> &7de type &6<type>&7."),
 		REGION_DEFINE_CUBOID_POINTS("region.define.cuboid.points",								"&6<region>"),
 		REGION_DEFINE_CUBOID_POINTS_HOVER("region.define.cuboid.pointsHover",					"&6Min : (&c<min_x>&6, &c<min_y>&6, &c<min_z>&6)[RT]&6Max : (&c<max_x>&6, &c<max_y>&6, &c<max_z>&6)"),
 		REGION_DEFINE_CUBOID_ERROR_POSITION("region.define.cuboid.errorPosition",				"&cErreur : Vous devez sélectionner 2 positions pour définir une région &6<type>&c."),
-		REGION_DEFINE_POLYGONAL_CREATE("region.define.polygonal.create",						"&7Vous venez de créer la région &6<positions> &7de type &6<type>."),
+		REGION_DEFINE_POLYGONAL_CREATE("region.define.polygonal.create",						"&7Vous venez de créer la région &6<positions> &7de type &6<type>&7."),
 		REGION_DEFINE_POLYGONAL_POINTS("region.define.polygonal.points",						"&6<region>"),
 		REGION_DEFINE_POLYGONAL_POINTS_HOVER("region.define.polygonal.pointsHover",				"&6Les positions : [RT]<positions>"),
 		REGION_DEFINE_POLYGONAL_POINTS_HOVER_LINE("region.define.polygonal.pointsHoverLine",	"&6#<num> : (&c<x>&6, &c<y>&6, &c<z>&6)"),
@@ -163,7 +163,7 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		REGION_DEFINE_ERROR_SELECT_TYPE("region.define.errorSelectType",						"&cErreur : Impossible de créer une région de type &6<type>&c."),
 		
 		REGION_REDEFINE_DESCRIPTION("region.redefine.description",									"Permet de redéfinir une région"),
-		REGION_REDEFINE_CUBOID_CREATE("region.redefine.cuboid.create",								"&7Création de la région &6<region> &7de type &6<type>."),
+		REGION_REDEFINE_CUBOID_CREATE("region.redefine.cuboid.create",								"&7Création de la région &6<region> &7de type &6<type>&7."),
 		REGION_REDEFINE_CUBOID_POINTS("region.redefine.cuboid.points",								"&6(&c<min_x>&6, &c<min_y>&6, &c<min_z>&6) (&c<max_x>&6, &c<max_y>&6, &c<max_z>&6)"),
 		REGION_REDEFINE_CUBOID_POINTS_HOVER("region.redefine.cuboid.pointsHover",					"&6Min : (&c<min_x>&6, &c<min_y>&6, &c<min_z>&6)[RT]&6Max : (&c<max_x>&6, &c<max_y>&6, &c<max_z>&6)"),
 		REGION_REDEFINE_CUBOID_ERROR_POSITION("region.redefine.cuboid.errorPosition",				"&cErreur : Vous devez sélectionner 2 positions pour définir une région &6<type>&c."),
@@ -234,8 +234,8 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		REGION_MEMBER_REMOVE_GROUPS_JOIN("region.removemember.groupsJoin",						"&7, &6"),
 		
 		REGION_PARENT_DESCRIPTION("region.parent.description",									"Défini le parent d'une région"),
-		REGION_PARENT_SET("region.parent.set",													"&7Vous avez défini la région &6<parent> &7en tant que région parent de &7<region>"),
-		REGION_PARENT_SET_HERITAGE("region.parent.setHeritage",									"&7Vous avez défini la région &6<parent> &7en tant que région parent de &6<region> : [RT]<heritage>"),
+		REGION_PARENT_SET("region.parent.set",													"&7Vous avez défini la région &6<parent> &7en tant que parent de la région &6<region>&7."),
+		REGION_PARENT_SET_HERITAGE("region.parent.setHeritage",									"&7Vous avez défini la région &6<parent> &7en tant que parent de la région &6<region> : [RT]<heritage>"),
 		REGION_PARENT_SET_HERITAGE_LINE("region.parent.setHeritageLine",						"    &c└ <region> : &7<type>"),
 		REGION_PARENT_SET_HERITAGE_PADDING("region.parent.setHeritagePadding",					"  "),
 		REGION_PARENT_SET_CIRCULAR("region.parent.setCircular",									"&cErreur : Impossible de définir la région &6<parent> &cen tant que parent de &6<region>&c."),
@@ -251,8 +251,8 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		REGION_REMOVE_REGION("region.remove.region",											"&7Vous avez supprimé la région &6<region> &7dans le monde &6<world>&7."),
 		REGION_REMOVE_CHILDREN_REMOVE("region.remove.childrenRemove",							"&7Vous avez supprimé la région &6<region> &7et ces enfants &7dans le monde &6<world>&7."),
 		REGION_REMOVE_CHILDREN_UNSET("region.remove.childrenUnset",								"&7Vous avez supprimé la région &6<region> &7et gardé ces enfants &7dans le monde &6<world>&7."),
-		REGION_REMOVE_ERROR_GLOBAL("region.remove.errorGlobal",									"&cErreur : Impossible de supprimé la région &6<region> &ccar elle est de type &6<type>&c."),
-		REGION_REMOVE_ERROR_CHILDREN("region.remove.errorChildren",								"&cErreur : La région &6<region> &ca au moins une région enfant :[RT]"
+		REGION_REMOVE_ERROR_GLOBAL("region.remove.errorGlobal",									"&cErreur : Impossible de supprimer la région &6<region> &ccar elle est de type &6<type>&c."),
+		REGION_REMOVE_ERROR_CHILDREN("region.remove.errorChildren",								"&cErreur : La région &6<region> &cpossède au moins une région enfant :[RT]"
 																							  + "    -f : Permet de supprimer aussi les régions enfants[RT]"
 																							  + "    -u : Permet de supprimer uniquement la région parent"),
 		

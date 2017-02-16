@@ -277,7 +277,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 				this.addLine(list, EWMessages.REGION_INFO_ONE_POINTS.getFormat()
 						.toText("<positions>",  EWMessages.REGION_INFO_ONE_POINTS_CUBOID.getFormat()
 								.toText(replaces).toBuilder()
-								.onHover(TextActions.showText(EWMessages.REGION_INFO_ONE_POINTS_CUBOID.getFormat()
+								.onHover(TextActions.showText(EWMessages.REGION_INFO_ONE_POINTS_CUBOID_HOVER.getFormat()
 										.toText(replaces)))
 								.build()));
 			} else if (region.getType().equals(ProtectedRegion.Type.POLYGONAL)) {
