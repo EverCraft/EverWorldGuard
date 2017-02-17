@@ -68,7 +68,7 @@ public class EWRegionMemberAdd extends ESubCommand<EverWorldGuard> {
 					return Arrays.asList();
 				}
 				
-				return this.plugin.getService().getOrCreateWorld(world.get()).getAll().stream()
+				return this.plugin.getProtectionService().getOrCreateWorld(world.get()).getAll().stream()
 							.map(region -> region.getIdentifier())
 							.collect(Collectors.toSet());
 			})
@@ -144,7 +144,7 @@ public class EWRegionMemberAdd extends ESubCommand<EverWorldGuard> {
 			return false;
 		}
 		
-		Optional<ProtectedRegion> region = this.plugin.getService().getOrCreateWorld(world).getRegion(args_string.get(0));
+		Optional<ProtectedRegion> region = this.plugin.getProtectionService().getOrCreateWorld(world).getRegion(args_string.get(0));
 		// Region introuvable
 		if (!region.isPresent()) {
 			EAMessages.REGION_NOT_FOUND.sender()

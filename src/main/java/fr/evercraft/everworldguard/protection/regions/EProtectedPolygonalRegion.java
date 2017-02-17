@@ -49,7 +49,6 @@ public class EProtectedPolygonalRegion extends EProtectedRegion implements Prote
 		this.setMinMaxPoints(positions);
 
         this.volume = this.setVolume();
-		System.err.println(identifier + " : " + this.volume);
 	}
 	
 	@Override

@@ -82,9 +82,7 @@ public class EWSelectClear extends ESubCommand<EverWorldGuard> {
 	}
 
 	private boolean commandSelectClear(final EPlayer player) {
-		player.setSelectPos1(null);
-		player.setSelectPos2(null);
-		player.clearSelectPoints();
+		player.clearSelector();
 		
 		EWMessages.SELECT_CLEAR_PLAYER.sendTo(player);
 		return true;

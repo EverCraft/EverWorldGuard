@@ -61,12 +61,12 @@ public class EWRegionFlagAdd extends ESubCommand<EverWorldGuard> {
 					return Arrays.asList();
 				}
 				
-				return this.plugin.getService().getOrCreateWorld(world.get()).getAll().stream()
+				return this.plugin.getProtectionService().getOrCreateWorld(world.get()).getAll().stream()
 							.map(region -> region.getIdentifier())
 							.collect(Collectors.toSet());
 			})
 			.arg((source, args) -> {
-				return this.plugin.getService().getFlags().stream()
+				return this.plugin.getProtectionService().getFlags().stream()
 						.map(flag -> flag.getName())
 						.collect(Collectors.toSet());
 			})
@@ -76,7 +76,7 @@ public class EWRegionFlagAdd extends ESubCommand<EverWorldGuard> {
 					return Arrays.asList();
 				}
 				
-				Optional<Flag<?>> flag = this.plugin.getService().getFlag(flag_string.get());
+				Optional<Flag<?>> flag = this.plugin.getProtectionService().getFlag(flag_string.get());
 				if (!flag_string.isPresent()) {
 					return Arrays.asList();
 				}
@@ -93,7 +93,7 @@ public class EWRegionFlagAdd extends ESubCommand<EverWorldGuard> {
 					return Arrays.asList();
 				}
 				
-				Optional<Flag<?>> flag = this.plugin.getService().getFlag(flag_string.get());
+				Optional<Flag<?>> flag = this.plugin.getProtectionService().getFlag(flag_string.get());
 				if (!flag_string.isPresent()) {
 					return Arrays.asList();
 				}
@@ -161,7 +161,7 @@ public class EWRegionFlagAdd extends ESubCommand<EverWorldGuard> {
 			return false;
 		}
 		
-		Optional<ProtectedRegion> region = this.plugin.getService().getOrCreateWorld(world).getRegion(args_string.get(0));
+		Optional<ProtectedRegion> region = this.plugin.getProtectionService().getOrCreateWorld(world).getRegion(args_string.get(0));
 		// Region introuvable
 		if (!region.isPresent()) {
 			EAMessages.REGION_NOT_FOUND.sender()
@@ -178,7 +178,7 @@ public class EWRegionFlagAdd extends ESubCommand<EverWorldGuard> {
 			return false;
 		}	
 		
-		Optional<Flag<?>> flag = this.plugin.getService().getFlag(args_string.get(1));
+		Optional<Flag<?>> flag = this.plugin.getProtectionService().getFlag(args_string.get(1));
 		if (!flag.isPresent()) {
 			EWMessages.FLAG_NOT_FOUND.sender()
 				.replace("<group>", args_string.get(1))

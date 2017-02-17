@@ -68,7 +68,7 @@ public class EWRegionOwnerRemove extends ESubCommand<EverWorldGuard> {
 					return Arrays.asList();
 				}
 				
-				return this.plugin.getService().getOrCreateWorld(world.get()).getAll().stream()
+				return this.plugin.getProtectionService().getOrCreateWorld(world.get()).getAll().stream()
 							.map(region -> region.getIdentifier())
 							.collect(Collectors.toSet());
 			})
@@ -78,7 +78,7 @@ public class EWRegionOwnerRemove extends ESubCommand<EverWorldGuard> {
 					return Arrays.asList();
 				}
 		
-				Optional<ProtectedRegion> optRegion = this.plugin.getService().getOrCreateEWorld(world.get()).getRegion(args.getArg(0).get());
+				Optional<ProtectedRegion> optRegion = this.plugin.getProtectionService().getOrCreateEWorld(world.get()).getRegion(args.getArg(0).get());
 				if (!optRegion.isPresent()) {
 					return Arrays.asList();
 				}
@@ -158,7 +158,7 @@ public class EWRegionOwnerRemove extends ESubCommand<EverWorldGuard> {
 			return false;
 		}
 		
-		Optional<ProtectedRegion> region = this.plugin.getService().getOrCreateWorld(world).getRegion(args_string.get(0));
+		Optional<ProtectedRegion> region = this.plugin.getProtectionService().getOrCreateWorld(world).getRegion(args_string.get(0));
 		// Region introuvable
 		if (!region.isPresent()) {
 			EAMessages.REGION_NOT_FOUND.sender()

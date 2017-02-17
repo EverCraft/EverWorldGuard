@@ -108,29 +108,25 @@ public class EWSelectType extends ESubCommand<EverWorldGuard> {
 			return false;
 		}
 		
-		if (player.getSelectType().equals(type.get())) {
+		if (player.getSelectorType().equals(type.get())) {
 			EWMessages.SELECT_TYPE_EQUALS.sender()
 				.replace("<type>", type.get().getName())
 				.sendTo(player);
 			return false;
 		}
 		
-		if (!player.setSelectType(type.get())) {
+		if (!player.setSelectorType(type.get())) {
 			EWMessages.SELECT_TYPE_CANCEL.sender()
 				.replace("<type>", type.get().getName())
 				.sendTo(player);
 			return false;
 		}
 		
-		player.setSelectPos1(null);
-		player.setSelectPos2(null);
-		player.clearSelectPoints();
-		
-		if (player.getSelectType().equals(SelectionType.CUBOID)) {
+		if (player.getSelectorType().equals(SelectionType.CUBOID)) {
 			EWMessages.SELECT_TYPE_CUBOID.sendTo(player);
-		} else if (player.getSelectType().equals(SelectionType.POLYGONAL)) {
+		} else if (player.getSelectorType().equals(SelectionType.POLYGONAL)) {
 			EWMessages.SELECT_TYPE_POLYGONAL.sendTo(player);
-		} else if (player.getSelectType().equals(SelectionType.CYLINDER)) {
+		} else if (player.getSelectorType().equals(SelectionType.CYLINDER)) {
 			EWMessages.SELECT_TYPE_CYLINDER.sendTo(player);
 		} else {
 			player.sendMessage(this.help(player));

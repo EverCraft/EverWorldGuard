@@ -19,13 +19,13 @@ public class ChunkListener {
 	@Listener(order=Order.PRE)
 	public void onLoadChunk(LoadChunkEvent event) {
 		Chunk chunk = event.getTargetChunk();
-		this.plugin.getService().getOrCreateEWorld(chunk.getWorld()).loadChunk(chunk.getPosition());
+		this.plugin.getProtectionService().getOrCreateEWorld(chunk.getWorld()).loadChunk(chunk.getPosition());
 	}
 	
 	@Listener(order=Order.PRE)
 	public void onUnloadChunk(UnloadChunkEvent event) {
 		Chunk chunk = event.getTargetChunk();
-		this.plugin.getService().getOrCreateEWorld(chunk.getWorld()).loadChunk(chunk.getPosition());
+		this.plugin.getProtectionService().getOrCreateEWorld(chunk.getWorld()).loadChunk(chunk.getPosition());
 	}
 
 }

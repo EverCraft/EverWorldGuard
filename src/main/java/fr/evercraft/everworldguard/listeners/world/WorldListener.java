@@ -17,12 +17,12 @@ public class WorldListener {
 	
 	@Listener(order=Order.PRE)
 	public void onLoadWorld(LoadWorldEvent event) {
-		this.plugin.getService().getOrCreateWorld(event.getTargetWorld());
+		this.plugin.getProtectionService().getOrCreateWorld(event.getTargetWorld());
 	}
 	
 	@Listener(order=Order.PRE)
 	public void onUnloadWorld(UnloadWorldEvent event) {
-		this.plugin.getService().unLoadWorld(event.getTargetWorld());
+		this.plugin.getProtectionService().unLoadWorld(event.getTargetWorld());
 	}
 
 }

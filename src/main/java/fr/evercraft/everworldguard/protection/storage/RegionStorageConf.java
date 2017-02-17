@@ -146,7 +146,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 		
 		for (Entry<Object, ? extends ConfigurationNode> config_flags : config.getNode("flags-default").getChildrenMap().entrySet()) {
 			if (config_flags.getKey() instanceof String) {
-				Optional<Flag<?>> optFlag = this.plugin.getService().getFlag((String) config_flags.getKey());
+				Optional<Flag<?>> optFlag = this.plugin.getProtectionService().getFlag((String) config_flags.getKey());
 				if (optFlag.isPresent()) {
 					Flag<T> flag = (Flag<T>) optFlag.get();
 					T value = flag.deserialize(config_flags.getValue().getString(""));
@@ -161,7 +161,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 		
 		for (Entry<Object, ? extends ConfigurationNode> config_flags : config.getNode("flags-member").getChildrenMap().entrySet()) {
 			if (config_flags.getKey() instanceof String) {
-				Optional<Flag<?>> optFlag = this.plugin.getService().getFlag((String) config_flags.getKey());
+				Optional<Flag<?>> optFlag = this.plugin.getProtectionService().getFlag((String) config_flags.getKey());
 				if (optFlag.isPresent()) {
 					Flag<T> flag = (Flag<T>) optFlag.get();
 					T value = flag.deserialize(config_flags.getValue().getString(""));
@@ -176,7 +176,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 		
 		for (Entry<Object, ? extends ConfigurationNode> config_flags : config.getNode("flags-owner").getChildrenMap().entrySet()) {
 			if (config_flags.getKey() instanceof String) {
-				Optional<Flag<?>> optFlag = this.plugin.getService().getFlag((String) config_flags.getKey());
+				Optional<Flag<?>> optFlag = this.plugin.getProtectionService().getFlag((String) config_flags.getKey());
 				if (optFlag.isPresent()) {
 					Flag<T> flag = (Flag<T>) optFlag.get();
 					T value = flag.deserialize(config_flags.getValue().getString(""));

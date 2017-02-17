@@ -27,18 +27,18 @@ public class PlayerListener {
 	
 	@Listener
 	public void onClientConnectionEvent(final ClientConnectionEvent.Auth event) {
-		this.plugin.getService().getSubjectList().get(event.getProfile().getUniqueId());
+		this.plugin.getProtectionService().getSubjectList().get(event.getProfile().getUniqueId());
 	}
 	
 	@Listener
 	public void onClientConnectionEvent(final ClientConnectionEvent.Join event) {
-		EUserSubject player = this.plugin.getService().getSubjectList().registerPlayer(event.getTargetEntity().getUniqueId());
+		EUserSubject player = this.plugin.getProtectionService().getSubjectList().registerPlayer(event.getTargetEntity().getUniqueId());
 		player.initialize(event.getTargetEntity());
 	}
 
 	@Listener
 	public void onClientConnectionEvent(final ClientConnectionEvent.Disconnect event) {
-		this.plugin.getService().getSubjectList().removePlayer(event.getTargetEntity().getUniqueId());
+		this.plugin.getProtectionService().getSubjectList().removePlayer(event.getTargetEntity().getUniqueId());
 	}
 	
 	@Listener(order=Order.FIRST)
@@ -54,13 +54,13 @@ public class PlayerListener {
 	}
 	
 	public void onChangeBlockPlayer(ChangeBlockEvent event, Player player) {
-		WorldWorldGuard world = this.plugin.getService().getOrCreateWorld(event.getTargetWorld());
+		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetWorld());
 		 
 		event.filter(location -> world.getRegions(location.getPosition()).getFlag(player, Flags.BUILD).equals(State.ALLOW));
 	}
 	
 	public void onChangeBlockNatural(ChangeBlockEvent event) {
-		WorldWorldGuard world = this.plugin.getService().getOrCreateWorld(event.getTargetWorld());
+		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetWorld());
 		 
 		event.filter(location -> world.getRegions(location.getPosition()).getFlagDefault(Flags.BUILD).equals(State.ALLOW));
 	}
@@ -69,7 +69,7 @@ public class PlayerListener {
 	public void onPlayerHeal(HealEntityEvent event) {
 		if (event.isCancelled()) return;
 		
-		WorldWorldGuard world = this.plugin.getService().getOrCreateWorld(event.getTargetEntity().getWorld());
+		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetEntity().getWorld());
 		
 		if (event.getTargetEntity() instanceof Player && event.getBaseHealAmount() > event.getFinalHealAmount()) {
 			Player player = (Player) event.getTargetEntity();
@@ -84,7 +84,7 @@ public class PlayerListener {
 	public void onPlayerDamage(DamageEntityEvent event) {
 		if (event.isCancelled()) return;
 		
-		WorldWorldGuard world = this.plugin.getService().getOrCreateWorld(event.getTargetEntity().getWorld());
+		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetEntity().getWorld());
 		
 		if (event.getTargetEntity() instanceof Player) {
 			Player player = (Player) event.getTargetEntity();

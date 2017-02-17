@@ -36,7 +36,7 @@ public class ManagerFlags {
 				try {
 					Object flag = field.get(null);
 					if (flag instanceof Flag) {
-						this.plugin.getService().registerFlag((Flag<?>) flag);
+						this.plugin.getProtectionService().registerFlag((Flag<?>) flag);
 						this.plugin.getGame().getEventManager().registerListeners(this.plugin, flag);
 					}
 				} catch (Exception e) {

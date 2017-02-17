@@ -32,6 +32,7 @@ import fr.evercraft.everapi.EAMessage.EAMessages;
 import fr.evercraft.everapi.plugin.command.ESubCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everapi.services.selection.SelectionType;
+import fr.evercraft.everapi.services.selection.SelectorSecondaryException;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EverWorldGuard;
 
@@ -85,18 +86,20 @@ public class EWSelectRemove extends ESubCommand<EverWorldGuard> {
 	}
 
 	private boolean commandSelectRemove(final EPlayer player) {		
-		if (!player.getSelectType().equals(SelectionType.POLYGONAL)) {
+		if (!player.getSelectorType().equals(SelectionType.POLYGONAL)) {
 			EWMessages.SELECT_REMOVE_ERROR.sendTo(player);
 			return false;
 		}
 		
-		if (player.getSelectPoints().isEmpty()) {
+		List<Vector3i> positions = player.getSelectorPositions();
+		if (player.getSelectorPositions().isEmpty()) {
 			EWMessages.SELECT_REMOVE_EMPTY.sendTo(player);
 			return false;
 		}
-		List<Vector3i> points = player.getSelectPoints();
-		Vector3i pos = points.get(points.size() - 1);
-		player.removeSelectPoint(points.size() - 1);
+		Vector3i pos = positions.get(positions.size() - 1);
+		try {
+			player.setSelectorSecondary(null);
+		} catch (SelectorSecondaryException e) {}
 		
 		EWMessages.SELECT_REMOVE_PLAYER.sender()
 			.replace("<pos>", EWSelect.getPositionHover(pos))

@@ -31,7 +31,7 @@ public class PlayerMoveListener {
 	
 	@Listener(order=Order.PRE)
 	public void onRespawnPlayerPre(RespawnPlayerEvent event) {
-		Optional<EUserSubject> optSubject = this.plugin.getService().getSubject(event.getOriginalPlayer().getUniqueId());
+		Optional<EUserSubject> optSubject = this.plugin.getProtectionService().getSubject(event.getOriginalPlayer().getUniqueId());
 		if (!optSubject.isPresent()) return;
 		EUserSubject subject = optSubject.get();
 		
@@ -40,7 +40,7 @@ public class PlayerMoveListener {
 	
 	@Listener(order=Order.BEFORE_POST, beforeModifications=true)
 	public void onRespawnPlayerPost(RespawnPlayerEvent event) {
-		Optional<EUserSubject> optSubject = this.plugin.getService().getSubject(event.getOriginalPlayer().getUniqueId());
+		Optional<EUserSubject> optSubject = this.plugin.getProtectionService().getSubject(event.getOriginalPlayer().getUniqueId());
 		if (!optSubject.isPresent()) return;
 		EUserSubject subject = optSubject.get();
 		
@@ -51,7 +51,7 @@ public class PlayerMoveListener {
 	public void onMoveEntityFirst(MoveEntityEvent event, @Getter("getTargetEntity") Player player_sponge) {
 		if (event.isCancelled()) return;
 			
-		Optional<EUserSubject> optSubject = this.plugin.getService().getSubject(player_sponge.getUniqueId());
+		Optional<EUserSubject> optSubject = this.plugin.getProtectionService().getSubject(player_sponge.getUniqueId());
 		if (!optSubject.isPresent()) return;
 		
 		Location<World> location = optSubject.get().moveToPre(player_sponge, event.getToTransform().getLocation(), MoveType.MOVE, event.getCause()).orElse(null);
@@ -85,7 +85,7 @@ public class PlayerMoveListener {
 	public void onMoveEntityPost(MoveEntityEvent event, @Getter("getTargetEntity") Player player_sponge) {
 		if (event.isCancelled()) return;
 		
-		Optional<EUserSubject> optSubject = this.plugin.getService().getSubject(player_sponge.getUniqueId());
+		Optional<EUserSubject> optSubject = this.plugin.getProtectionService().getSubject(player_sponge.getUniqueId());
 		if (!optSubject.isPresent()) return;
 		
 		optSubject.get().moveToPost(player_sponge, event.getToTransform().getLocation(), MoveType.MOVE, event.getCause());

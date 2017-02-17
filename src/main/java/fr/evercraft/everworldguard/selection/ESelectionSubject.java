@@ -19,10 +19,11 @@ package fr.evercraft.everworldguard.selection;
 import java.util.UUID;
 
 import com.google.common.base.Preconditions;
-import fr.evercraft.everapi.services.selection.SelectionRegion;
+import fr.evercraft.everapi.services.selection.SelectionType;
 import fr.evercraft.everapi.services.selection.SubjectSelection;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.selection.selector.ECuboidSelector;
+import fr.evercraft.everworldguard.selection.selector.EPolygonalSelector;
 import fr.evercraft.everworldguard.selection.selector.ESelector;
 
 public class ESelectionSubject implements SubjectSelection {
@@ -49,22 +50,22 @@ public class ESelectionSubject implements SubjectSelection {
 	}
 	
 	@Override
-	public void setType(SelectionRegion.Type type) {
+	public void setType(SelectionType type) {
 		Preconditions.checkNotNull(type, "type");
+				
+		if (this.selector.getType().equals(type)) return;
 		
-		if (!this.selector.getType().equals(type)) return;
-		
-		if (type.equals(SelectionRegion.Type.CUBOID)) {
+		if (type.equals(SelectionType.CUBOID)) {
 			this.selector = new ECuboidSelector();
-		} else if (type.equals(SelectionRegion.Type.POLYGONAL)) {
-			// TODO this.selector = new EPolygonalSelector();
-		} else if (type.equals(SelectionRegion.Type.CYLINDER)) {
+		} else if (type.equals(SelectionType.POLYGONAL)) {
+			this.selector = new EPolygonalSelector();
+		} else if (type.equals(SelectionType.CYLINDER)) {
 			// TODO this.selector = new ECylinderSelector();
 		}
 	}
 
 	@Override
-	public SelectionRegion.Type getType() {
+	public SelectionType getType() {
 		return this.selector.getType();
 	}
 	

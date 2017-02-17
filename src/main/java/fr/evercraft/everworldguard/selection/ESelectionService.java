@@ -31,11 +31,12 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
+import fr.evercraft.everapi.services.selection.SelectionService;
 import fr.evercraft.everapi.services.selection.SubjectSelection;
 import fr.evercraft.everapi.util.Chronometer;
 import fr.evercraft.everworldguard.EverWorldGuard;
 
-public class ESelectionService {
+public class ESelectionService implements SelectionService {
 	
 	private final EverWorldGuard plugin;
 	

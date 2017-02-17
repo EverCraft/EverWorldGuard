@@ -22,12 +22,14 @@ import org.spongepowered.api.plugin.Plugin;
 import fr.evercraft.everapi.EverAPI;
 import fr.evercraft.everapi.exception.PluginDisableException;
 import fr.evercraft.everapi.plugin.EPlugin;
+import fr.evercraft.everapi.services.selection.SelectionService;
 import fr.evercraft.everapi.services.worldguard.WorldGuardService;
 import fr.evercraft.everworldguard.command.EWManagerCommands;
 import fr.evercraft.everworldguard.listeners.EWListener;
 import fr.evercraft.everworldguard.protection.EProtectionService;
 import fr.evercraft.everworldguard.protection.flag.ManagerFlags;
 import fr.evercraft.everworldguard.protection.storage.EWDataBases;
+import fr.evercraft.everworldguard.selection.ESelectionService;
 
 @Plugin(id = "everworldguard", 
 		name = "EverWorldGuard", 
@@ -43,7 +45,8 @@ public class EverWorldGuard extends EPlugin<EverWorldGuard> {
 	private EWConfig configs;
 	private EWMessage messages;
 	
-	private EProtectionService service;
+	private EProtectionService protection;
+	private ESelectionService selection;
 	private EWManagerCommands commands;
 	private EWDataBases database;
 	
@@ -54,8 +57,10 @@ public class EverWorldGuard extends EPlugin<EverWorldGuard> {
 		
 		this.database = new EWDataBases(this);
 		
-		this.service = new EProtectionService(this);
-		this.getGame().getServiceManager().setProvider(this, WorldGuardService.class, this.service);
+		this.protection = new EProtectionService(this);
+		this.selection = new ESelectionService(this);
+		this.getGame().getServiceManager().setProvider(this, WorldGuardService.class, this.protection);
+		this.getGame().getServiceManager().setProvider(this, SelectionService.class, this.selection);
 		
 		this.getGame().getEventManager().registerListeners(this, new EWListener(this));
 		
@@ -70,7 +75,8 @@ public class EverWorldGuard extends EPlugin<EverWorldGuard> {
 	protected void onReload() throws PluginDisableException{
 		this.reloadConfigurations();
 		this.database.reload();
-		this.service.reload();
+		this.protection.reload();
+		this.selection.reload();
 	}
 	
 	protected void onDisable() {
@@ -88,8 +94,12 @@ public class EverWorldGuard extends EPlugin<EverWorldGuard> {
 		return this.configs;
 	}
 	
-	public EProtectionService getService() {
-		return this.service;
+	public EProtectionService getProtectionService() {
+		return this.protection;
+	}
+	
+	public ESelectionService getSelectionService() {
+		return this.selection;
 	}
 	
 	public EWDataBases getDataBase() {

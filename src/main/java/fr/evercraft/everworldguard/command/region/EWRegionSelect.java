@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -40,6 +41,7 @@ import fr.evercraft.everapi.plugin.command.Args;
 import fr.evercraft.everapi.plugin.command.ESubCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everapi.services.selection.SelectionType;
+import fr.evercraft.everapi.services.selection.SelectorSecondaryException;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion.Type;
 import fr.evercraft.everapi.sponge.UtilsContexts;
@@ -66,7 +68,7 @@ public class EWRegionSelect extends ESubCommand<EverWorldGuard> {
 					return Arrays.asList();
 				}
 				
-				return this.plugin.getService().getOrCreateWorld(world.get()).getAll().stream()
+				return this.plugin.getProtectionService().getOrCreateWorld(world.get()).getAll().stream()
 							.map(region -> region.getIdentifier())
 							.collect(Collectors.toSet());
 			});
@@ -136,7 +138,7 @@ public class EWRegionSelect extends ESubCommand<EverWorldGuard> {
 			return false;
 		}
 		
-		Optional<ProtectedRegion> region = this.plugin.getService().getOrCreateWorld(world).getRegion(args_string.get(0));
+		Optional<ProtectedRegion> region = this.plugin.getProtectionService().getOrCreateWorld(world).getRegion(args_string.get(0));
 		// Region introuvable
 		if (!region.isPresent()) {
 			EAMessages.REGION_NOT_FOUND.sender()
@@ -182,9 +184,11 @@ public class EWRegionSelect extends ESubCommand<EverWorldGuard> {
 		Vector3i min = region.getMinimumPoint();
 		Vector3i max = region.getMaximumPoint();
 		
-		player.setSelectType(SelectionType.CUBOID);
-		player.setSelectPos1(min);
-		player.setSelectPos2(max);
+		player.setSelectorType(SelectionType.CUBOID);
+		player.setSelectorPrimary(min);
+		try {
+			player.setSelectorSecondary(max);
+		} catch (SelectorSecondaryException e) {}
 		
 		Map<String, EReplace<?>> replaces = new HashMap<String, EReplace<?>>();
 		replaces.put("<min_x>", EReplace.of(String.valueOf(min.getX())));
@@ -208,8 +212,16 @@ public class EWRegionSelect extends ESubCommand<EverWorldGuard> {
 	}
 	
 	private boolean commandRegionSelectPolygonal(final EPlayer player, final ProtectedRegion region, final World world) {
-		player.setSelectType(SelectionType.POLYGONAL);
-		player.setSelectPoints(region.getPoints());
+		player.setSelectorType(SelectionType.POLYGONAL);
+		Iterator<Vector3i> iterator = region.getPoints().iterator();
+		if (iterator.hasNext()) {
+			player.setSelectorPrimary(iterator.next());
+			while (iterator.hasNext()) {
+				try {
+					player.setSelectorSecondary(iterator.next());
+				} catch (SelectorSecondaryException e) {}
+			}
+		}
 		
 		Vector3i min = region.getMinimumPoint();
 		Vector3i max = region.getMaximumPoint();

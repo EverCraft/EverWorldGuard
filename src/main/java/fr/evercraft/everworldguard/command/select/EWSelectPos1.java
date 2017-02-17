@@ -87,15 +87,13 @@ public class EWSelectPos1 extends ESubCommand<EverWorldGuard> {
 
 	private boolean commandSelectPos1(final EPlayer player) {
 		Vector3i position = player.getLocation().getPosition().toInt();
-		Optional<Vector3i> pos1 = player.getSelectPos1();
-		Optional<Vector3i> pos2 = player.getSelectPos2();
 		
-		if (player.getSelectType().equals(SelectionType.CUBOID)) {
-			return this.commandSelectPos1Cuboid(player, position, pos1, pos2);
-		} else if (player.getSelectType().equals(SelectionType.POLYGONAL)) {
-			return this.commandSelectPos1Polygonal(player, position, pos1, pos2);
-		} else if (player.getSelectType().equals(SelectionType.CYLINDER)) {
-			return this.commandSelectPos1Cylinder(player, position, pos1, pos2);
+		if (player.getSelectorType().equals(SelectionType.CUBOID)) {
+			return this.commandSelectPos1Cuboid(player, position);
+		} else if (player.getSelectorType().equals(SelectionType.POLYGONAL)) {
+			return this.commandSelectPos1Polygonal(player, position);
+		} else if (player.getSelectorType().equals(SelectionType.CYLINDER)) {
+			return this.commandSelectPos1Cylinder(player, position);
 		} else {
 			EAMessages.COMMAND_ERROR.sender()
 				.prefix(EWMessages.PREFIX)
@@ -104,59 +102,59 @@ public class EWSelectPos1 extends ESubCommand<EverWorldGuard> {
 		}
 	}
 	
-	private boolean commandSelectPos1Cuboid(final EPlayer player, Vector3i position, Optional<Vector3i> pos1, Optional<Vector3i> pos2) {
+	private boolean commandSelectPos1Cuboid(final EPlayer player, Vector3i position) {
+		Optional<Vector3i> pos1 = player.getSelectorPrimary();
+		Optional<Vector3i> pos2 = player.getSelectorSecondary();
+		
 		if (pos1.isPresent() && pos1.get().equals(position)) {
 			EWMessages.SELECT_POS1_EQUALS.sender()
-				.replace("<pos>", EWSelect.getPositionHover(position))
+				.replace("<position>", EWSelect.getPositionHover(position))
 				.sendTo(player);
 			return false;
 		}
 		
-		if (!player.setSelectPos1(position)) {
+		if (!player.setSelectorPrimary(position)) {
 			EWMessages.SELECT_POS1_CANCEL.sender()
-				.replace("<pos>", EWSelect.getPositionHover(position))
+				.replace("<position>", EWSelect.getPositionHover(position))
 				.sendTo(player);
 			return false;
 		}
 		
 		if (!pos2.isPresent()) {
 			EWMessages.SELECT_POS1_CUBOID_ONE.sender()
-				.replace("<pos>", EWSelect.getPositionHover(position))
+				.replace("<position>", EWSelect.getPositionHover(position))
 				.sendTo(player);
 		} else {
 			EWMessages.SELECT_POS1_CUBOID_TWO.sender()
-				.replace("<pos>", EWSelect.getPositionHover(position))
-				.replace("<area>", player.getSelectArea().orElse(0).toString())
+				.replace("<position>", EWSelect.getPositionHover(position))
+				.replace("<area>", String.valueOf(player.getSelectorVolume()))
 				.sendTo(player);
 		}
 		return true;
 	}
 	
-	private boolean commandSelectPos1Polygonal(final EPlayer player, Vector3i position, Optional<Vector3i> pos1, Optional<Vector3i> pos2) {
-		if (!player.setSelectPos1(position)) {
+	private boolean commandSelectPos1Polygonal(final EPlayer player, Vector3i position) {
+		if (!player.setSelectorPrimary(position)) {
 			EWMessages.SELECT_POS1_CANCEL.sender()
-				.replace("<pos>", EWSelect.getPositionHover(position))
+				.replace("<position>", EWSelect.getPositionHover(position))
 				.sendTo(player);
 			return false;
 		}
 		
-		player.setSelectPos2(null);
-		player.clearSelectPoints();
 		EWMessages.SELECT_POS1_POLY.sender()
 			.replace("<pos>", EWSelect.getPositionHover(position))
 			.sendTo(player);
 		return true;
 	}
 	
-	private boolean commandSelectPos1Cylinder(final EPlayer player, Vector3i position, Optional<Vector3i> pos1, Optional<Vector3i> pos2) {
-		if (!player.setSelectPos1(position)) {
+	private boolean commandSelectPos1Cylinder(final EPlayer player, Vector3i position) {		
+		if (!player.setSelectorPrimary(position)) {
 			EWMessages.SELECT_POS1_CANCEL.sender()
 				.replace("<pos>", EWSelect.getPositionHover(position))
 				.sendTo(player);
 			return false;
 		}
 		
-		player.setSelectPos2(null);
 		EWMessages.SELECT_POS1_CYLINDER_CENTER.sender()
 			.replace("<pos>", EWSelect.getPositionHover(position))
 			.sendTo(player);

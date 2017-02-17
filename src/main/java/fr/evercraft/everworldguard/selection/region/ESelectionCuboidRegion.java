@@ -32,41 +32,56 @@ public class ESelectionCuboidRegion extends ESelectionRegion implements Selectio
 	private Vector3i position1;
 	private Vector3i position2;
 	
+	public ESelectionCuboidRegion(SelectionRegion.Cuboid region) {
+		super(region.getWorld().orElse(null));
+		
+		this.position1 = region.getPrimaryPosition();
+		this.position2 = region.getSecondaryPosition();
+	}
+	
 	public ESelectionCuboidRegion(World world, Vector3i pos1, Vector3i pos2) {
 		super(world);
 		
-		this.setPosition(pos1, pos2);
+		this.position1 = pos1;
+		this.position2 = pos2;
+		this.recalculate();
 	}
 	
 	public void setPosition(Vector3i pos1, Vector3i pos2) {
-		Preconditions.checkNotNull(pos1, "pos1");
-		Preconditions.checkNotNull(pos2, "pos2");
+		this.position1 = pos1;
+		this.position2 = pos2;
 		
-		
-		int minY = (world == null) ? 255 : world.getBlockMin().getY();
-		int maxY = (world == null) ? 255 : world.getBlockMax().getY();
+		this.recalculate();
+	}
+	
+	private void recalculate() {
+		int minY = (this.world == null) ? 0 : world.getBlockMin().getY();
+		int maxY = (this.world == null) ? 255 : world.getBlockMax().getY();
 		
 		this.position1 = new Vector3i(
-				pos1.getX(),
-				Math.max(minY, Math.min(maxY, pos1.getY())), 
-				pos1.getZ());
+				this.position1.getX(),
+				Math.max(minY, Math.min(maxY, this.position1.getY())), 
+				this.position1.getZ());
 		this.position2 = new Vector3i(
-				pos2.getX(),
-				Math.max(minY, Math.min(maxY, pos2.getY())), 
-				pos2.getZ());
+				this.position2.getX(),
+				Math.max(minY, Math.min(maxY, this.position2.getY())), 
+				this.position2.getZ());
 	}
 	
 	@Override
 	public Vector3i getMinimumPoint() {
-		return this.position1;
+		return Vector3i.from(
+				Math.min(this.position1.getX(), this.position2.getX()),
+                Math.min(this.position1.getY(), this.position2.getY()),
+                Math.min(this.position1.getZ(), this.position2.getZ()));
 	}
 
 	@Override
 	public Vector3i getMaximumPoint() {
 		return Vector3i.from(
-				Math.min(this.position1.getX(), this.position2.getX()),
-                Math.min(this.position1.getY(), this.position2.getY()),
-                Math.min(this.position1.getZ(), this.position2.getZ()));
+				Math.max(this.position1.getX(), this.position2.getX()),
+                Math.max(this.position1.getY(), this.position2.getY()),
+                Math.max(this.position1.getZ(), this.position2.getZ()));
 	}
 	
 	@Override
@@ -169,6 +184,7 @@ public class ESelectionCuboidRegion extends ESelectionRegion implements Selectio
                 }
             }
         }
+		this.recalculate();
 		return true;
 	}
 
@@ -220,7 +236,7 @@ public class ESelectionCuboidRegion extends ESelectionRegion implements Selectio
             }
         }
 		
-		this.setPosition(this.position1, this.position2);
+		this.recalculate();
 		return true;
 	}
 
@@ -229,7 +245,12 @@ public class ESelectionCuboidRegion extends ESelectionRegion implements Selectio
 		this.position1.add(change);
 		this.position2.add(change);
 		
-		this.setPosition(this.position1, this.position2);
+		this.recalculate();
 		return true;
+	}
+	
+	@Override
+	public ESelectionCuboidRegion clone() {
+		return new ESelectionCuboidRegion(this);
 	}
 }
