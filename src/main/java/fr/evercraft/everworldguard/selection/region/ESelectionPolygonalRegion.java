@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.OptionalLong;
 import java.util.stream.IntStream;
 
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.World;
 
 import com.flowpowered.math.vector.Vector3i;
@@ -205,7 +207,7 @@ public class ESelectionPolygonalRegion extends ESelectionRegion implements Selec
     	
     	this.volume = (int) (volume.orElse(0) * (maxY - minY + 1));
     	
-    	System.err.println(this.volume + " : " + chronometer.getMilliseconds().toString() + " mse");
+    	Sponge.getServer().getBroadcastChannel().send(Text.of(this.volume + " : " + chronometer.getMilliseconds().toString() + " ms"));
     	
     	return this.volume;
     }
@@ -232,6 +234,7 @@ public class ESelectionPolygonalRegion extends ESelectionRegion implements Selec
             }
         }
         
+        this.volume = null;
         return true;
     }
 
@@ -256,6 +259,8 @@ public class ESelectionPolygonalRegion extends ESelectionRegion implements Selec
             	this.min = this.min.add(0, y, 0);
             }
         }
+        
+        this.volume = null;
 		return true;
 	}
 
