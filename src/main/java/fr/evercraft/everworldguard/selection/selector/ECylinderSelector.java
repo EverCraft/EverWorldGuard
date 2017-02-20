@@ -43,9 +43,15 @@ public class ECylinderSelector extends ESelector implements Selector.Cylinder {
 	public boolean selectPrimary(Vector3i position) {
 		this.center = position;
 		
-		this.region.setCenter(position);
-		this.region.setMinimumY(position.getY());
-		this.region.setMaximumY(position.getY());
+		if (position == null) {
+			this.region.setCenter(Vector3i.ZERO);
+			this.region.setMinimumY(0);
+			this.region.setMaximumY(0);
+		} else {
+			this.region.setCenter(position);
+			this.region.setMinimumY(position.getY());
+			this.region.setMaximumY(position.getY());
+		}
 		this.region.setRadius(Vector3d.ZERO);
 		return true;
 	}
@@ -62,8 +68,12 @@ public class ECylinderSelector extends ESelector implements Selector.Cylinder {
 		
 		this.radius = position;
 		
-		this.region.setY(position.getY());
-		this.region.setRadius(this.center.sub(this.radius).toDouble());
+		if (position == null) {
+			this.region.extendRadius(this.center.sub(this.radius).toDouble());
+		} else {
+			this.region.setY(position.getY());
+			this.region.extendRadius(this.center.sub(this.radius).toDouble());
+		}
 		return true;
 	}
 

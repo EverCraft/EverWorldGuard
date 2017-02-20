@@ -3,37 +3,20 @@ package fr.evercraft.everworldguard.selection.selector;
 import java.util.List;
 import java.util.Optional;
 
-import javax.annotation.Nullable;
-
 import org.spongepowered.api.world.World;
 
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.collect.ImmutableList;
 
 import fr.evercraft.everapi.services.selection.SelectionRegion;
-import fr.evercraft.everapi.services.selection.Selector;
-import fr.evercraft.everworldguard.selection.region.ESelectionCuboidRegion;
-
-public class ECuboidSelector extends ESelector implements Selector.Cuboid {
-	protected Vector3i position1;
-	protected Vector3i position2;
-	protected final ESelectionCuboidRegion region;
+public class EExtendingCuboidSelector extends ECuboidSelector {
 	
-	public ECuboidSelector() {
+	public EExtendingCuboidSelector() {
 		this(null);
 	}
 	
-	public ECuboidSelector(World world) {
-		super();
-		this.region = new ESelectionCuboidRegion(world, Vector3i.ZERO, Vector3i.ZERO);
-	}
-	
-	public Optional<World> getWorld() {
-		return this.region.getWorld();
-	}
-
-	public void setWorld(@Nullable World world) {
-		this.region.setWorld(world);
+	public EExtendingCuboidSelector(World world) {
+		super(world);
 	}
 
 	@Override
@@ -42,18 +25,26 @@ public class ECuboidSelector extends ESelector implements Selector.Cuboid {
             return false;
         }
 		
-		this.position1 = position;
+		if (this.position1 != null && position != null && (position.compareTo(this.position1) == 0)) {
+            return false;
+        }
+		
+		this.position1 = this.position2 = position;
 		this.recalculate();
 		return true;
 	}
 
 	@Override
 	public boolean selectSecondary(Vector3i position) {
-		if (this.position2 != null && position != null && (position.compareTo(this.position2) == 0)) {
+		if (position == null) return false;
+		if (this.position1 == null || this.position2 == null) this.selectPrimary(position);
+		
+		if (this.region.containsPosition(position)) {
             return false;
         }
 		
-		this.position2 = position;
+		this.position1 = this.position1.min(position);
+		this.position2 = this.position2.max(position);
 		this.recalculate();
 		return true;
 	}
