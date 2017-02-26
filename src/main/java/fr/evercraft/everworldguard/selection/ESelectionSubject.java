@@ -16,23 +16,33 @@
  */
 package fr.evercraft.everworldguard.selection;
 
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
+import org.spongepowered.api.entity.living.player.Player;
+
 import com.google.common.base.Preconditions;
+
+import fr.evercraft.everapi.services.selection.CUIMessage;
+import fr.evercraft.everapi.services.selection.CUIRegion;
 import fr.evercraft.everapi.services.selection.SelectionType;
 import fr.evercraft.everapi.services.selection.SubjectSelection;
 import fr.evercraft.everworldguard.EverWorldGuard;
+import fr.evercraft.everworldguard.selection.cui.ShapeCuiMessage;
 import fr.evercraft.everworldguard.selection.selector.ECuboidSelector;
+import fr.evercraft.everworldguard.selection.selector.ECylinderSelector;
 import fr.evercraft.everworldguard.selection.selector.EPolygonalSelector;
 import fr.evercraft.everworldguard.selection.selector.ESelector;
 
 public class ESelectionSubject implements SubjectSelection {
 	
-	@SuppressWarnings("unused")
 	private final EverWorldGuard plugin;
 	
 	private final UUID identifier;
 	private ESelector selector;
+	
+	private boolean cuiSupport;
+	private int cuiVersion;
 	
 	public ESelectionSubject(final EverWorldGuard plugin, final UUID identifier) {
 		Preconditions.checkNotNull(plugin, "plugin");
@@ -41,7 +51,10 @@ public class ESelectionSubject implements SubjectSelection {
 		this.plugin = plugin;
 		this.identifier = identifier;
 		
-		this.selector = new ECuboidSelector();
+		this.cuiSupport = false;
+		this.cuiVersion = -1;
+		
+		this.selector = new ECuboidSelector(this);
 	}
 	
 	@Override
@@ -56,17 +69,93 @@ public class ESelectionSubject implements SubjectSelection {
 		if (this.selector.getType().equals(type)) return;
 		
 		if (type.equals(SelectionType.CUBOID)) {
-			this.selector = new ECuboidSelector();
+			this.selector = new ECuboidSelector(this);
 		} else if (type.equals(SelectionType.POLYGONAL)) {
-			this.selector = new EPolygonalSelector();
+			this.selector = new EPolygonalSelector(this);
 		} else if (type.equals(SelectionType.CYLINDER)) {
-			// TODO this.selector = new ECylinderSelector();
+			this.selector = new ECylinderSelector(this);
 		}
 	}
 
 	@Override
 	public SelectionType getType() {
 		return this.selector.getType();
+	}
+	
+	@Override
+	public boolean isCuiSupport() {
+		return this.cuiSupport;
+	}
+	
+	@Override
+	public void setCuiSupport(boolean cuiSupport) {
+		this.cuiSupport = cuiSupport;
+	}
+	
+	@Override
+	public int getCUIVersion() {
+		return this.cuiVersion;
+	}
+	
+	public void setCUIVersion(int version) {
+		this.cuiVersion = version;
+	}
+	
+	public void describeCUI() {
+		this.plugin.getEServer().getPlayer(this.getUniqueId()).ifPresent(player -> this.describeCUI(player));
+	}
+	
+	@Override
+	public void describeCUI(Player player) {
+		Preconditions.checkNotNull(player, "player");
+		
+		if (!this.isCuiSupport()) return;
+		
+		if (this.selector instanceof CUIRegion) {
+			CUIRegion cui = (CUIRegion) this.selector;
+
+            if (cui.getProtocolVersion() > this.cuiVersion) {
+            	cui.describeLegacyCUI();
+            } else {
+            	cui.describeCUI();
+            }
+		}
+	}
+	
+	public void describeCUISelection(Player player) {
+		Preconditions.checkNotNull(player, "player");
+		
+		if (!this.isCuiSupport()) return;
+		
+		if (this.selector instanceof CUIRegion) {
+			CUIRegion cui = (CUIRegion) this.selector;
+
+            if (cui.getProtocolVersion() > this.cuiVersion) {
+            	this.dispatchCUIEvent(player, new ShapeCuiMessage(cui.getLegacyTypeID()));
+            	cui.describeLegacyCUI();
+            } else {
+            	this.dispatchCUIEvent(player, new ShapeCuiMessage(cui.getTypeID()));
+            	cui.describeCUI();
+            }
+		}
+	}
+	
+	public void dispatchCUIEvent(CUIMessage message) {
+		this.plugin.getEServer().getPlayer(this.getUniqueId()).ifPresent(player -> this.dispatchCUIEvent(player, message));
+	}
+	
+	public void dispatchCUIEvent(Player player, CUIMessage message) {
+		Preconditions.checkNotNull(message, "message");
+		
+		 String[] params = message.getParameters();
+	     String send = message.getTypeId();
+	     if (params.length > 0) {
+	    	 send = send + "|" + String.join("|", params);
+	     }
+
+	     String finalData = send;
+	     this.plugin.getSelectionService().getCUIChannel().getChannel()
+	     	.sendTo(player, buffer -> buffer.writeBytes(finalData.getBytes(StandardCharsets.UTF_8)));
 	}
 	
 	public String getIdentifier() {

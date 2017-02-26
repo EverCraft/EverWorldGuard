@@ -1,3 +1,19 @@
+/*
+ * This file is part of EverWorldGuard.
+ *
+ * EverWorldGuard is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * EverWorldGuard is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with EverWorldGuard.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package fr.evercraft.everworldguard.selection.selector;
 
 import java.util.ArrayList;
@@ -12,22 +28,27 @@ import org.spongepowered.api.world.World;
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.collect.ImmutableList;
 
+import fr.evercraft.everapi.services.selection.CUIRegion;
 import fr.evercraft.everapi.services.selection.RegionOperationException;
 import fr.evercraft.everapi.services.selection.SelectionRegion;
 import fr.evercraft.everapi.services.selection.Selector;
+import fr.evercraft.everworldguard.selection.ESelectionSubject;
+import fr.evercraft.everworldguard.selection.cui.MinMaxCuiMessage;
+import fr.evercraft.everworldguard.selection.cui.Point2DCuiMessage;
+import fr.evercraft.everworldguard.selection.cui.ShapeCuiMessage;
 import fr.evercraft.everworldguard.selection.region.ESelectionPolygonalRegion;
 
-public class EPolygonalSelector extends ESelector implements Selector.Polygonal {
+public class EPolygonalSelector extends ESelector implements Selector.Polygonal, CUIRegion {
 	
 	private final List<Vector3i> positions;
 	private final ESelectionPolygonalRegion region;
 	
-	public EPolygonalSelector() {
-		this(null);
+	public EPolygonalSelector(ESelectionSubject subject) {
+		this(subject, null);
 	}
 	
-	public EPolygonalSelector(World world) {
-		super();
+	public EPolygonalSelector(ESelectionSubject subject, World world) {
+		super(subject);
 		
 		this.positions = new ArrayList<Vector3i>();
 		this.region = new ESelectionPolygonalRegion(world, Arrays.asList(Vector3i.ZERO));
@@ -50,6 +71,10 @@ public class EPolygonalSelector extends ESelector implements Selector.Polygonal 
         }
 		
 		this.recalculate();
+		
+		this.subject.dispatchCUIEvent(new ShapeCuiMessage(this.getTypeID()));
+		this.subject.dispatchCUIEvent(new Point2DCuiMessage(0, position, this.getVolume()));
+		this.subject.dispatchCUIEvent(new MinMaxCuiMessage(this.region.getMinimumPoint().getY(), this.region.getMaximumPoint().getY()));
 		return true;
 	}
 
@@ -62,6 +87,9 @@ public class EPolygonalSelector extends ESelector implements Selector.Polygonal 
         	this.positions.add(position);
         }
 		this.recalculate();
+		
+		this.subject.dispatchCUIEvent(new Point2DCuiMessage(this.positions.size() - 1, position, this.getVolume()));
+		this.subject.dispatchCUIEvent(new MinMaxCuiMessage(this.region.getMinimumPoint().getY(), this.region.getMaximumPoint().getY()));
 		return true;
 	}
 
@@ -147,5 +175,37 @@ public class EPolygonalSelector extends ESelector implements Selector.Polygonal 
 	@Override
 	public Optional<SelectionRegion.Cylinder> getRegionCylinder() {
 		return Optional.empty();
+	}
+
+	@Override
+	public void describeCUI() {
+		final List<Vector3i> points = this.region.getPositions();
+		int volume = this.getVolume();
+		
+        for (int id = 0; id < points.size(); id++) {
+        	this.subject.dispatchCUIEvent(new Point2DCuiMessage(id, points.get(id), volume));
+        }
+
+        this.subject.dispatchCUIEvent(new MinMaxCuiMessage(this.region.getMinimumPoint().getY(), this.region.getMaximumPoint().getY()));
+	}
+
+	@Override
+	public void describeLegacyCUI() {
+		this.describeCUI();
+	}
+
+	@Override
+	public int getProtocolVersion() {
+		return 0;
+	}
+
+	@Override
+	public String getTypeID() {
+		return "polygon2d";
+	}
+
+	@Override
+	public String getLegacyTypeID() {
+		return "polygon2d";
 	}
 }

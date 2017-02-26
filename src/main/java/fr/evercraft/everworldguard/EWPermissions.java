@@ -32,6 +32,7 @@ public enum EWPermissions implements EnumPermission {
 	SELECT_WAND("select.wand"),
 	SELECT_POS("select.pos"),
 	SELECT_EXPAND("select.expand"),
+	SELECT_CUI("select.cui"),
 	
 	REGION("region.command"),
 	

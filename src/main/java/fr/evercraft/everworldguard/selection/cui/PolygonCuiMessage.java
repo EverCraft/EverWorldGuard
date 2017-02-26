@@ -14,24 +14,33 @@
  * You should have received a copy of the GNU General Public License
  * along with EverWorldGuard.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.evercraft.everworldguard.protection.flags;
+package fr.evercraft.everworldguard.selection.cui;
 
-import fr.evercraft.everapi.services.worldguard.flag.type.StateFlag;
-import fr.evercraft.everworldguard.EWMessage.EWMessages;
+import fr.evercraft.everapi.services.selection.CUIMessage;
 
-public class FlagInvincibility extends StateFlag {
+public class PolygonCuiMessage implements CUIMessage {
 
-	public FlagInvincibility() {
-		super("INVINCIBILITY");
-	}
-	
-	@Override
-	public String getDescription() {
-		return EWMessages.FLAG_INVINCIBILITY.getString();
-	}
+    protected final int[] vertices;
 
-	@Override
-	public State getDefault() {
-		return State.DENY;
-	}
+    public PolygonCuiMessage(int... vertices) {
+        this.vertices = vertices;
+    }
+
+    @Override
+    public String getTypeId() {
+        return "poly";
+    }
+
+    @Override
+    public String[] getParameters() {
+        final String[] ret = new String[this.vertices.length];
+
+        int i = 0;
+        for (int vertex : this.vertices) {
+            ret[i++] = String.valueOf(vertex);
+        }
+
+        return ret;
+    }
+
 }

@@ -39,6 +39,8 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		
 		SELECT_DESCRIPTION("select.description",					"Permet de sélectionner une région"),
 		
+		SELECT_CUI_DESCRIPTION("select.cui.description",								"Permet de voir les régions"),
+		
 		SELECT_INFO_POS("select.info.pos",												"&7(&6<x>&7, &6<y>&7, &6<z>&7)"),
 		SELECT_INFO_POS_HOVER("select.info.posHover",									"&7X : &6<x>[RT]&7Y : &6<y>[RT]&7Z : &6<z>"),
 		SELECT_INFO_CUBOID_POS1_AND_POS2("select.info.cuboidPos1AndPos2",				"&7Position 1 : <pos1> &7, Position 2 : <pos2> &7(&6<area>&7)"),

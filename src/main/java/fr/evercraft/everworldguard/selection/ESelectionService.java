@@ -35,6 +35,7 @@ import fr.evercraft.everapi.services.selection.SelectionService;
 import fr.evercraft.everapi.services.selection.SubjectSelection;
 import fr.evercraft.everapi.util.Chronometer;
 import fr.evercraft.everworldguard.EverWorldGuard;
+import fr.evercraft.everworldguard.selection.cui.CUIChannel;
 
 public class ESelectionService implements SelectionService {
 	
@@ -43,10 +44,12 @@ public class ESelectionService implements SelectionService {
 	private final ConcurrentMap<UUID, ESelectionSubject> subjects;
 	private final LoadingCache<UUID, ESelectionSubject> cache;
 	
+	private final CUIChannel cuiChannel;
 	
 	public ESelectionService(final EverWorldGuard plugin) {		
 		this.plugin = plugin;
 		
+		this.cuiChannel = new CUIChannel(this.plugin);
 		this.subjects = new ConcurrentHashMap<UUID, ESelectionSubject>();
 		this.cache = CacheBuilder.newBuilder()
 					    .maximumSize(100)
@@ -148,5 +151,9 @@ public class ESelectionService implements SelectionService {
 		list.addAll(this.subjects.values());
 		list.addAll(this.cache.asMap().values());
 		return list;
+	}
+
+	public CUIChannel getCUIChannel() {
+		return this.cuiChannel;
 	}
 }

@@ -1,3 +1,19 @@
+/*
+ * This file is part of EverWorldGuard.
+ *
+ * EverWorldGuard is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * EverWorldGuard is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with EverWorldGuard.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package fr.evercraft.everworldguard.selection.selector;
 
 import java.util.List;
@@ -10,21 +26,24 @@ import org.spongepowered.api.world.World;
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.collect.ImmutableList;
 
+import fr.evercraft.everapi.services.selection.CUIRegion;
 import fr.evercraft.everapi.services.selection.SelectionRegion;
 import fr.evercraft.everapi.services.selection.Selector;
+import fr.evercraft.everworldguard.selection.ESelectionSubject;
+import fr.evercraft.everworldguard.selection.cui.PointCuiMessage;
 import fr.evercraft.everworldguard.selection.region.ESelectionCuboidRegion;
 
-public class ECuboidSelector extends ESelector implements Selector.Cuboid {
+public class ECuboidSelector extends ESelector implements Selector.Cuboid, CUIRegion {
 	protected Vector3i position1;
 	protected Vector3i position2;
 	protected final ESelectionCuboidRegion region;
 	
-	public ECuboidSelector() {
-		this(null);
+	public ECuboidSelector(ESelectionSubject subject) {
+		this(subject, null);
 	}
 	
-	public ECuboidSelector(World world) {
-		super();
+	public ECuboidSelector(ESelectionSubject subject, World world) {
+		super(subject);
 		this.region = new ESelectionCuboidRegion(world, Vector3i.ZERO, Vector3i.ZERO);
 	}
 	
@@ -44,6 +63,10 @@ public class ECuboidSelector extends ESelector implements Selector.Cuboid {
 		
 		this.position1 = position;
 		this.recalculate();
+		
+		if (this.position1 != null) {
+			this.subject.dispatchCUIEvent(new PointCuiMessage(0, this.position1, this.getVolume()));
+		}
 		return true;
 	}
 
@@ -55,6 +78,10 @@ public class ECuboidSelector extends ESelector implements Selector.Cuboid {
 		
 		this.position2 = position;
 		this.recalculate();
+		
+		if (this.position2 != null) {
+			this.subject.dispatchCUIEvent(new PointCuiMessage(1, this.position2, this.getVolume()));
+		}
 		return true;
 	}
 
@@ -101,6 +128,8 @@ public class ECuboidSelector extends ESelector implements Selector.Cuboid {
 		
 		this.position1 = this.region.getPrimaryPosition();
 		this.position2 = this.region.getSecondaryPosition();
+		
+		this.describeCUI();
 		return true;
 	}
 
@@ -111,6 +140,8 @@ public class ECuboidSelector extends ESelector implements Selector.Cuboid {
 		
 		this.position1 = this.region.getPrimaryPosition();
 		this.position2 = this.region.getSecondaryPosition();
+		
+		this.describeCUI();
 		return true;
 	}
 
@@ -156,5 +187,38 @@ public class ECuboidSelector extends ESelector implements Selector.Cuboid {
 	@Override
 	public Optional<SelectionRegion.Cylinder> getRegionCylinder() {
 		return Optional.empty();
+	}
+
+	@Override
+	public void describeCUI() {
+		int volume = this.getVolume();
+		
+		if (this.position1 != null) {
+			this.subject.dispatchCUIEvent(new PointCuiMessage(0, this.position1, volume));
+		}
+		
+		if (this.position2 != null) {
+			this.subject.dispatchCUIEvent(new PointCuiMessage(1, this.position2, volume));
+		}
+	}
+
+	@Override
+	public void describeLegacyCUI() {
+		this.describeCUI();
+	}
+
+	@Override
+	public int getProtocolVersion() {
+		return 1;
+	}
+
+	@Override
+	public String getTypeID() {
+		return "ellipsoid";
+	}
+
+	@Override
+	public String getLegacyTypeID() {
+		return "cuboid";
 	}
 }

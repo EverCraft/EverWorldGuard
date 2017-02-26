@@ -1,3 +1,19 @@
+/*
+ * This file is part of EverWorldGuard.
+ *
+ * EverWorldGuard is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * EverWorldGuard is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with EverWorldGuard.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package fr.evercraft.everworldguard.selection.selector;
 
 import java.util.List;
@@ -11,23 +27,29 @@ import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.collect.ImmutableList;
 
+import fr.evercraft.everapi.services.selection.CUIRegion;
 import fr.evercraft.everapi.services.selection.RegionOperationException;
 import fr.evercraft.everapi.services.selection.SelectionRegion;
 import fr.evercraft.everapi.services.selection.Selector;
 import fr.evercraft.everapi.services.selection.SelectorSecondaryException;
+import fr.evercraft.everworldguard.selection.ESelectionSubject;
+import fr.evercraft.everworldguard.selection.cui.CylinderCuiMessage;
+import fr.evercraft.everworldguard.selection.cui.MinMaxCuiMessage;
+import fr.evercraft.everworldguard.selection.cui.PointCuiMessage;
+import fr.evercraft.everworldguard.selection.cui.ShapeCuiMessage;
 import fr.evercraft.everworldguard.selection.region.ESelectionCylinderRegion;
 
-public class ECylinderSelector extends ESelector implements Selector.Cylinder {
+public class ECylinderSelector extends ESelector implements Selector.Cylinder, CUIRegion {
 	private Vector3i center;
 	private Vector3i radius;
 	private final ESelectionCylinderRegion region;
 	
-	public ECylinderSelector() {
-		this(null);
+	public ECylinderSelector(ESelectionSubject subject) {
+		this(subject, null);
 	}
 	
-	public ECylinderSelector(World world) {
-		super();
+	public ECylinderSelector(ESelectionSubject subject, World world) {
+		super(subject);
 		this.region = new ESelectionCylinderRegion(world, Vector3i.ZERO, Vector3d.ZERO, 0, 0);
 	}
 	
@@ -53,6 +75,9 @@ public class ECylinderSelector extends ESelector implements Selector.Cylinder {
 			this.region.setMaximumY(position.getY());
 		}
 		this.region.setRadius(Vector3d.ZERO);
+		
+		this.subject.dispatchCUIEvent(new ShapeCuiMessage(this.getTypeID()));
+		this.subject.describeCUI();
 		return true;
 	}
 
@@ -74,6 +99,8 @@ public class ECylinderSelector extends ESelector implements Selector.Cylinder {
 			this.region.setY(position.getY());
 			this.region.extendRadius(this.center.sub(this.radius).toDouble());
 		}
+		
+		this.subject.describeCUI();
 		return true;
 	}
 
@@ -159,5 +186,36 @@ public class ECylinderSelector extends ESelector implements Selector.Cylinder {
 	public Optional<SelectionRegion.Cylinder> getRegionCylinder() {
 		if (this.center == null || this.radius == null) return Optional.empty();
 		return Optional.of(this.region);
+	}
+
+	@Override
+	public void describeCUI() {
+		this.subject.dispatchCUIEvent(new CylinderCuiMessage(this.region.getCenter(), this.region.getRadius()));
+		this.subject.dispatchCUIEvent(new MinMaxCuiMessage(this.region.getMinimumY(), this.region.getMaximumY()));
+	}
+
+	@Override
+	public void describeLegacyCUI() {
+		if (this.center != null && this.radius != null) {
+			int volume = this.getVolume();
+			
+			this.subject.dispatchCUIEvent(new PointCuiMessage(0, this.region.getMinimumPoint(), volume));
+			this.subject.dispatchCUIEvent(new PointCuiMessage(1, this.region.getMaximumPoint(), volume));
+		}
+	}
+
+	@Override
+	public int getProtocolVersion() {
+		return 1;
+	}
+
+	@Override
+	public String getTypeID() {
+		return "cylinder";
+	}
+
+	@Override
+	public String getLegacyTypeID() {
+		return "cuboid";
 	}
 }

@@ -14,24 +14,26 @@
  * You should have received a copy of the GNU General Public License
  * along with EverWorldGuard.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.evercraft.everworldguard.protection.flags;
+package fr.evercraft.everworldguard.selection.cui;
 
-import fr.evercraft.everapi.services.worldguard.flag.type.StateFlag;
-import fr.evercraft.everworldguard.EWMessage.EWMessages;
+import fr.evercraft.everapi.services.selection.CUIMessage;
 
-public class FlagInvincibility extends StateFlag {
+public class ShapeCuiMessage implements CUIMessage {
 
-	public FlagInvincibility() {
-		super("INVINCIBILITY");
-	}
-	
-	@Override
-	public String getDescription() {
-		return EWMessages.FLAG_INVINCIBILITY.getString();
-	}
+    protected final String shapeName;
 
-	@Override
-	public State getDefault() {
-		return State.DENY;
-	}
+    public ShapeCuiMessage(String shapeName) {
+        this.shapeName = shapeName;
+    }
+
+    @Override
+    public String getTypeId() {
+        return "s";
+    }
+
+    @Override
+    public String[] getParameters() {
+        return new String[] { this.shapeName };
+    }
+
 }
