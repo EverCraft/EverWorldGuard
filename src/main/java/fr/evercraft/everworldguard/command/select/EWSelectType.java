@@ -128,10 +128,13 @@ public class EWSelectType extends ESubCommand<EverWorldGuard> {
 			EWMessages.SELECT_TYPE_POLYGONAL.sendTo(player);
 		} else if (player.getSelectorType().equals(SelectionType.CYLINDER)) {
 			EWMessages.SELECT_TYPE_CYLINDER.sendTo(player);
+		} else if (player.getSelectorType().equals(SelectionType.ELLIPSOID)) {
+			EWMessages.SELECT_TYPE_ELLIPSOID.sendTo(player);
 		} else {
 			player.sendMessage(this.help(player));
 			return false;
 		}
+		
 		return true;
 	}
 }

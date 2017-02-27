@@ -36,12 +36,12 @@ import fr.evercraft.everworldguard.selection.ESelectionSubject;
 import fr.evercraft.everworldguard.selection.cui.EllipsoidPointCuiMessage;
 import fr.evercraft.everworldguard.selection.cui.PointCuiMessage;
 import fr.evercraft.everworldguard.selection.cui.ShapeCuiMessage;
-import fr.evercraft.everworldguard.selection.region.ESelectionCylinderRegion;
+import fr.evercraft.everworldguard.selection.region.ESelectionEllipsoidRegion;
 
 public class EEllipsoidSelector extends ESelector implements Selector.Cylinder, CUIRegion {
 	private Vector3i center;
 	private Vector3i radius;
-	private final ESelectionCylinderRegion region;
+	private final ESelectionEllipsoidRegion region;
 	
 	public EEllipsoidSelector(ESelectionSubject subject) {
 		this(subject, null);
@@ -49,7 +49,7 @@ public class EEllipsoidSelector extends ESelector implements Selector.Cylinder, 
 	
 	public EEllipsoidSelector(ESelectionSubject subject, World world) {
 		super(subject);
-		this.region = new ESelectionCylinderRegion(world, Vector3i.ZERO, Vector3d.ZERO, 0, 0);
+		this.region = new ESelectionEllipsoidRegion(world, Vector3i.ZERO, Vector3d.ZERO);
 	}
 	
 	public Optional<World> getWorld() {
@@ -66,12 +66,8 @@ public class EEllipsoidSelector extends ESelector implements Selector.Cylinder, 
 		
 		if (position == null) {
 			this.region.setCenter(Vector3i.ZERO);
-			this.region.setMinimumY(0);
-			this.region.setMaximumY(0);
 		} else {
 			this.region.setCenter(position);
-			this.region.setMinimumY(position.getY());
-			this.region.setMaximumY(position.getY());
 		}
 		this.region.setRadius(Vector3d.ZERO);
 		
@@ -93,9 +89,8 @@ public class EEllipsoidSelector extends ESelector implements Selector.Cylinder, 
 		this.radius = position;
 		
 		if (position == null) {
-			this.region.extendRadius(this.center.sub(this.radius).toDouble());
+			this.region.setRadius(Vector3d.ZERO);
 		} else {
-			this.region.setY(position.getY());
 			this.region.extendRadius(this.center.sub(this.radius).toDouble());
 		}
 		
@@ -109,8 +104,6 @@ public class EEllipsoidSelector extends ESelector implements Selector.Cylinder, 
 		this.radius = null;
 		
 		this.region.setCenter(Vector3i.ZERO);
-		this.region.setMinimumY(0);
-		this.region.setMaximumY(0);
 		this.region.setRadius(Vector3d.ZERO);
 		return true;
 	}
@@ -170,21 +163,14 @@ public class EEllipsoidSelector extends ESelector implements Selector.Cylinder, 
 		if (this.center == null || this.radius == null) return Optional.empty();
 		return Optional.of(this.region);
 	}
-
+	
+	@SuppressWarnings("unchecked")
 	@Override
-	public Optional<SelectionRegion.Cuboid> getRegionCuboid() {
-		return Optional.empty();
-	}
-
-	@Override
-	public Optional<SelectionRegion.Polygonal> getRegionPolygonal() {
-		return Optional.empty();
-	}
-
-	@Override
-	public Optional<SelectionRegion.Cylinder> getRegionCylinder() {
+	public <T extends SelectionRegion> Optional<T> getRegion(Class<T> type) {
+		if (!type.equals(SelectionRegion.Ellipsoid.class)) return Optional.empty();
 		if (this.center == null || this.radius == null) return Optional.empty();
-		return Optional.of(this.region);
+		
+		return Optional.of((T) this.region);
 	}
 
 	@Override

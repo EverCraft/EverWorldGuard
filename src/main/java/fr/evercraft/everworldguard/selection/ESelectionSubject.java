@@ -31,6 +31,7 @@ import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.selection.cui.ShapeCuiMessage;
 import fr.evercraft.everworldguard.selection.selector.ECuboidSelector;
 import fr.evercraft.everworldguard.selection.selector.ECylinderSelector;
+import fr.evercraft.everworldguard.selection.selector.EEllipsoidSelector;
 import fr.evercraft.everworldguard.selection.selector.EPolygonalSelector;
 import fr.evercraft.everworldguard.selection.selector.ESelector;
 
@@ -74,6 +75,13 @@ public class ESelectionSubject implements SubjectSelection {
 			this.selector = new EPolygonalSelector(this);
 		} else if (type.equals(SelectionType.CYLINDER)) {
 			this.selector = new ECylinderSelector(this);
+		} else if (type.equals(SelectionType.ELLIPSOID)) {
+			this.selector = new EEllipsoidSelector(this);
+		}
+		
+		if (this.selector instanceof CUIRegion) {
+			CUIRegion cui = (CUIRegion) this.selector;
+			this.dispatchCUIEvent(new ShapeCuiMessage(cui.getTypeID()));
 		}
 	}
 

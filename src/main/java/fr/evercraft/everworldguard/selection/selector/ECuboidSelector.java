@@ -64,6 +64,7 @@ public class ECuboidSelector extends ESelector implements Selector.Cuboid, CUIRe
 		this.position1 = position;
 		this.recalculate();
 		
+		// CUI
 		if (this.position1 != null) {
 			this.subject.dispatchCUIEvent(new PointCuiMessage(0, this.position1, this.getVolume()));
 		}
@@ -79,6 +80,7 @@ public class ECuboidSelector extends ESelector implements Selector.Cuboid, CUIRe
 		this.position2 = position;
 		this.recalculate();
 		
+		// CUI
 		if (this.position2 != null) {
 			this.subject.dispatchCUIEvent(new PointCuiMessage(1, this.position2, this.getVolume()));
 		}
@@ -173,20 +175,13 @@ public class ECuboidSelector extends ESelector implements Selector.Cuboid, CUIRe
 		return Optional.of(this.region);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public Optional<SelectionRegion.Cuboid> getRegionCuboid() {
+	public <T extends SelectionRegion> Optional<T> getRegion(Class<T> type) {
+		if (!type.equals(SelectionRegion.Cuboid.class)) return Optional.empty();
 		if (this.position1 == null || this.position2 == null) return Optional.empty();
-		return Optional.of(this.region);
-	}
-
-	@Override
-	public Optional<SelectionRegion.Polygonal> getRegionPolygonal() {
-		return Optional.empty();
-	}
-
-	@Override
-	public Optional<SelectionRegion.Cylinder> getRegionCylinder() {
-		return Optional.empty();
+		
+		return Optional.of((T) this.region);
 	}
 
 	@Override
@@ -209,12 +204,12 @@ public class ECuboidSelector extends ESelector implements Selector.Cuboid, CUIRe
 
 	@Override
 	public int getProtocolVersion() {
-		return 1;
+		return 0;
 	}
 
 	@Override
 	public String getTypeID() {
-		return "ellipsoid";
+		return "cuboid";
 	}
 
 	@Override

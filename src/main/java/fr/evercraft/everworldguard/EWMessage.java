@@ -92,6 +92,8 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 																"&72D polygon selector: Left/right click to add a point."),
 		SELECT_TYPE_CYLINDER("select.type.cylinder",			"&7Cylindrique : clique gauche pour définir le centre, clique droit pour définir le rayon.",
 																"&7Cylindrical select: Left click=center, right click to extend."),
+		SELECT_TYPE_ELLIPSOID("select.type.ellipsoid",			"&7Ellipsoid : clique gauche pour définir le centre, clique droit pour définir les formes.",
+																"&7Ellipsoid select: Left click=center, right click to extend."),
 		SELECT_TYPE_EQUALS("select.type.equals",				"&cErreur : Sélection &6<type> &cdéjà activée"),
 		SELECT_TYPE_CANCEL("select.type.cancel",				"&cErreur : Impossible de changer de type de sélection pour le moment."),
 		

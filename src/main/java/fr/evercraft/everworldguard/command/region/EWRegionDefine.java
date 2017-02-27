@@ -181,7 +181,7 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 	}
 	
 	private boolean commandRegionDefineCuboid(final EPlayer player, final String region_id, final Set<EUser> players, final Set<Subject> groups) {
-		Optional<SelectionRegion.Cuboid> selection = player.getSelectorRegionCuboid();
+		Optional<SelectionRegion.Cuboid> selection = player.getSelectorRegion(SelectionRegion.Cuboid.class);
 		if (!selection.isPresent()) {
 			EWMessages.REGION_DEFINE_CUBOID_ERROR_POSITION.sender()
 				.replace("<region>", region_id)
@@ -229,7 +229,7 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 	}
 	
 	private boolean commandRegionDefinePolygonal(final EPlayer player, final String region_id, final Set<EUser> players, final Set<Subject> groups) {
-		Optional<SelectionRegion.Polygonal> selector = player.getSelectorRegionPolygonal();
+		Optional<SelectionRegion.Polygonal> selector = player.getSelectorRegion(SelectionRegion.Polygonal.class);
 		if (!selector.isPresent()) {
 			EWMessages.REGION_DEFINE_POLYGONAL_ERROR_POSITION.sender()
 				.replace("<region>", region_id)

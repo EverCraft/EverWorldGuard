@@ -164,7 +164,7 @@ public class EWRegionRedefine extends ESubCommand<EverWorldGuard> {
 	}
 	
 	private boolean commandRegionRedefineCuboid(final EPlayer player, final ProtectedRegion region) {
-		Optional<SelectionRegion.Cuboid> selector = player.getSelectorRegionCuboid();
+		Optional<SelectionRegion.Cuboid> selector = player.getSelectorRegion(SelectionRegion.Cuboid.class);
 		if (!selector.isPresent()) {
 			EWMessages.REGION_REDEFINE_CUBOID_ERROR_POSITION.sender()
 				.replace("<region>", region.getIdentifier())
@@ -206,7 +206,7 @@ public class EWRegionRedefine extends ESubCommand<EverWorldGuard> {
 	}
 	
 	private boolean commandRegionRedefinePolygonal(final EPlayer player, final ProtectedRegion region) {
-		Optional<SelectionRegion.Polygonal> selector = player.getSelectorRegionPolygonal();
+		Optional<SelectionRegion.Polygonal> selector = player.getSelectorRegion(SelectionRegion.Polygonal.class);
 		if (!selector.isPresent()) {
 			EWMessages.REGION_REDEFINE_POLYGONAL_ERROR_POSITION.sender()
 				.replace("<region>", region.getIdentifier())

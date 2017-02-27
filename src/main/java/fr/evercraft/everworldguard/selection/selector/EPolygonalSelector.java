@@ -66,15 +66,20 @@ public class EPolygonalSelector extends ESelector implements Selector.Polygonal,
 	public boolean selectPrimary(@Nullable Vector3i position) {
 		this.positions.clear();
 		
-		if (position != null) {
+		if (position == null) {
+			this.recalculate();
+			
+			// CUI
+			this.subject.dispatchCUIEvent(new ShapeCuiMessage(this.getTypeID()));
+		} else {
 			this.positions.add(position);
-        }
-		
-		this.recalculate();
-		
-		this.subject.dispatchCUIEvent(new ShapeCuiMessage(this.getTypeID()));
-		this.subject.dispatchCUIEvent(new Point2DCuiMessage(0, position, this.getVolume()));
-		this.subject.dispatchCUIEvent(new MinMaxCuiMessage(this.region.getMinimumPoint().getY(), this.region.getMaximumPoint().getY()));
+			this.recalculate();
+
+			// CUI
+			this.subject.dispatchCUIEvent(new ShapeCuiMessage(this.getTypeID()));
+			this.subject.dispatchCUIEvent(new Point2DCuiMessage(0, position, this.getVolume()));
+			this.subject.dispatchCUIEvent(new MinMaxCuiMessage(this.region.getMinimumPoint().getY(), this.region.getMaximumPoint().getY()));
+		}
 		return true;
 	}
 
@@ -83,13 +88,18 @@ public class EPolygonalSelector extends ESelector implements Selector.Polygonal,
 		if (position == null) {
             if (this.positions.isEmpty())return false;
             this.positions.get(this.positions.size() - 1);
+            this.recalculate();
+            
+            // CUI
+            this.subject.describeCUI();
         } else {
         	this.positions.add(position);
+        	this.recalculate();
+        	
+        	// CUI
+        	this.subject.dispatchCUIEvent(new Point2DCuiMessage(this.positions.size() - 1, position, this.getVolume()));
+    		this.subject.dispatchCUIEvent(new MinMaxCuiMessage(this.region.getMinimumPoint().getY(), this.region.getMaximumPoint().getY()));
         }
-		this.recalculate();
-		
-		this.subject.dispatchCUIEvent(new Point2DCuiMessage(this.positions.size() - 1, position, this.getVolume()));
-		this.subject.dispatchCUIEvent(new MinMaxCuiMessage(this.region.getMinimumPoint().getY(), this.region.getMaximumPoint().getY()));
 		return true;
 	}
 
@@ -103,6 +113,9 @@ public class EPolygonalSelector extends ESelector implements Selector.Polygonal,
 
 	@Override
 	public int getVolume() {
+		if (this.positions.size() < 2) {
+			return 0;
+		}
 		return this.region.getVolume();
 	}
 
@@ -113,7 +126,7 @@ public class EPolygonalSelector extends ESelector implements Selector.Polygonal,
 	}
 	
 	public void recalculate() {
-		if (this.positions.size() < 2) {
+		if (this.positions.isEmpty()) {
 			this.region.setPositions(Arrays.asList(Vector3i.ZERO));
 		} else {
 			this.region.setPositions(this.positions);
@@ -160,21 +173,14 @@ public class EPolygonalSelector extends ESelector implements Selector.Polygonal,
 		if (this.positions.isEmpty()) return Optional.empty();
 		return Optional.of(this.region);
 	}
-
+	
+	@SuppressWarnings("unchecked")
 	@Override
-	public Optional<SelectionRegion.Cuboid> getRegionCuboid() {
-		return Optional.empty();
-	}
-
-	@Override
-	public Optional<SelectionRegion.Polygonal> getRegionPolygonal() {
+	public <T extends SelectionRegion> Optional<T> getRegion(Class<T> type) {
+		if (!type.equals(SelectionRegion.Polygonal.class)) return Optional.empty();
 		if (this.positions.isEmpty()) return Optional.empty();
-		return Optional.of(this.region);
-	}
-
-	@Override
-	public Optional<SelectionRegion.Cylinder> getRegionCylinder() {
-		return Optional.empty();
+		
+		return Optional.of((T) this.region);
 	}
 
 	@Override

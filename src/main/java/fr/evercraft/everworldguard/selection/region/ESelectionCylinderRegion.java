@@ -59,7 +59,7 @@ public class ESelectionCylinderRegion extends ESelectionRegion implements Select
 	}
 	
 	public Vector3i getCenter() {
-		return Vector3i.from(this.center.getX(), (this.maxY + this.minY / 2), this.center.getY());
+		return Vector3i.from(this.center.getX(), (this.maxY + this.minY) / 2, this.center.getZ());
 	}
 	
 	public void setRadius(Vector3d radius) {
@@ -72,7 +72,7 @@ public class ESelectionCylinderRegion extends ESelectionRegion implements Select
 	}
 	
 	public void extendRadius(Vector3d radius) {
-		this.setRadius(this.radius.max(radius));
+		this.setRadius(this.radius.max(radius.abs()));
     }
 	
 	public void setMinimumY(int y) {

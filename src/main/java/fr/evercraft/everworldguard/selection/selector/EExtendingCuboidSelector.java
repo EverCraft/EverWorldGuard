@@ -24,8 +24,9 @@ import org.spongepowered.api.world.World;
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.collect.ImmutableList;
 
-import fr.evercraft.everapi.services.selection.SelectionRegion;
 import fr.evercraft.everworldguard.selection.ESelectionSubject;
+import fr.evercraft.everworldguard.selection.cui.PointCuiMessage;
+
 public class EExtendingCuboidSelector extends ECuboidSelector {
 	
 	public EExtendingCuboidSelector(ESelectionSubject subject) {
@@ -63,6 +64,11 @@ public class EExtendingCuboidSelector extends ECuboidSelector {
 		this.position1 = this.position1.min(position);
 		this.position2 = this.position2.max(position);
 		this.recalculate();
+		
+		// CUI
+		if (this.position1 != null) {
+			this.subject.dispatchCUIEvent(new PointCuiMessage(0, this.position1, this.getVolume()));
+		}
 		return true;
 	}
 
@@ -72,6 +78,11 @@ public class EExtendingCuboidSelector extends ECuboidSelector {
 		this.position2 = null;
 		
 		this.recalculate();
+		
+		// CUI
+		if (this.position2 != null) {
+			this.subject.dispatchCUIEvent(new PointCuiMessage(1, this.position2, this.getVolume()));
+		}
 		return true;
 	}
 
@@ -142,27 +153,5 @@ public class EExtendingCuboidSelector extends ECuboidSelector {
 			builder.add(this.position2);
 		}
 		return builder.build();
-	}
-	
-	@Override
-	public Optional<SelectionRegion> getRegion() {
-		if (this.position1 == null || this.position2 == null) return Optional.empty();
-		return Optional.of(this.region);
-	}
-
-	@Override
-	public Optional<SelectionRegion.Cuboid> getRegionCuboid() {
-		if (this.position1 == null || this.position2 == null) return Optional.empty();
-		return Optional.of(this.region);
-	}
-
-	@Override
-	public Optional<SelectionRegion.Polygonal> getRegionPolygonal() {
-		return Optional.empty();
-	}
-
-	@Override
-	public Optional<SelectionRegion.Cylinder> getRegionCylinder() {
-		return Optional.empty();
 	}
 }

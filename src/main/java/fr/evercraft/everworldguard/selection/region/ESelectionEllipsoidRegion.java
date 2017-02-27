@@ -56,16 +56,15 @@ public class ESelectionEllipsoidRegion extends ESelectionRegion implements Selec
 	}
 	
 	public void setRadius(Vector3d radius) {
-		radius = radius.abs();
-		this.radius = Vector3d.from(radius.getX() + 0.5, 0, radius.getZ() + 0.5);
+		this.radius = radius.abs().add(0.5, 0.5, 0.5);
 	}
 	
 	public Vector3d getRadius() {
-		return this.radius.sub(0.5, 0, 0.5);
+		return this.radius.sub(0.5, 0.5, 0.5);
 	}
 	
 	public void extendRadius(Vector3d radius) {
-		this.setRadius(this.radius.max(radius));
+		this.setRadius(this.radius.max(radius.abs()));
     }
 	
 	@Override
