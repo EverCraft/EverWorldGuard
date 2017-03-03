@@ -32,8 +32,10 @@ import fr.evercraft.everworldguard.selection.cui.ShapeCuiMessage;
 import fr.evercraft.everworldguard.selection.selector.ECuboidSelector;
 import fr.evercraft.everworldguard.selection.selector.ECylinderSelector;
 import fr.evercraft.everworldguard.selection.selector.EEllipsoidSelector;
+import fr.evercraft.everworldguard.selection.selector.EExtendingCuboidSelector;
 import fr.evercraft.everworldguard.selection.selector.EPolygonalSelector;
 import fr.evercraft.everworldguard.selection.selector.ESelector;
+import fr.evercraft.everworldguard.selection.selector.ESphereSelector;
 
 public class ESelectionSubject implements SubjectSelection {
 	
@@ -71,12 +73,16 @@ public class ESelectionSubject implements SubjectSelection {
 		
 		if (type.equals(SelectionType.CUBOID)) {
 			this.selector = new ECuboidSelector(this);
+		} else if (type.equals(SelectionType.EXTEND)) {
+			this.selector = new EExtendingCuboidSelector(this);
 		} else if (type.equals(SelectionType.POLYGONAL)) {
 			this.selector = new EPolygonalSelector(this);
 		} else if (type.equals(SelectionType.CYLINDER)) {
 			this.selector = new ECylinderSelector(this);
 		} else if (type.equals(SelectionType.ELLIPSOID)) {
 			this.selector = new EEllipsoidSelector(this);
+		} else if (type.equals(SelectionType.SPHERE)) {
+			this.selector = new ESphereSelector(this);
 		}
 		
 		if (this.selector instanceof CUIRegion) {
@@ -154,6 +160,8 @@ public class ESelectionSubject implements SubjectSelection {
 	
 	public void dispatchCUIEvent(Player player, CUIMessage message) {
 		Preconditions.checkNotNull(message, "message");
+		
+		if (!this.isCuiSupport()) return;
 		
 		 String[] params = message.getParameters();
 	     String send = message.getTypeId();

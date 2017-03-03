@@ -124,12 +124,16 @@ public class EWSelectType extends ESubCommand<EverWorldGuard> {
 		
 		if (player.getSelectorType().equals(SelectionType.CUBOID)) {
 			EWMessages.SELECT_TYPE_CUBOID.sendTo(player);
+		} else if (player.getSelectorType().equals(SelectionType.EXTEND)) {
+			EWMessages.SELECT_TYPE_EXTEND.sendTo(player);
 		} else if (player.getSelectorType().equals(SelectionType.POLYGONAL)) {
 			EWMessages.SELECT_TYPE_POLYGONAL.sendTo(player);
 		} else if (player.getSelectorType().equals(SelectionType.CYLINDER)) {
 			EWMessages.SELECT_TYPE_CYLINDER.sendTo(player);
 		} else if (player.getSelectorType().equals(SelectionType.ELLIPSOID)) {
 			EWMessages.SELECT_TYPE_ELLIPSOID.sendTo(player);
+		} else if (player.getSelectorType().equals(SelectionType.SPHERE)) {
+			EWMessages.SELECT_TYPE_SPHERE.sendTo(player);
 		} else {
 			player.sendMessage(this.help(player));
 			return false;

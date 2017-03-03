@@ -43,19 +43,24 @@ public class EExtendingCuboidSelector extends ECuboidSelector {
             return false;
         }
 		
-		if (this.position1 != null && position != null && (position.compareTo(this.position1) == 0)) {
+		if (this.position2 != null && position != null && (position.compareTo(this.position2) == 0)) {
             return false;
         }
 		
 		this.position1 = this.position2 = position;
 		this.recalculate();
+		
+		// CUI
+		if (this.position1 != null) {
+			this.subject.dispatchCUIEvent(new PointCuiMessage(0, this.position1, this.getVolume()));
+		}
 		return true;
 	}
 
 	@Override
 	public boolean selectSecondary(Vector3i position) {
 		if (position == null) return false;
-		if (this.position1 == null || this.position2 == null) this.selectPrimary(position);
+		if (this.position1 == null) return this.selectPrimary(position);
 		
 		if (this.region.containsPosition(position)) {
             return false;
@@ -66,8 +71,9 @@ public class EExtendingCuboidSelector extends ECuboidSelector {
 		this.recalculate();
 		
 		// CUI
-		if (this.position1 != null) {
+		if (this.position2 != null) {
 			this.subject.dispatchCUIEvent(new PointCuiMessage(0, this.position1, this.getVolume()));
+			this.subject.dispatchCUIEvent(new PointCuiMessage(1, this.position2, this.getVolume()));
 		}
 		return true;
 	}

@@ -185,9 +185,12 @@ public class EPolygonalSelector extends ESelector implements Selector.Polygonal,
 
 	@Override
 	public void describeCUI() {
-		final List<Vector3i> points = this.region.getPositions();
-		int volume = this.getVolume();
+		this.subject.dispatchCUIEvent(new ShapeCuiMessage(this.getTypeID()));
 		
+		final List<Vector3i> points = this.region.getPositions();
+		if (points.isEmpty()) return;
+		
+		int volume = this.getVolume();
         for (int id = 0; id < points.size(); id++) {
         	this.subject.dispatchCUIEvent(new Point2DCuiMessage(id, points.get(id), volume));
         }

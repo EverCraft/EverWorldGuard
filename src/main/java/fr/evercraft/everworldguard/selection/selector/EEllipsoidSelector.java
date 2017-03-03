@@ -39,9 +39,9 @@ import fr.evercraft.everworldguard.selection.cui.ShapeCuiMessage;
 import fr.evercraft.everworldguard.selection.region.ESelectionEllipsoidRegion;
 
 public class EEllipsoidSelector extends ESelector implements Selector.Cylinder, CUIRegion {
-	private Vector3i center;
-	private Vector3i radius;
-	private final ESelectionEllipsoidRegion region;
+	protected Vector3i center;
+	protected Vector3i radius;
+	protected final ESelectionEllipsoidRegion region;
 	
 	public EEllipsoidSelector(ESelectionSubject subject) {
 		this(subject, null);
@@ -61,6 +61,16 @@ public class EEllipsoidSelector extends ESelector implements Selector.Cylinder, 
 	}
 
 	@Override
+	public int getVolume() {
+		return this.region.getVolume();
+	}
+
+	@Override
+	public Optional<Vector3i> getPrimaryPosition() {
+		return Optional.ofNullable(this.center);
+	}
+	
+	@Override
 	public boolean selectPrimary(Vector3i position) {
 		this.center = position;
 		
@@ -71,7 +81,7 @@ public class EEllipsoidSelector extends ESelector implements Selector.Cylinder, 
 		}
 		this.region.setRadius(Vector3d.ZERO);
 		
-		this.subject.dispatchCUIEvent(new ShapeCuiMessage(this.getTypeID()));
+		// CUI
 		this.subject.describeCUI();
 		return true;
 	}
@@ -94,6 +104,7 @@ public class EEllipsoidSelector extends ESelector implements Selector.Cylinder, 
 			this.region.extendRadius(this.center.sub(this.radius).toDouble());
 		}
 		
+		// CUI
 		this.subject.describeCUI();
 		return true;
 	}
@@ -105,17 +116,10 @@ public class EEllipsoidSelector extends ESelector implements Selector.Cylinder, 
 		
 		this.region.setCenter(Vector3i.ZERO);
 		this.region.setRadius(Vector3d.ZERO);
+		
+		// CUI
+		this.subject.describeCUI();
 		return true;
-	}
-
-	@Override
-	public int getVolume() {
-		return this.region.getVolume();
-	}
-
-	@Override
-	public Optional<Vector3i> getPrimaryPosition() {
-		return Optional.ofNullable(this.center);
 	}
 	
 	@Override
@@ -124,6 +128,9 @@ public class EEllipsoidSelector extends ESelector implements Selector.Cylinder, 
 		if (!this.region.expand(changes)) return false;
 		
 		this.center = this.region.getPrimaryPosition();
+		
+		// CUI
+		this.subject.describeCUI();
 		return true;
 	}
 
@@ -133,6 +140,9 @@ public class EEllipsoidSelector extends ESelector implements Selector.Cylinder, 
 		if (!this.region.contract(changes)) return false;
 		
 		this.center = this.region.getPrimaryPosition();
+		
+		// CUI
+		this.subject.describeCUI();
 		return true;
 	}
 
@@ -143,6 +153,9 @@ public class EEllipsoidSelector extends ESelector implements Selector.Cylinder, 
 		
 		this.center = this.region.getPrimaryPosition();
 		this.radius = null;
+		
+		// CUI
+		this.subject.describeCUI();
 		return true;
 	}
 
@@ -175,14 +188,20 @@ public class EEllipsoidSelector extends ESelector implements Selector.Cylinder, 
 
 	@Override
 	public void describeCUI() {
+		this.subject.dispatchCUIEvent(new ShapeCuiMessage(this.getTypeID()));
+		
+		if (this.center == null && this.radius == null) return;
 		this.subject.dispatchCUIEvent(new EllipsoidPointCuiMessage(0, this.region.getCenter()));
 		this.subject.dispatchCUIEvent(new EllipsoidPointCuiMessage(1, this.region.getRadius().toInt()));
 	}
 
 	@Override
 	public void describeLegacyCUI() {
+		this.subject.dispatchCUIEvent(new ShapeCuiMessage(this.getLegacyTypeID()));
+		
 		int volume = this.getVolume();
 		
+		if (this.center == null && this.radius == null) return;
 		this.subject.dispatchCUIEvent(new PointCuiMessage(0, this.region.getMinimumPoint(), volume));
 		this.subject.dispatchCUIEvent(new PointCuiMessage(1, this.region.getMaximumPoint(), volume));
 	}

@@ -21,8 +21,6 @@ import java.util.Optional;
 
 import javax.annotation.Nullable;
 
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.World;
 
 import com.flowpowered.math.vector.Vector3d;
@@ -38,6 +36,7 @@ import fr.evercraft.everworldguard.selection.ESelectionSubject;
 import fr.evercraft.everworldguard.selection.cui.CylinderCuiMessage;
 import fr.evercraft.everworldguard.selection.cui.MinMaxCuiMessage;
 import fr.evercraft.everworldguard.selection.cui.PointCuiMessage;
+import fr.evercraft.everworldguard.selection.cui.ShapeCuiMessage;
 import fr.evercraft.everworldguard.selection.region.ESelectionCylinderRegion;
 
 public class ECylinderSelector extends ESelector implements Selector.Cylinder, CUIRegion {
@@ -63,6 +62,16 @@ public class ECylinderSelector extends ESelector implements Selector.Cylinder, C
 	}
 
 	@Override
+	public int getVolume() {
+		return this.region.getVolume();
+	}
+
+	@Override
+	public Optional<Vector3i> getPrimaryPosition() {
+		return Optional.ofNullable(this.center);
+	}
+	
+	@Override
 	public boolean selectPrimary(Vector3i position) {
 		this.center = position;
 		
@@ -77,6 +86,7 @@ public class ECylinderSelector extends ESelector implements Selector.Cylinder, C
 		}
 		this.region.setRadius(Vector3d.ZERO);
 		
+		// CUI
 		this.subject.describeCUI();
 		return true;
 	}
@@ -98,10 +108,9 @@ public class ECylinderSelector extends ESelector implements Selector.Cylinder, C
 		} else {
 			this.region.setY(position.getY());
 			this.region.extendRadius(this.center.sub(this.radius).toDouble());
-			
-			Sponge.getServer().getBroadcastChannel().send(Text.of("radius : " + this.center.sub(this.radius).toDouble()));
 		}
 		
+		// CUI
 		this.subject.describeCUI();
 		return true;
 	}
@@ -115,17 +124,10 @@ public class ECylinderSelector extends ESelector implements Selector.Cylinder, C
 		this.region.setMinimumY(0);
 		this.region.setMaximumY(0);
 		this.region.setRadius(Vector3d.ZERO);
+		
+		// CUI
+		this.subject.describeCUI();
 		return true;
-	}
-
-	@Override
-	public int getVolume() {
-		return this.region.getVolume();
-	}
-
-	@Override
-	public Optional<Vector3i> getPrimaryPosition() {
-		return Optional.ofNullable(this.center);
 	}
 	
 	@Override
@@ -134,6 +136,9 @@ public class ECylinderSelector extends ESelector implements Selector.Cylinder, C
 		if (!this.region.expand(changes)) return false;
 		
 		this.center = this.region.getPrimaryPosition();
+		
+		// CUI
+		this.subject.describeCUI();
 		return true;
 	}
 
@@ -143,6 +148,9 @@ public class ECylinderSelector extends ESelector implements Selector.Cylinder, C
 		if (!this.region.contract(changes)) return false;
 		
 		this.center = this.region.getPrimaryPosition();
+		
+		// CUI
+		this.subject.describeCUI();
 		return true;
 	}
 
@@ -153,6 +161,9 @@ public class ECylinderSelector extends ESelector implements Selector.Cylinder, C
 		
 		this.center = this.region.getPrimaryPosition();
 		this.radius = null;
+		
+		// CUI
+		this.subject.describeCUI();
 		return true;
 	}
 
@@ -185,28 +196,22 @@ public class ECylinderSelector extends ESelector implements Selector.Cylinder, C
 
 	@Override
 	public void describeCUI() {
-		Sponge.getServer().getBroadcastChannel().send(Text.of("###### describeCUI #####"));
-		Sponge.getServer().getBroadcastChannel().send(Text.of("center : " + this.region.getCenter()));
-		Sponge.getServer().getBroadcastChannel().send(Text.of("radius : " + this.region.getRadius()));
-		Sponge.getServer().getBroadcastChannel().send(Text.of("MinimumY : " + this.region.getMinimumY()));
-		Sponge.getServer().getBroadcastChannel().send(Text.of("MaximumY : " + this.region.getMaximumY()));
+		this.subject.dispatchCUIEvent(new ShapeCuiMessage(this.getTypeID()));
 		
+		if (this.center == null && this.radius == null) return;
 		this.subject.dispatchCUIEvent(new CylinderCuiMessage(this.region.getCenter(), this.region.getRadius()));
 		this.subject.dispatchCUIEvent(new MinMaxCuiMessage(this.region.getMinimumY(), this.region.getMaximumY()));
 	}
 
 	@Override
 	public void describeLegacyCUI() {
-		Sponge.getServer().getBroadcastChannel().send(Text.of("###### describeLegacyCUI #####"));
-		if (this.center != null && this.radius != null) {
-			Sponge.getServer().getBroadcastChannel().send(Text.of("MinimumPoint : " + this.region.getMinimumPoint()));
-			Sponge.getServer().getBroadcastChannel().send(Text.of("MaximumPoint : " + this.region.getMaximumPoint()));
-			
-			int volume = this.getVolume();
-			
-			this.subject.dispatchCUIEvent(new PointCuiMessage(0, this.region.getMinimumPoint(), volume));
-			this.subject.dispatchCUIEvent(new PointCuiMessage(1, this.region.getMaximumPoint(), volume));
-		}
+		this.subject.dispatchCUIEvent(new ShapeCuiMessage(this.getTypeID()));
+		
+		if (this.center == null && this.radius == null) return;
+	
+		int volume = this.getVolume();
+		this.subject.dispatchCUIEvent(new PointCuiMessage(0, this.region.getMinimumPoint(), volume));
+		this.subject.dispatchCUIEvent(new PointCuiMessage(1, this.region.getMaximumPoint(), volume));
 	}
 
 	@Override

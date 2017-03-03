@@ -31,6 +31,7 @@ import fr.evercraft.everapi.services.selection.SelectionRegion;
 import fr.evercraft.everapi.services.selection.Selector;
 import fr.evercraft.everworldguard.selection.ESelectionSubject;
 import fr.evercraft.everworldguard.selection.cui.PointCuiMessage;
+import fr.evercraft.everworldguard.selection.cui.ShapeCuiMessage;
 import fr.evercraft.everworldguard.selection.region.ESelectionCuboidRegion;
 
 public class ECuboidSelector extends ESelector implements Selector.Cuboid, CUIRegion {
@@ -55,6 +56,33 @@ public class ECuboidSelector extends ESelector implements Selector.Cuboid, CUIRe
 		this.region.setWorld(world);
 	}
 
+	@Override
+	public int getVolume() {
+		return this.region.getVolume();
+	}
+
+	@Override
+	public Optional<Vector3i> getPrimaryPosition() {
+		return Optional.ofNullable(this.position1);
+	}
+	
+	@Override
+	public Optional<Vector3i> getSecondaryPosition() {
+		return Optional.ofNullable(this.position2);
+	}
+	
+	public void recalculate() {
+		if (this.position1 == null && this.position2 == null) {
+			this.region.setPosition(Vector3i.ZERO, Vector3i.ZERO);
+		} else if (this.position1 == null) {
+			this.region.setPosition(this.position2, this.position2);
+		} else if (this.position2 == null) {
+			this.region.setPosition(this.position1, this.position1);
+		} else {
+			this.region.setPosition(this.position1, this.position2);
+		}
+	}
+	
 	@Override
 	public boolean selectPrimary(Vector3i position) {
 		if (this.position1 != null && position != null && (position.compareTo(this.position1) == 0)) {
@@ -93,34 +121,10 @@ public class ECuboidSelector extends ESelector implements Selector.Cuboid, CUIRe
 		this.position2 = null;
 		
 		this.recalculate();
+		
+		// CUI
+		this.subject.describeCUI();
 		return true;
-	}
-
-	@Override
-	public int getVolume() {
-		return this.region.getVolume();
-	}
-
-	@Override
-	public Optional<Vector3i> getPrimaryPosition() {
-		return Optional.ofNullable(this.position1);
-	}
-	
-	@Override
-	public Optional<Vector3i> getSecondaryPosition() {
-		return Optional.ofNullable(this.position2);
-	}
-	
-	public void recalculate() {
-		if (this.position1 == null && this.position2 == null) {
-			this.region.setPosition(Vector3i.ZERO, Vector3i.ZERO);
-		} else if (this.position1 == null) {
-			this.region.setPosition(this.position2, this.position2);
-		} else if (this.position2 == null) {
-			this.region.setPosition(this.position1, this.position1);
-		} else {
-			this.region.setPosition(this.position1, this.position2);
-		}
 	}
 	
 	@Override
@@ -131,7 +135,8 @@ public class ECuboidSelector extends ESelector implements Selector.Cuboid, CUIRe
 		this.position1 = this.region.getPrimaryPosition();
 		this.position2 = this.region.getSecondaryPosition();
 		
-		this.describeCUI();
+		// CUI
+		this.subject.describeCUI();
 		return true;
 	}
 
@@ -143,7 +148,8 @@ public class ECuboidSelector extends ESelector implements Selector.Cuboid, CUIRe
 		this.position1 = this.region.getPrimaryPosition();
 		this.position2 = this.region.getSecondaryPosition();
 		
-		this.describeCUI();
+		// CUI
+		this.subject.describeCUI();
 		return true;
 	}
 
@@ -154,6 +160,9 @@ public class ECuboidSelector extends ESelector implements Selector.Cuboid, CUIRe
 		
 		this.position1 = this.region.getPrimaryPosition();
 		this.position2 = this.region.getSecondaryPosition();
+		
+		// CUI
+		this.subject.describeCUI();
 		return true;
 	}
 
@@ -186,6 +195,7 @@ public class ECuboidSelector extends ESelector implements Selector.Cuboid, CUIRe
 
 	@Override
 	public void describeCUI() {
+		this.subject.dispatchCUIEvent(new ShapeCuiMessage(this.getTypeID()));
 		int volume = this.getVolume();
 		
 		if (this.position1 != null) {
