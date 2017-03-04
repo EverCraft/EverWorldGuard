@@ -50,14 +50,19 @@ public class EWSelectExpand extends ESubCommand<EverWorldGuard> {
 
 	@Override
 	public Text help(final CommandSource source) {
-		return Text.builder("/" + this.getName())
-				.onClick(TextActions.suggestCommand("/" + this.getName()))
+		return Text.builder("/" + this.getName() + " [vert|<" + EAMessages.ARGS_AMOUNT.getString() + "> "
+												  + "[" + EAMessages.ARGS_DIRECTION.getString() + "]]")
+				.onClick(TextActions.suggestCommand("/" + this.getName() + " "))
 				.color(TextColors.RED)
 				.build();
 	}
 	
 	@Override
 	public Collection<String> subTabCompleter(final CommandSource source, final List<String> args) throws CommandException {
+		if (args.size() == 1) {
+			return Arrays.asList("vert", "10", "20", "30");
+		}
+		
 		return Arrays.asList();
 	}
 	
