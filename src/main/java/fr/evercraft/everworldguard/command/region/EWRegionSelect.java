@@ -41,7 +41,7 @@ import fr.evercraft.everapi.plugin.command.Args;
 import fr.evercraft.everapi.plugin.command.ESubCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everapi.services.selection.SelectionType;
-import fr.evercraft.everapi.services.selection.SelectorSecondaryException;
+import fr.evercraft.everapi.services.selection.exception.SelectorSecondaryException;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion.Type;
 import fr.evercraft.everapi.sponge.UtilsContexts;

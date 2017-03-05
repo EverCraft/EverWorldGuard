@@ -16,8 +16,6 @@
  */
 package fr.evercraft.everworldguard.selection.cui;
 
-import fr.evercraft.everapi.services.selection.CUIMessage;
-
 public class ShapeCuiMessage implements CUIMessage {
 
     protected final String shapeName;

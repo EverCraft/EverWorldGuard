@@ -16,8 +16,8 @@
  */
 package fr.evercraft.everworldguard.selection.region;
 
-import fr.evercraft.everapi.services.selection.RegionOperationException;
 import fr.evercraft.everapi.services.selection.SelectionRegion;
+import fr.evercraft.everapi.services.selection.exception.RegionOperationException;
 
 import java.util.List;
 

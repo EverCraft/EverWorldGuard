@@ -16,8 +16,6 @@
  */
 package fr.evercraft.everworldguard.selection.cui;
 
-import fr.evercraft.everapi.services.selection.CUIMessage;
-
 public class PolygonCuiMessage implements CUIMessage {
 
     protected final int[] vertices;

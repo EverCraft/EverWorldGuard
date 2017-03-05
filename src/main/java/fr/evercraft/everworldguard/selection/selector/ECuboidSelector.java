@@ -26,10 +26,10 @@ import org.spongepowered.api.world.World;
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.collect.ImmutableList;
 
-import fr.evercraft.everapi.services.selection.CUIRegion;
 import fr.evercraft.everapi.services.selection.SelectionRegion;
 import fr.evercraft.everapi.services.selection.Selector;
 import fr.evercraft.everworldguard.selection.ESelectionSubject;
+import fr.evercraft.everworldguard.selection.cui.CUIRegion;
 import fr.evercraft.everworldguard.selection.cui.PointCuiMessage;
 import fr.evercraft.everworldguard.selection.cui.ShapeCuiMessage;
 import fr.evercraft.everworldguard.selection.region.ESelectionCuboidRegion;

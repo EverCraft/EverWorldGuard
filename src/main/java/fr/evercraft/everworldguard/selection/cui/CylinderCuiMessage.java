@@ -19,8 +19,6 @@ package fr.evercraft.everworldguard.selection.cui;
 import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
 
-import fr.evercraft.everapi.services.selection.CUIMessage;
-
 public class CylinderCuiMessage implements CUIMessage {
 
     protected final Vector3i positions;

@@ -18,8 +18,6 @@ package fr.evercraft.everworldguard.selection.cui;
 
 import com.flowpowered.math.vector.Vector3i;
 
-import fr.evercraft.everapi.services.selection.CUIMessage;
-
 public class PointCuiMessage implements CUIMessage {
 
     protected final int identifier;

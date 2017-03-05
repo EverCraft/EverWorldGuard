@@ -70,7 +70,7 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		SELECT_POS2_POLY_ALL("select.pos2.polyAll",					"&7Ajout de la position &6#<num> &7: <position> &7(&6<area>&7)."),
 		SELECT_POS2_RADIUS("select.pos2.radius",					"&7Sélection d'un rayon de <radius> &7block(s) : <position>."),
 		SELECT_POS2_NO_CENTER("select.pos2.noCenter",				"&cErreur : Aucune position centrale selectionnée."),
-		SELECT_POS2_EQUALS("select.pos2.equals",					"&cErreur : Vous avez déjà selectionnée une position."),
+		SELECT_POS2_EQUALS("select.pos2.equals",					"&cErreur : Vous avez déjà selectionnée cette position."),
 		SELECT_POS2_CANCEL("select.pos2.cancel",					"&cErreur : Impossible de sélectionner une position pour le moment."),
 		
 		SELECT_CLEAR_DESCRIPTION("select.clear.description",		"Supprime toutes les positions selectionnées"),
@@ -82,7 +82,13 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		SELECT_REMOVE_ERROR("select.remove.error",					"&4Erreur : Uniquement pour le type &62D Polygonal&c."),
 		
 		
-		SELECT_EXPAND_DESCRIPTION("select.expand.description",	"Etend la zone sur toute la hauteur voulue"),
+		SELECT_EXPAND_DESCRIPTION("select.expand.description",				"Etend la zone sur toute la hauteur voulue"),
+		SELECT_EXPAND_VERT("select.expand.vert", 							"&7Vous avez étendu votre sélection de &6<size> &7block(s) [Bas-En-Haut]."),
+		SELECT_EXPAND_DIRECTION("select.expand.direction", 					"&7Vous avez étendu votre sélection de &6<size> &7block(s) [<amount> <direction>]."),
+		SELECT_EXPAND_DIRECTION_OPPOSITE("select.expand.directionOpposite",	"&7Vous avez étendu votre sélection de &6<size> &7block(s) [<amount> <direction>] [<amount_opposite> <direction_opposite>]."),
+		
+		SELECT_EXPAND_ERROR_OPERATION("select.expand.errorOperation",	"&4Erreur : Vous ne pouvez pas faire cette opération sur ce type de région."),
+		SELECT_EXPAND_ERROR_NO_REGION("select.expand.errorNoRegion",	"&4Erreur : Vous devez d'abord sélectionner une région."),
 		
 		SELECT_TYPE_DESCRIPTION("select.type.description",		"&7Change le type de selection"),
 		

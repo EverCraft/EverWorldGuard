@@ -23,11 +23,11 @@ import org.spongepowered.api.entity.living.player.Player;
 
 import com.google.common.base.Preconditions;
 
-import fr.evercraft.everapi.services.selection.CUIMessage;
-import fr.evercraft.everapi.services.selection.CUIRegion;
 import fr.evercraft.everapi.services.selection.SelectionType;
 import fr.evercraft.everapi.services.selection.SubjectSelection;
 import fr.evercraft.everworldguard.EverWorldGuard;
+import fr.evercraft.everworldguard.selection.cui.CUIMessage;
+import fr.evercraft.everworldguard.selection.cui.CUIRegion;
 import fr.evercraft.everworldguard.selection.cui.ShapeCuiMessage;
 import fr.evercraft.everworldguard.selection.selector.ECuboidSelector;
 import fr.evercraft.everworldguard.selection.selector.ECylinderSelector;
@@ -101,7 +101,6 @@ public class ESelectionSubject implements SubjectSelection {
 		return this.cuiSupport;
 	}
 	
-	@Override
 	public void setCuiSupport(boolean cuiSupport) {
 		this.cuiSupport = cuiSupport;
 	}
@@ -119,7 +118,6 @@ public class ESelectionSubject implements SubjectSelection {
 		this.plugin.getEServer().getPlayer(this.getUniqueId()).ifPresent(player -> this.describeCUI(player));
 	}
 	
-	@Override
 	public void describeCUI(Player player) {
 		Preconditions.checkNotNull(player, "player");
 		

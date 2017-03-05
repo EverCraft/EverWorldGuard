@@ -28,11 +28,11 @@ import org.spongepowered.api.world.World;
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.collect.ImmutableList;
 
-import fr.evercraft.everapi.services.selection.CUIRegion;
-import fr.evercraft.everapi.services.selection.RegionOperationException;
 import fr.evercraft.everapi.services.selection.SelectionRegion;
 import fr.evercraft.everapi.services.selection.Selector;
+import fr.evercraft.everapi.services.selection.exception.RegionOperationException;
 import fr.evercraft.everworldguard.selection.ESelectionSubject;
+import fr.evercraft.everworldguard.selection.cui.CUIRegion;
 import fr.evercraft.everworldguard.selection.cui.MinMaxCuiMessage;
 import fr.evercraft.everworldguard.selection.cui.Point2DCuiMessage;
 import fr.evercraft.everworldguard.selection.cui.ShapeCuiMessage;

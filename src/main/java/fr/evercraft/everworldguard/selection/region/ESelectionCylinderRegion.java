@@ -16,8 +16,8 @@
  */
 package fr.evercraft.everworldguard.selection.region;
 
-import fr.evercraft.everapi.services.selection.RegionOperationException;
 import fr.evercraft.everapi.services.selection.SelectionRegion;
+import fr.evercraft.everapi.services.selection.exception.RegionOperationException;
 
 import java.util.List;
 
@@ -63,12 +63,11 @@ public class ESelectionCylinderRegion extends ESelectionRegion implements Select
 	}
 	
 	public void setRadius(Vector3d radius) {
-		radius = radius.abs();
-		this.radius = Vector3d.from(radius.getX() + 0.5, 0, radius.getZ() + 0.5);
+		this.radius = radius.abs();
 	}
 	
 	public Vector3d getRadius() {
-		return this.radius.sub(0.5, 0, 0.5);
+		return this.radius;
 	}
 	
 	public void extendRadius(Vector3d radius) {
