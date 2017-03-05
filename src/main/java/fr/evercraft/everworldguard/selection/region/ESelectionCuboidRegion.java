@@ -242,8 +242,10 @@ public class ESelectionCuboidRegion extends ESelectionRegion implements Selectio
 
 	@Override
 	public boolean shift(Vector3i change) {
-		this.position1.add(change);
-		this.position2.add(change);
+		Preconditions.checkNotNull(change, "change");
+		
+		this.position1 = this.position1.add(change);
+		this.position2 = this.position2.add(change);
 		
 		this.recalculate();
 		return true;

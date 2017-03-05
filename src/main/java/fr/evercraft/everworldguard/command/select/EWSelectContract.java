@@ -29,8 +29,6 @@ import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.util.Direction;
 
-import com.flowpowered.math.vector.Vector3i;
-
 import fr.evercraft.everapi.EAMessage.EAMessages;
 import fr.evercraft.everapi.java.UtilsInteger;
 import fr.evercraft.everapi.plugin.command.ESubCommand;
@@ -42,13 +40,12 @@ import fr.evercraft.everapi.sponge.UtilsDirection;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EverWorldGuard;
 
-public class EWSelectExpand extends ESubCommand<EverWorldGuard> {
-	private static final List<String> VERT = Arrays.asList("vert", "verticale");
-	
-	public EWSelectExpand(final EverWorldGuard plugin, final EWSelect command) {
-        super(plugin, command, "expand");
+public class EWSelectContract extends ESubCommand<EverWorldGuard> {
+
+	public EWSelectContract(final EverWorldGuard plugin, final EWSelect command) {
+        super(plugin, command, "contract");
     }
-	
+
 	@Override
 	public boolean testPermission(final CommandSource source) {
 		return true;
@@ -56,14 +53,14 @@ public class EWSelectExpand extends ESubCommand<EverWorldGuard> {
 
 	@Override
 	public Text description(final CommandSource source) {
-		return EWMessages.SELECT_EXPAND_DESCRIPTION.getText();
+		return EWMessages.SELECT_CONTRACT_DESCRIPTION.getText();
 	}
 
 	@Override
 	public Text help(final CommandSource source) {
-		return Text.builder("/" + this.getName() + " <vert|<" + EAMessages.ARGS_AMOUNT.getString() + "> "
+		return Text.builder("/" + this.getName() + " <" + EAMessages.ARGS_AMOUNT.getString() + "> "
 												  + "[" + EAMessages.ARGS_DIRECTION.getString() + "] "
-												  + "[" + EAMessages.ARGS_REVERSE_AMOUNT.getString() + "]>")
+												  + "[" + EAMessages.ARGS_REVERSE_AMOUNT.getString() + "]")
 				.onClick(TextActions.suggestCommand("/" + this.getName() + " "))
 				.color(TextColors.RED)
 				.build();
@@ -74,20 +71,16 @@ public class EWSelectExpand extends ESubCommand<EverWorldGuard> {
 		if (args.size() == 1) {
 			return Arrays.asList("vert", "10", "20", "30");
 		} else if (args.size() == 2) {
-			if (!VERT.contains(args.get(1).toLowerCase())) {
-				List<String> suggests = new ArrayList<String>();
-				suggests.add("Me");
-				for (Direction direction : Direction.values()) {
-					if (direction.isCardinal() || direction.isOrdinal()) {
-						suggests.add(direction.name());
-					}
+			List<String> suggests = new ArrayList<String>();
+			suggests.add("Me");
+			for (Direction direction : Direction.values()) {
+				if (direction.isCardinal() || direction.isOrdinal()) {
+					suggests.add(direction.name());
 				}
-				return suggests;
 			}
+			return suggests;
 		} else if (args.size() == 3) {
-			if (!(args.get(1).equalsIgnoreCase("vert") || args.get(1).equalsIgnoreCase("verticale"))) {
-				return Arrays.asList("10", "20", "30");
-			}
+			return Arrays.asList("10", "20", "30");
 		}
 		return Arrays.asList();
 	}
@@ -106,48 +99,29 @@ public class EWSelectExpand extends ESubCommand<EverWorldGuard> {
 			boolean resultat = false;
 			
 			if (args.size() == 1) {
-				if (VERT.contains(args.get(0).toLowerCase())) {
-					resultat = this.commandSelectExpandVert(player);
-				} else {
-					resultat = this.commandSelectExpand(player, args.get(0));
-				}
+				resultat = this.commandSelectContract(player, args.get(0));
 			} else if (args.size() == 2) {
-				resultat = this.commandSelectExpand(player, args.get(0), args.get(1));
+				resultat = this.commandSelectContract(player, args.get(0), args.get(1));
 			} else if (args.size() == 3) {
-				resultat = this.commandSelectExpand(player, args.get(0), args.get(1), args.get(2));
+				resultat = this.commandSelectContract(player, args.get(0), args.get(1), args.get(2));
 			} else {
 				source.sendMessage(this.help(source));
 			}
 			return resultat;
 		} catch (RegionOperationException e) {
-			EWMessages.SELECT_EXPAND_ERROR_OPERATION.sender()
+			EWMessages.SELECT_CONTRACT_ERROR_OPERATION.sender()
 				.replace("<exception>", e.getMessage())
 				.sendTo(player);
 			return false;
 		} catch (NoSelectedRegionException e) {
-			EWMessages.SELECT_EXPAND_ERROR_NO_REGION.sender()
+			EWMessages.SELECT_CONTRACT_ERROR_NO_REGION.sender()
 				.replace("<exception>", e.getMessage())
 				.sendTo(player);
 			return false;
 		}
 	}
-	
-	private boolean commandSelectExpandVert(final EPlayer player) throws RegionOperationException, NoSelectedRegionException {
-		Selector selector = player.getSelector();
-		
-		int oldArea = selector.getVolume();
-		int max = player.getWorld().getBlockMax().getY() + 1;			
-		selector.expand(Vector3i.from(0, max, 0), Vector3i.from(0, -max, 0));
-		int newArea = selector.getVolume();
-		
-		EWMessages.SELECT_EXPAND_VERT.sender()
-			.replace("<size>", String.valueOf(newArea-oldArea))
-			.sendTo(player);
-		return true;
 
-	}
-
-	private boolean commandSelectExpand(final EPlayer player, final String amount_string) throws RegionOperationException, NoSelectedRegionException {
+	private boolean commandSelectContract(final EPlayer player, final String amount_string) throws RegionOperationException, NoSelectedRegionException {
 		Optional<Integer> amount = UtilsInteger.parseInt(amount_string);
 		if (!amount.isPresent()) {
 			EAMessages.IS_NOT_NUMBER.sender()
@@ -157,10 +131,10 @@ public class EWSelectExpand extends ESubCommand<EverWorldGuard> {
 			return false;
 		}
 		
-		return this.commandSelectExpand(player, amount.get(), player.getDirection());
+		return this.commandSelectContract(player, amount.get(), player.getDirection());
 	}
 	
-	private boolean commandSelectExpand(final EPlayer player, final String amount_string, final String direction_string) 
+	private boolean commandSelectContract(final EPlayer player, final String amount_string, final String direction_string) 
 			throws RegionOperationException, NoSelectedRegionException {
 		Optional<Integer> amount = UtilsInteger.parseInt(amount_string);
 		if (!amount.isPresent()) {
@@ -186,26 +160,26 @@ public class EWSelectExpand extends ESubCommand<EverWorldGuard> {
 			return false;
 		}
 		
-		return this.commandSelectExpand(player, amount.get(), direction.get());
+		return this.commandSelectContract(player, amount.get(), direction.get());
 	}
 	
-	private boolean commandSelectExpand(final EPlayer player, final int amount, final Direction direction) 
+	private boolean commandSelectContract(final EPlayer player, final int amount, final Direction direction) 
 			throws RegionOperationException, NoSelectedRegionException {
 		Selector selector = player.getSelector();
 		
 		int oldArea = selector.getVolume();		
-		selector.expand(direction.asOffset().mul(amount).round().toInt());
+		selector.contract(direction.asOffset().mul(amount).round().toInt());
 		int newArea = selector.getVolume();
 		
-		EWMessages.SELECT_EXPAND_DIRECTION.sender()
-			.replace("<size>", String.valueOf(newArea-oldArea))
+		EWMessages.SELECT_CONTRACT_DIRECTION.sender()
+			.replace("<size>", String.valueOf(oldArea-newArea))
 			.replace("<amount>", String.valueOf(amount))
 			.replace("<direction>", UtilsDirection.getText(direction))
 			.sendTo(player);
 		return true;
 	}
 	
-	private boolean commandSelectExpand(final EPlayer player, final String amount_string, 
+	private boolean commandSelectContract(final EPlayer player, final String amount_string, 
 			final String direction_string, final String amountOpposite_string) 
 					throws RegionOperationException, NoSelectedRegionException {
 		Optional<Integer> amount = UtilsInteger.parseInt(amount_string);
@@ -241,23 +215,23 @@ public class EWSelectExpand extends ESubCommand<EverWorldGuard> {
 			return false;
 		}
 		
-		return this.commandSelectExpand(player, amount.get(), direction.get(), amountOpposite.get());
+		return this.commandSelectContract(player, amount.get(), direction.get(), amountOpposite.get());
 	}
 		
-	private boolean commandSelectExpand(final EPlayer player, final int amount, final Direction direction, final int amountOpposite) 
+	private boolean commandSelectContract(final EPlayer player, final int amount, final Direction direction, final int amountOpposite) 
 			throws RegionOperationException, NoSelectedRegionException {
 		
 		Direction directionOpposite = direction.getOpposite();
 		Selector selector = player.getSelector();
 		
 		int oldArea = selector.getVolume();		
-		selector.expand(
+		selector.contract(
 				direction.asOffset().mul(amount).round().toInt(),
 				direction.getOpposite().asOffset().mul(amountOpposite).round().toInt());
 		int newArea = selector.getVolume();
 		
-		EWMessages.SELECT_EXPAND_DIRECTION_OPPOSITE.sender()
-			.replace("<size>", String.valueOf(newArea-oldArea))
+		EWMessages.SELECT_CONTRACT_DIRECTION_OPPOSITE.sender()
+			.replace("<size>", String.valueOf(oldArea-newArea))
 			.replace("<amount>", String.valueOf(amount))
 			.replace("<direction>", UtilsDirection.getText(direction))
 			.replace("<amount_opposite>", String.valueOf(amountOpposite))

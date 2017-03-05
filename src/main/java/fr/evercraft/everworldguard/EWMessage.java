@@ -82,13 +82,23 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		SELECT_REMOVE_ERROR("select.remove.error",					"&4Erreur : Uniquement pour le type &62D Polygonal&c."),
 		
 		
-		SELECT_EXPAND_DESCRIPTION("select.expand.description",				"Etend la zone sur toute la hauteur voulue"),
-		SELECT_EXPAND_VERT("select.expand.vert", 							"&7Vous avez étendu votre sélection de &6<size> &7block(s) [Bas-En-Haut]."),
-		SELECT_EXPAND_DIRECTION("select.expand.direction", 					"&7Vous avez étendu votre sélection de &6<size> &7block(s) [<amount> <direction>]."),
-		SELECT_EXPAND_DIRECTION_OPPOSITE("select.expand.directionOpposite",	"&7Vous avez étendu votre sélection de &6<size> &7block(s) [<amount> <direction>] [<amount_opposite> <direction_opposite>]."),
+		SELECT_EXPAND_DESCRIPTION("select.expand.description",					"Permet d'étendre la sélection"),
+		SELECT_EXPAND_VERT("select.expand.vert", 								"&7Vous avez étendu votre sélection de &6<size> &7block(s) [Bas-En-Haut]."),
+		SELECT_EXPAND_DIRECTION("select.expand.direction", 						"&7Vous avez étendu votre sélection de &6<size> &7block(s) [<amount> <direction>]."),
+		SELECT_EXPAND_DIRECTION_OPPOSITE("select.expand.directionOpposite",		"&7Vous avez étendu votre sélection de &6<size> &7block(s) [<amount> <direction>] [<amount_opposite> <direction_opposite>]."),
+		SELECT_EXPAND_ERROR_OPERATION("select.expand.errorOperation",			"&4Erreur : Vous ne pouvez pas faire cette opération sur ce type de région."),
+		SELECT_EXPAND_ERROR_NO_REGION("select.expand.errorNoRegion",			"&4Erreur : Vous devez d'abord sélectionner une région."),
 		
-		SELECT_EXPAND_ERROR_OPERATION("select.expand.errorOperation",	"&4Erreur : Vous ne pouvez pas faire cette opération sur ce type de région."),
-		SELECT_EXPAND_ERROR_NO_REGION("select.expand.errorNoRegion",	"&4Erreur : Vous devez d'abord sélectionner une région."),
+		SELECT_CONTRACT_DESCRIPTION("select.contract.description",				"Permet de réduire la sélection"),
+		SELECT_CONTRACT_DIRECTION("select.contract.direction", 					"&7Vous avez réduit votre sélection de &6<size> &7block(s) [<amount> <direction>]."),
+		SELECT_CONTRACT_DIRECTION_OPPOSITE("select.contract.directionOpposite",	"&7Vous avez réduit votre sélection de &6<size> &7block(s) [<amount> <direction>] [<amount_opposite> <direction_opposite>]."),
+		SELECT_CONTRACT_ERROR_OPERATION("select.contract.errorOperation",		"&4Erreur : Vous ne pouvez pas faire cette opération sur ce type de région."),
+		SELECT_CONTRACT_ERROR_NO_REGION("select.contract.errorNoRegion",		"&4Erreur : Vous devez d'abord sélectionner une région."),
+		
+		SELECT_SHIFT_DESCRIPTION("select.shift.description",					"Permet de déplacer la sélection"),
+		SELECT_SHIFT_DIRECTION("select.shift.direction", 						"&7Vous avez déplacé votre sélection de &6<amount> &7block(s) vers la &6<direction>&7."),
+		SELECT_SHIFT_ERROR_OPERATION("select.shift.errorOperation",				"&4Erreur : Vous ne pouvez pas faire cette opération sur ce type de région."),
+		SELECT_SHIFT_ERROR_NO_REGION("select.shift.errorNoRegion",				"&4Erreur : Vous devez d'abord sélectionner une région."),
 		
 		SELECT_TYPE_DESCRIPTION("select.type.description",		"&7Change le type de selection"),
 		

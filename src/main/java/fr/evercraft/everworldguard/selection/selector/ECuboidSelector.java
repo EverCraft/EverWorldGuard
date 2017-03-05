@@ -157,7 +157,6 @@ public class ECuboidSelector extends ESelector implements Selector.Cuboid, CUIRe
 	public boolean shift(Vector3i change) {
 		if (this.position1 == null || this.position2 == null) return false;
 		if (!this.region.shift(change)) return false;
-		
 		this.position1 = this.region.getPrimaryPosition();
 		this.position2 = this.region.getSecondaryPosition();
 		
