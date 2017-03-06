@@ -53,6 +53,14 @@ public class ECylinderSelector extends ESelector implements Selector.Cylinder, C
 		this.region = new ESelectionCylinderRegion(world, Vector3i.ZERO, Vector3d.ZERO, 0, 0);
 	}
 	
+	public ECylinderSelector(ESelectionSubject subject, World world, Vector3i min, Vector3i max) {
+		super(subject);
+		
+		this.center = max.add(min).div(2);
+		this.radius = max;
+		this.region = new ESelectionCylinderRegion(world, this.center, max.sub(min).toDouble().div(2), min.getY(), max.getY());	
+	}
+	
 	public Optional<World> getWorld() {
 		return this.region.getWorld();
 	}
@@ -63,7 +71,7 @@ public class ECylinderSelector extends ESelector implements Selector.Cylinder, C
 
 	@Override
 	public int getVolume() {
-		return this.region.getVolume();
+		return this.region.getArea();
 	}
 
 	@Override
@@ -74,6 +82,7 @@ public class ECylinderSelector extends ESelector implements Selector.Cylinder, C
 	@Override
 	public boolean selectPrimary(Vector3i position) {
 		this.center = position;
+		this.radius = null;
 		
 		if (position == null) {
 			this.region.setCenter(Vector3i.ZERO);

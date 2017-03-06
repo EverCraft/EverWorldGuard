@@ -116,7 +116,7 @@ public class ESelectionCuboidRegion extends ESelectionRegion implements Selectio
     }
 	
     @Override
-    public int getVolume() {
+    public int getArea() {
     	Vector3i min = this.getMinimumPoint();
         Vector3i max = this.getMaximumPoint();
     	

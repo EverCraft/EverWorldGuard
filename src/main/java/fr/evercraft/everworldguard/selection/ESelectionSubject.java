@@ -17,12 +17,16 @@
 package fr.evercraft.everworldguard.selection;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.world.World;
 
+import com.flowpowered.math.vector.Vector3i;
 import com.google.common.base.Preconditions;
 
+import fr.evercraft.everapi.services.selection.SelectionRegion;
 import fr.evercraft.everapi.services.selection.SelectionType;
 import fr.evercraft.everapi.services.selection.SubjectSelection;
 import fr.evercraft.everworldguard.EverWorldGuard;
@@ -71,24 +75,42 @@ public class ESelectionSubject implements SubjectSelection {
 				
 		if (this.selector.getType().equals(type)) return;
 		
-		if (type.equals(SelectionType.CUBOID)) {
-			this.selector = new ECuboidSelector(this);
-		} else if (type.equals(SelectionType.EXTEND)) {
-			this.selector = new EExtendingCuboidSelector(this);
-		} else if (type.equals(SelectionType.POLYGONAL)) {
-			this.selector = new EPolygonalSelector(this);
-		} else if (type.equals(SelectionType.CYLINDER)) {
-			this.selector = new ECylinderSelector(this);
-		} else if (type.equals(SelectionType.ELLIPSOID)) {
-			this.selector = new EEllipsoidSelector(this);
-		} else if (type.equals(SelectionType.SPHERE)) {
-			this.selector = new ESphereSelector(this);
+		Optional<SelectionRegion> region = this.selector.getRegion();
+		if (region.isPresent()) {
+			World world = region.get().getWorld().orElse(null);
+			Vector3i min = region.get().getMinimumPoint();
+			Vector3i max = region.get().getMaximumPoint();
+			
+			if (type.equals(SelectionType.CUBOID)) {
+				this.selector = new ECuboidSelector(this, world, min, max);
+			} else if (type.equals(SelectionType.EXTEND)) {
+				this.selector = new EExtendingCuboidSelector(this, world, min, max);
+			} else if (type.equals(SelectionType.POLYGONAL)) {
+				this.selector = new EPolygonalSelector(this, world, min, max);
+			} else if (type.equals(SelectionType.CYLINDER)) {
+				this.selector = new ECylinderSelector(this, world, min, max);
+			} else if (type.equals(SelectionType.ELLIPSOID)) {
+				this.selector = new EEllipsoidSelector(this, world, min, max);
+			} else if (type.equals(SelectionType.SPHERE)) {
+				this.selector = new ESphereSelector(this, world, min, max);
+			}
+		} else {
+			if (type.equals(SelectionType.CUBOID)) {
+				this.selector = new ECuboidSelector(this);
+			} else if (type.equals(SelectionType.EXTEND)) {
+				this.selector = new EExtendingCuboidSelector(this);
+			} else if (type.equals(SelectionType.POLYGONAL)) {
+				this.selector = new EPolygonalSelector(this);
+			} else if (type.equals(SelectionType.CYLINDER)) {
+				this.selector = new ECylinderSelector(this);
+			} else if (type.equals(SelectionType.ELLIPSOID)) {
+				this.selector = new EEllipsoidSelector(this);
+			} else if (type.equals(SelectionType.SPHERE)) {
+				this.selector = new ESphereSelector(this);
+			}
 		}
 		
-		if (this.selector instanceof CUIRegion) {
-			CUIRegion cui = (CUIRegion) this.selector;
-			this.dispatchCUIEvent(new ShapeCuiMessage(cui.getTypeID()));
-		}
+		this.describeCUI();
 	}
 
 	@Override

@@ -106,9 +106,9 @@ public class ESelectionCylinderRegion extends ESelectionRegion implements Select
 		int maxY = (this.world == null) ? 255 : world.getBlockMax().getY();
 		
 		return Vector3i.from(
-				(int) (this.center.getX() - this.radius.getX()),
+				(int) Math.round(this.center.getX() - this.radius.getX()),
 				Math.max(minY, Math.min(maxY, this.minY)),
-                (int) (this.center.getZ() - this.radius.getZ()));
+				(int) Math.round(this.center.getZ() - this.radius.getZ()));
 	}
 
 	@Override
@@ -117,9 +117,9 @@ public class ESelectionCylinderRegion extends ESelectionRegion implements Select
 		int maxY = (this.world == null) ? 255 : world.getBlockMax().getY();
 		
 		return Vector3i.from(
-				(int) (this.center.getX() + this.radius.getX()),
+				(int) Math.round(this.center.getX() + this.radius.getX()),
 				Math.max(minY, Math.min(maxY, this.maxY)),
-                (int) (this.center.getZ() + this.radius.getZ()));
+				(int) Math.round(this.center.getZ() + this.radius.getZ()));
 	}
 	
 	@Override
@@ -147,8 +147,9 @@ public class ESelectionCylinderRegion extends ESelectionRegion implements Select
     }
 	
     @Override
-    public int getVolume() {
-    	return (int) Math.floor(radius.getX() * radius.getZ() * Math.PI * getHeight());
+    public int getArea() {
+    	Vector3d radius = this.radius.add(0.5, 0.5, 0.5);
+    	return (int) Math.floor(radius.getX() * radius.getZ() * Math.PI * this.getHeight());
     }
     
     @Override

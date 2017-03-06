@@ -18,7 +18,6 @@ package fr.evercraft.everworldguard.selection.region;
 
 import fr.evercraft.everapi.services.selection.SelectionRegion;
 import fr.evercraft.everapi.services.selection.exception.RegionOperationException;
-import fr.evercraft.everapi.util.Chronometer;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -26,8 +25,6 @@ import java.util.List;
 import java.util.OptionalLong;
 import java.util.stream.IntStream;
 
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.World;
 
 import com.flowpowered.math.vector.Vector3i;
@@ -42,12 +39,12 @@ public class ESelectionPolygonalRegion extends ESelectionRegion implements Selec
 	private Vector3i min;
 	private Vector3i max;
 	
-	private Integer volume;
+	private Integer area;
 	
 	public ESelectionPolygonalRegion(SelectionRegion.Polygonal region) {
 		super(region.getWorld().orElse(null));
 		
-		this.volume = null;
+		this.area = null;
 		this.positions = new ArrayList<Vector3i>();
 		this.setPositions(this.getPositions());
 	}
@@ -66,7 +63,7 @@ public class ESelectionPolygonalRegion extends ESelectionRegion implements Selec
 		Preconditions.checkNotNull(positions, "positions");
 		Preconditions.checkArgument(!positions.isEmpty(), "positions > 0");
 		
-		this.volume = null;
+		this.area = null;
 		this.positions.clear();
 		
 		int minWorldY = (this.world == null) ? 0 : world.getBlockMin().getY();
@@ -190,26 +187,22 @@ public class ESelectionPolygonalRegion extends ESelectionRegion implements Selec
     }
 	
     @Override
-    public int getVolume() {
-    	if (this.volume != null) {
-    		return this.volume;
+    public int getArea() {
+    	if (this.area != null) {
+    		return this.area;
     	}
     	
     	int minY = this.min.getY();
         int maxY = this.max.getY();
-        
-        Chronometer chronometer = new Chronometer();
+
+    	OptionalLong volume = IntStream.range(this.min.getX(), this.max.getX()+1).parallel()
+    		.mapToLong(x -> IntStream.range(this.min.getZ(), this.max.getZ()+1).parallel()
+    			.filter(z -> this.containsPosition(Vector3i.from(x, minY, z)))
+    			.count())
+    		.reduce((count1, count2) -> count1 + count2);
     	
-    	OptionalLong volume = IntStream.range(this.min.getX(), this.max.getX()+1).parallel().mapToLong(
-			x -> IntStream.range(this.min.getZ(), this.max.getZ()+1).parallel().filter(
-					z -> this.containsPosition(Vector3i.from(x, minY, z))).count()
-    	).reduce((count1, count2) -> count1 + count2);
-    	
-    	this.volume = (int) (volume.orElse(0) * (maxY - minY + 1));
-    	
-    	Sponge.getServer().getBroadcastChannel().send(Text.of(this.volume + " : " + chronometer.getMilliseconds().toString() + " ms"));
-    	
-    	return this.volume;
+    	this.area = (int) (volume.orElse(0) * (maxY - minY + 1));
+    	return this.area;
     }
 
 	@Override
@@ -234,7 +227,7 @@ public class ESelectionPolygonalRegion extends ESelectionRegion implements Selec
             }
         }
         
-        this.volume = null;
+        this.area = null;
         return true;
     }
 
@@ -260,7 +253,7 @@ public class ESelectionPolygonalRegion extends ESelectionRegion implements Selec
             }
         }
         
-        this.volume = null;
+        this.area = null;
 		return true;
 	}
 

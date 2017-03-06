@@ -56,11 +56,11 @@ public class ESelectionEllipsoidRegion extends ESelectionRegion implements Selec
 	}
 	
 	public void setRadius(Vector3d radius) {
-		this.radius = radius.abs().add(0.5, 0.5, 0.5);
+		this.radius = radius.abs();
 	}
 	
 	public Vector3d getRadius() {
-		return this.radius.sub(0.5, 0.5, 0.5);
+		return this.radius;
 	}
 	
 	public void extendRadius(Vector3d radius) {
@@ -73,20 +73,19 @@ public class ESelectionEllipsoidRegion extends ESelectionRegion implements Selec
 		int maxY = (this.world == null) ? 255 : world.getBlockMax().getY();
 		
 		return Vector3i.from(
-				(int) (this.center.getX() - this.radius.getX()),
+				(int) Math.round(this.center.getX() - this.radius.getX()),
 				Math.max(minY, Math.min(maxY, this.center.getY() - ((int) this.radius.getY()))),
-                (int) (this.center.getZ() - this.radius.getZ()));
+				(int) Math.round(this.center.getZ() - this.radius.getZ()));
 	}
 
 	@Override
 	public Vector3i getMaximumPoint() {
 		int minY = (this.world == null) ? 0 : world.getBlockMin().getY();
 		int maxY = (this.world == null) ? 255 : world.getBlockMax().getY();
-		
 		return Vector3i.from(
-				(int) (this.center.getX() + this.radius.getX()),
+				(int) Math.round(this.center.getX() + this.radius.getX()),
 				Math.max(minY, Math.min(maxY, this.center.getY() + ((int) this.radius.getY()))),
-                (int) (this.center.getZ() + this.radius.getZ()));
+				(int) Math.round(this.center.getZ() + this.radius.getZ()));
 	}
 	
 	@Override
@@ -112,8 +111,9 @@ public class ESelectionEllipsoidRegion extends ESelectionRegion implements Selec
     }
 	
     @Override
-    public int getVolume() {
-    	return (int) Math.floor((4.0 / 3.0) * Math.PI * this.radius.getX() * this.radius.getY() * this.radius.getZ());
+    public int getArea() {
+    	Vector3d radius = this.radius.add(0.5, 0.5, 0.5);
+    	return (int) Math.floor((4.0 / 3.0) * Math.PI * radius.getX() * radius.getY() * radius.getZ());
     }
     
     @Override

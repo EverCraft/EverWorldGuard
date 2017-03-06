@@ -38,7 +38,7 @@ import fr.evercraft.everworldguard.selection.cui.PointCuiMessage;
 import fr.evercraft.everworldguard.selection.cui.ShapeCuiMessage;
 import fr.evercraft.everworldguard.selection.region.ESelectionEllipsoidRegion;
 
-public class EEllipsoidSelector extends ESelector implements Selector.Cylinder, CUIRegion {
+public class EEllipsoidSelector extends ESelector implements Selector.Ellipsoid, CUIRegion {
 	protected Vector3i center;
 	protected Vector3i radius;
 	protected final ESelectionEllipsoidRegion region;
@@ -52,6 +52,14 @@ public class EEllipsoidSelector extends ESelector implements Selector.Cylinder, 
 		this.region = new ESelectionEllipsoidRegion(world, Vector3i.ZERO, Vector3d.ZERO);
 	}
 	
+	public EEllipsoidSelector(ESelectionSubject subject, World world, Vector3i min, Vector3i max) {
+		super(subject);
+		
+		this.center = max.add(min).div(2);
+		this.radius = max;
+		this.region = new ESelectionEllipsoidRegion(world, this.center, max.sub(min).toDouble().div(2));
+	}
+	
 	public Optional<World> getWorld() {
 		return this.region.getWorld();
 	}
@@ -62,7 +70,7 @@ public class EEllipsoidSelector extends ESelector implements Selector.Cylinder, 
 
 	@Override
 	public int getVolume() {
-		return this.region.getVolume();
+		return this.region.getArea();
 	}
 
 	@Override
@@ -73,6 +81,7 @@ public class EEllipsoidSelector extends ESelector implements Selector.Cylinder, 
 	@Override
 	public boolean selectPrimary(Vector3i position) {
 		this.center = position;
+		this.radius = null;
 		
 		if (position == null) {
 			this.region.setCenter(Vector3i.ZERO);

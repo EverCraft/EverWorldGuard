@@ -25,6 +25,7 @@ import org.spongepowered.api.world.World;
 import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
 
+import fr.evercraft.everapi.services.selection.SelectionType;
 import fr.evercraft.everapi.services.selection.exception.SelectorSecondaryException;
 import fr.evercraft.everworldguard.selection.ESelectionSubject;
 
@@ -35,6 +36,10 @@ public class ESphereSelector extends EEllipsoidSelector {
 	
 	public ESphereSelector(ESelectionSubject subject, World world) {
 		super(subject, world);
+	}
+	
+	public ESphereSelector(ESelectionSubject subject, World world, Vector3i min, Vector3i max) {
+		super(subject, world, min, max);
 	}
 	
 	public Optional<World> getWorld() {
@@ -66,5 +71,10 @@ public class ESphereSelector extends EEllipsoidSelector {
 		
 		this.subject.describeCUI();
 		return true;
+	}
+	
+	@Override
+	public SelectionType getType() {
+		return SelectionType.SPHERE;
 	}
 }

@@ -54,6 +54,17 @@ public class EPolygonalSelector extends ESelector implements Selector.Polygonal,
 		this.region = new ESelectionPolygonalRegion(world, Arrays.asList(Vector3i.ZERO));
 	}
 	
+	public EPolygonalSelector(ESelectionSubject subject, World world, Vector3i min, Vector3i max) {
+		super(subject);
+		
+		this.positions = new ArrayList<Vector3i>();
+		this.positions.add(min);
+		this.positions.add(Vector3i.from(min.getX(), min.getY(), max.getZ()));
+		this.positions.add(max);
+		this.positions.add(Vector3i.from(max.getX(), min.getY(), min.getZ()));
+		this.region = new ESelectionPolygonalRegion(world, this.positions);
+	}
+	
 	public Optional<World> getWorld() {
 		return this.region.getWorld();
 	}
@@ -87,20 +98,22 @@ public class EPolygonalSelector extends ESelector implements Selector.Polygonal,
 	public boolean selectSecondary(Vector3i position) {
 		if (position == null) {
             if (this.positions.isEmpty())return false;
-            this.positions.get(this.positions.size() - 1);
+            this.positions.remove(this.positions.size() - 1);
             this.recalculate();
             
             // CUI
             this.subject.describeCUI();
-        } else {
+            return true;
+        } else if (this.positions.isEmpty() || !this.positions.get(this.positions.size() - 1).equals(position)) {
         	this.positions.add(position);
         	this.recalculate();
         	
         	// CUI
         	this.subject.dispatchCUIEvent(new Point2DCuiMessage(this.positions.size() - 1, position, this.getVolume()));
     		this.subject.dispatchCUIEvent(new MinMaxCuiMessage(this.region.getMinimumPoint().getY(), this.region.getMaximumPoint().getY()));
+    		return true;
         }
-		return true;
+		return false;
 	}
 
 	@Override
@@ -116,7 +129,7 @@ public class EPolygonalSelector extends ESelector implements Selector.Polygonal,
 		if (this.positions.size() < 2) {
 			return 0;
 		}
-		return this.region.getVolume();
+		return this.region.getArea();
 	}
 
 	@Override

@@ -48,6 +48,14 @@ public class ECuboidSelector extends ESelector implements Selector.Cuboid, CUIRe
 		this.region = new ESelectionCuboidRegion(world, Vector3i.ZERO, Vector3i.ZERO);
 	}
 	
+	public ECuboidSelector(ESelectionSubject subject, World world, Vector3i min, Vector3i max) {
+		super(subject);
+		
+		this.position1 = min;
+		this.position2 = max;
+		this.region = new ESelectionCuboidRegion(world, min, max);
+	}
+	
 	public Optional<World> getWorld() {
 		return this.region.getWorld();
 	}
@@ -58,7 +66,7 @@ public class ECuboidSelector extends ESelector implements Selector.Cuboid, CUIRe
 
 	@Override
 	public int getVolume() {
-		return this.region.getVolume();
+		return this.region.getArea();
 	}
 
 	@Override

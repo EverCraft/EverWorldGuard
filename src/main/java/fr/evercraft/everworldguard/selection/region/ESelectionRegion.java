@@ -33,7 +33,7 @@ public abstract class ESelectionRegion implements SelectionRegion {
 
 	@Override
 	public Optional<World> getWorld() {
-		return Optional.of(this.world);
+		return Optional.ofNullable(this.world);
 	}
 
 	@Override
