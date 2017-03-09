@@ -77,4 +77,22 @@ public class ESphereSelector extends EEllipsoidSelector {
 	public SelectionType getType() {
 		return SelectionType.SPHERE;
 	}
+	
+	@Override
+	public boolean expand(Vector3i... changes) {
+		for (int cpt=0; cpt < changes.length; cpt++) {
+			Vector3i change = changes[cpt];
+			changes[cpt] = Vector3i.from(Math.max(Math.max(change.getX(), change.getY()), change.getZ()));
+		}
+		return super.expand(changes);
+	}
+
+	@Override
+	public boolean contract(Vector3i... changes) {
+		for (int cpt=0; cpt < changes.length; cpt++) {
+			Vector3i change = changes[cpt];
+			changes[cpt] = Vector3i.from(Math.max(Math.max(change.getX(), change.getY()), change.getZ()));
+		}
+		return super.contract(changes);
+	}
 }

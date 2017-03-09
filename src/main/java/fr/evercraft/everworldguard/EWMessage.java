@@ -39,33 +39,62 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		
 		SELECT_DESCRIPTION("select.description",					"Permet de sélectionner une région"),
 		
-		SELECT_CUI_DESCRIPTION("select.cui.description",								"Permet de voir les régions"),
+		SELECT_CUI_DESCRIPTION("select.cui.description",								"Permet de voir les régions (Require : WorldEdit CUI)"),
 		
+		SELECT_INFO_DESCRIPTION("select.info.description",								"Informe sur la région selectionné"),
 		SELECT_INFO_POS("select.info.pos",												"&7(&6<x>&7, &6<y>&7, &6<z>&7)"),
 		SELECT_INFO_POS_HOVER("select.info.posHover",									"&7X : &6<x>[RT]&7Y : &6<y>[RT]&7Z : &6<z>"),
-		SELECT_INFO_CUBOID_POS1_AND_POS2("select.info.cuboidPos1AndPos2",				"&7Position 1 : <pos1> &7, Position 2 : <pos2> &7(&6<area>&7)"),
-		SELECT_INFO_CUBOID_POS1("select.info.cuboidPos1",								"&7Position 1 : <pos>"),
-		SELECT_INFO_CUBOID_POS2("select.info.cuboidPos2",								"&7Position 2 : <pos>"),
-		SELECT_INFO_CUBOID_EMPTY("select.info.cuboidEmpty",								"&cErreur : Aucune position sélectionnée."),
-		SELECT_INFO_POLY_LINE("select.info.polyLine",									"    &7- <pos>"),
-		SELECT_INFO_POLY_TITLE("select.info.polyTitle",									"&7Liste des positions &7(&6<area>&7)"),
-		SELECT_INFO_POLY_EMPTY("select.info.polyEmpty",									"&cErreur : Aucune position sélectionnée."),
-		SELECT_INFO_CYLINDER_CENTER_AND_RADIUS("select.info.cylinderCenterAndRadius",	"&7Centre : <pos1> &7, Radius : <pos2> &7(&6<area>&7)"),
-		SELECT_INFO_CYLINDER_CENTER("select.info.cylinderCenter",						"&7Centre : <pos>"),
-		SELECT_INFO_CYLINDER_RADIUS("select.info.cylinderRadius",						"&7Radius : <pos>"),
-		SELECT_INFO_CYLINDER_EMPTY("select.info.cylinderEmpty",							"&cErreur : Aucune position sélectionnée."),
+		SELECT_INFO_CUBOID_TITLE("select.info.cuboidTitle",								"&7Votre sélection &6CUDOID&7"),
+		SELECT_INFO_CUBOID_POS1_AND_POS2("select.info.cuboidPos1AndPos2",				"    &6&l➤  &6Position 1 : &c<pos1>[RT]"
+																					  + "    &6&l➤  &6Position 2 : &c<pos2>[RT]"
+																					  + "    &6&l➤  &6Volume : &7<area>"),
+		SELECT_INFO_CUBOID_POS1("select.info.cuboidPos1",								"    &6&l➤  &6Position 1 : &7<pos1>"),
+		SELECT_INFO_CUBOID_POS2("select.info.cuboidPos2",								"    &6&l➤  &6Position 2 : &7<pos2>"),
+		SELECT_INFO_CUBOID_EMPTY("select.info.cuboidEmpty",								"    &cAucune position sélectionnée."),
+		SELECT_INFO_EXTEND_TITLE("select.info.extendTitle",								"&7Votre sélection &6EXTEND&7"),
+		SELECT_INFO_EXTEND_POS1_AND_POS2("select.info.extendPos1AndPos2",				"    &6&l➤  &6Position 1 : &7<pos1>[RT]"
+																					  + "    &6&l➤  &6Position 2 : &7<pos2>[RT]"
+																					  + "    &6&l➤  &6Volume : &7<area>"),	
+		SELECT_INFO_EXTEND_POS1("select.info.extendPos1",								"    &6&l➤  &6Position 1 : &7<pos1>"),
+		SELECT_INFO_EXTEND_POS2("select.info.extendPos2",								"    &6&l➤  &6Position 2 : &7<pos2>"),
+		SELECT_INFO_EXTEND_EMPTY("select.info.extendEmpty",								"    &cAucune position sélectionnée."),
+		SELECT_INFO_POLY_TITLE("select.info.polyTitle",									"&7Votre sélection &6POLYGONAL &7(&6<area>&7)"),
+		SELECT_INFO_POLY_LINE("select.info.polyLine",									"    &6&l➤  &6#<num> : &7<pos>"),
+		SELECT_INFO_POLY_EMPTY("select.info.polyEmpty",									"    Aucune position sélectionnée."),
+		SELECT_INFO_CYLINDER_TITLE("select.info.cylinderTitle",								"&7Votre sélection &6CYLINDER&7"),
+		SELECT_INFO_CYLINDER_CENTER_AND_RADIUS("select.info.cylinderCenterAndRadius",	"    &6&l➤  &6Centre : &7<center>[RT]"
+																					  + "    &6&l➤  &6Longueur : &7<width>[RT]"
+																					  + "    &6&l➤  &6Hauteur : &7<height>[RT]"
+																					  + "    &6&l➤  &6Profondeur : &7<length>[RT]"
+																					  + "    &6&l➤  &6Volume : &7<area>"),
+		SELECT_INFO_CYLINDER_CENTER("select.info.cylinderCenter",						"    &6&l➤  &6Centre : &7<center>"),
+		SELECT_INFO_CYLINDER_EMPTY("select.info.cylinderEmpty",							"&cAucune position sélectionnée."),
+		SELECT_INFO_ELLIPSOID_TITLE("select.info.ellipsoidTitle",						"&7Votre sélection &6ELLIPSOID&7"),
+		SELECT_INFO_ELLIPSOID_CENTER_AND_RADIUS("select.info.ellipsoidCenterAndRadius",	"    &6&l➤  &6Centre : &7<center>[RT]"
+																					  + "    &6&l➤  &6Longueur : &7<width>[RT]"
+																					  + "    &6&l➤  &6Hauteur : &7<height>[RT]"
+																					  + "    &6&l➤  &6Profondeur : &7<length>[RT]"
+																					  + "    &6&l➤  &6Volume : &7<area>"),
+		SELECT_INFO_ELLIPSOID_CENTER("select.info.ellipsoidCenter",						"    &6&l➤  &6Centre : &7<center>"),
+		SELECT_INFO_ELLIPSOID_EMPTY("select.info.ellipsoidEmpty",						"    Aucune position sélectionnée."),
+		SELECT_INFO_SPHERE_TITLE("select.info.sphereTitle",								"&7Votre sélection &6SPHERE&7"),
+		SELECT_INFO_SPHERE_CENTER_AND_RADIUS("select.info.sphereCenterAndRadius",		"    &6&l➤  &6Centre : &7<center>[RT]"
+																					  + "    &6&l➤  &6Rayon : &7<radius>[RT]"
+																					  + "    &6&l➤  &6Volume : &7<area>"),
+		SELECT_INFO_SPHERE_CENTER("select.info.sphereCenter",							"    &6&l➤  &6Centre : &7<center>"),
+		SELECT_INFO_SPHERE_EMPTY("select.info.sphereEmpty",								"    Aucune position sélectionnée."),
 		
 		SELECT_POS1_DESCRIPTION("select.pos1.description",			"Defini la première position"),
-		SELECT_POS1_CUBOID_ONE("select.pos1.cuboidOne",				"&7Sélection de la première position : <position>."),
-		SELECT_POS1_CUBOID_TWO("select.pos1.cuboidTwo",				"&7Sélection de la première position : <position> &7(&6<area>&7)."),
-		SELECT_POS1_POLY("select.pos1.poly",						"&7Sélection de la première position : <position>."),
-		SELECT_POS1_CYLINDER_CENTER("select.pos1.cylinderCentor",	"&7Sélection du centre : <position>."),
+		SELECT_POS1_ONE("select.pos1.one",							"&7Sélection de la position 1 : <position>."),
+		SELECT_POS1_TWO("select.pos1.two",							"&7Sélection de la position 1 : <position> &7(&6<area>&7)."),
+		SELECT_POS1_POLY("select.pos1.poly",						"&7Sélection de la position #1 : <position>."),
+		SELECT_POS1_CENTER("select.pos1.center",					"&7Sélection du centre : <position>."),
 		SELECT_POS1_EQUALS("select.pos1.equals",					"&cErreur : Vous avez déjà sélectionnée une position."),
 		SELECT_POS1_CANCEL("select.pos1.cancel",					"&cErreur : Impossible de sélectionner une position pour le moment."),
 		
 		SELECT_POS2_DESCRIPTION("select.pos2.description",			"Defini la deuxième position"),
-		SELECT_POS2_CUBOID_ONE("select.pos2.cuboidOne",				"&7Sélection de la deuxième position : <position>."),
-		SELECT_POS2_CUBOID_TWO("select.pos2.cuboidTwo",				"&7Sélection de la deuxième position : <position> &7(&6<area>&7)."),
+		SELECT_POS2_ONE("select.pos2.one",							"&7Sélection de la position 2 : <position>."),
+		SELECT_POS2_TWO("select.pos2.two",							"&7Sélection de la position 2 : <position> &7(&6<area>&7)."),
 		SELECT_POS2_POLY_ONE("select.pos2.polyOnde",				"&7Ajout de la position &6#<num> &7: <position>."),
 		SELECT_POS2_POLY_ALL("select.pos2.polyAll",					"&7Ajout de la position &6#<num> &7: <position> &7(&6<area>&7)."),
 		SELECT_POS2_RADIUS("select.pos2.radius",					"&7Sélection d'un rayon de <radius> &7block(s) : <position>."),

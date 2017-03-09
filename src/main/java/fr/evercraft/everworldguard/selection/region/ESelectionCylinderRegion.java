@@ -17,7 +17,6 @@
 package fr.evercraft.everworldguard.selection.region;
 
 import fr.evercraft.everapi.services.selection.SelectionRegion;
-import fr.evercraft.everapi.services.selection.exception.RegionOperationException;
 
 import java.util.List;
 
@@ -167,14 +166,10 @@ public class ESelectionCylinderRegion extends ESelectionRegion implements Select
         return (int) (2 * radius.getZ());
     }
 
-    private Vector3i calculateDiff(Vector3i... changes) throws RegionOperationException {
+    private Vector3i calculateDiff(Vector3i... changes) {
         Vector3i diff = Vector3i.ZERO;
         for (Vector3i change : changes) {
             diff = diff.add(change);
-        }
-
-        if ((diff.getX() & 1) + (diff.getZ() & 1) != 0) {
-            throw new RegionOperationException("Cylinders changes must be even for each horizontal dimensions.");
         }
         return diff.toDouble().div(2).floor().toInt();
     }
@@ -189,7 +184,7 @@ public class ESelectionCylinderRegion extends ESelectionRegion implements Select
     }
 
 	@Override
-	public boolean expand(Vector3i... changes) throws RegionOperationException {
+	public boolean expand(Vector3i... changes) {
 		Preconditions.checkNotNull(changes, "changes");
 		
 		this.center = this.center.add(this.calculateDiff(changes));
@@ -207,7 +202,7 @@ public class ESelectionCylinderRegion extends ESelectionRegion implements Select
 	}
 
 	@Override
-	public boolean contract(Vector3i... changes) throws RegionOperationException {
+	public boolean contract(Vector3i... changes) {
 		Preconditions.checkNotNull(changes, "changes");
 		
 		this.center = this.center.sub(this.calculateDiff(changes));

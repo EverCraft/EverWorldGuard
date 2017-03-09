@@ -29,7 +29,6 @@ import com.google.common.collect.ImmutableList;
 
 import fr.evercraft.everapi.services.selection.SelectionRegion;
 import fr.evercraft.everapi.services.selection.Selector;
-import fr.evercraft.everapi.services.selection.exception.RegionOperationException;
 import fr.evercraft.everapi.services.selection.exception.SelectorSecondaryException;
 import fr.evercraft.everworldguard.selection.ESelectionSubject;
 import fr.evercraft.everworldguard.selection.cui.CUIRegion;
@@ -132,7 +131,7 @@ public class EEllipsoidSelector extends ESelector implements Selector.Ellipsoid,
 	}
 	
 	@Override
-	public boolean expand(Vector3i... changes) throws RegionOperationException {
+	public boolean expand(Vector3i... changes) {
 		if (this.center == null || this.radius == null) return false;
 		if (!this.region.expand(changes)) return false;
 		
@@ -144,7 +143,7 @@ public class EEllipsoidSelector extends ESelector implements Selector.Ellipsoid,
 	}
 
 	@Override
-	public boolean contract(Vector3i... changes) throws RegionOperationException {
+	public boolean contract(Vector3i... changes) {
 		if (this.center == null || this.radius == null) return false;
 		if (!this.region.contract(changes)) return false;
 		

@@ -88,11 +88,14 @@ public class EWSelectPos1 extends ESubCommand<EverWorldGuard> {
 	private boolean commandSelectPos1(final EPlayer player) {
 		Vector3i position = player.getLocation().getPosition().toInt();
 		
-		if (player.getSelectorType().equals(SelectionType.CUBOID)) {
+		if (player.getSelectorType().equals(SelectionType.CUBOID) ||
+				player.getSelectorType().equals(SelectionType.EXTEND)) {
 			return this.commandSelectPos1Cuboid(player, position);
 		} else if (player.getSelectorType().equals(SelectionType.POLYGONAL)) {
 			return this.commandSelectPos1Polygonal(player, position);
-		} else if (player.getSelectorType().equals(SelectionType.CYLINDER)) {
+		} else if (player.getSelectorType().equals(SelectionType.CYLINDER) || 
+					player.getSelectorType().equals(SelectionType.ELLIPSOID) || 
+					player.getSelectorType().equals(SelectionType.SPHERE)) {
 			return this.commandSelectPos1Cylinder(player, position);
 		} else {
 			EAMessages.COMMAND_ERROR.sender()
@@ -121,11 +124,11 @@ public class EWSelectPos1 extends ESubCommand<EverWorldGuard> {
 		}
 		
 		if (!pos2.isPresent()) {
-			EWMessages.SELECT_POS1_CUBOID_ONE.sender()
+			EWMessages.SELECT_POS1_ONE.sender()
 				.replace("<position>", EWSelect.getPositionHover(position))
 				.sendTo(player);
 		} else {
-			EWMessages.SELECT_POS1_CUBOID_TWO.sender()
+			EWMessages.SELECT_POS1_TWO.sender()
 				.replace("<position>", EWSelect.getPositionHover(position))
 				.replace("<area>", String.valueOf(player.getSelectorVolume()))
 				.sendTo(player);
@@ -155,7 +158,7 @@ public class EWSelectPos1 extends ESubCommand<EverWorldGuard> {
 			return false;
 		}
 		
-		EWMessages.SELECT_POS1_CYLINDER_CENTER.sender()
+		EWMessages.SELECT_POS1_CENTER.sender()
 			.replace("<pos>", EWSelect.getPositionHover(position))
 			.sendTo(player);
 		return true;

@@ -64,6 +64,10 @@ public class ESelectionSubject implements SubjectSelection {
 		this.selector = new ECuboidSelector(this);
 	}
 	
+	public void reload() {
+		this.describeCUI();
+	}
+	
 	@Override
 	public ESelector getSelector() {
 		return this.selector;

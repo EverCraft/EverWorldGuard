@@ -26,6 +26,8 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+import org.spongepowered.api.item.ItemType;
+
 import com.google.common.base.Preconditions;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -45,6 +47,7 @@ public class ESelectionService implements SelectionService {
 	private final LoadingCache<UUID, ESelectionSubject> cache;
 	
 	private final CUIChannel cuiChannel;
+	private ItemType item;
 	
 	public ESelectionService(final EverWorldGuard plugin) {		
 		this.plugin = plugin;
@@ -68,6 +71,14 @@ public class ESelectionService implements SelectionService {
 					            return subject;
 					        }
 					    });
+		this.plugin.getGame().getEventManager().registerListeners(this.plugin, new ESelectionListener(this.plugin));
+		this.reload();
+	}
+	
+	public void reload() {
+		this.item = this.plugin.getConfigs().getSelectItem();
+		this.cache.cleanUp();
+		this.subjects.forEach((uuid, subject) -> subject.reload());
 	}
 	
 	public Optional<SubjectSelection> get(UUID uuid) {
@@ -99,13 +110,6 @@ public class ESelectionService implements SelectionService {
 			return this.plugin.getGame().getServer().getPlayer(uuid).isPresent();
 		} catch (IllegalArgumentException e) {}
 		return false;
-	}
-	
-	/**
-	 * Rechargement : Vide le cache et recharge tous les joueurs
-	 */
-	public void reload() {		
-		this.cache.cleanUp();
 	}
 	
 	/**
@@ -155,5 +159,9 @@ public class ESelectionService implements SelectionService {
 
 	public CUIChannel getCUIChannel() {
 		return this.cuiChannel;
+	}
+	
+	public ItemType getItem() {
+		return this.item;
 	}
 }

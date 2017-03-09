@@ -16,8 +16,14 @@
  */
 package fr.evercraft.everworldguard;
 
+import java.util.Optional;
+
+import org.spongepowered.api.item.ItemType;
+import org.spongepowered.api.item.ItemTypes;
+
 import fr.evercraft.everapi.plugin.file.EConfig;
 import fr.evercraft.everapi.plugin.file.EMessage;
+import fr.evercraft.everapi.sponge.UtilsItemType;
 
 public class EWConfig extends EConfig<EverWorldGuard> {
 
@@ -42,5 +48,17 @@ public class EWConfig extends EConfig<EverWorldGuard> {
 		addDefault("SQL.enable", false);
 		addDefault("SQL.url", "jdbc:mysql://root:password@localhost:3306/minecraft");
 		addDefault("SQL.prefix", "everworldguard_");
+		
+		addDefault("select.item", ItemTypes.WOODEN_AXE.getId());
+	}
+
+	public ItemType getSelectItem() {
+		String item_string = this.get("select.item").getString("");
+		Optional<ItemType> item = UtilsItemType.getItemType(item_string);
+		if (!item.isPresent()) {
+			this.plugin.getLogger().warn("[Config] 'select.item' : Can not find itemType '" + item_string + "'");
+			return ItemTypes.WOODEN_AXE;
+		}
+		return item.get();
 	}
 }

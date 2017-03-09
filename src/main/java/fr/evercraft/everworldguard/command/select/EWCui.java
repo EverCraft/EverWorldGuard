@@ -66,17 +66,14 @@ public class EWCui extends ECommand<EverWorldGuard> {
 
 	@Override
 	public boolean execute(CommandSource source, final List<String> args) throws CommandException {
-		// Erreur : Context 
-		if(source instanceof EPlayer) {
-			source = ((EPlayer) source).get();
-		}
-		
 		// Résultat de la commande :
 		boolean resultat = false;
 		
 		// Si on ne connait pas le joueur
-		if (args.size() == 1 && args.get(0).equalsIgnoreCase("cui")) {
-			resultat = this.commandCui(source, "\"" + args.get(0) + "\"");
+		if (args.size() == 1) {
+			if(source instanceof EPlayer) {
+				resultat = this.commandCui((EPlayer) source);
+			}
 		// Nombre d'argument incorrect
 		} else {
 			source.sendMessage(this.help(source));
@@ -85,8 +82,11 @@ public class EWCui extends ECommand<EverWorldGuard> {
 		return resultat;
 	}
 	
-	public boolean commandCui(final CommandSource player, final String world) throws CommandException {
-		this.plugin.getGame().getCommandManager().process(player, "select cui");
-		return false;
+	public boolean commandCui(final EPlayer player) throws CommandException {
+		this.plugin.getSelectionService().getSubject(player.getUniqueId()).ifPresent(subject -> {
+			subject.setCuiSupport(true);
+			subject.describeCUI(player);
+		});
+		return true;
 	}
 }
