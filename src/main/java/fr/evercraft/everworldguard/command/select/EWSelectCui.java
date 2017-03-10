@@ -21,7 +21,13 @@ import java.util.Collection;
 import java.util.List;
 
 import org.spongepowered.api.command.CommandException;
+import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.GenericArguments;
+import org.spongepowered.api.command.spec.CommandExecutor;
+import org.spongepowered.api.command.spec.CommandSpec;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
@@ -36,6 +42,21 @@ public class EWSelectCui extends ESubCommand<EverWorldGuard> {
 	
 	public EWSelectCui(final EverWorldGuard plugin, final EWSelect command) {
         super(plugin, command, "cui");
+        
+        CommandSpec myCommandSpec = CommandSpec.builder()
+                .description(EWMessages.SELECT_CUI_DESCRIPTION.getText())
+                .arguments(GenericArguments.string(Text.of("cui")))
+                .executor(new CommandExecutor() {
+                    @Override
+                    public CommandResult execute(CommandSource source, CommandContext args) throws CommandException {
+                    	if (source instanceof Player) {
+                    		EWSelectCui.this.commandSelectClear((Player) source);
+            			}
+                        return CommandResult.success();
+                    }
+                })
+                .build();
+        this.plugin.getGame().getCommandManager().register(plugin, myCommandSpec, "we");
     }
 	
 	@Override
@@ -68,7 +89,7 @@ public class EWSelectCui extends ESubCommand<EverWorldGuard> {
 		
 		if (args.size() == 0) {
 			if (source instanceof EPlayer) {
-				resultat = this.commandSelectClear((EPlayer) source);
+				resultat = this.commandSelectClear(((EPlayer) source).get());
 			} else {
 				EAMessages.COMMAND_ERROR_FOR_PLAYER.sender()
 					.prefix(EWMessages.PREFIX)
@@ -81,7 +102,7 @@ public class EWSelectCui extends ESubCommand<EverWorldGuard> {
 		return resultat;
 	}
 
-	private boolean commandSelectClear(final EPlayer player) {
+	private boolean commandSelectClear(final Player player) {
 		this.plugin.getSelectionService().getSubject(player.getUniqueId()).ifPresent(subject -> {
 			subject.setCuiSupport(true);
 			subject.describeCUI(player);
