@@ -70,15 +70,21 @@ public class PlayerListener {
 	}
 	
 	public void onChangeBlockPlayer(ChangeBlockEvent event, Player player) {
-		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetWorld());
-		 
-		event.filter(location -> world.getRegions(location.getPosition()).getFlag(player, Flags.BUILD).equals(State.ALLOW));
+		//player.sendMessage(Text.of(String.join(", ", event.getCause().getNamedCauses().keySet())));
+		event.getTransactions().forEach(transaction -> {
+		});
+		
+		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetWorld());		
+		if (event instanceof ChangeBlockEvent.Pre || event instanceof ChangeBlockEvent.Place || event instanceof ChangeBlockEvent.Break) {
+			event.filter(location -> world.getRegions(location.getPosition()).getFlag(player, Flags.BUILD).equals(State.ALLOW));
+		}
 	}
 	
 	public void onChangeBlockNatural(ChangeBlockEvent event) {
 		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetWorld());
-		 
-		event.filter(location -> world.getRegions(location.getPosition()).getFlagDefault(Flags.BUILD).equals(State.ALLOW));
+		if (event instanceof ChangeBlockEvent.Pre || event instanceof ChangeBlockEvent.Place || event instanceof ChangeBlockEvent.Break) {
+			event.filter(location -> world.getRegions(location.getPosition()).getFlagDefault(Flags.BUILD).equals(State.ALLOW));
+		}
 	}
 	
 	@Listener(order=Order.FIRST)

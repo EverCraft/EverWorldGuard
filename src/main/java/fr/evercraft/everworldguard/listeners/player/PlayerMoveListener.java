@@ -27,7 +27,6 @@ import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEvent;
 import org.spongepowered.api.event.filter.Getter;
-import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -78,7 +77,6 @@ public class PlayerMoveListener {
 			
 			Entity vehicle = player_sponge.getVehicle().orElse(null);
 			if (vehicle != null) {
-				player_sponge.sendMessage(Text.of("vehicle"));
 				while (vehicle != null) {
 					vehicle.clearPassengers();
 					vehicle.setVelocity(Vector3d.ZERO);
