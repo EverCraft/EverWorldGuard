@@ -16,19 +16,14 @@
  */
 package fr.evercraft.everworldguard.listeners.world;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.action.TextActions;
-
 import fr.evercraft.everworldguard.EverWorldGuard;
 
 public class BlockListener {
 	
+	@SuppressWarnings("unused")
 	private EverWorldGuard plugin;
 
 	public BlockListener(EverWorldGuard plugin) {

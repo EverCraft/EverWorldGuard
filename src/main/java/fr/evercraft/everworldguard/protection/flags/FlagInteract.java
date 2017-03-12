@@ -29,9 +29,9 @@ import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
-import org.spongepowered.api.event.block.ChangeBlockEvent;
-
-import com.google.common.collect.ImmutableSet;
+import org.spongepowered.api.event.block.InteractBlockEvent;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
 
 import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
 import fr.evercraft.everapi.services.worldguard.flag.Flags;
@@ -156,42 +156,40 @@ public class FlagInteract extends SetFlag<BlockType> {
 	}
 
 	@Listener(order=Order.FIRST)
-	public void onChangeBlock(ChangeBlockEvent.Modify event) {
+	public void onChangeBlock(InteractBlockEvent event) {
 		if (event.isCancelled()) return;
 		
-		Optional<Player> optPlayer = event.getCause().first(Player.class);
-		if (optPlayer.isPresent()) {
-			this.onChangeBlockPlayer(event, optPlayer.get());
+		event.getTargetBlock().getLocation().ifPresent(location -> {
+			Optional<Player> optPlayer = event.getCause().first(Player.class);
+			if (optPlayer.isPresent()) {
+				this.onChangeBlockPlayer(event, location, optPlayer.get());
+			} else {
+				this.onChangeBlockNatural(event, location);
+			}
+		});
+	}
+	
+	public void onChangeBlockPlayer(InteractBlockEvent event, Location<World> location, Player player) {
+		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(location.getExtent());	
+		
+		BlockType type = event.getTargetBlock().getState().getType();
+		if (this.getDefault().contains(type) && world.getRegions(location.getPosition()).getFlag(player, Flags.INTERACT).contains(type)) {
+			//this.plugin.getEServer().broadcast("Player.Modify : Flags : " + type.getId());
+			event.setCancelled(true);
 		} else {
-			this.onChangeBlockNatural(event);
+			//this.plugin.getEServer().broadcast("Player.Modify : No : " + type.getId());
 		}
 	}
 	
-	public void onChangeBlockPlayer(ChangeBlockEvent.Modify event, Player player) {
-		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetWorld());	
+	public void onChangeBlockNatural(InteractBlockEvent event, Location<World> location) {
+		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(location.getExtent());
 		
-		event.getTransactions().forEach(transaction -> {
-			BlockType type = transaction.getOriginal().getState().getType();
-			if (this.getDefault().contains(type) && world.getRegions(transaction.getOriginal().getPosition()).getFlag(player, Flags.INTERACT).contains(transaction.getOriginal().getState().getType())) {
-				//this.plugin.getEServer().broadcast("Player.Modify : Flags : " + transaction.getOriginal().getState().getType().getId());
-				transaction.setValid(false);
-			} else {
-				this.plugin.getEServer().broadcast("Player.Modify : No : " + transaction.getOriginal().getState().getType().getId());
-			}
-		});
-	}
-	
-	public void onChangeBlockNatural(ChangeBlockEvent.Modify event) {
-		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetWorld());
-		
-		event.getTransactions().forEach(transaction -> {
-			BlockType type = transaction.getOriginal().getState().getType();
-			if (this.getDefault().contains(type) && !world.getRegions(transaction.getOriginal().getPosition()).getFlagDefault(Flags.INTERACT).contains(type)) {
-				this.plugin.getEServer().broadcast("Natural.Modify : Flags : " + transaction.getOriginal().getState().getType().getId());
-				transaction.setValid(false);
-			} else {
-				//this.plugin.getEServer().broadcast("Natural.Modify : No : " + transaction.getOriginal().getState().getType().getId());
-			}
-		});
+		BlockType type = event.getTargetBlock().getState().getType();
+		if (this.getDefault().contains(type) && !world.getRegions(location.getPosition()).getFlagDefault(Flags.INTERACT).contains(type)) {
+			//this.plugin.getEServer().broadcast("Natural.Modify : Flags : " + type.getId());
+			event.setCancelled(true);
+		} else {
+			//this.plugin.getEServer().broadcast("Natural.Modify : No : " + type.getId());
+		}
 	}
 }
