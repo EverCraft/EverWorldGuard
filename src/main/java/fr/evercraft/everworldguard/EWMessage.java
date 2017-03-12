@@ -334,6 +334,7 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		
 		
 		FLAG_BUILD("flag.build",						"Désactive/Active les constructions"),
+		FLAG_INTERACT("flag.interact",					"Désactive/Active les interactions"),
 		FLAG_ENTRY("flag.entry",						""),
 		FLAG_EXIT("flag.exit",							""),
 		FLAG_INVINCIBILITY("flag.invincibity",			"Désactive/Active l'invincibilité"),

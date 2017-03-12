@@ -20,6 +20,7 @@ import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.listeners.player.PlayerListener;
 import fr.evercraft.everworldguard.listeners.player.PlayerMoveListener;
 import fr.evercraft.everworldguard.listeners.world.ChunkListener;
+import fr.evercraft.everworldguard.listeners.world.BlockListener;
 import fr.evercraft.everworldguard.listeners.world.WorldListener;
 
 public class EWListener {
@@ -33,6 +34,7 @@ public class EWListener {
 	
 	public void load() {
 		this.register(new WorldListener(this.plugin));
+		this.register(new BlockListener(this.plugin));
 		this.register(new ChunkListener(this.plugin));
 		this.register(new PlayerListener(this.plugin));
 		this.register(new PlayerMoveListener(this.plugin));
