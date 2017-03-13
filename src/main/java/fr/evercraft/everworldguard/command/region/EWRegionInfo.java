@@ -442,7 +442,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 									"<value>", Text.builder(value_string)
 													.onShiftClick(TextActions.insertText(value_string))
 													.onClick(TextActions.suggestCommand(
-						"/" + this.getParentName() + " flag -w \"" + world.getName() + "\" \"" + region.getIdentifier() + "\" \"" + flag.getName() + "\" \"" + value_string + "\""))
+						"/" + this.getParentName() + " removeflag -w \"" + world.getName() + "\" \"" + region.getIdentifier() + "\" \"" + flag.getName() + "\" \"" + association.name() + "\" \"" + value_string + "\""))
 													.build());
 					if (association.equals(Group.DEFAULT)) {
 						flags_default.put(flag.getIdentifier(), message);
@@ -486,17 +486,17 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 						if (association.equals(Group.DEFAULT)) {
 							if (!flags_default.containsKey(key.getIdentifier()) && 
 									!heritage_flags_default.containsKey(key.getIdentifier())) {
-								heritage_flags_default.put(key.getIdentifier(), this.getTextHeritagFlagsLine(key, (T) value, curParent, world));
+								heritage_flags_default.put(key.getIdentifier(), this.getTextHeritagFlagsLine(key, (T) value, association, curParent, world));
 							}
 						} else if (association.equals(Group.MEMBER)) {
 							if (!flags_member.containsKey(key.getIdentifier()) && 
 									!heritage_flags_member.containsKey(key.getIdentifier())) {
-								heritage_flags_member.put(key.getIdentifier(), this.getTextHeritagFlagsLine(key, (T) value, curParent, world));
+								heritage_flags_member.put(key.getIdentifier(), this.getTextHeritagFlagsLine(key, (T) value, association, curParent, world));
 							}
 						} else if (association.equals(Group.OWNER)) {
 							if (!flags_owner.containsKey(key.getIdentifier()) && 
 									!heritage_flags_owner.containsKey(key.getIdentifier())) {
-								heritage_flags_owner.put(key.getIdentifier(), this.getTextHeritagFlagsLine(key, (T) value, curParent, world));
+								heritage_flags_owner.put(key.getIdentifier(), this.getTextHeritagFlagsLine(key, (T) value, association, curParent, world));
 							}
 						}
 					});
@@ -541,7 +541,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 		}
 	}
 	
-	private <T> Text getTextHeritagFlagsLine(final Flag<T> flag, final T value, final ProtectedRegion curParent, final World world) {
+	private <T> Text getTextHeritagFlagsLine(final Flag<T> flag, final T value, final Group association, final ProtectedRegion curParent, final World world) {
 		String value_string = flag.serialize(value);
 		return EWMessages.REGION_INFO_ONE_HERITAGE_FLAGS_LINE.getFormat()
 				.toText("<flag>",  flag.getNameFormat().toBuilder()
@@ -550,7 +550,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 						"<value>", Text.builder(value_string)
 										.onShiftClick(TextActions.insertText(value_string))
 										.onClick(TextActions.suggestCommand(
-			"/" + this.getParentName() + " flag -w \"" + world.getName() + "\" \"" + curParent.getIdentifier() + "\" \"" + flag.getName() + "\" \"" + value_string + "\""))
+			"/" + this.getParentName() + " removeflag -w \"" + world.getName() + "\" \"" + curParent.getIdentifier() + "\" \"" + flag.getName() + "\" \"" + association.name() + "\" \"" + value_string + "\""))
 										.build());
 		
 	}

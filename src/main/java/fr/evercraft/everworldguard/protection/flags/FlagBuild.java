@@ -31,10 +31,8 @@ import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.cause.entity.spawn.EntitySpawnCause;
 import org.spongepowered.api.event.cause.entity.spawn.SpawnTypes;
-import org.spongepowered.api.event.filter.cause.First;
-import org.spongepowered.api.event.item.inventory.InteractItemEvent;
-import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.Direction;
 import org.spongepowered.api.world.LocatableBlock;
 
@@ -114,10 +112,12 @@ public class FlagBuild extends StateFlag {
 		if (optPlayer.isPresent()) {
 			Player player = optPlayer.get();
 			if (event.getLocations().stream().anyMatch(location -> world.getRegions(location.getPosition()).getFlag(player, Flags.BUILD).equals(State.DENY))) {
+				this.plugin.getEServer().getBroadcastChannel().send(Text.of("ChangeBlockEvent.Pre Player : "));
 				event.setCancelled(true);
 			}
 		} else {
 			if (event.getLocations().stream().anyMatch(location -> world.getRegions(location.getPosition()).getFlagDefault(Flags.BUILD).equals(State.DENY))) {
+				this.plugin.getEServer().getBroadcastChannel().send(Text.of("ChangeBlockEvent.Pre Nature : "));
 				event.setCancelled(true);
 			}
 		}
@@ -131,20 +131,16 @@ public class FlagBuild extends StateFlag {
 	public void onChangeBlock(ChangeBlockEvent.Place event) {
 		if (event.isCancelled()) return;		
 		
-		if (event.getCause().get(NamedCause.SOURCE, FallingBlock.class).isPresent()) {
-			this.onChangeBlockPlaceFalling(event);
+		Optional<FallingBlock> falling = event.getCause().get(NamedCause.SOURCE, FallingBlock.class);
+		if (falling.isPresent()) {
+			this.onChangeBlockPlaceFalling(event, falling.get());
 		} else {
-			Optional<Player> optPlayer = event.getCause().first(Player.class);
-			if (optPlayer.isPresent()) {
-				this.onChangeBlockPlayer(event, optPlayer.get());
-			} else {
-				this.onChangeBlockNatural(event);
-			}
+			this.onChangeBlockPlace(event);
 		}
 	}
 	
 	// Drop l'item au sol pour le bloc avec gravité
-	public void onChangeBlockPlaceFalling(ChangeBlockEvent.Place event) {
+	public void onChangeBlockPlaceFalling(ChangeBlockEvent.Place event, FallingBlock falling) {
 		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetWorld());		
 		Optional<Player> optPlayer = event.getCause().first(Player.class);
 		
@@ -161,7 +157,7 @@ public class FlagBuild extends StateFlag {
 						.from(event.getCause())
 						.named(UtilsCause.PLACE_EVENT, event).build());
 				}));
-		} else {
+		} else {			
 			event.filter(location -> world.getRegions(location.getPosition()).getFlagDefault(Flags.BUILD).equals(State.ALLOW))
 				.forEach(transaction -> transaction.getFinal().getLocation().ifPresent(location -> {
 					Entity entity = location.getExtent().createEntity(EntityTypes.ITEM, location.getPosition());
@@ -175,6 +171,18 @@ public class FlagBuild extends StateFlag {
 		}
 	}
 	
+	public void onChangeBlockPlace(ChangeBlockEvent.Place event) {
+		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetWorld());
+		Optional<Player> optPlayer = event.getCause().first(Player.class);
+		
+		if (optPlayer.isPresent()) {
+			Player player = optPlayer.get();
+			event.filter(location -> world.getRegions(location.getPosition()).getFlag(player, Flags.BUILD).equals(State.ALLOW));
+		} else {
+			event.filter(location -> world.getRegions(location.getPosition()).getFlagDefault(Flags.BUILD).equals(State.ALLOW));
+		}
+	}
+	
 	/*
 	 * ChangeBlockEvent.Break
 	 */
@@ -185,33 +193,41 @@ public class FlagBuild extends StateFlag {
 		
 		Optional<Player> optPlayer = event.getCause().first(Player.class);
 		if (optPlayer.isPresent()) {
-			this.onChangeBlockPlayer(event, optPlayer.get());
+			this.onChangeBlockBreakPlayer(event, optPlayer.get());
 		} else {
-			this.onChangeBlockNatural(event);
+			this.onChangeBlockBreakNatural(event);
 		}
 	}
 	
-	public void onChangeBlockPlayer(ChangeBlockEvent event, Player player) {
-		// Si il a marché sur de la terre labourée : https://github.com/SpongePowered/SpongeAPI/issues/1518
-		/*if (event.getTransactions().stream()
-			.filter(transaction -> transaction.getOriginal().getExtendedState().getType().equals(BlockTypes.FARMLAND) && 
-					transaction.getFinal().getExtendedState().getType().equals(BlockTypes.DIRT))
-			.findAny().isPresent()) return;*/
-		
+	public void onChangeBlockBreakPlayer(ChangeBlockEvent.Break event, Player player) {
 		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetWorld());	
 		
-		event.filter(location -> world.getRegions(location.getPosition()).getFlag(player, Flags.BUILD).equals(State.ALLOW));
+		if (!event.filter(location -> world.getRegions(location.getPosition()).getFlag(player, Flags.BUILD).equals(State.ALLOW)).isEmpty()) {
+			Optional<FallingBlock> falling = event.getCause().get(NamedCause.SOURCE, FallingBlock.class);
+			if (falling.isPresent()) {
+				falling.get().remove();
+			}
+		}
 	}
 	
-	public void onChangeBlockNatural(ChangeBlockEvent event) {
+	public void onChangeBlockBreakNatural(ChangeBlockEvent.Break event) {
 		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetWorld());
 		
-		event.filter(location -> world.getRegions(location.getPosition()).getFlagDefault(Flags.BUILD).equals(State.ALLOW));
+		if (!event.filter(location -> world.getRegions(location.getPosition()).getFlagDefault(Flags.BUILD).equals(State.ALLOW)).isEmpty()) {
+			Optional<FallingBlock> falling = event.getCause().get(NamedCause.SOURCE, FallingBlock.class);
+			if (falling.isPresent()) {
+				falling.get().remove();
+			}
+		}
 	}
 	
+	/*
+	 * InteractItemEvent.Secondary
+	 */
+	/*
 	@Listener(order=Order.FIRST)
 	public void onPlayerInteract(InteractItemEvent.Secondary event, @First Entity entity) {
-		// Erreur Sponge : Pas de ChangeBlockEvent pour les BUCKET
+		// Erreur Sponge : Pas de ChangeBlockEvent pour les BUCKET : https://github.com/SpongePowered/SpongeCommon/issues/1252
 		if (event.getItemStack().getType().equals(ItemTypes.BUCKET) || 
 				event.getItemStack().getType().equals(ItemTypes.LAVA_BUCKET) ||
 				event.getItemStack().getType().equals(ItemTypes.WATER_BUCKET)) {
@@ -230,5 +246,5 @@ public class FlagBuild extends StateFlag {
 				}
 			});
 		}
-	}
+	}*/
 }

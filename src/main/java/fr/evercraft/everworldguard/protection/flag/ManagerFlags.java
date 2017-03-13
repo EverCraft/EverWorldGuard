@@ -37,7 +37,7 @@ public class ManagerFlags {
 
 	private void load() {
 		Flags.BUILD = new FlagBuild(this.plugin);
-		Flags.INTERACT = new FlagInteract(this.plugin);
+		Flags.INTERACT_BLOCK = new FlagInteractBlock(this.plugin);
 		Flags.ENTRY = new FlagEntry();
 		Flags.EXIT = new FlagExit();
 		Flags.INVINCIBILITY = new FlagInvincibility();

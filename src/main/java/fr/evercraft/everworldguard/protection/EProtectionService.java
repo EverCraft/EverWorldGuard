@@ -29,6 +29,7 @@ import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
 import fr.evercraft.everapi.services.worldguard.flag.Flag;
 import fr.evercraft.everworldguard.EWPermissions;
 import fr.evercraft.everworldguard.EverWorldGuard;
+import fr.evercraft.everworldguard.protection.flag.EWFlagConfig;
 import fr.evercraft.everworldguard.protection.index.EWWorld;
 import fr.evercraft.everworldguard.protection.subject.EUserSubject;
 
@@ -40,7 +41,8 @@ public class EProtectionService implements WorldGuardService {
 	
 	private final EUserSubjectList subjects;
 	private final EWorldList worlds;
-	private final FlagRegister flags;
+	private final FlagRegister flagsRegister;
+	private final EWFlagConfig flagsConfig;
 	
 	
 	public EProtectionService(final EverWorldGuard plugin) {		
@@ -48,7 +50,8 @@ public class EProtectionService implements WorldGuardService {
 		
 		this.subjects = new EUserSubjectList(this.plugin);
 		this.worlds = new EWorldList(this.plugin);
-		this.flags = new FlagRegister();
+		this.flagsRegister = new FlagRegister();
+		this.flagsConfig = new EWFlagConfig(this.plugin);
 	}
 	
 	public void reload() {		
@@ -110,30 +113,34 @@ public class EProtectionService implements WorldGuardService {
 	
 	@Override
 	public Optional<Flag<?>> getFlag(String name) {
-		return this.flags.get(name);
+		return this.flagsRegister.get(name);
 	}
 
 	@Override
 	public void registerFlag(Flag<?> flag) {
-		this.flags.register(flag);
+		this.flagsRegister.register(flag);
 	}
 	
 	@Override
 	public void registerFlag(Set<Flag<?>> flags) {
-		this.flags.register(flags);
+		this.flagsRegister.register(flags);
 	}
 
 	@Override
 	public boolean hasRegisteredFlag(Flag<?> flag) {
-		return this.flags.hasRegistered(flag);
+		return this.flagsRegister.hasRegistered(flag);
 	}
 	
 	public Set<Flag<?>> getFlags() {
-		return this.flags.getAll();
+		return this.flagsRegister.getAll();
 	}
 
 	@Override
 	public void clearFlags() {
 		// TODO Supprimer les flags non utilisé dans la config
+	}
+
+	public EWFlagConfig getConfigFlags() {
+		return this.flagsConfig;
 	}
 }
