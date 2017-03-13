@@ -138,6 +138,5 @@ public class BlockListener {
 				.onHover(TextActions.showText(Text.of(event.getClass().getName())))
 				.onClick(TextActions.suggestCommand(event.getClass().getName()))
 				.build().concat(Text.joinWith(Text.of(", "), list)));				
-	}
-	*/
+	}*/
 }

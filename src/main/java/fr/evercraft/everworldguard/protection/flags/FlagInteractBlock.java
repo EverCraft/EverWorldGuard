@@ -17,40 +17,41 @@
 package fr.evercraft.everworldguard.protection.flags;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.projectile.Projectile;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.block.InteractBlockEvent;
+import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.util.Tristate;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-import com.google.common.collect.Sets;
-
 import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
 import fr.evercraft.everapi.services.worldguard.flag.Flags;
-import fr.evercraft.everapi.services.worldguard.flag.type.SetFlag;
+import fr.evercraft.everapi.services.worldguard.flag.type.EntryFlag;
+import fr.evercraft.everapi.services.worldguard.flag.value.EntryFlagValue;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EverWorldGuard;
 
-public class FlagInteractBlock extends SetFlag<BlockType> {
+public class FlagInteractBlock extends EntryFlag<String, BlockType> {
 	
 	private static final String ALL = "ALL";
 	
 	private final EverWorldGuard plugin;
 	private final Map<String, Set<BlockType>> groups;
-	private final Set<BlockType> types;
+	private EntryFlagValue<String, BlockType> defaults;
 	
 	public FlagInteractBlock(EverWorldGuard plugin) {
 		super("INTERACT_BLOCK");
@@ -58,17 +59,19 @@ public class FlagInteractBlock extends SetFlag<BlockType> {
 		this.plugin = plugin;
 		
 		this.groups = new ConcurrentHashMap<String, Set<BlockType>>();
-		this.types = Sets.newConcurrentHashSet();
+		this.defaults = new EntryFlagValue<String, BlockType>();
 		
 		this.reload();
 	}
 	
 	public void reload() {
 		this.groups.clear();
-		this.types.clear();
-		
 		this.groups.putAll(this.plugin.getProtectionService().getConfigFlags().getInteracts());
-		this.groups.forEach((group, blocks) -> this.types.addAll(blocks));
+		
+		Set<String> keys = this.groups.keySet();
+		Set<BlockType> values = new HashSet<BlockType>();
+		this.groups.values().forEach(value -> values.addAll(value));
+		this.defaults = new EntryFlagValue<String, BlockType>(keys, values);
 	}
 	
 	@Override
@@ -77,8 +80,8 @@ public class FlagInteractBlock extends SetFlag<BlockType> {
 	}
 
 	@Override
-	public Set<BlockType> getDefault() {
-		return this.types;
+	public EntryFlagValue<String, BlockType> getDefault() {
+		return this.defaults;
 	}
 
 	@Override
@@ -100,27 +103,27 @@ public class FlagInteractBlock extends SetFlag<BlockType> {
 	}
 	
 	@Override
-	public String subSerialize(BlockType value) {
-		for (Entry<String, Set<BlockType>> group : this.groups.entrySet()) {
-			for (BlockType block : group.getValue()) {
-				if (block.equals(value)) {
-					return group.getKey();
-				}
-			}
-		}
-		return "";
+	public String serialize(EntryFlagValue<String, BlockType> value) {
+		return String.join(",", value.getKeys());
 	}
 
 	@Override
-	public Set<BlockType> subDeserialize(String value) throws IllegalArgumentException {
-		if (value.equalsIgnoreCase(ALL)) return this.types;
+	public EntryFlagValue<String, BlockType> deserialize(String value) throws IllegalArgumentException {
+		if (value.equalsIgnoreCase(ALL)) return this.defaults;
+		if (value.isEmpty()) return new EntryFlagValue<String, BlockType>();
 		
-		Set<BlockType> group = this.groups.get(value.toUpperCase());
-		if (group != null) {
-			return group;
-		} else {
-			throw new IllegalArgumentException();
+		Set<String> keys = new HashSet<String>();
+		Set<BlockType> values = new HashSet<BlockType>();
+		for (String key : value.split("[,\\s]+")) {
+			Set<BlockType> blocks = this.groups.get(key.toUpperCase());
+			if (blocks != null) {
+				keys.add(key.toUpperCase());
+				values.addAll(blocks);
+			} else {
+				throw new IllegalArgumentException();
+			}
 		}
+		return new EntryFlagValue<String, BlockType>(keys, values);
 	}
 
 	@Listener(order=Order.FIRST)
@@ -140,7 +143,7 @@ public class FlagInteractBlock extends SetFlag<BlockType> {
 		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(location.getExtent());	
 		
 		BlockType type = event.getTargetBlock().getState().getType();
-		if (this.getDefault().contains(type) && !world.getRegions(location.getPosition()).getFlag(player, Flags.INTERACT_BLOCK).contains(type)) {
+		if (this.getDefault().containsValue(type) && !world.getRegions(location.getPosition()).getFlag(player, Flags.INTERACT_BLOCK).containsValue(type)) {
 			/*this.plugin.getEServer().broadcast("InteractBlockEvent : Player : Cancel : " + type.getId());
 			this.plugin.getEServer().broadcast("    - UseBlockResult : " + event.getUseBlockResult());
 			this.plugin.getEServer().broadcast("    - UseItemResult : " + event.getUseItemResult());
@@ -159,7 +162,7 @@ public class FlagInteractBlock extends SetFlag<BlockType> {
 	public void onChangeBlockNatural(InteractBlockEvent.Secondary event, Location<World> location) {
 		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(location.getExtent());
 		BlockType type = event.getTargetBlock().getState().getType();
-		if (this.getDefault().contains(type) && !world.getRegions(location.getPosition()).getFlagDefault(Flags.INTERACT_BLOCK).contains(type)) {
+		if (this.getDefault().containsValue(type) && !world.getRegions(location.getPosition()).getFlagDefault(Flags.INTERACT_BLOCK).containsValue(type)) {
 			/*this.plugin.getEServer().broadcast("InteractBlockEvent : Natural : Cancel : " + type.getId());
 			this.plugin.getEServer().broadcast("    - UseBlockResult : " + event.getUseBlockResult());
 			this.plugin.getEServer().broadcast("    - UseItemResult : " + event.getUseItemResult());
@@ -192,7 +195,7 @@ public class FlagInteractBlock extends SetFlag<BlockType> {
 		
 		event.getTransactions().forEach(transaction -> {
 			BlockType type = transaction.getOriginal().getState().getType();
-			if (this.getDefault().contains(type) && !world.getRegions(transaction.getOriginal().getPosition()).getFlag(player, Flags.INTERACT_BLOCK).contains(type)) {
+			if (this.getDefault().containsValue(type) && !world.getRegions(transaction.getOriginal().getPosition()).getFlag(player, Flags.INTERACT_BLOCK).containsValue(type)) {
 				//this.plugin.getEServer().broadcast("ChangeBlockEvent.Modify : Player : Flags : " + type.getId());
 				event.setCancelled(true);
 			} else {
@@ -206,11 +209,51 @@ public class FlagInteractBlock extends SetFlag<BlockType> {
 		
 		event.getTransactions().forEach(transaction -> {
 			BlockType type = transaction.getOriginal().getState().getType();
-			if (this.getDefault().contains(type) && !world.getRegions(transaction.getOriginal().getPosition()).getFlagDefault(Flags.INTERACT_BLOCK).contains(type)) {
+			if (this.getDefault().containsValue(type) && !world.getRegions(transaction.getOriginal().getPosition()).getFlagDefault(Flags.INTERACT_BLOCK).containsValue(type)) {
 				//this.plugin.getEServer().broadcast("ChangeBlockEvent.Modify : Natural : Flags : " + type.getId());
 				event.setCancelled(true);
 			} else {
 				//this.plugin.getEServer().broadcast("ChangeBlockEvent.Modify : Natural : No : " + type.getId());
+			}
+		});
+	}
+	
+	/*
+	 * Projectile
+	 */
+	
+	@Listener(order=Order.FIRST)
+	public void onChangeBlock(ChangeBlockEvent.Break event) {
+		if (!event.getCause().get(NamedCause.SOURCE, Projectile.class).isPresent()) return;
+		
+		Optional<Player> optPlayer = event.getCause().first(Player.class);
+		if (optPlayer.isPresent()) {
+			this.onChangeBlockBreakPlayer(event, optPlayer.get());
+		} else {
+			this.onChangeBlockBreakNatural(event);
+		}
+	}
+	
+	public void onChangeBlockBreakPlayer(ChangeBlockEvent.Break event, Player player) {
+		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetWorld());	
+		
+		event.getTransactions().forEach(transaction -> {
+			BlockType type = transaction.getOriginal().getState().getType();
+			
+			if (this.getDefault().containsValue(type) && !world.getRegions(transaction.getOriginal().getPosition()).getFlag(player, Flags.INTERACT_BLOCK).containsValue(type)) {
+				transaction.setValid(false);
+			}
+		});
+	}
+	
+	public void onChangeBlockBreakNatural(ChangeBlockEvent.Break event) {
+		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetWorld());	
+		
+		event.getTransactions().forEach(transaction -> {
+			BlockType type = transaction.getOriginal().getState().getType();
+			
+			if (this.getDefault().containsValue(type) && !world.getRegions(transaction.getOriginal().getPosition()).getFlagDefault(Flags.INTERACT_BLOCK).containsValue(type)) {
+				transaction.setValid(false);
 			}
 		});
 	}

@@ -71,10 +71,8 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 				BlockTypes.SILVER_SHULKER_BOX,
 				BlockTypes.WHITE_SHULKER_BOX,
 				BlockTypes.YELLOW_SHULKER_BOX,
-				BlockTypes.JUKEBOX,
 				BlockTypes.BREWING_STAND,
-				BlockTypes.CAULDRON,
-				BlockTypes.END_PORTAL)
+				BlockTypes.CAULDRON)
 					.stream().map(block -> block.getId()).collect(Collectors.toList()));
 		
 		interact.put("GROUP_REDSTONE", Arrays.asList(
@@ -88,12 +86,12 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 				BlockTypes.LIGHT_WEIGHTED_PRESSURE_PLATE,
 				BlockTypes.DAYLIGHT_DETECTOR,
 				BlockTypes.DAYLIGHT_DETECTOR_INVERTED,
-				BlockTypes.HOPPER,
 				BlockTypes.POWERED_REPEATER,
 				BlockTypes.UNPOWERED_REPEATER,
 				BlockTypes.POWERED_COMPARATOR,
 				BlockTypes.UNPOWERED_COMPARATOR,
-				BlockTypes.NOTEBLOCK)
+				BlockTypes.NOTEBLOCK,
+				BlockTypes.DETECTOR_RAIL)
 					.stream().map(block -> block.getId()).collect(Collectors.toList()));
 		
 		interact.put("GROUP_DOOR", Arrays.asList(
@@ -112,6 +110,17 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 				BlockTypes.SPRUCE_FENCE_GATE,
 				BlockTypes.TRAPDOOR,
 				BlockTypes.IRON_TRAPDOOR)
+					.stream().map(block -> block.getId()).collect(Collectors.toList()));
+		
+		interact.put("TNT", Arrays.asList(
+				BlockTypes.TNT)
+					.stream().map(block -> block.getId()).collect(Collectors.toList()));
+		interact.put("GROUP_OTHERS", Arrays.asList(
+				BlockTypes.BED,
+				BlockTypes.END_PORTAL,
+				BlockTypes.BEACON,
+				BlockTypes.MOB_SPAWNER,
+				BlockTypes.JUKEBOX)
 					.stream().map(block -> block.getId()).collect(Collectors.toList()));
 		
 		addDefault("interact", interact);
