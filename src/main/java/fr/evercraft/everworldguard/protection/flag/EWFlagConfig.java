@@ -71,8 +71,7 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 				BlockTypes.SILVER_SHULKER_BOX,
 				BlockTypes.WHITE_SHULKER_BOX,
 				BlockTypes.YELLOW_SHULKER_BOX,
-				BlockTypes.BREWING_STAND,
-				BlockTypes.CAULDRON)
+				BlockTypes.BREWING_STAND)
 					.stream().map(block -> block.getId()).collect(Collectors.toList()));
 		
 		interact.put("GROUP_REDSTONE", Arrays.asList(
@@ -120,7 +119,8 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 				BlockTypes.END_PORTAL,
 				BlockTypes.BEACON,
 				BlockTypes.MOB_SPAWNER,
-				BlockTypes.JUKEBOX)
+				BlockTypes.JUKEBOX,
+				BlockTypes.CAULDRON)
 					.stream().map(block -> block.getId()).collect(Collectors.toList()));
 		
 		addDefault("interact", interact);

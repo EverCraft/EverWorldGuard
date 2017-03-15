@@ -83,18 +83,13 @@ public class FlagInteractBlock extends EntryFlag<String, BlockType> {
 	public EntryFlagValue<String, BlockType> getDefault() {
 		return this.defaults;
 	}
+	
+	/*
+	 * Suggest
+	 */
 
 	@Override
 	public Collection<String> getSuggestAdd(List<String> args) {
-		return Stream.concat(
-				this.groups.keySet().stream(),
-				Stream.of(ALL))
-			.filter(suggest -> !args.stream().anyMatch(arg -> arg.equalsIgnoreCase(suggest)))
-			.collect(Collectors.toList());
-	}
-
-	@Override
-	public Collection<String> getSuggestRemove(List<String> args) {
 		return Stream.concat(
 				this.groups.keySet().stream(),
 				Stream.of(ALL))
@@ -114,7 +109,7 @@ public class FlagInteractBlock extends EntryFlag<String, BlockType> {
 		
 		Set<String> keys = new HashSet<String>();
 		Set<BlockType> values = new HashSet<BlockType>();
-		for (String key : value.split("[,\\s]+")) {
+		for (String key : value.split(PATTERN_SPLIT)) {
 			Set<BlockType> blocks = this.groups.get(key.toUpperCase());
 			if (blocks != null) {
 				keys.add(key.toUpperCase());
