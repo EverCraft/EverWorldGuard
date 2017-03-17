@@ -35,7 +35,7 @@ import fr.evercraft.everapi.EAMessage.EAMessages;
 import fr.evercraft.everapi.message.replace.EReplace;
 import fr.evercraft.everapi.plugin.command.Args;
 import fr.evercraft.everapi.plugin.command.ESubCommand;
-import fr.evercraft.everapi.server.location.VirtualLocation;
+import fr.evercraft.everapi.server.location.VirtualTransform;
 import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everapi.services.worldguard.flag.Flags;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
@@ -161,7 +161,7 @@ public class EWRegionTeleport extends ESubCommand<EverWorldGuard> {
 	}
 
 	private boolean commandRegionTeleport(EPlayer player, ProtectedRegion region, World world) {
-		VirtualLocation location = region.getFlag(Flags.TELEPORT)
+		VirtualTransform location = region.getFlag(Flags.TELEPORT)
 				.getInherit(region.getGroup(player, UtilsContexts.get(world.getName())))
 				.orElseGet(() -> Flags.TELEPORT.getDefault(region));
 		
@@ -173,7 +173,7 @@ public class EWRegionTeleport extends ESubCommand<EverWorldGuard> {
 			return false;
 		}
 		
-		if (!player.teleportSafe(location.getTransform().get(), true)) {
+		if (!player.teleportSafeZone(location.getTransform(player.getTransform()), true)) {
 			EAMessages.PLAYER_ERROR_TELEPORT.sendTo(player);
 			return false;
 		}
@@ -186,13 +186,13 @@ public class EWRegionTeleport extends ESubCommand<EverWorldGuard> {
 		return true;
 	}
 	
-	private Text getTeleportHover(final VirtualLocation location) {
+	private Text getTeleportHover(final VirtualTransform location) {
 		Map<String, EReplace<?>> replaces = new HashMap<String, EReplace<?>>();
-		replaces.put("<x>", EReplace.of(location.getFloorX().toString()));
-		replaces.put("<y>", EReplace.of(location.getFloorY().toString()));
-		replaces.put("<z>", EReplace.of(location.getFloorZ().toString()));
-		replaces.put("<pitch>", EReplace.of(location.getPitch().toString()));
-		replaces.put("<yaw>", EReplace.of(location.getYaw().toString()));
+		replaces.put("<x>", EReplace.of(String.valueOf(location.getPosition().getFloorX())));
+		replaces.put("<y>", EReplace.of(String.valueOf(location.getPosition().getFloorY())));
+		replaces.put("<z>", EReplace.of(String.valueOf(location.getPosition().getFloorZ())));
+		replaces.put("<pitch>", EReplace.of(String.valueOf(location.getPitch())));
+		replaces.put("<yaw>", EReplace.of(String.valueOf(location.getYaw())));
 		replaces.put("<world>", EReplace.of(location.getWorldName()));
 		return EWMessages.REGION_TELEPORT_TELEPORT_POSITION.getFormat().toText(replaces)
 				.toBuilder()
@@ -208,7 +208,7 @@ public class EWRegionTeleport extends ESubCommand<EverWorldGuard> {
 			return false;
 		}
 		
-		Optional<VirtualLocation> optLocation = region.getFlag(Flags.SPAWN).getInherit(region.getGroup(player, UtilsContexts.get(world.getName())));
+		Optional<VirtualTransform> optLocation = region.getFlag(Flags.SPAWN).getInherit(region.getGroup(player, UtilsContexts.get(world.getName())));
 		if (!optLocation.isPresent()) {
 			EWMessages.REGION_TELEPORT_SPAWN_EMPTY.sender()
 				.replace("<region>", region.getIdentifier())
@@ -216,7 +216,7 @@ public class EWRegionTeleport extends ESubCommand<EverWorldGuard> {
 				.sendTo(player);
 			return false;
 		}
-		VirtualLocation location = optLocation.get();
+		VirtualTransform location = optLocation.get();
 		
 		if (location.isEmpty()) {
 			EWMessages.REGION_TELEPORT_SPAWN_ERROR.sender()
@@ -239,13 +239,13 @@ public class EWRegionTeleport extends ESubCommand<EverWorldGuard> {
 		return true;
 	}
 	
-	private Text getSpawnHover(final VirtualLocation location) {
+	private Text getSpawnHover(final VirtualTransform location) {
 		Map<String, EReplace<?>> replaces = new HashMap<String, EReplace<?>>();
-		replaces.put("<x>", EReplace.of(location.getFloorX().toString()));
-		replaces.put("<y>", EReplace.of(location.getFloorY().toString()));
-		replaces.put("<z>", EReplace.of(location.getFloorZ().toString()));
-		replaces.put("<pitch>", EReplace.of(location.getPitch().toString()));
-		replaces.put("<yaw>", EReplace.of(location.getYaw().toString()));
+		replaces.put("<x>", EReplace.of(String.valueOf(location.getPosition().getFloorX())));
+		replaces.put("<y>", EReplace.of(String.valueOf(location.getPosition().getFloorY())));
+		replaces.put("<z>", EReplace.of(String.valueOf(location.getPosition().getFloorZ())));
+		replaces.put("<pitch>", EReplace.of(String.valueOf(location.getPitch())));
+		replaces.put("<yaw>", EReplace.of(String.valueOf(location.getYaw())));
 		replaces.put("<world>", EReplace.of(location.getWorldName()));
 		return EWMessages.REGION_TELEPORT_SPAWN_POSITION.getFormat().toText(replaces)
 				.toBuilder()

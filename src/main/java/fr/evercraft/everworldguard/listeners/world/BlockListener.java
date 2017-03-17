@@ -16,11 +16,17 @@
  */
 package fr.evercraft.everworldguard.listeners.world;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.block.InteractBlockEvent;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.action.TextActions;
 
+import fr.evercraft.everapi.plugin.EChat;
 import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
 import fr.evercraft.everworldguard.EverWorldGuard;
 
@@ -42,7 +48,8 @@ public class BlockListener {
 		
 		this.plugin.getManagerFlags().BUILD.onChangeBlockPre(world, event);
 		
-		/*List<Text> list = new ArrayList<Text>();
+		// Debug
+		List<Text> list = new ArrayList<Text>();
 		event.getCause().getNamedCauses().forEach((key, value) -> {
 			list.add(Text.builder(key)
 					.onHover(TextActions.showText(Text.of(EChat.fixLength(value.toString(), 254))))
@@ -51,7 +58,7 @@ public class BlockListener {
 		});
 		this.plugin.getEServer().getBroadcastChannel().send(Text.of("ChangeBlockEvent.Pre : ").concat(Text.joinWith(Text.of(", "), list)));
 		
-		event.getLocations().forEach(location -> this.plugin.getEServer().getBroadcastChannel().send(Text.of("   - " + location.getPosition())));*/
+		event.getLocations().forEach(location -> this.plugin.getEServer().getBroadcastChannel().send(Text.of("   - " + location.getPosition())));
 	}
 	
 	@Listener(order=Order.FIRST)
@@ -60,7 +67,8 @@ public class BlockListener {
 		
 		this.plugin.getManagerFlags().BUILD.onChangeBlockPlace(world, event);
 		
-		/*List<Text> list = new ArrayList<Text>();
+		// Debug
+		List<Text> list = new ArrayList<Text>();
 		event.getCause().getNamedCauses().forEach((key, value) -> {
 			list.add(Text.builder(key)
 					.onHover(TextActions.showText(Text.of(EChat.fixLength(value.toString(), 254))))
@@ -70,7 +78,7 @@ public class BlockListener {
 		this.plugin.getEServer().getBroadcastChannel().send(Text.builder("ChangeBlockEvent.Place : ")
 				.onHover(TextActions.showText(Text.of(event.getClass().getName())))
 				.onClick(TextActions.suggestCommand(event.getClass().getName()))
-				.build().concat(Text.joinWith(Text.of(", "), list)));	*/			
+				.build().concat(Text.joinWith(Text.of(", "), list)));
 	}
 	
 	@Listener(order=Order.FIRST)
@@ -80,7 +88,8 @@ public class BlockListener {
 		this.plugin.getManagerFlags().BUILD.onChangeBlockBreak(world, event);
 		this.plugin.getManagerFlags().INTERACT_BLOCK.onChangeBlockBreak(world, event);
 		
-		/*List<Text> list = new ArrayList<Text>();
+		// Debug
+		List<Text> list = new ArrayList<Text>();
 		event.getCause().getNamedCauses().forEach((key, value) -> {
 			list.add(Text.builder(key)
 					.onHover(TextActions.showText(Text.of(EChat.fixLength(value.toString(), 254))))
@@ -90,7 +99,7 @@ public class BlockListener {
 		this.plugin.getEServer().getBroadcastChannel().send(Text.builder("ChangeBlockEvent.Break : ")
 				.onHover(TextActions.showText(Text.of(event.getClass().getName())))
 				.onClick(TextActions.suggestCommand(event.getClass().getName()))
-				.build().concat(Text.joinWith(Text.of(", "), list)));*/
+				.build().concat(Text.joinWith(Text.of(", "), list)));
 				
 	}
 	
@@ -100,7 +109,8 @@ public class BlockListener {
 		
 		this.plugin.getManagerFlags().INTERACT_BLOCK.onChangeBlockModify(world, event);
 		
-		/*List<Text> list = new ArrayList<Text>();
+		// Debug
+		List<Text> list = new ArrayList<Text>();
 		event.getCause().getNamedCauses().forEach((key, value) -> {
 			list.add(Text.builder(key)
 					.onHover(TextActions.showText(Text.of(EChat.fixLength(value.toString(), 254))))
@@ -110,14 +120,15 @@ public class BlockListener {
 		this.plugin.getEServer().getBroadcastChannel().send(Text.builder("ChangeBlockEvent.Modify : ")
 				.onHover(TextActions.showText(Text.of(event.getClass().getName())))
 				.onClick(TextActions.suggestCommand(event.getClass().getName()))
-				.build().concat(Text.joinWith(Text.of(", "), list)));*/
+				.build().concat(Text.joinWith(Text.of(", "), list)));
 	}
 	
 	@Listener(order=Order.FIRST)
 	public void onChangeBlock(ChangeBlockEvent.Decay event) {
 		//WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetWorld());
 		
-		/*List<Text> list = new ArrayList<Text>();
+		// Debug
+		List<Text> list = new ArrayList<Text>();
 		event.getCause().getNamedCauses().forEach((key, value) -> {
 			list.add(Text.builder(key)
 					.onHover(TextActions.showText(Text.of(EChat.fixLength(value.toString(), 254))))
@@ -127,7 +138,7 @@ public class BlockListener {
 		this.plugin.getEServer().getBroadcastChannel().send(Text.builder("ChangeBlockEvent.Decay : ")
 				.onHover(TextActions.showText(Text.of(event.getClass().getName())))
 				.onClick(TextActions.suggestCommand(event.getClass().getName()))
-				.build().concat(Text.joinWith(Text.of(", "), list)));*/
+				.build().concat(Text.joinWith(Text.of(", "), list)));
 				
 	}
 	
@@ -135,7 +146,8 @@ public class BlockListener {
 	public void onChangeBlock(ChangeBlockEvent.Post event) {
 		//WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetWorld());
 		
-		/*List<Text> list = new ArrayList<Text>();
+		// Debug
+		List<Text> list = new ArrayList<Text>();
 		event.getCause().getNamedCauses().forEach((key, value) -> {
 			list.add(Text.builder(key)
 					.onHover(TextActions.showText(Text.of(EChat.fixLength(value.toString(), 254))))
@@ -145,7 +157,7 @@ public class BlockListener {
 		this.plugin.getEServer().getBroadcastChannel().send(Text.builder("ChangeBlockEvent.Post : ")
 				.onHover(TextActions.showText(Text.of(event.getClass().getName())))
 				.onClick(TextActions.suggestCommand(event.getClass().getName()))
-				.build().concat(Text.joinWith(Text.of(", "), list)));*/
+				.build().concat(Text.joinWith(Text.of(", "), list)));
 				
 	}
 	
@@ -153,7 +165,8 @@ public class BlockListener {
 	public void onChangeBlock(ChangeBlockEvent.Grow event) {
 		//WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetWorld());
 		
-		/*List<Text> list = new ArrayList<Text>();
+		// Debug
+		List<Text> list = new ArrayList<Text>();
 		event.getCause().getNamedCauses().forEach((key, value) -> {
 			list.add(Text.builder(key)
 					.onHover(TextActions.showText(Text.of(EChat.fixLength(value.toString(), 254))))
@@ -163,8 +176,7 @@ public class BlockListener {
 		this.plugin.getEServer().getBroadcastChannel().send(Text.builder("ChangeBlockEvent.Grow : ")
 				.onHover(TextActions.showText(Text.of(event.getClass().getName())))
 				.onClick(TextActions.suggestCommand(event.getClass().getName()))
-				.build().concat(Text.joinWith(Text.of(", "), list)));*/
-				
+				.build().concat(Text.joinWith(Text.of(", "), list)));
 	}
 	
 	@Listener(order=Order.FIRST)

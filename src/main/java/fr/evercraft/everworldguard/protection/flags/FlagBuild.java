@@ -86,7 +86,7 @@ public class FlagBuild extends StateFlag {
 				event.getLocations().stream().map(location -> location.getPosition().add(direction)))
 				.distinct();
 		
-		Optional<Player> optPlayer = event.getCause().first(Player.class);
+		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
 		if (optPlayer.isPresent()) {
 			Player player = optPlayer.get();
 			
@@ -102,7 +102,7 @@ public class FlagBuild extends StateFlag {
 	
 	// Vérification des pistons...
 	private void onChangeBlockPreOthers(WorldWorldGuard world, ChangeBlockEvent.Pre event) {
-		Optional<Player> optPlayer = event.getCause().first(Player.class);
+		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
 		if (optPlayer.isPresent()) {
 			Player player = optPlayer.get();
 			if (event.getLocations().stream().anyMatch(location -> world.getRegions(location.getPosition()).getFlag(player, Flags.BUILD).equals(State.DENY))) {
@@ -132,7 +132,7 @@ public class FlagBuild extends StateFlag {
 	
 	// Drop l'item au sol pour le bloc avec gravité
 	private void onChangeBlockPlaceFalling(WorldWorldGuard world, ChangeBlockEvent.Place event, FallingBlock falling) {
-		Optional<Player> optPlayer = event.getCause().first(Player.class);
+		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
 		if (optPlayer.isPresent()) {
 			Player player = optPlayer.get();
 			event.filter(location -> world.getRegions(location.getPosition()).getFlag(player, Flags.BUILD).equals(State.ALLOW))
@@ -162,7 +162,7 @@ public class FlagBuild extends StateFlag {
 	
 	// Placement de bloc
 	private void onChangeBlockPlaceNoFalling(WorldWorldGuard world, ChangeBlockEvent.Place event) {
-		Optional<Player> optPlayer = event.getCause().first(Player.class);
+		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
 		if (optPlayer.isPresent()) {
 			Player player = optPlayer.get();
 			event.filter(location -> world.getRegions(location.getPosition()).getFlag(player, Flags.BUILD).equals(State.ALLOW));
@@ -178,7 +178,7 @@ public class FlagBuild extends StateFlag {
 	public void onChangeBlockBreak(WorldWorldGuard world, ChangeBlockEvent.Break event) {
 		if (event.isCancelled()) return;
 		
-		Optional<Player> optPlayer = event.getCause().first(Player.class);
+		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
 		if (optPlayer.isPresent()) {
 			this.onChangeBlockBreakPlayer(world, event, optPlayer.get());
 		} else {

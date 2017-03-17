@@ -51,8 +51,8 @@ public class EWManagerFlags {
 		INVINCIBILITY = new FlagInvincibility();
 		PVP = new FlagPvp();
 		
-		SPAWN = new FlagSpawn();
-		TELEPORT = new FlagTeleport();
+		SPAWN = new FlagSpawn(this.plugin);
+		TELEPORT = new FlagTeleport(this.plugin);
 		
 		this.register();
 	}

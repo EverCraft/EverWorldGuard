@@ -29,8 +29,6 @@ import java.util.stream.Stream;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.projectile.Projectile;
-import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.cause.NamedCause;
@@ -125,12 +123,11 @@ public class FlagInteractBlock extends EntryFlag<String, BlockType> {
 	 * InteractBlockEvent.Secondary
 	 */
 
-	@Listener(order=Order.FIRST)
 	public void onInteractBlockSecondary(WorldWorldGuard world, InteractBlockEvent.Secondary event, Location<World> location) {
 		if (event.isCancelled()) return;
 		
 		BlockType type = event.getTargetBlock().getState().getType();
-		Optional<Player> optPlayer = event.getCause().first(Player.class);
+		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
 		if (optPlayer.isPresent()) {
 			this.onChangeBlockPlayer(world, event, location, type, optPlayer.get());
 		} else {
@@ -154,11 +151,10 @@ public class FlagInteractBlock extends EntryFlag<String, BlockType> {
 	 * ChangeBlockEvent.Modify
 	 */
 	
-	@Listener(order=Order.FIRST)
 	public void onChangeBlockModify(WorldWorldGuard world, ChangeBlockEvent.Modify event) {
 		if (event.isCancelled()) return;
 		
-		Optional<Player> optPlayer = event.getCause().first(Player.class);
+		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
 		if (optPlayer.isPresent()) {
 			this.onChangeBlockModifyPlayer(world, event, optPlayer.get());
 		} else {
@@ -190,12 +186,11 @@ public class FlagInteractBlock extends EntryFlag<String, BlockType> {
 	 * Projectile
 	 */
 	
-	@Listener(order=Order.FIRST)
 	public void onChangeBlockBreak(WorldWorldGuard world, ChangeBlockEvent.Break event) {
 		if (event.isCancelled()) return;
 		if (!event.getCause().get(NamedCause.SOURCE, Projectile.class).isPresent()) return;
 		
-		Optional<Player> optPlayer = event.getCause().first(Player.class);
+		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
 		if (optPlayer.isPresent()) {
 			this.onChangeBlockBreakPlayer(world, event, optPlayer.get());
 		} else {
