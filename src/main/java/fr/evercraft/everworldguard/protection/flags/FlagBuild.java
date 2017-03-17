@@ -24,15 +24,12 @@ import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.FallingBlock;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.cause.entity.spawn.EntitySpawnCause;
 import org.spongepowered.api.event.cause.entity.spawn.SpawnTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
-import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.Direction;
 import org.spongepowered.api.world.LocatableBlock;
 
@@ -47,6 +44,7 @@ import fr.evercraft.everworldguard.EverWorldGuard;
 
 public class FlagBuild extends StateFlag {
 	
+	@SuppressWarnings("unused")
 	private final EverWorldGuard plugin;
 
 	public FlagBuild(EverWorldGuard plugin) {
@@ -69,29 +67,26 @@ public class FlagBuild extends StateFlag {
 	 * ChangeBlockEvent.Pre
 	 */
 	
-	@Listener(order=Order.FIRST)
-	public void onChangeBlockPre(ChangeBlockEvent.Pre event) {
+	public void onChangeBlockPre(WorldWorldGuard world, ChangeBlockEvent.Pre event) {
 		if (event.isCancelled()) return;
 		
 		Optional<LocatableBlock> piston = event.getCause().get(NamedCause.SOURCE, LocatableBlock.class);
 		if (piston.isPresent() && event.getCause().containsNamed(NamedCause.PISTON_EXTEND)) {
-			this.onChangeBlockPrePiston(event, piston.get());
+			this.onChangeBlockPrePiston(world, event, piston.get());
 		} else {
-			this.onChangeBlockPreOthers(event);
+			this.onChangeBlockPreOthers(world, event);
 		}
 	}
 	
 	// Il faut vérifer le block d'arrivé
-	public void onChangeBlockPrePiston(ChangeBlockEvent.Pre event, LocatableBlock block) {
-		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetWorld());
-		Optional<Player> optPlayer = event.getCause().first(Player.class);
+	private void onChangeBlockPrePiston(WorldWorldGuard world, ChangeBlockEvent.Pre event, LocatableBlock block) {
 		Vector3d direction = block.get(Keys.DIRECTION).orElse(Direction.NONE).asOffset();
-		
 		Stream<Vector3d> positions = Stream.concat(
 				event.getLocations().stream().map(location -> location.getPosition()),
 				event.getLocations().stream().map(location -> location.getPosition().add(direction)))
 				.distinct();
 		
+		Optional<Player> optPlayer = event.getCause().first(Player.class);
 		if (optPlayer.isPresent()) {
 			Player player = optPlayer.get();
 			
@@ -105,19 +100,16 @@ public class FlagBuild extends StateFlag {
 		}
 	}
 	
-	public void onChangeBlockPreOthers(ChangeBlockEvent.Pre event) {
-		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetWorld());
+	// Vérification des pistons...
+	private void onChangeBlockPreOthers(WorldWorldGuard world, ChangeBlockEvent.Pre event) {
 		Optional<Player> optPlayer = event.getCause().first(Player.class);
-		
 		if (optPlayer.isPresent()) {
 			Player player = optPlayer.get();
 			if (event.getLocations().stream().anyMatch(location -> world.getRegions(location.getPosition()).getFlag(player, Flags.BUILD).equals(State.DENY))) {
-				this.plugin.getEServer().getBroadcastChannel().send(Text.of("ChangeBlockEvent.Pre Player : "));
 				event.setCancelled(true);
 			}
 		} else {
 			if (event.getLocations().stream().anyMatch(location -> world.getRegions(location.getPosition()).getFlagDefault(Flags.BUILD).equals(State.DENY))) {
-				this.plugin.getEServer().getBroadcastChannel().send(Text.of("ChangeBlockEvent.Pre Nature : "));
 				event.setCancelled(true);
 			}
 		}
@@ -127,23 +119,20 @@ public class FlagBuild extends StateFlag {
 	 * ChangeBlockEvent.Place
 	 */
 	
-	@Listener(order=Order.FIRST)
-	public void onChangeBlock(ChangeBlockEvent.Place event) {
+	public void onChangeBlockPlace(WorldWorldGuard world, ChangeBlockEvent.Place event) {
 		if (event.isCancelled()) return;		
 		
 		Optional<FallingBlock> falling = event.getCause().get(NamedCause.SOURCE, FallingBlock.class);
 		if (falling.isPresent()) {
-			this.onChangeBlockPlaceFalling(event, falling.get());
+			this.onChangeBlockPlaceFalling(world, event, falling.get());
 		} else {
-			this.onChangeBlockPlace(event);
+			this.onChangeBlockPlaceNoFalling(world, event);
 		}
 	}
 	
 	// Drop l'item au sol pour le bloc avec gravité
-	public void onChangeBlockPlaceFalling(ChangeBlockEvent.Place event, FallingBlock falling) {
-		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetWorld());		
+	private void onChangeBlockPlaceFalling(WorldWorldGuard world, ChangeBlockEvent.Place event, FallingBlock falling) {
 		Optional<Player> optPlayer = event.getCause().first(Player.class);
-		
 		if (optPlayer.isPresent()) {
 			Player player = optPlayer.get();
 			event.filter(location -> world.getRegions(location.getPosition()).getFlag(player, Flags.BUILD).equals(State.ALLOW))
@@ -171,10 +160,9 @@ public class FlagBuild extends StateFlag {
 		}
 	}
 	
-	public void onChangeBlockPlace(ChangeBlockEvent.Place event) {
-		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetWorld());
+	// Placement de bloc
+	private void onChangeBlockPlaceNoFalling(WorldWorldGuard world, ChangeBlockEvent.Place event) {
 		Optional<Player> optPlayer = event.getCause().first(Player.class);
-		
 		if (optPlayer.isPresent()) {
 			Player player = optPlayer.get();
 			event.filter(location -> world.getRegions(location.getPosition()).getFlag(player, Flags.BUILD).equals(State.ALLOW));
@@ -187,21 +175,18 @@ public class FlagBuild extends StateFlag {
 	 * ChangeBlockEvent.Break
 	 */
 	
-	@Listener(order=Order.FIRST)
-	public void onChangeBlock(ChangeBlockEvent.Break event) {
+	public void onChangeBlockBreak(WorldWorldGuard world, ChangeBlockEvent.Break event) {
 		if (event.isCancelled()) return;
 		
 		Optional<Player> optPlayer = event.getCause().first(Player.class);
 		if (optPlayer.isPresent()) {
-			this.onChangeBlockBreakPlayer(event, optPlayer.get());
+			this.onChangeBlockBreakPlayer(world, event, optPlayer.get());
 		} else {
-			this.onChangeBlockBreakNatural(event);
+			this.onChangeBlockBreakNatural(world, event);
 		}
 	}
 	
-	public void onChangeBlockBreakPlayer(ChangeBlockEvent.Break event, Player player) {
-		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetWorld());	
-		
+	private void onChangeBlockBreakPlayer(WorldWorldGuard world, ChangeBlockEvent.Break event, Player player) {		
 		if (!event.filter(location -> world.getRegions(location.getPosition()).getFlag(player, Flags.BUILD).equals(State.ALLOW)).isEmpty()) {
 			Optional<FallingBlock> falling = event.getCause().get(NamedCause.SOURCE, FallingBlock.class);
 			if (falling.isPresent()) {
@@ -210,9 +195,7 @@ public class FlagBuild extends StateFlag {
 		}
 	}
 	
-	public void onChangeBlockBreakNatural(ChangeBlockEvent.Break event) {
-		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetWorld());
-		
+	private void onChangeBlockBreakNatural(WorldWorldGuard world, ChangeBlockEvent.Break event) {		
 		if (!event.filter(location -> world.getRegions(location.getPosition()).getFlagDefault(Flags.BUILD).equals(State.ALLOW)).isEmpty()) {
 			Optional<FallingBlock> falling = event.getCause().get(NamedCause.SOURCE, FallingBlock.class);
 			if (falling.isPresent()) {
@@ -220,31 +203,4 @@ public class FlagBuild extends StateFlag {
 			}
 		}
 	}
-	
-	/*
-	 * InteractItemEvent.Secondary
-	 */
-	/*
-	@Listener(order=Order.FIRST)
-	public void onPlayerInteract(InteractItemEvent.Secondary event, @First Entity entity) {
-		// Erreur Sponge : Pas de ChangeBlockEvent pour les BUCKET : https://github.com/SpongePowered/SpongeCommon/issues/1252
-		if (event.getItemStack().getType().equals(ItemTypes.BUCKET) || 
-				event.getItemStack().getType().equals(ItemTypes.LAVA_BUCKET) ||
-				event.getItemStack().getType().equals(ItemTypes.WATER_BUCKET)) {
-
-			event.getInteractionPoint().ifPresent(position -> {
-				WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(entity.getWorld());
-				
-				if (entity instanceof Player) {
-					if (world.getRegions(position).getFlag((Player) entity, Flags.BUILD).equals(State.DENY)) {
-						event.setCancelled(true);
-					}
-				} else {
-					if (world.getRegions(position).getFlagDefault(Flags.BUILD).equals(State.DENY)) {
-						event.setCancelled(true);
-					}
-				}
-			});
-		}
-	}*/
 }

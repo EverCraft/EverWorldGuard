@@ -19,45 +19,62 @@ package fr.evercraft.everworldguard.protection.flag;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
+import fr.evercraft.everapi.java.UtilsField;
 import fr.evercraft.everapi.services.worldguard.flag.Flag;
 import fr.evercraft.everapi.services.worldguard.flag.Flags;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.protection.flags.*;
 
-public class ManagerFlags {
+public class EWManagerFlags {
 
 	private final EverWorldGuard plugin;
 	
-	public ManagerFlags(EverWorldGuard plugin) {
+	public final FlagBuild BUILD;
+	public final FlagInteractBlock INTERACT_BLOCK;
+	public final FlagEntry ENTRY;
+	public final FlagExit EXIT;
+	public final FlagInvincibility INVINCIBILITY;
+	public final FlagPvp PVP;
+	
+	public final FlagSpawn SPAWN;
+	public final FlagTeleport TELEPORT;
+	
+	public EWManagerFlags(EverWorldGuard plugin) {
 		this.plugin = plugin;
 		
-		this.load();
 		this.register();
-	}
 
-	private void load() {
-		Flags.BUILD = new FlagBuild(this.plugin);
-		Flags.INTERACT_BLOCK = new FlagInteractBlock(this.plugin);
-		Flags.ENTRY = new FlagEntry();
-		Flags.EXIT = new FlagExit();
-		Flags.INVINCIBILITY = new FlagInvincibility();
-		Flags.PVP = new FlagPvp();
+		BUILD = new FlagBuild(this.plugin);
+		INTERACT_BLOCK = new FlagInteractBlock(this.plugin);
+		ENTRY = new FlagEntry();
+		EXIT = new FlagExit();
+		INVINCIBILITY = new FlagInvincibility();
+		PVP = new FlagPvp();
 		
-		Flags.SPAWN = new FlagSpawn();
-		Flags.TELEPORT = new FlagTeleport();
+		SPAWN = new FlagSpawn();
+		TELEPORT = new FlagTeleport();
+		
+		this.register();
 	}
 	
 	private void register() {
 		for (Field field : Flags.class.getFields()) {
 			if (Modifier.isStatic(field.getModifiers())) {
 				try {
-					Object flag = field.get(null);
-					if (flag instanceof Flag) {
-						this.plugin.getProtectionService().registerFlag((Flag<?>) flag);
-						this.plugin.getGame().getEventManager().registerListeners(this.plugin, flag);
+					Field fieldFlag = this.getClass().getField(field.getName());
+					try {
+						Object flag = fieldFlag.get(this);
+						UtilsField.setFinalStatic(field, flag);
+						
+						if (flag instanceof Flag) {
+							this.plugin.getProtectionService().registerFlag((Flag<?>) flag);
+							this.plugin.getGame().getEventManager().registerListeners(this.plugin, flag);
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					this.plugin.getLogger().warn("[Flag] Not yet implemented : " + field.getName());
 				}
 			}
 		}

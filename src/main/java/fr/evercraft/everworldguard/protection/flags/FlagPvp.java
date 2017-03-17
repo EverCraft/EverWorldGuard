@@ -16,6 +16,14 @@
  */
 package fr.evercraft.everworldguard.protection.flags;
 
+import java.util.Optional;
+
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.event.cause.entity.damage.source.EntityDamageSource;
+import org.spongepowered.api.event.entity.DamageEntityEvent;
+
+import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
+import fr.evercraft.everapi.services.worldguard.flag.Flags;
 import fr.evercraft.everapi.services.worldguard.flag.type.StateFlag;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 
@@ -33,5 +41,20 @@ public class FlagPvp extends StateFlag {
 	@Override
 	public State getDefault() {
 		return State.ALLOW;
+	}
+	
+	public void onPlayerDamage(WorldWorldGuard world, DamageEntityEvent event) {
+		if (event.isCancelled()) return;
+		
+		if (event.getTargetEntity() instanceof Player) {
+			Player player = (Player) event.getTargetEntity();
+			
+			Optional<EntityDamageSource> optDamageSource = event.getCause().first(EntityDamageSource.class);
+			if (optDamageSource.isPresent() && optDamageSource.get().getSource() instanceof Player) {
+				if (world.getRegions(player.getLocation().getPosition()).getFlag(player, Flags.PVP).equals(State.DENY)) {
+					event.setCancelled(true);
+				}
+			}
+		}
 	}
 }

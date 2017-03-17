@@ -27,7 +27,7 @@ import fr.evercraft.everapi.services.worldguard.WorldGuardService;
 import fr.evercraft.everworldguard.command.EWManagerCommands;
 import fr.evercraft.everworldguard.listeners.EWListener;
 import fr.evercraft.everworldguard.protection.EProtectionService;
-import fr.evercraft.everworldguard.protection.flag.ManagerFlags;
+import fr.evercraft.everworldguard.protection.flag.EWManagerFlags;
 import fr.evercraft.everworldguard.protection.storage.EWDataBases;
 import fr.evercraft.everworldguard.selection.ESelectionService;
 
@@ -49,6 +49,7 @@ public class EverWorldGuard extends EPlugin<EverWorldGuard> {
 	private ESelectionService selection;
 	private EWManagerCommands commands;
 	private EWDataBases database;
+	private EWManagerFlags flags;
 	
 	@Override
 	protected void onPreEnable() throws PluginDisableException {		
@@ -59,12 +60,12 @@ public class EverWorldGuard extends EPlugin<EverWorldGuard> {
 		
 		this.protection = new EProtectionService(this);
 		this.selection = new ESelectionService(this);
+		this.flags = new EWManagerFlags(this);
+		
 		this.getGame().getServiceManager().setProvider(this, WorldGuardService.class, this.protection);
 		this.getGame().getServiceManager().setProvider(this, SelectionService.class, this.selection);
 		
 		this.getGame().getEventManager().registerListeners(this, new EWListener(this));
-		
-		new ManagerFlags(this);
 	}
 	
 	@Override
@@ -108,5 +109,9 @@ public class EverWorldGuard extends EPlugin<EverWorldGuard> {
 	
 	public EWManagerCommands getManagerCommands() {
 		return this.commands;
+	}
+	
+	public EWManagerFlags getManagerFlags() {
+		return this.flags;
 	}
 }

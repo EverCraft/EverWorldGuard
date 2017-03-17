@@ -120,95 +120,68 @@ public class FlagInteractBlock extends EntryFlag<String, BlockType> {
 		}
 		return new EntryFlagValue<String, BlockType>(keys, values);
 	}
+	
+	/*
+	 * InteractBlockEvent.Secondary
+	 */
 
 	@Listener(order=Order.FIRST)
-	public void onChangeBlock(InteractBlockEvent.Secondary event) {
+	public void onInteractBlockSecondary(WorldWorldGuard world, InteractBlockEvent.Secondary event, Location<World> location) {
 		if (event.isCancelled()) return;
-			event.getTargetBlock().getLocation().ifPresent(location -> {
-			Optional<Player> optPlayer = event.getCause().first(Player.class);
-			if (optPlayer.isPresent()) {
-				this.onChangeBlockPlayer(event, location, optPlayer.get());
-			} else {
-				this.onChangeBlockNatural(event, location);
-			}
-		});
-	}
-	
-	public void onChangeBlockPlayer(InteractBlockEvent.Secondary event, Location<World> location, Player player) {
-		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(location.getExtent());	
 		
 		BlockType type = event.getTargetBlock().getState().getType();
-		if (this.getDefault().containsValue(type) && !world.getRegions(location.getPosition()).getFlag(player, Flags.INTERACT_BLOCK).containsValue(type)) {
-			/*this.plugin.getEServer().broadcast("InteractBlockEvent : Player : Cancel : " + type.getId());
-			this.plugin.getEServer().broadcast("    - UseBlockResult : " + event.getUseBlockResult());
-			this.plugin.getEServer().broadcast("    - UseItemResult : " + event.getUseItemResult());
-			this.plugin.getEServer().broadcast("    - OriginalUseBlockResult : " + event.getOriginalUseBlockResult());
-			this.plugin.getEServer().broadcast("    - OriginalUseItemResult : " + event.getOriginalUseItemResult());*/
-			event.setUseBlockResult(Tristate.FALSE);
+		Optional<Player> optPlayer = event.getCause().first(Player.class);
+		if (optPlayer.isPresent()) {
+			this.onChangeBlockPlayer(world, event, location, type, optPlayer.get());
 		} else {
-			/*this.plugin.getEServer().broadcast("InteractBlockEvent : Player : No : " + type.getId());
-			this.plugin.getEServer().broadcast("    - UseBlockResult : " + event.getUseBlockResult());
-			this.plugin.getEServer().broadcast("    - UseItemResult : " + event.getUseItemResult());
-			this.plugin.getEServer().broadcast("    - OriginalUseBlockResult : " + event.getOriginalUseBlockResult());
-			this.plugin.getEServer().broadcast("    - OriginalUseItemResult : " + event.getOriginalUseItemResult());*/
+			this.onChangeBlockNatural(world, event, location, type);
 		}
 	}
 	
-	public void onChangeBlockNatural(InteractBlockEvent.Secondary event, Location<World> location) {
-		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(location.getExtent());
-		BlockType type = event.getTargetBlock().getState().getType();
-		if (this.getDefault().containsValue(type) && !world.getRegions(location.getPosition()).getFlagDefault(Flags.INTERACT_BLOCK).containsValue(type)) {
-			/*this.plugin.getEServer().broadcast("InteractBlockEvent : Natural : Cancel : " + type.getId());
-			this.plugin.getEServer().broadcast("    - UseBlockResult : " + event.getUseBlockResult());
-			this.plugin.getEServer().broadcast("    - UseItemResult : " + event.getUseItemResult());
-			this.plugin.getEServer().broadcast("    - OriginalUseBlockResult : " + event.getOriginalUseBlockResult());
-			this.plugin.getEServer().broadcast("    - OriginalUseItemResult : " + event.getOriginalUseItemResult());*/
+	private void onChangeBlockPlayer(WorldWorldGuard world, InteractBlockEvent.Secondary event, Location<World> location, BlockType type, Player player) {		
+		if (this.getDefault().containsValue(type) && !world.getRegions(location.getPosition()).getFlag(player, Flags.INTERACT_BLOCK).containsValue(type)) {
 			event.setUseBlockResult(Tristate.FALSE);
-		} else {
-			/*this.plugin.getEServer().broadcast("InteractBlockEvent : Natural : No : " + type.getId());
-			this.plugin.getEServer().broadcast("    - UseBlockResult : " + event.getUseBlockResult());
-			this.plugin.getEServer().broadcast("    - UseItemResult : " + event.getUseItemResult());
-			this.plugin.getEServer().broadcast("    - OriginalUseBlockResult : " + event.getOriginalUseBlockResult());
-			this.plugin.getEServer().broadcast("    - OriginalUseItemResult : " + event.getOriginalUseItemResult());*/
 		}
 	}
+	
+	private void onChangeBlockNatural(WorldWorldGuard world, InteractBlockEvent.Secondary event, Location<World> location, BlockType type) {
+		if (this.getDefault().containsValue(type) && !world.getRegions(location.getPosition()).getFlagDefault(Flags.INTERACT_BLOCK).containsValue(type)) {
+			event.setUseBlockResult(Tristate.FALSE);
+		}
+	}
+	
+	/*
+	 * ChangeBlockEvent.Modify
+	 */
 	
 	@Listener(order=Order.FIRST)
-	public void onChangeBlock(ChangeBlockEvent.Modify event) {
+	public void onChangeBlockModify(WorldWorldGuard world, ChangeBlockEvent.Modify event) {
 		if (event.isCancelled()) return;
 		
 		Optional<Player> optPlayer = event.getCause().first(Player.class);
 		if (optPlayer.isPresent()) {
-			this.onChangeBlockModifyPlayer(event, optPlayer.get());
+			this.onChangeBlockModifyPlayer(world, event, optPlayer.get());
 		} else {
-			this.onChangeBlockModifyNatural(event);
+			this.onChangeBlockModifyNatural(world, event);
 		}
 	}
 	
-	public void onChangeBlockModifyPlayer(ChangeBlockEvent.Modify event, Player player) {
-		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetWorld());	
-		
+	private void onChangeBlockModifyPlayer(WorldWorldGuard world, ChangeBlockEvent.Modify event, Player player) {
 		event.getTransactions().forEach(transaction -> {
 			BlockType type = transaction.getOriginal().getState().getType();
+			
 			if (this.getDefault().containsValue(type) && !world.getRegions(transaction.getOriginal().getPosition()).getFlag(player, Flags.INTERACT_BLOCK).containsValue(type)) {
-				//this.plugin.getEServer().broadcast("ChangeBlockEvent.Modify : Player : Flags : " + type.getId());
 				event.setCancelled(true);
-			} else {
-				//this.plugin.getEServer().broadcast("ChangeBlockEvent.Modify : Player : No : " + type.getId());
 			}
 		});
 	}
 	
-	public void onChangeBlockModifyNatural(ChangeBlockEvent.Modify event) {
-		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetWorld());
-		
+	private void onChangeBlockModifyNatural(WorldWorldGuard world, ChangeBlockEvent.Modify event) {
 		event.getTransactions().forEach(transaction -> {
 			BlockType type = transaction.getOriginal().getState().getType();
+			
 			if (this.getDefault().containsValue(type) && !world.getRegions(transaction.getOriginal().getPosition()).getFlagDefault(Flags.INTERACT_BLOCK).containsValue(type)) {
-				//this.plugin.getEServer().broadcast("ChangeBlockEvent.Modify : Natural : Flags : " + type.getId());
 				event.setCancelled(true);
-			} else {
-				//this.plugin.getEServer().broadcast("ChangeBlockEvent.Modify : Natural : No : " + type.getId());
 			}
 		});
 	}
@@ -218,20 +191,19 @@ public class FlagInteractBlock extends EntryFlag<String, BlockType> {
 	 */
 	
 	@Listener(order=Order.FIRST)
-	public void onChangeBlock(ChangeBlockEvent.Break event) {
+	public void onChangeBlockBreak(WorldWorldGuard world, ChangeBlockEvent.Break event) {
+		if (event.isCancelled()) return;
 		if (!event.getCause().get(NamedCause.SOURCE, Projectile.class).isPresent()) return;
 		
 		Optional<Player> optPlayer = event.getCause().first(Player.class);
 		if (optPlayer.isPresent()) {
-			this.onChangeBlockBreakPlayer(event, optPlayer.get());
+			this.onChangeBlockBreakPlayer(world, event, optPlayer.get());
 		} else {
-			this.onChangeBlockBreakNatural(event);
+			this.onChangeBlockBreakNatural(world, event);
 		}
 	}
 	
-	public void onChangeBlockBreakPlayer(ChangeBlockEvent.Break event, Player player) {
-		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetWorld());	
-		
+	private void onChangeBlockBreakPlayer(WorldWorldGuard world, ChangeBlockEvent.Break event, Player player) {		
 		event.getTransactions().forEach(transaction -> {
 			BlockType type = transaction.getOriginal().getState().getType();
 			
@@ -241,9 +213,7 @@ public class FlagInteractBlock extends EntryFlag<String, BlockType> {
 		});
 	}
 	
-	public void onChangeBlockBreakNatural(ChangeBlockEvent.Break event) {
-		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetWorld());	
-		
+	private void onChangeBlockBreakNatural(WorldWorldGuard world, ChangeBlockEvent.Break event) {
 		event.getTransactions().forEach(transaction -> {
 			BlockType type = transaction.getOriginal().getState().getType();
 			
