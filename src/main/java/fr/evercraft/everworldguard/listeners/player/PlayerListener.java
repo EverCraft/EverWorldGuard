@@ -18,8 +18,10 @@ package fr.evercraft.everworldguard.listeners.player;
 
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
+import org.spongepowered.api.event.entity.CollideEntityEvent;
 import org.spongepowered.api.event.entity.DamageEntityEvent;
 import org.spongepowered.api.event.entity.HealEntityEvent;
+import org.spongepowered.api.event.entity.IgniteEntityEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 
 import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
@@ -57,10 +59,32 @@ public class PlayerListener {
 		this.plugin.getManagerFlags().INVINCIBILITY.onPlayerHeal(world, event);
 	}
 	
-	@Listener
+	@Listener(order=Order.FIRST)
 	public void onPlayerDamage(DamageEntityEvent event) {
 		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetEntity().getWorld());
 		
 		this.plugin.getManagerFlags().PVP.onPlayerDamage(world, event);
+	}
+	
+	@Listener(order=Order.FIRST)
+	public void onCollideEntity(CollideEntityEvent event) {
+		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetWorld());
+
+		this.plugin.getManagerFlags().PVP.onCollideEntity(world, event);
+	}
+	
+	@Listener
+	public void onCollideEntity(IgniteEntityEvent event) {		
+		/*List<Text> list = new ArrayList<Text>();
+		event.getCause().getNamedCauses().forEach((key, value) -> {
+			list.add(Text.builder(key)
+					.onHover(TextActions.showText(Text.of(EChat.fixLength(value.toString(), 254))))
+					.onClick(TextActions.suggestCommand(EChat.fixLength(value.toString(), 254)))
+					.build());
+		});
+		this.plugin.getEServer().getBroadcastChannel().send(Text.builder("IgniteEntityEvent: ")
+				.onHover(TextActions.showText(Text.of(event.getClass().getName())))
+				.onClick(TextActions.suggestCommand(event.getClass().getName()))
+				.build().concat(Text.joinWith(Text.of(", "), list)));*/
 	}
 }

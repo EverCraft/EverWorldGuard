@@ -49,7 +49,7 @@ public class EWManagerFlags {
 		ENTRY = new FlagEntry();
 		EXIT = new FlagExit();
 		INVINCIBILITY = new FlagInvincibility();
-		PVP = new FlagPvp();
+		PVP = new FlagPvp(this.plugin);
 		
 		SPAWN = new FlagSpawn(this.plugin);
 		TELEPORT = new FlagTeleport(this.plugin);
@@ -64,11 +64,9 @@ public class EWManagerFlags {
 					Field fieldFlag = this.getClass().getField(field.getName());
 					try {
 						Object flag = fieldFlag.get(this);
-						UtilsField.setFinalStatic(field, flag);
-						
 						if (flag instanceof Flag) {
+							UtilsField.setFinalStatic(field, flag);
 							this.plugin.getProtectionService().registerFlag((Flag<?>) flag);
-							this.plugin.getGame().getEventManager().registerListeners(this.plugin, flag);
 						}
 					} catch (Exception e) {
 						e.printStackTrace();

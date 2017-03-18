@@ -17,20 +17,39 @@
 package fr.evercraft.everworldguard.protection.flags;
 
 import java.util.Optional;
+import java.util.UUID;
 
+import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.projectile.Projectile;
+import org.spongepowered.api.event.cause.NamedCause;
+import org.spongepowered.api.event.cause.entity.damage.DamageTypes;
+import org.spongepowered.api.event.cause.entity.damage.source.BlockDamageSource;
+import org.spongepowered.api.event.cause.entity.damage.source.DamageSource;
 import org.spongepowered.api.event.cause.entity.damage.source.EntityDamageSource;
+import org.spongepowered.api.event.cause.entity.damage.source.FallingBlockDamageSource;
+import org.spongepowered.api.event.cause.entity.damage.source.IndirectEntityDamageSource;
+import org.spongepowered.api.event.entity.CollideEntityEvent;
 import org.spongepowered.api.event.entity.DamageEntityEvent;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
+
+import com.flowpowered.math.vector.Vector3d;
 
 import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
 import fr.evercraft.everapi.services.worldguard.flag.Flags;
 import fr.evercraft.everapi.services.worldguard.flag.type.StateFlag;
+import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 
 public class FlagPvp extends StateFlag {
+	
+	@SuppressWarnings("unused")
+	private final EverWorldGuard plugin;
 
-	public FlagPvp() {
+	public FlagPvp(EverWorldGuard plugin) {
 		super("PVP");
+		this.plugin = plugin;
 	}
 	
 	@Override
@@ -43,15 +62,76 @@ public class FlagPvp extends StateFlag {
 		return State.ALLOW;
 	}
 	
-	public void onPlayerDamage(WorldWorldGuard world, DamageEntityEvent event) {
+	public void onCollideEntity(WorldWorldGuard world, CollideEntityEvent event) {
 		if (event.isCancelled()) return;
 		
-		if (event.getTargetEntity() instanceof Player) {
-			Player player = (Player) event.getTargetEntity();
+		if (event.getCause().get(NamedCause.SOURCE, Projectile.class).isPresent() && event.getCause().get(NamedCause.OWNER, Player.class).isPresent()) {
+			event.filterEntities(entity -> {
+				if (entity instanceof Player) {
+					if (world.getRegions(entity.getLocation().getPosition()).getFlag((Player) entity, Flags.PVP).equals(State.DENY)) {
+						return false;
+					}
+				}
+				return true;
+			});
+		}
+	}
+	
+	public void onPlayerDamage(WorldWorldGuard world, DamageEntityEvent event) {
+		if (event.isCancelled()) return;
+		if (!(event.getTargetEntity() instanceof Player)) return;
+		
+		Player player = (Player) event.getTargetEntity();
+		
+		Object source = event.getCause().root();
+		 if (source instanceof FallingBlockDamageSource) {				
+			FallingBlockDamageSource damageSource = (FallingBlockDamageSource) source;
 			
-			Optional<EntityDamageSource> optDamageSource = event.getCause().first(EntityDamageSource.class);
-			if (optDamageSource.isPresent() && optDamageSource.get().getSource() instanceof Player) {
+			Optional<UUID> creator = damageSource.getSource().getCreator();
+			if (creator.isPresent() && !creator.get().equals(player.getUniqueId())) {
 				if (world.getRegions(player.getLocation().getPosition()).getFlag(player, Flags.PVP).equals(State.DENY)) {
+					event.setCancelled(true);
+					
+				}
+			}
+		} else if (source instanceof IndirectEntityDamageSource) {				
+			IndirectEntityDamageSource damageSource = (IndirectEntityDamageSource) source;
+			
+			if (damageSource.getIndirectSource() instanceof Player && !damageSource.getSource().equals(player)) {
+				if (world.getRegions(player.getLocation().getPosition()).getFlag(player, Flags.PVP).equals(State.DENY)) {
+					event.setCancelled(true);
+				}
+			}
+		} else if (source instanceof EntityDamageSource) {				
+			EntityDamageSource damageSource = (EntityDamageSource) source;
+			
+			if (damageSource.getSource() instanceof Player && !damageSource.getSource().equals(player)) {
+				if (world.getRegions(player.getLocation().getPosition()).getFlag(player, Flags.PVP).equals(State.DENY)) {
+					event.setCancelled(true);
+					
+				}
+			}
+		} else if (source instanceof BlockDamageSource) {
+			BlockDamageSource damageSource = (BlockDamageSource) source;
+			
+			// TODO Bug BUCKET : no creator
+			Optional<UUID> creator = damageSource.getBlockSnapshot().getCreator();
+			if (creator.isPresent() && !creator.get().equals(player.getUniqueId())) {
+				if (world.getRegions(player.getLocation().getPosition()).getFlag(player, Flags.PVP).equals(State.DENY)) {
+					event.setCancelled(true);
+					// TODO Bug IgniteEntityEvent : no implemented
+					if (damageSource.getType().equals(DamageTypes.FIRE)) {
+						player.offer(Keys.FIRE_TICKS, 0);
+					}
+				}
+			}
+		} else if (source instanceof DamageSource){
+			DamageSource damageSource = (DamageSource) source;
+			
+			if (damageSource.getType().equals(DamageTypes.SUFFOCATE)) {
+				Location<World> location = player.getLocation().add(Vector3d.from(0, 2, 0));
+				Optional<UUID> creator = location.getExtent().getCreator(location.getBlockPosition());
+				if (creator.isPresent() && !creator.get().equals(player.getUniqueId())) {
 					event.setCancelled(true);
 				}
 			}
