@@ -72,7 +72,7 @@ public class EWManagerFlags {
 						e.printStackTrace();
 					}
 				} catch (Exception e) {
-					this.plugin.getLogger().warn("[Flag] Not yet implemented : " + field.getName());
+					this.plugin.getELogger().warn("[Flag] Not yet implemented : " + field.getName());
 				}
 			}
 		}

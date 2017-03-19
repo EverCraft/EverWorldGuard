@@ -25,10 +25,21 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.block.BlockTypes;
+import org.spongepowered.api.entity.Entity;
+import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.entity.EntityTypes;
+import org.spongepowered.api.entity.living.animal.Animal;
+import org.spongepowered.api.entity.living.monster.Monster;
+
+import com.flowpowered.math.vector.Vector3d;
+import com.google.common.reflect.TypeToken;
+
 import fr.evercraft.everapi.plugin.file.EConfig;
 import fr.evercraft.everworldguard.EverWorldGuard;
+import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 
 public class EWFlagConfig extends EConfig<EverWorldGuard> {
 
@@ -38,13 +49,13 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 	
 	@Override
 	public void loadDefault() {
-		this.loadInteract();
+		this.loadInteractBlock();
 	}
 	
-	public void loadInteract() {
-		Map<String, List<String>> interact = new HashMap<String, List<String>>();
+	public void loadInteractBlock() {
+		Map<String, List<String>> interact_block = new HashMap<String, List<String>>();
 		
-		interact.put("GROUP_INVENTORY", Arrays.asList(
+		interact_block.put("GROUP_INVENTORY", Arrays.asList(
 				BlockTypes.CHEST,
 				BlockTypes.TRAPPED_CHEST,
 				BlockTypes.ENDER_CHEST,
@@ -74,7 +85,7 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 				BlockTypes.BREWING_STAND)
 					.stream().map(block -> block.getId()).collect(Collectors.toList()));
 		
-		interact.put("GROUP_REDSTONE", Arrays.asList(
+		interact_block.put("GROUP_REDSTONE", Arrays.asList(
 				BlockTypes.LEVER,
 				BlockTypes.STONE_PRESSURE_PLATE,
 				BlockTypes.WOODEN_PRESSURE_PLATE,
@@ -93,7 +104,7 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 				BlockTypes.DETECTOR_RAIL)
 					.stream().map(block -> block.getId()).collect(Collectors.toList()));
 		
-		interact.put("GROUP_DOOR", Arrays.asList(
+		interact_block.put("GROUP_DOOR", Arrays.asList(
 				BlockTypes.ACACIA_DOOR,
 				BlockTypes.BIRCH_DOOR,
 				BlockTypes.DARK_OAK_DOOR,
@@ -111,10 +122,10 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 				BlockTypes.IRON_TRAPDOOR)
 					.stream().map(block -> block.getId()).collect(Collectors.toList()));
 		
-		interact.put("TNT", Arrays.asList(
+		interact_block.put("TNT", Arrays.asList(
 				BlockTypes.TNT)
 					.stream().map(block -> block.getId()).collect(Collectors.toList()));
-		interact.put("GROUP_OTHERS", Arrays.asList(
+		interact_block.put("GROUP_OTHERS", Arrays.asList(
 				BlockTypes.BED,
 				BlockTypes.END_PORTAL,
 				BlockTypes.BEACON,
@@ -123,10 +134,40 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 				BlockTypes.CAULDRON)
 					.stream().map(block -> block.getId()).collect(Collectors.toList()));
 		
-		addDefault("interact", interact);
+		addDefault("INTERACT_BLOCK", interact_block);
 	}
 	
-	public Map<String, Set<BlockType>> getInteracts() {
+	public void loadInteractEntity() {
+		Map<String, List<String>> interact_entity = new HashMap<String, List<String>>();
+		
+		interact_entity.put("GROUP_ANIMAL", Sponge.getGame().getRegistry().getAllOf(EntityType.class).stream()
+				.filter(entity -> entity instanceof Animal)
+				.map(entity -> entity.getId())
+				.collect(Collectors.toList()));
+		
+		interact_entity.put("GROUP_MONSTER", Sponge.getGame().getRegistry().getAllOf(EntityType.class).stream()
+				.filter(entity -> entity instanceof Monster)
+				.map(entity -> entity.getId())
+				.collect(Collectors.toList()));
+		
+		interact_entity.put("GROUP_INVENTORY", Arrays.asList(
+				EntityTypes.ARMOR_STAND,
+				EntityTypes.CHESTED_MINECART,
+				EntityTypes.FURNACE_MINECART,
+				EntityTypes.HOPPER_MINECART)
+					.stream().map(block -> block.getId()).collect(Collectors.toList()));
+		addDefault("INTERACT_ENTITY", interact_entity);
+		
+		Entity entity = this.plugin.getEServer().getWorld("world").get().createEntity(EntityTypes.WOLF, Vector3d.ZERO);
+		entity.toContainer();
+		try {
+			this.get("test").setValue(TypeToken.of(Entity.class), entity);
+		} catch (ObjectMappingException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public Map<String, Set<BlockType>> getInteractBlock() {
 		Map<String, Set<BlockType>> groups = new HashMap<String, Set<BlockType>>();
 		this.get("interact").getChildrenMap().forEach((group, list) -> {
 			Set<BlockType> blocks = new HashSet<BlockType>();
@@ -135,10 +176,27 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 				if (block.isPresent()) {
 					blocks.add(block.get());
 				} else {
-					this.plugin.getLogger().warn("[Flag][Config][Interact] Error : BlockType '" + block_config.getString("") + "'");
+					this.plugin.getELogger().warn("[Flag][Config][INTERACT_BLOCK] Error : BlockType '" + block_config.getString("") + "'");
 				}
 			});
 			groups.put(group.toString().toUpperCase(), blocks);
+		});
+		return groups;
+	}
+	
+	public Map<String, Set<EntityType>> getInteractEntity() {
+		Map<String, Set<EntityType>> groups = new HashMap<String, Set<EntityType>>();
+		this.get("interact").getChildrenMap().forEach((group, list) -> {
+			Set<EntityType> entities = new HashSet<EntityType>();
+			list.getChildrenList().forEach(entity_config -> {
+				Optional<EntityType> entity = this.plugin.getGame().getRegistry().getType(EntityType.class, entity_config.getString(""));
+				if (entity.isPresent()) {
+					entities.add(entity.get());
+				} else {
+					this.plugin.getELogger().warn("[Flag][Config][INTERACT_ENTITY] Error : EntityType '" + entity_config.getString("") + "'");
+				}
+			});
+			groups.put(group.toString().toUpperCase(), entities);
 		});
 		return groups;
 	}

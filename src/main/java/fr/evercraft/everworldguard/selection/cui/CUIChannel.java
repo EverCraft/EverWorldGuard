@@ -65,7 +65,7 @@ public class CUIChannel implements RawDataListener {
                 try {
                 	subject.setCUIVersion(Integer.parseInt(split[1]));
                 } catch (NumberFormatException e) {
-                    this.plugin.getLogger().warn("Error while reading CUI init message: " + e.getMessage());
+                    this.plugin.getELogger().warn("Error while reading CUI init message: " + e.getMessage());
                 }
             }
             

@@ -64,7 +64,7 @@ public class FlagInteractBlock extends EntryFlag<String, BlockType> {
 	
 	public void reload() {
 		this.groups.clear();
-		this.groups.putAll(this.plugin.getProtectionService().getConfigFlags().getInteracts());
+		this.groups.putAll(this.plugin.getProtectionService().getConfigFlags().getInteractBlock());
 		
 		Set<String> keys = this.groups.keySet();
 		Set<BlockType> values = new HashSet<BlockType>();

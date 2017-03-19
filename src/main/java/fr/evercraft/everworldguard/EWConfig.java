@@ -33,7 +33,7 @@ public class EWConfig extends EConfig<EverWorldGuard> {
 	
 	public void reload() {
 		super.reload();
-		this.plugin.getLogger().setDebug(this.isDebug());
+		this.plugin.getELogger().setDebug(this.isDebug());
 	}
 	
 	@Override
@@ -56,7 +56,7 @@ public class EWConfig extends EConfig<EverWorldGuard> {
 		String item_string = this.get("select.item").getString("");
 		Optional<ItemType> item = UtilsItemType.getItemType(item_string);
 		if (!item.isPresent()) {
-			this.plugin.getLogger().warn("[Config] 'select.item' : Can not find itemType '" + item_string + "'");
+			this.plugin.getELogger().warn("[Config] 'select.item' : Can not find itemType '" + item_string + "'");
 			return ItemTypes.WOODEN_AXE;
 		}
 		return item.get();

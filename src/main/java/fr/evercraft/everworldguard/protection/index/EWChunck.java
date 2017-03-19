@@ -61,7 +61,7 @@ public class EWChunck {
 					        	
 					        	ESetProtectedRegion regions = new ESetProtectedRegion(position, EWChunck.this.regions);
 					        	
-					        	EWChunck.this.plugin.getLogger().debug("Loading bloc (x:" + position.getX() + ";y:" + position.getY() + ";z:" + position.getZ() + ") in " +  chronometer.getMilliseconds().toString() + " ms");
+					        	EWChunck.this.plugin.getELogger().debug("Loading bloc (x:" + position.getX() + ";y:" + position.getY() + ";z:" + position.getZ() + ") in " +  chronometer.getMilliseconds().toString() + " ms");
 					            return regions;
 					        }
 					    });

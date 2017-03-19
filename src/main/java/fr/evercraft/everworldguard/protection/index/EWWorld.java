@@ -83,16 +83,16 @@ public class EWWorld implements WorldWorldGuard {
 	}
 	
 	public void start() {
-		this.plugin.getLogger().info("Loading region for world '" + this.world.getName() + "' ...");
+		this.plugin.getELogger().info("Loading region for world '" + this.world.getName() + "' ...");
 		
 		this.regions.clear();
 		this.storage.getAll().forEach(region -> this.regions.put(region.getIdentifier().toLowerCase(), region));
 		
-		this.plugin.getLogger().info("Loading " + this.regions.size() + " region(s) for world '" + this.world.getName() + "'.");
+		this.plugin.getELogger().info("Loading " + this.regions.size() + " region(s) for world '" + this.world.getName() + "'.");
 	}
 	
 	public void stop() {
-		this.plugin.getLogger().info("Region data changes made in '" + this.world.getName() + "' have been background saved.");
+		this.plugin.getELogger().info("Region data changes made in '" + this.world.getName() + "' have been background saved.");
 	}
 	
 	public Set<ProtectedRegion> getAll() {

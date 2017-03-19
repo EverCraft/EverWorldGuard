@@ -86,7 +86,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 				this.get((String) config.getKey(), config.getValue())
 					.ifPresent(region -> regions.put(region.getIdentifier().toLowerCase(), region));
 			} else {
-				this.plugin.getLogger().warn("Nom de la région incorrect : " + config.getKey().toString());
+				this.plugin.getELogger().warn("Nom de la région incorrect : " + config.getKey().toString());
 			}
 		}
 		
@@ -101,7 +101,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 					if (parent != null) {
 						region.init(parent);
 					} else {
-						this.plugin.getLogger().warn("Parent incorrect : " + value);
+						this.plugin.getELogger().warn("Parent incorrect : " + value);
 					}
 				}
 			}
@@ -116,7 +116,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 		String type_string = config.getNode("type").getString("");
 		Optional<ProtectedRegion.Type> optType = ProtectedRegion.Type.of(type_string);
 		if (!optType.isPresent()) {
-			this.plugin.getLogger().warn("Type incorrect : " + type_string + " (id:'" + identifier + "')");
+			this.plugin.getELogger().warn("Type incorrect : " + type_string + " (id:'" + identifier + "')");
 			return Optional.empty();
 		}
 		ProtectedRegion.Type type = optType.get();
@@ -129,7 +129,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 			owners = ImmutableSet.copyOf(config.getNode("owners").getList(TypeToken.of(UUID.class)));
 		} catch (ObjectMappingException e) {
 			owners = ImmutableSet.of();
-			this.plugin.getLogger().warn("Owners incorrect (id:'" + identifier + "') : " + e.getMessage());
+			this.plugin.getELogger().warn("Owners incorrect (id:'" + identifier + "') : " + e.getMessage());
 		}
 		
 		Set<String> group_owners = null;
@@ -137,7 +137,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 			group_owners = ImmutableSet.copyOf(config.getNode("group-owners").getList(TypeToken.of(String.class)));
 		} catch (ObjectMappingException e) {
 			group_owners = ImmutableSet.of();
-			this.plugin.getLogger().warn("GroupOwners incorrect (id:'" + identifier + "') : " + e.getMessage());
+			this.plugin.getELogger().warn("GroupOwners incorrect (id:'" + identifier + "') : " + e.getMessage());
 		}
 		
 		// Members
@@ -146,7 +146,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 			members = ImmutableSet.copyOf(config.getNode("members").getList(TypeToken.of(UUID.class)));
 		} catch (ObjectMappingException e) {
 			members = ImmutableSet.of();
-			this.plugin.getLogger().warn("Members incorrect (id:'" + identifier + "') : " + e.getMessage());
+			this.plugin.getELogger().warn("Members incorrect (id:'" + identifier + "') : " + e.getMessage());
 		}
 		
 		Set<String> group_members = null;
@@ -154,7 +154,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 			group_members = ImmutableSet.copyOf(config.getNode("group-members").getList(TypeToken.of(String.class)));
 		} catch (ObjectMappingException e) {
 			group_members = ImmutableSet.of();
-			this.plugin.getLogger().warn("GroupMembers incorrect (id:'" + identifier + "') : " + e.getMessage());
+			this.plugin.getELogger().warn("GroupMembers incorrect (id:'" + identifier + "') : " + e.getMessage());
 		}
 		
 		// Flags
@@ -168,10 +168,10 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 					T value = flag.deserialize(config_flags.getValue().getString(""));
 					flags.put(flag, this.putFlags((EFlagValue<T>) flags.get(flag), Group.DEFAULT, value));
 				} else {
-					this.plugin.getLogger().warn("FlagDefault no register : " + config_flags.getKey().toString() + " (id:'" + identifier + "')");
+					this.plugin.getELogger().warn("FlagDefault no register : " + config_flags.getKey().toString() + " (id:'" + identifier + "')");
 				}
 			} else {
-				this.plugin.getLogger().warn("FlagDefault incorrect : " + config_flags.getKey().toString() + " (id:'" + identifier + "')");
+				this.plugin.getELogger().warn("FlagDefault incorrect : " + config_flags.getKey().toString() + " (id:'" + identifier + "')");
 			}
 		}
 		
@@ -183,10 +183,10 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 					T value = flag.deserialize(config_flags.getValue().getString(""));
 					flags.put(flag, this.putFlags((EFlagValue<T>) flags.get(flag), Group.MEMBER, value));
 				} else {
-					this.plugin.getLogger().warn("FlagMember no register : " + config_flags.getKey().toString() + " (id:'" + identifier + "')");
+					this.plugin.getELogger().warn("FlagMember no register : " + config_flags.getKey().toString() + " (id:'" + identifier + "')");
 				}
 			} else {
-				this.plugin.getLogger().warn("FlagMember incorrect : " + config_flags.getKey().toString() + " (id:'" + identifier + "')");
+				this.plugin.getELogger().warn("FlagMember incorrect : " + config_flags.getKey().toString() + " (id:'" + identifier + "')");
 			}
 		}
 		
@@ -198,10 +198,10 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 					T value = flag.deserialize(config_flags.getValue().getString(""));
 					flags.put(flag, this.putFlags((EFlagValue<T>) flags.get(flag), Group.OWNER, value));
 				} else {
-					this.plugin.getLogger().warn("FlagOwner no register : " + config_flags.getKey().toString() + " (id:'" + identifier + "')");
+					this.plugin.getELogger().warn("FlagOwner no register : " + config_flags.getKey().toString() + " (id:'" + identifier + "')");
 				}
 			} else {
-				this.plugin.getLogger().warn("FlagOwner incorrect : " + config_flags.getKey().toString() + " (id:'" + identifier + "')");
+				this.plugin.getELogger().warn("FlagOwner incorrect : " + config_flags.getKey().toString() + " (id:'" + identifier + "')");
 			}
 		}
 		
@@ -219,7 +219,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 					min = config.getNode("min").getValue(TypeToken.of(Vector3i.class));
 				} catch (ObjectMappingException e1) {}
 				if (min == null) {
-					this.plugin.getLogger().warn("Min incorrect (id:'" + identifier + "')");
+					this.plugin.getELogger().warn("Min incorrect (id:'" + identifier + "')");
 					return Optional.empty();
 				}
 				
@@ -228,7 +228,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 					max = config.getNode("max").getValue(TypeToken.of(Vector3i.class));
 				} catch (ObjectMappingException e) {}
 				if (max == null) {
-					this.plugin.getLogger().warn("Max incorrect (id:'" + identifier + "')");
+					this.plugin.getELogger().warn("Max incorrect (id:'" + identifier + "')");
 					return Optional.empty();
 				}
 
@@ -239,7 +239,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 					vectors = config.getNode("positions").getList(TypeToken.of(Vector3i.class));
 				} catch (ObjectMappingException e) {}
                 if (vectors == null) {
-                    this.plugin.getLogger().warn("Positions incorrect (id:'" + identifier + "')");
+                    this.plugin.getELogger().warn("Positions incorrect (id:'" + identifier + "')");
                     return Optional.empty();
                 }
 
@@ -252,7 +252,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 			return Optional.of(region);
 			
 		} catch (RegionIdentifierException e) {
-			this.plugin.getLogger().warn("Identifier invalid (id:'" + identifier + "')");
+			this.plugin.getELogger().warn("Identifier invalid (id:'" + identifier + "')");
 			return Optional.empty();
 		}
 	}

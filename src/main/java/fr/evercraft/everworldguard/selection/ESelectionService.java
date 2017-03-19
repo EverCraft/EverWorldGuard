@@ -66,7 +66,7 @@ public class ESelectionService implements SelectionService {
 					        	Chronometer chronometer = new Chronometer();
 					        	
 					        	ESelectionSubject subject = new ESelectionSubject(ESelectionService.this.plugin, uuid);
-					        	ESelectionService.this.plugin.getLogger().debug("Loading SelectionSubject '" + uuid.toString() + "' in " +  chronometer.getMilliseconds().toString() + " ms");
+					        	ESelectionService.this.plugin.getELogger().debug("Loading SelectionSubject '" + uuid.toString() + "' in " +  chronometer.getMilliseconds().toString() + " ms");
 					        	
 					            return subject;
 					        }
@@ -93,7 +93,7 @@ public class ESelectionService implements SelectionService {
 	    	}
 	    	return Optional.ofNullable(this.subjects.get(uuid));
 		} catch (ExecutionException e) {
-			this.plugin.getLogger().warn("Error : Loading SelectionSubject (identifier='" + uuid + "';message='" + e.getMessage() + "')");
+			this.plugin.getELogger().warn("Error : Loading SelectionSubject (identifier='" + uuid + "';message='" + e.getMessage() + "')");
 			return Optional.empty();
 		}
 	}
@@ -124,13 +124,13 @@ public class ESelectionService implements SelectionService {
 		// Si le joueur est dans le cache
 		if (player != null) {
 			this.subjects.putIfAbsent(uuid, player);
-			this.plugin.getLogger().debug("Loading player cache : " + uuid.toString());
+			this.plugin.getELogger().debug("Loading player cache : " + uuid.toString());
 		// Si le joueur n'est pas dans le cache
 		} else {
 			Chronometer chronometer = new Chronometer();
 			player = new ESelectionSubject(this.plugin, uuid);
 			this.subjects.putIfAbsent(uuid, player);
-			this.plugin.getLogger().debug("Loading player '" + uuid.toString() + "' in " +  chronometer.getMilliseconds().toString() + " ms");
+			this.plugin.getELogger().debug("Loading player '" + uuid.toString() + "' in " +  chronometer.getMilliseconds().toString() + " ms");
 		}
 		return player;
 	}
@@ -146,7 +146,7 @@ public class ESelectionService implements SelectionService {
 		// Si le joueur existe
 		if (player != null) {
 			this.cache.put(uuid, player);
-			this.plugin.getLogger().debug("Unloading the player : " + uuid.toString());
+			this.plugin.getELogger().debug("Unloading the player : " + uuid.toString());
 		}
 	}
 	

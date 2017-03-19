@@ -60,7 +60,7 @@ public class EUserSubjectList {
 					        	Chronometer chronometer = new Chronometer();
 					        	
 					        	EUserSubject subject = new EUserSubject(EUserSubjectList.this.plugin, uuid);
-					        	EUserSubjectList.this.plugin.getLogger().debug("Loading user '" + uuid.toString() + "' in " +  chronometer.getMilliseconds().toString() + " ms");
+					        	EUserSubjectList.this.plugin.getELogger().debug("Loading user '" + uuid.toString() + "' in " +  chronometer.getMilliseconds().toString() + " ms");
 					        	
 					            return subject;
 					        }
@@ -79,7 +79,7 @@ public class EUserSubjectList {
 	    	}
 	    	return Optional.ofNullable(this.subjects.get(uuid));
 		} catch (ExecutionException e) {
-			this.plugin.getLogger().warn("Error : Loading user (identifier='" + uuid + "';message='" + e.getMessage() + "')");
+			this.plugin.getELogger().warn("Error : Loading user (identifier='" + uuid + "';message='" + e.getMessage() + "')");
 			return Optional.empty();
 		}
 	}
@@ -117,13 +117,13 @@ public class EUserSubjectList {
 		// Si le joueur est dans le cache
 		if (player != null) {
 			this.subjects.putIfAbsent(uuid, player);
-			this.plugin.getLogger().debug("Loading player cache : " + uuid.toString());
+			this.plugin.getELogger().debug("Loading player cache : " + uuid.toString());
 		// Si le joueur n'est pas dans le cache
 		} else {
 			Chronometer chronometer = new Chronometer();
 			player = new EUserSubject(this.plugin, uuid);
 			this.subjects.putIfAbsent(uuid, player);
-			this.plugin.getLogger().debug("Loading player '" + uuid.toString() + "' in " +  chronometer.getMilliseconds().toString() + " ms");
+			this.plugin.getELogger().debug("Loading player '" + uuid.toString() + "' in " +  chronometer.getMilliseconds().toString() + " ms");
 		}
 		return player;
 	}
@@ -139,7 +139,7 @@ public class EUserSubjectList {
 		// Si le joueur existe
 		if (player != null) {
 			this.cache.put(uuid, player);
-			this.plugin.getLogger().debug("Unloading the player : " + uuid.toString());
+			this.plugin.getELogger().debug("Unloading the player : " + uuid.toString());
 		}
 	}
 	
