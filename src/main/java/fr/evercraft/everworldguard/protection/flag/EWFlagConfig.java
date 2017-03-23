@@ -28,18 +28,13 @@ import java.util.stream.Collectors;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.block.BlockTypes;
-import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.animal.Animal;
 import org.spongepowered.api.entity.living.monster.Monster;
 
-import com.flowpowered.math.vector.Vector3d;
-import com.google.common.reflect.TypeToken;
-
 import fr.evercraft.everapi.plugin.file.EConfig;
 import fr.evercraft.everworldguard.EverWorldGuard;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 
 public class EWFlagConfig extends EConfig<EverWorldGuard> {
 
@@ -50,6 +45,7 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 	@Override
 	public void loadDefault() {
 		this.loadInteractBlock();
+		this.loadInteractEntity();
 	}
 	
 	public void loadInteractBlock() {
@@ -141,12 +137,12 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 		Map<String, List<String>> interact_entity = new HashMap<String, List<String>>();
 		
 		interact_entity.put("GROUP_ANIMAL", Sponge.getGame().getRegistry().getAllOf(EntityType.class).stream()
-				.filter(entity -> entity instanceof Animal)
+				.filter(entity -> Animal.class.isAssignableFrom(entity.getEntityClass()) && !EntityTypes.WOLF.equals(entity))
 				.map(entity -> entity.getId())
 				.collect(Collectors.toList()));
 		
 		interact_entity.put("GROUP_MONSTER", Sponge.getGame().getRegistry().getAllOf(EntityType.class).stream()
-				.filter(entity -> entity instanceof Monster)
+				.filter(entity -> Monster.class.isAssignableFrom(entity.getEntityClass()))
 				.map(entity -> entity.getId())
 				.collect(Collectors.toList()));
 		
@@ -157,14 +153,6 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 				EntityTypes.HOPPER_MINECART)
 					.stream().map(block -> block.getId()).collect(Collectors.toList()));
 		addDefault("INTERACT_ENTITY", interact_entity);
-		
-		Entity entity = this.plugin.getEServer().getWorld("world").get().createEntity(EntityTypes.WOLF, Vector3d.ZERO);
-		entity.toContainer();
-		try {
-			this.get("test").setValue(TypeToken.of(Entity.class), entity);
-		} catch (ObjectMappingException e) {
-			e.printStackTrace();
-		}
 	}
 	
 	public Map<String, Set<BlockType>> getInteractBlock() {

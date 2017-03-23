@@ -25,28 +25,28 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.spongepowered.api.entity.EntityType;
+import fr.evercraft.everapi.services.entity.EntityTemplate;
 import fr.evercraft.everapi.services.worldguard.flag.type.EntryFlag;
 import fr.evercraft.everapi.services.worldguard.flag.value.EntryFlagValue;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EverWorldGuard;
 
-public class FlagInteractEntity extends EntryFlag<String, EntityType> {
+public class FlagInteractEntity extends EntryFlag<String, EntityTemplate> {
 	
 	private static final String ALL = "ALL";
 	
 	@SuppressWarnings("unused")
 	private final EverWorldGuard plugin;
-	private final Map<String, Set<EntityType>> groups;
-	private EntryFlagValue<String, EntityType> defaults;
+	private final Map<String, Set<EntityTemplate>> groups;
+	private EntryFlagValue<String, EntityTemplate> defaults;
 	
 	public FlagInteractEntity(EverWorldGuard plugin) {
 		super("INTERACT_ENTITY");
 		
 		this.plugin = plugin;
 		
-		this.groups = new ConcurrentHashMap<String, Set<EntityType>>();
-		this.defaults = new EntryFlagValue<String, EntityType>();
+		this.groups = new ConcurrentHashMap<String, Set<EntityTemplate>>();
+		this.defaults = new EntryFlagValue<String, EntityTemplate>();
 		
 		this.reload();
 	}
@@ -56,9 +56,9 @@ public class FlagInteractEntity extends EntryFlag<String, EntityType> {
 		//this.groups.putAll(this.plugin.getProtectionService().getConfigFlags().getInteractBlock());
 		
 		Set<String> keys = this.groups.keySet();
-		Set<EntityType> values = new HashSet<EntityType>();
+		Set<EntityTemplate> values = new HashSet<EntityTemplate>();
 		this.groups.values().forEach(value -> values.addAll(value));
-		this.defaults = new EntryFlagValue<String, EntityType>(keys, values);
+		this.defaults = new EntryFlagValue<String, EntityTemplate>(keys, values);
 	}
 	
 	@Override
@@ -67,7 +67,7 @@ public class FlagInteractEntity extends EntryFlag<String, EntityType> {
 	}
 
 	@Override
-	public EntryFlagValue<String, EntityType> getDefault() {
+	public EntryFlagValue<String, EntityTemplate> getDefault() {
 		return this.defaults;
 	}
 	
@@ -85,19 +85,19 @@ public class FlagInteractEntity extends EntryFlag<String, EntityType> {
 	}
 	
 	@Override
-	public String serialize(EntryFlagValue<String, EntityType> value) {
+	public String serialize(EntryFlagValue<String, EntityTemplate> value) {
 		return String.join(",", value.getKeys());
 	}
 
 	@Override
-	public EntryFlagValue<String, EntityType> deserialize(String value) throws IllegalArgumentException {
+	public EntryFlagValue<String, EntityTemplate> deserialize(String value) throws IllegalArgumentException {
 		if (value.equalsIgnoreCase(ALL)) return this.defaults;
-		if (value.isEmpty()) return new EntryFlagValue<String, EntityType>();
+		if (value.isEmpty()) return new EntryFlagValue<String, EntityTemplate>();
 		
 		Set<String> keys = new HashSet<String>();
-		Set<EntityType> values = new HashSet<EntityType>();
+		Set<EntityTemplate> values = new HashSet<EntityTemplate>();
 		for (String key : value.split(PATTERN_SPLIT)) {
-			Set<EntityType> blocks = this.groups.get(key.toUpperCase());
+			Set<EntityTemplate> blocks = this.groups.get(key.toUpperCase());
 			if (blocks != null) {
 				keys.add(key.toUpperCase());
 				values.addAll(blocks);
@@ -105,7 +105,7 @@ public class FlagInteractEntity extends EntryFlag<String, EntityType> {
 				throw new IllegalArgumentException();
 			}
 		}
-		return new EntryFlagValue<String, EntityType>(keys, values);
+		return new EntryFlagValue<String, EntityTemplate>(keys, values);
 	}
 	
 	/*
