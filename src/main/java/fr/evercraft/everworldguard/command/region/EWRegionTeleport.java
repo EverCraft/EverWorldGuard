@@ -194,9 +194,9 @@ public class EWRegionTeleport extends ESubCommand<EverWorldGuard> {
 		replaces.put("<pitch>", EReplace.of(String.valueOf(location.getPitch())));
 		replaces.put("<yaw>", EReplace.of(String.valueOf(location.getYaw())));
 		replaces.put("<world>", EReplace.of(location.getWorldName()));
-		return EWMessages.REGION_TELEPORT_TELEPORT_POSITION.getFormat().toText(replaces)
+		return EWMessages.REGION_TELEPORT_TELEPORT_POSITION.getFormat().toText2(replaces)
 				.toBuilder()
-				.onHover(TextActions.showText(EWMessages.REGION_TELEPORT_TELEPORT_POSITION_HOVER.getFormat().toText(replaces)))
+				.onHover(TextActions.showText(EWMessages.REGION_TELEPORT_TELEPORT_POSITION_HOVER.getFormat().toText2(replaces)))
 				.build();
 	}
 
@@ -247,9 +247,9 @@ public class EWRegionTeleport extends ESubCommand<EverWorldGuard> {
 		replaces.put("<pitch>", EReplace.of(String.valueOf(location.getPitch())));
 		replaces.put("<yaw>", EReplace.of(String.valueOf(location.getYaw())));
 		replaces.put("<world>", EReplace.of(location.getWorldName()));
-		return EWMessages.REGION_TELEPORT_SPAWN_POSITION.getFormat().toText(replaces)
+		return EWMessages.REGION_TELEPORT_SPAWN_POSITION.getFormat().toText2(replaces)
 				.toBuilder()
-				.onHover(TextActions.showText(EWMessages.REGION_TELEPORT_SPAWN_POSITION_HOVER.getFormat().toText(replaces)))
+				.onHover(TextActions.showText(EWMessages.REGION_TELEPORT_SPAWN_POSITION_HOVER.getFormat().toText2(replaces)))
 				.build();
 	}
 	

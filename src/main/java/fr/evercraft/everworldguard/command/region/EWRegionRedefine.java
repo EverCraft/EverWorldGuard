@@ -197,9 +197,9 @@ public class EWRegionRedefine extends ESubCommand<EverWorldGuard> {
 			.replace("<region>", region.getIdentifier())
 			.replace("<type>", region_new.get().getType().getNameFormat())
 			.replace("<positions>", EWMessages.REGION_REDEFINE_CUBOID_POINTS.getFormat()
-					.toText(replaces).toBuilder()
+					.toText2(replaces).toBuilder()
 					.onHover(TextActions.showText(EWMessages.REGION_REDEFINE_CUBOID_POINTS_HOVER.getFormat()
-							.toText(replaces)))
+							.toText2(replaces)))
 					.build())
 			.sendTo(player);
 		return true;
@@ -246,9 +246,9 @@ public class EWRegionRedefine extends ESubCommand<EverWorldGuard> {
 			.replace("<region>", region.getIdentifier())
 			.replace("<type>", region_new.get().getType().getNameFormat())
 			.replace("<positions>", EWMessages.REGION_REDEFINE_POLYGONAL_POINTS.getFormat()
-					.toText(replaces).toBuilder()
+					.toText2(replaces).toBuilder()
 					.onHover(TextActions.showText(EWMessages.REGION_REDEFINE_POLYGONAL_POINTS_HOVER.getFormat()
-							.toText(replaces)))
+							.toText2(replaces)))
 					.build())
 			.sendTo(player);
 		return true;

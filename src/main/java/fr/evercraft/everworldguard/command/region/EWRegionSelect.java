@@ -201,11 +201,11 @@ public class EWRegionSelect extends ESubCommand<EverWorldGuard> {
 		replaces.put("<type>", EReplace.of(region.getType().getNameFormat()));
 		
 		EWMessages.REGION_SELECT_CUBOID.sender()
-			.replace(replaces)
+			.replaceString(replaces)
 			.replace("<positions>", EWMessages.REGION_SELECT_CUBOID_POINTS.getFormat()
-					.toText(replaces).toBuilder()
+					.toText2(replaces).toBuilder()
 					.onHover(TextActions.showText(EWMessages.REGION_SELECT_CUBOID_POINTS_HOVER.getFormat()
-							.toText(replaces)))
+							.toText2(replaces)))
 					.build())
 			.sendTo(player);
 		return false;
@@ -245,11 +245,11 @@ public class EWRegionSelect extends ESubCommand<EverWorldGuard> {
 		replaces.put("<positions>", EReplace.of(Text.joinWith(EWMessages.REGION_SELECT_POLYGONAL_POINTS_HOVER_JOIN.getText(), positions_text)));
 		
 		EWMessages.REGION_SELECT_POLYGONAL.sender()
-			.replace(replaces)
+			.replaceString(replaces)
 			.replace("<positions>", EWMessages.REGION_SELECT_POLYGONAL_POINTS.getFormat()
-					.toText(replaces).toBuilder()
+					.toText2(replaces).toBuilder()
 					.onHover(TextActions.showText(EWMessages.REGION_SELECT_POLYGONAL_POINTS_HOVER.getFormat()
-							.toText(replaces)))
+							.toText2(replaces)))
 					.build())
 			.sendTo(player);
 		return false;

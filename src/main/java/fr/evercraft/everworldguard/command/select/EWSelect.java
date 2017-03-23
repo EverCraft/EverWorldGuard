@@ -61,9 +61,9 @@ public class EWSelect extends EParentCommand<EverWorldGuard> {
 		replaces.put("<x>", EReplace.of(String.valueOf(position.getX())));
 		replaces.put("<y>", EReplace.of(String.valueOf(position.getY())));
 		replaces.put("<z>", EReplace.of(String.valueOf(position.getZ())));
-		return EWMessages.SELECT_INFO_POS.getFormat().toText(replaces)
+		return EWMessages.SELECT_INFO_POS.getFormat().toText2(replaces)
 				.toBuilder()
-				.onHover(TextActions.showText(EWMessages.SELECT_INFO_POS_HOVER.getFormat().toText(replaces)))
+				.onHover(TextActions.showText(EWMessages.SELECT_INFO_POS_HOVER.getFormat().toText2(replaces)))
 				.build();
 	}
 	

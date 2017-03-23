@@ -276,9 +276,9 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 			if (region.getType().equals(ProtectedRegion.Type.CUBOID)) {
 				this.addLine(list, EWMessages.REGION_INFO_ONE_POINTS.getFormat()
 						.toText("<positions>",  EWMessages.REGION_INFO_ONE_POINTS_CUBOID.getFormat()
-								.toText(replaces).toBuilder()
+								.toText2(replaces).toBuilder()
 								.onHover(TextActions.showText(EWMessages.REGION_INFO_ONE_POINTS_CUBOID_HOVER.getFormat()
-										.toText(replaces)))
+										.toText2(replaces)))
 								.build()));
 			} else if (region.getType().equals(ProtectedRegion.Type.POLYGONAL)) {
 				List<Text> positions = new ArrayList<Text>();
@@ -295,9 +295,9 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 				
 				this.addLine(list, EWMessages.REGION_INFO_ONE_POINTS.getFormat()
 						.toText("<positions>",  EWMessages.REGION_INFO_ONE_POINTS_POLYGONAL.getFormat()
-								.toText(replaces).toBuilder()
+								.toText2(replaces).toBuilder()
 								.onHover(TextActions.showText(EWMessages.REGION_INFO_ONE_POINTS_POLYGONAL_HOVER.getFormat()
-										.toText(replaces)))
+										.toText2(replaces)))
 								.build()));
 			}
 		}
