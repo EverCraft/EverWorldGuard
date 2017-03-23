@@ -137,12 +137,12 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 		Map<String, List<String>> interact_entity = new HashMap<String, List<String>>();
 		
 		interact_entity.put("GROUP_ANIMAL", Sponge.getGame().getRegistry().getAllOf(EntityType.class).stream()
-				.filter(entity -> Animal.class.isAssignableFrom(entity.getEntityClass()) && !EntityTypes.WOLF.equals(entity))
+				.filter(entity -> !EntityTypes.UNKNOWN.equals(entity) && !EntityTypes.WOLF.equals(entity) && Animal.class.isAssignableFrom(entity.getEntityClass()))
 				.map(entity -> entity.getId())
 				.collect(Collectors.toList()));
 		
 		interact_entity.put("GROUP_MONSTER", Sponge.getGame().getRegistry().getAllOf(EntityType.class).stream()
-				.filter(entity -> Monster.class.isAssignableFrom(entity.getEntityClass()))
+				.filter(entity -> !EntityTypes.UNKNOWN.equals(entity) && Monster.class.isAssignableFrom(entity.getEntityClass()))
 				.map(entity -> entity.getId())
 				.collect(Collectors.toList()));
 		
