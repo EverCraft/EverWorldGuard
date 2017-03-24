@@ -34,6 +34,7 @@ import org.spongepowered.api.entity.living.animal.Animal;
 import org.spongepowered.api.entity.living.monster.Monster;
 
 import fr.evercraft.everapi.plugin.file.EConfig;
+import fr.evercraft.everapi.services.entity.EntityTemplate;
 import fr.evercraft.everworldguard.EverWorldGuard;
 
 public class EWFlagConfig extends EConfig<EverWorldGuard> {
@@ -172,14 +173,14 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 		return groups;
 	}
 	
-	public Map<String, Set<EntityType>> getInteractEntity() {
-		Map<String, Set<EntityType>> groups = new HashMap<String, Set<EntityType>>();
+	public Map<String, Set<EntityTemplate>> getInteractEntity() {
+		Map<String, Set<EntityTemplate>> groups = new HashMap<String, Set<EntityTemplate>>();
 		this.get("interact").getChildrenMap().forEach((group, list) -> {
-			Set<EntityType> entities = new HashSet<EntityType>();
+			Set<EntityTemplate> entities = new HashSet<EntityTemplate>();
 			list.getChildrenList().forEach(entity_config -> {
 				Optional<EntityType> entity = this.plugin.getGame().getRegistry().getType(EntityType.class, entity_config.getString(""));
 				if (entity.isPresent()) {
-					entities.add(entity.get());
+					entities.add(EntityTemplate.of(entity.get()));
 				} else {
 					this.plugin.getELogger().warn("[Flag][Config][INTERACT_ENTITY] Error : EntityType '" + entity_config.getString("") + "'");
 				}

@@ -28,7 +28,6 @@ import java.util.Set;
 
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
@@ -137,16 +136,8 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 		Set<Subject> groups = new HashSet<Subject>();
 		Optional<List<String>> groups_string = args.getList(MARKER_OWNER_GROUP);
 		if (groups_string.isPresent()) {
-			Optional<PermissionService> service = this.plugin.getEverAPI().getManagerService().getPermission();
-			if (!service.isPresent()) {
-				EAMessages.COMMAND_ERROR.sender()
-					.prefix(EWMessages.PREFIX)
-					.sendTo(source);
-				return false;
-			}
-			
 			for (String group_string : groups_string.get()) {
-				Subject group = service.get().getGroupSubjects().get(group_string);
+				Subject group = this.plugin.getEverAPI().getManagerService().getPermission().getGroupSubjects().get(group_string);
 				if (group != null) {
 					groups.add(group);
 				} else {

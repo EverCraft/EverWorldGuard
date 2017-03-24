@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.User;
-import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
@@ -234,18 +233,10 @@ public class EWRegionMemberRemove extends ESubCommand<EverWorldGuard> {
 		return true;
 	}
 	
-	private boolean commandRegionMemberRemoveGroup(final CommandSource source, ProtectedRegion region, List<String> groups_string, World world) {
-		Optional<PermissionService> service = this.plugin.getEverAPI().getManagerService().getPermission();
-		if (!service.isPresent()) {
-			EAMessages.COMMAND_ERROR.sender()
-				.prefix(EWMessages.PREFIX)
-				.sendTo(source);
-			return false;
-		}
-		
+	private boolean commandRegionMemberRemoveGroup(final CommandSource source, ProtectedRegion region, List<String> groups_string, World world) {		
 		Set<Subject> groups = new HashSet<Subject>();
 		for (String group_string : groups_string) {
-			Subject group = service.get().getGroupSubjects().get(group_string);
+			Subject group = this.plugin.getEverAPI().getManagerService().getPermission().getGroupSubjects().get(group_string);
 			if (group != null) {
 				groups.add(group);
 			} else {

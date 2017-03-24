@@ -24,7 +24,6 @@ import java.util.Optional;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
@@ -257,16 +256,7 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 	}
 	
 	private boolean commandRegionListGroup(CommandSource player, World world, String group_string) {
-		Optional<PermissionService> service = this.plugin.getEverAPI().getManagerService().getPermission();
-		// Le joueur est introuvable
-		if (!service.isPresent()){
-			EAMessages.COMMAND_ERROR.sender()
-				.prefix(EWMessages.PREFIX)
-				.sendTo(player);
-			return false;
-		}
-		
-		Subject group = service.get().getGroupSubjects().get(group_string);
+		Subject group = this.plugin.getEverAPI().getManagerService().getPermission().getGroupSubjects().get(group_string);
 		// Le joueur est introuvable
 		if (group == null){
 			EAMessages.PLAYER_NOT_FOUND.sender()
