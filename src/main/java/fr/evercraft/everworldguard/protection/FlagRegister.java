@@ -52,6 +52,10 @@ public class FlagRegister {
 		this.read_lock = this.lock.readLock();
 	}
 
+	public void setInitialized(boolean initialized) {
+		this.initialized = initialized;
+	}
+	
 	public void register(Flag<?> flag) throws FlagRegisterException {
 		Preconditions.checkNotNull(flag, "flag");
 		

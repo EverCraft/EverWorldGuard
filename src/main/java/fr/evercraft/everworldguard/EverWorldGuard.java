@@ -60,7 +60,6 @@ public class EverWorldGuard extends EPlugin<EverWorldGuard> {
 		
 		this.protection = new EProtectionService(this);
 		this.selection = new ESelectionService(this);
-		this.flags = new EWManagerFlags(this);
 		
 		this.getGame().getServiceManager().setProvider(this, WorldGuardService.class, this.protection);
 		this.getGame().getServiceManager().setProvider(this, SelectionService.class, this.selection);
@@ -69,7 +68,14 @@ public class EverWorldGuard extends EPlugin<EverWorldGuard> {
 	}
 	
 	@Override
+	protected void onEnable() {
+		this.flags = new EWManagerFlags(this);
+	}
+	
+	@Override
 	protected void onCompleteEnable() {
+		this.protection.getRegister().setInitialized(false);
+		
 		this.commands = new EWManagerCommands(this);
 	}
 

@@ -24,13 +24,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.animal.Animal;
+import org.spongepowered.api.entity.living.golem.Golem;
 import org.spongepowered.api.entity.living.monster.Monster;
 
 import fr.evercraft.everapi.plugin.file.EConfig;
@@ -128,7 +129,8 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 				BlockTypes.BEACON,
 				BlockTypes.MOB_SPAWNER,
 				BlockTypes.JUKEBOX,
-				BlockTypes.CAULDRON)
+				BlockTypes.CAULDRON,
+				BlockTypes.COMMAND_BLOCK)
 					.stream().map(block -> block.getId()).collect(Collectors.toList()));
 		
 		addDefault("INTERACT_BLOCK", interact_block);
@@ -137,28 +139,43 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 	public void loadInteractEntity() {
 		Map<String, List<String>> interact_entity = new HashMap<String, List<String>>();
 		
-		interact_entity.put("GROUP_ANIMAL", Sponge.getGame().getRegistry().getAllOf(EntityType.class).stream()
+		interact_entity.put("GROUP_ANIMAL", Stream.concat(
+			this.plugin.getGame().getRegistry().getAllOf(EntityType.class).stream()
 				.filter(entity -> !EntityTypes.UNKNOWN.equals(entity) && !EntityTypes.WOLF.equals(entity) && Animal.class.isAssignableFrom(entity.getEntityClass()))
-				.map(entity -> entity.getId())
-				.collect(Collectors.toList()));
+				.map(entity -> entity.getId()),
+			Arrays.asList("evercraft:wolf_passive").stream())
+			.collect(Collectors.toList()));
 		
-		interact_entity.put("GROUP_MONSTER", Sponge.getGame().getRegistry().getAllOf(EntityType.class).stream()
-				.filter(entity -> !EntityTypes.UNKNOWN.equals(entity) && Monster.class.isAssignableFrom(entity.getEntityClass()))
-				.map(entity -> entity.getId())
-				.collect(Collectors.toList()));
+		interact_entity.put("GROUP_MONSTER", Stream.concat(
+			this.plugin.getGame().getRegistry().getAllOf(EntityType.class).stream()
+				.filter(entity -> !EntityTypes.UNKNOWN.equals(entity) && 
+						(Monster.class.isAssignableFrom(entity.getEntityClass()) || Golem.class.isAssignableFrom(entity.getEntityClass())))
+				.map(entity -> entity.getId()),
+			Arrays.asList("evercraft:wolf_angry").stream())
+			.collect(Collectors.toList()));
 		
 		interact_entity.put("GROUP_INVENTORY", Arrays.asList(
-				EntityTypes.ARMOR_STAND,
-				EntityTypes.CHESTED_MINECART,
-				EntityTypes.FURNACE_MINECART,
-				EntityTypes.HOPPER_MINECART)
-					.stream().map(block -> block.getId()).collect(Collectors.toList()));
+				EntityTypes.ARMOR_STAND.getId(),
+				EntityTypes.CHESTED_MINECART.getId(),
+				EntityTypes.FURNACE_MINECART.getId(),
+				EntityTypes.HOPPER_MINECART.getId()));
+		
+		interact_entity.put("GROUP_OWNER", Arrays.asList(
+				"evercraft:wolf_owner",
+				"evercraft:horse_owner"));
+		
+		interact_entity.put("GROUP_OTHERS", Arrays.asList(
+				EntityTypes.MOB_SPAWNER_MINECART.getId(),
+				EntityTypes.COMMANDBLOCK_MINECART.getId(),
+				EntityTypes.ENDER_CRYSTAL.getId(),
+				EntityTypes.HOPPER_MINECART.getId(),
+				EntityTypes.ITEM_FRAME.getId()));
 		addDefault("INTERACT_ENTITY", interact_entity);
 	}
 	
 	public Map<String, Set<BlockType>> getInteractBlock() {
 		Map<String, Set<BlockType>> groups = new HashMap<String, Set<BlockType>>();
-		this.get("interact").getChildrenMap().forEach((group, list) -> {
+		this.get("INTERACT_BLOCK").getChildrenMap().forEach((group, list) -> {
 			Set<BlockType> blocks = new HashSet<BlockType>();
 			list.getChildrenList().forEach(block_config -> {
 				Optional<BlockType> block = this.plugin.getGame().getRegistry().getType(BlockType.class, block_config.getString(""));
@@ -175,14 +192,16 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 	
 	public Map<String, Set<EntityTemplate>> getInteractEntity() {
 		Map<String, Set<EntityTemplate>> groups = new HashMap<String, Set<EntityTemplate>>();
-		this.get("interact").getChildrenMap().forEach((group, list) -> {
+		this.get("INTERACT_ENTITY").getChildrenMap().forEach((group, list) -> {
 			Set<EntityTemplate> entities = new HashSet<EntityTemplate>();
 			list.getChildrenList().forEach(entity_config -> {
-				Optional<EntityType> entity = this.plugin.getGame().getRegistry().getType(EntityType.class, entity_config.getString(""));
-				if (entity.isPresent()) {
-					entities.add(EntityTemplate.of(entity.get()));
+				String entityString = entity_config.getString("");
+				
+				Optional<EntityTemplate> entityTemplate = this.plugin.getEverAPI().getManagerService().getEntity().getForAll(entityString);
+				if (entityTemplate.isPresent()) {
+					entities.add(entityTemplate.get());
 				} else {
-					this.plugin.getELogger().warn("[Flag][Config][INTERACT_ENTITY] Error : EntityType '" + entity_config.getString("") + "'");
+					this.plugin.getELogger().warn("[Flag][Config][INTERACT_ENTITY] Error : EntityTemplate '" + entityString + "'");
 				}
 			});
 			groups.put(group.toString().toUpperCase(), entities);

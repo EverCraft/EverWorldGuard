@@ -20,25 +20,32 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.spongepowered.api.entity.Entity;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.event.cause.NamedCause;
+import org.spongepowered.api.event.entity.InteractEntityEvent;
+
 import fr.evercraft.everapi.services.entity.EntityTemplate;
-import fr.evercraft.everapi.services.worldguard.flag.type.EntryFlag;
-import fr.evercraft.everapi.services.worldguard.flag.value.EntryFlagValue;
+import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
+import fr.evercraft.everapi.services.worldguard.flag.Flags;
+import fr.evercraft.everapi.services.worldguard.flag.type.EntityTemplateFlag;
+import fr.evercraft.everapi.services.worldguard.flag.value.EntityPatternFlagValue;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EverWorldGuard;
 
-public class FlagInteractEntity extends EntryFlag<String, EntityTemplate> {
+public class FlagInteractEntity extends EntityTemplateFlag {
 	
 	private static final String ALL = "ALL";
 	
-	@SuppressWarnings("unused")
 	private final EverWorldGuard plugin;
 	private final Map<String, Set<EntityTemplate>> groups;
-	private EntryFlagValue<String, EntityTemplate> defaults;
+	private EntityPatternFlagValue<EntityTemplate, Entity> defaults;
 	
 	public FlagInteractEntity(EverWorldGuard plugin) {
 		super("INTERACT_ENTITY");
@@ -46,19 +53,19 @@ public class FlagInteractEntity extends EntryFlag<String, EntityTemplate> {
 		this.plugin = plugin;
 		
 		this.groups = new ConcurrentHashMap<String, Set<EntityTemplate>>();
-		this.defaults = new EntryFlagValue<String, EntityTemplate>();
+		this.defaults = new EntityPatternFlagValue<EntityTemplate, Entity>();
 		
 		this.reload();
 	}
 	
 	public void reload() {
 		this.groups.clear();
-		//this.groups.putAll(this.plugin.getProtectionService().getConfigFlags().getInteractBlock());
+		this.groups.putAll(this.plugin.getProtectionService().getConfigFlags().getInteractEntity());
 		
 		Set<String> keys = this.groups.keySet();
 		Set<EntityTemplate> values = new HashSet<EntityTemplate>();
 		this.groups.values().forEach(value -> values.addAll(value));
-		this.defaults = new EntryFlagValue<String, EntityTemplate>(keys, values);
+		this.defaults = new EntityPatternFlagValue<EntityTemplate, Entity>(keys, values);
 	}
 	
 	@Override
@@ -67,7 +74,7 @@ public class FlagInteractEntity extends EntryFlag<String, EntityTemplate> {
 	}
 
 	@Override
-	public EntryFlagValue<String, EntityTemplate> getDefault() {
+	public EntityPatternFlagValue<EntityTemplate, Entity> getDefault() {
 		return this.defaults;
 	}
 	
@@ -85,14 +92,14 @@ public class FlagInteractEntity extends EntryFlag<String, EntityTemplate> {
 	}
 	
 	@Override
-	public String serialize(EntryFlagValue<String, EntityTemplate> value) {
+	public String serialize(EntityPatternFlagValue<EntityTemplate, Entity> value) {
 		return String.join(",", value.getKeys());
 	}
 
 	@Override
-	public EntryFlagValue<String, EntityTemplate> deserialize(String value) throws IllegalArgumentException {
+	public EntityPatternFlagValue<EntityTemplate, Entity> deserialize(String value) throws IllegalArgumentException {
 		if (value.equalsIgnoreCase(ALL)) return this.defaults;
-		if (value.isEmpty()) return new EntryFlagValue<String, EntityTemplate>();
+		if (value.isEmpty()) return new EntityPatternFlagValue<EntityTemplate, Entity>();
 		
 		Set<String> keys = new HashSet<String>();
 		Set<EntityTemplate> values = new HashSet<EntityTemplate>();
@@ -105,7 +112,32 @@ public class FlagInteractEntity extends EntryFlag<String, EntityTemplate> {
 				throw new IllegalArgumentException();
 			}
 		}
-		return new EntryFlagValue<String, EntityTemplate>(keys, values);
+		return new EntityPatternFlagValue<EntityTemplate, Entity>(keys, values);
+	}
+
+	public void onInteractEntity(WorldWorldGuard world, InteractEntityEvent event) {
+		if (event.isCancelled()) return;
+		
+		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
+		if (optPlayer.isPresent()) {
+			this.onInteractEntityPlayer(world, event, optPlayer.get());
+		} else {
+			this.onInteractEntityNatural(world, event);
+		}
+	}
+	
+	public void onInteractEntityPlayer(WorldWorldGuard world, InteractEntityEvent event, Player player) {
+		if (this.getDefault().contains(event.getTargetEntity()) && 
+				!world.getRegions(event.getTargetEntity().getLocation().getPosition()).getFlag(player, Flags.INTERACT_ENTITY).contains(event.getTargetEntity(), player)) {
+			event.setCancelled(true);
+		}
+	}
+	
+	public void onInteractEntityNatural(WorldWorldGuard world, InteractEntityEvent event) {
+		if (this.getDefault().contains(event.getTargetEntity()) && 
+				!world.getRegions(event.getTargetEntity().getLocation().getPosition()).getFlagDefault(Flags.INTERACT_ENTITY).contains(event.getTargetEntity())) {
+			event.setCancelled(true);
+		}
 	}
 	
 	/*

@@ -139,6 +139,10 @@ public class EProtectionService implements WorldGuardService {
 	public void clearFlags() {
 		// TODO Supprimer les flags non utilisé dans la config
 	}
+	
+	public FlagRegister getRegister() {
+		return this.flagsRegister;
+	}
 
 	public EWFlagConfig getConfigFlags() {
 		return this.flagsConfig;

@@ -38,18 +38,18 @@ import org.spongepowered.api.world.World;
 
 import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
 import fr.evercraft.everapi.services.worldguard.flag.Flags;
-import fr.evercraft.everapi.services.worldguard.flag.type.EntryFlag;
+import fr.evercraft.everapi.services.worldguard.flag.type.BlockTypeFlag;
 import fr.evercraft.everapi.services.worldguard.flag.value.EntryFlagValue;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EverWorldGuard;
 
-public class FlagInteractBlock extends EntryFlag<String, BlockType> {
+public class FlagInteractBlock extends BlockTypeFlag {
 	
 	private static final String ALL = "ALL";
 	
 	private final EverWorldGuard plugin;
 	private final Map<String, Set<BlockType>> groups;
-	private EntryFlagValue<String, BlockType> defaults;
+	private EntryFlagValue<BlockType> defaults;
 	
 	public FlagInteractBlock(EverWorldGuard plugin) {
 		super("INTERACT_BLOCK");
@@ -57,7 +57,7 @@ public class FlagInteractBlock extends EntryFlag<String, BlockType> {
 		this.plugin = plugin;
 		
 		this.groups = new ConcurrentHashMap<String, Set<BlockType>>();
-		this.defaults = new EntryFlagValue<String, BlockType>();
+		this.defaults = new EntryFlagValue<BlockType>();
 		
 		this.reload();
 	}
@@ -69,7 +69,7 @@ public class FlagInteractBlock extends EntryFlag<String, BlockType> {
 		Set<String> keys = this.groups.keySet();
 		Set<BlockType> values = new HashSet<BlockType>();
 		this.groups.values().forEach(value -> values.addAll(value));
-		this.defaults = new EntryFlagValue<String, BlockType>(keys, values);
+		this.defaults = new EntryFlagValue<BlockType>(keys, values);
 	}
 	
 	@Override
@@ -78,7 +78,7 @@ public class FlagInteractBlock extends EntryFlag<String, BlockType> {
 	}
 
 	@Override
-	public EntryFlagValue<String, BlockType> getDefault() {
+	public EntryFlagValue<BlockType> getDefault() {
 		return this.defaults;
 	}
 	
@@ -96,14 +96,14 @@ public class FlagInteractBlock extends EntryFlag<String, BlockType> {
 	}
 	
 	@Override
-	public String serialize(EntryFlagValue<String, BlockType> value) {
+	public String serialize(EntryFlagValue<BlockType> value) {
 		return String.join(",", value.getKeys());
 	}
 
 	@Override
-	public EntryFlagValue<String, BlockType> deserialize(String value) throws IllegalArgumentException {
+	public EntryFlagValue<BlockType> deserialize(String value) throws IllegalArgumentException {
 		if (value.equalsIgnoreCase(ALL)) return this.defaults;
-		if (value.isEmpty()) return new EntryFlagValue<String, BlockType>();
+		if (value.isEmpty()) return new EntryFlagValue<BlockType>();
 		
 		Set<String> keys = new HashSet<String>();
 		Set<BlockType> values = new HashSet<BlockType>();
@@ -116,7 +116,7 @@ public class FlagInteractBlock extends EntryFlag<String, BlockType> {
 				throw new IllegalArgumentException();
 			}
 		}
-		return new EntryFlagValue<String, BlockType>(keys, values);
+		return new EntryFlagValue<BlockType>(keys, values);
 	}
 	
 	/*
