@@ -44,6 +44,8 @@ public class EProtectionService implements WorldGuardService {
 	private final FlagRegister flagsRegister;
 	private final EWFlagConfig flagsConfig;
 	
+	private int intervalMessage;
+	
 	
 	public EProtectionService(final EverWorldGuard plugin) {		
 		this.plugin = plugin;
@@ -57,6 +59,16 @@ public class EProtectionService implements WorldGuardService {
 	public void reload() {		
 		this.subjects.reload();
 		this.worlds.reload();
+		
+		this.intervalMessage = this.plugin.getConfigs().getIntervalMessage();
+	}
+	
+	/*
+	 * 
+	 */
+	
+	public int getIntervalMessage() {
+		return this.intervalMessage;
 	}
 	
 	/*

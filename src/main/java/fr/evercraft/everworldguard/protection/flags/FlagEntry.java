@@ -20,7 +20,6 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 
 import fr.evercraft.everapi.event.MoveRegionEvent;
-import fr.evercraft.everapi.services.worldguard.flag.Flags;
 import fr.evercraft.everapi.services.worldguard.flag.type.StateFlag;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 
@@ -42,7 +41,7 @@ public class FlagEntry extends StateFlag {
 	
 	@Listener(order=Order.FIRST)
 	public void onMoveRegion(MoveRegionEvent.Pre.Cancellable event) {
-		if(event.getEnterRegions().getFlag(event.getPlayer(), Flags.ENTRY).equals(State.DENY)) {
+		if(event.getEnterRegions().getFlag(event.getPlayer(), this).equals(State.DENY)) {
 			event.setCancelled(true);
 			event.getPlayer().sendMessage("MoveRegion : DENY");
 		}

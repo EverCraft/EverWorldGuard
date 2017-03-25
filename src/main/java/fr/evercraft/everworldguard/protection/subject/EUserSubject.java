@@ -18,6 +18,7 @@ package fr.evercraft.everworldguard.protection.subject;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Event;
@@ -26,11 +27,17 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 import com.google.common.base.Preconditions;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Sets;
+
 import fr.evercraft.everapi.event.ESpongeEventFactory;
+import fr.evercraft.everapi.message.EMessageSender;
 import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everapi.services.worldguard.MoveType;
 import fr.evercraft.everapi.services.worldguard.SubjectWorldGuard;
+import fr.evercraft.everapi.services.worldguard.flag.Flag;
 import fr.evercraft.everapi.services.worldguard.region.SetProtectedRegion;
 import fr.evercraft.everapi.sponge.UtilsLocation;
 import fr.evercraft.everworldguard.EverWorldGuard;
@@ -44,6 +51,7 @@ public class EUserSubject implements SubjectWorldGuard {
 	
 	private Location<World> lastLocation;
 	private SetProtectedRegion lastRegions;
+	private final LoadingCache<Flag<?>, Long> messages;
 
 	public EUserSubject(final EverWorldGuard plugin, final UUID identifier) {
 		Preconditions.checkNotNull(plugin, "plugin");
@@ -53,6 +61,25 @@ public class EUserSubject implements SubjectWorldGuard {
 		this.identifier = identifier;
 		
 		this.lastRegions = SetProtectedRegion.empty();
+		this.messages = CacheBuilder.newBuilder()
+			    .maximumSize(10)
+			    .expireAfterAccess(10, TimeUnit.MINUTES)
+			    .build(new CacheLoader<Flag<?>, Long>() {
+			        @Override
+			        public Long load(Flag<?> flag) {
+			            return 0L;
+			        }
+			    });
+	}
+	
+	public boolean sendMessage(EPlayer player, EMessageSender message, Flag<?> flag) {
+		Long time = this.messages.getIfPresent(flag);
+		if (time != null && time > System.currentTimeMillis()) return false;
+			
+		message.sendTo(player);
+		
+		this.messages.put(flag, System.currentTimeMillis() + this.plugin.getProtectionService().getIntervalMessage());
+		return true;
 	}
 	
 	/*

@@ -20,7 +20,6 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.entity.HealEntityEvent;
 
 import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
-import fr.evercraft.everapi.services.worldguard.flag.Flags;
 import fr.evercraft.everapi.services.worldguard.flag.type.StateFlag;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 
@@ -46,7 +45,7 @@ public class FlagInvincibility extends StateFlag {
 		if (event.getTargetEntity() instanceof Player && event.getBaseHealAmount() > event.getFinalHealAmount()) {
 			Player player = (Player) event.getTargetEntity();
 			
-			if (world.getRegions(player.getLocation().getPosition()).getFlag(player, Flags.INVINCIBILITY).equals(State.ALLOW)) {
+			if (world.getRegions(player.getLocation().getPosition()).getFlag(player, this).equals(State.ALLOW)) {
 				event.setCancelled(true);
 			}
 		}

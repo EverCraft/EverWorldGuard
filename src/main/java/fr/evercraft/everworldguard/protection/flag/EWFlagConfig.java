@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -37,6 +38,7 @@ import org.spongepowered.api.entity.living.monster.Monster;
 import fr.evercraft.everapi.plugin.file.EConfig;
 import fr.evercraft.everapi.services.entity.EntityTemplate;
 import fr.evercraft.everworldguard.EverWorldGuard;
+import ninja.leaping.configurate.ConfigurationNode;
 
 public class EWFlagConfig extends EConfig<EverWorldGuard> {
 
@@ -47,9 +49,13 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 	@Override
 	public void loadDefault() {
 		this.loadInteractBlock();
-		this.loadInteractEntity();
+		this.loadEntity();
 		this.loadBuild();
 	}
+	
+	/*
+	 * Load
+	 */
 	
 	public void loadInteractBlock() {
 		Map<String, List<String>> interact_block = new HashMap<String, List<String>>();
@@ -137,10 +143,10 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 		addDefault("INTERACT_BLOCK", interact_block);
 	}
 	
-	public void loadInteractEntity() {
+	public void loadEntity() {
 		Map<String, List<String>> interact_entity = new HashMap<String, List<String>>();
 		
-		interact_entity.put("GROUP_ANIMAL", Stream.concat(
+		interact_entity.put("INTERACT_ENTITY, DAMAGE_ENTITY", Stream.concat(
 			this.plugin.getGame().getRegistry().getAllOf(EntityType.class).stream()
 				.filter(entity -> !EntityTypes.UNKNOWN.equals(entity) && !EntityTypes.WOLF.equals(entity) && Animal.class.isAssignableFrom(entity.getEntityClass()))
 				.map(entity -> entity.getId()),
@@ -173,7 +179,8 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 				EntityTypes.ENDER_CRYSTAL.getId(),
 				EntityTypes.BOAT.getId(),
 				EntityTypes.HOPPER_MINECART.getId(),
-				EntityTypes.ITEM_FRAME.getId()));
+				EntityTypes.ITEM_FRAME.getId(),
+				EntityTypes.VILLAGER.getId()));
 		addDefault("INTERACT_ENTITY", interact_entity);
 	}
 	
@@ -185,9 +192,13 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 		addDefault("BUILD", interact_entity);
 	}
 	
+	/*
+	 * Accesseurs
+	 */
+	
 	public Map<String, Set<BlockType>> getInteractBlock() {
 		Map<String, Set<BlockType>> groups = new HashMap<String, Set<BlockType>>();
-		this.get("INTERACT_BLOCK").getChildrenMap().forEach((group, list) -> {
+		this.getContains("INTERACT_BLOCK").getChildrenMap().forEach((group, list) -> {
 			Set<BlockType> blocks = new HashSet<BlockType>();
 			list.getChildrenList().forEach(block_config -> {
 				Optional<BlockType> block = this.plugin.getGame().getRegistry().getType(BlockType.class, block_config.getString(""));
@@ -204,7 +215,26 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 	
 	public Map<String, Set<EntityTemplate>> getInteractEntity() {
 		Map<String, Set<EntityTemplate>> groups = new HashMap<String, Set<EntityTemplate>>();
-		this.get("INTERACT_ENTITY").getChildrenMap().forEach((group, list) -> {
+		this.getContains("INTERACT_ENTITY").getChildrenMap().forEach((group, list) -> {
+			Set<EntityTemplate> entities = new HashSet<EntityTemplate>();
+			list.getChildrenList().forEach(entity_config -> {
+				String entityString = entity_config.getString("");
+				
+				Optional<EntityTemplate> entityTemplate = this.plugin.getEverAPI().getManagerService().getEntity().getForAll(entityString);
+				if (entityTemplate.isPresent()) {
+					entities.add(entityTemplate.get());
+				} else {
+					this.plugin.getELogger().warn("[Flag][Config][INTERACT_ENTITY] Error : EntityTemplate '" + entityString + "'");
+				}
+			});
+			groups.put(group.toString().toUpperCase(), entities);
+		});
+		return groups;
+	}
+	
+	public Map<String, Set<EntityTemplate>> getDamageEntity() {
+		Map<String, Set<EntityTemplate>> groups = new HashMap<String, Set<EntityTemplate>>();
+		this.getContains("DAMAGE_ENTITY").getChildrenMap().forEach((group, list) -> {
 			Set<EntityTemplate> entities = new HashSet<EntityTemplate>();
 			list.getChildrenList().forEach(entity_config -> {
 				String entityString = entity_config.getString("");
@@ -223,7 +253,7 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 
 	public Set<EntityType> getBuild() {
 		Set<EntityType> entities = new HashSet<EntityType>();
-		this.get("BUILD").getNode("entities").getChildrenList().forEach(entityConfig -> {
+		this.getContains("BUILD").getNode("entities").getChildrenList().forEach(entityConfig -> {
 			String entityString = entityConfig.getString("");
 			Optional<EntityType> entity = this.plugin.getGame().getRegistry().getType(EntityType.class, entityString);
 			if (entity.isPresent()) {
@@ -233,5 +263,14 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 			}
 		});
 		return entities;
+	}
+	
+	public ConfigurationNode getContains(String name) {
+		for (Entry<Object, ? extends ConfigurationNode> config : this.getNode().getChildrenMap().entrySet()) {
+			if (config.getKey().toString().contains(name)) {
+				return config.getValue();
+			}
+		}
+		return this.get(name);
 	}
 }

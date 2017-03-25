@@ -32,6 +32,7 @@ public class EWManagerFlags {
 	public final FlagBuild BUILD;
 	public final FlagInteractBlock INTERACT_BLOCK;
 	public final FlagInteractEntity INTERACT_ENTITY;
+	public final FlagDamageEntity DAMAGE_ENTITY;
 	public final FlagEntry ENTRY;
 	public final FlagExit EXIT;
 	public final FlagInvincibility INVINCIBILITY;
@@ -48,6 +49,7 @@ public class EWManagerFlags {
 		BUILD = new FlagBuild(this.plugin);
 		INTERACT_BLOCK = new FlagInteractBlock(this.plugin);
 		INTERACT_ENTITY = new FlagInteractEntity(this.plugin);
+		DAMAGE_ENTITY = new FlagDamageEntity(this.plugin);
 		ENTRY = new FlagEntry();
 		EXIT = new FlagExit();
 		INVINCIBILITY = new FlagInvincibility();

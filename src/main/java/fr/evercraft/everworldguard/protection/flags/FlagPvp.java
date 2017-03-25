@@ -37,7 +37,6 @@ import org.spongepowered.api.world.World;
 import com.flowpowered.math.vector.Vector3d;
 
 import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
-import fr.evercraft.everapi.services.worldguard.flag.Flags;
 import fr.evercraft.everapi.services.worldguard.flag.type.StateFlag;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
@@ -68,7 +67,7 @@ public class FlagPvp extends StateFlag {
 		if (event.getCause().get(NamedCause.SOURCE, Projectile.class).isPresent() && event.getCause().get(NamedCause.OWNER, Player.class).isPresent()) {
 			event.filterEntities(entity -> {
 				if (entity instanceof Player) {
-					if (world.getRegions(entity.getLocation().getPosition()).getFlag((Player) entity, Flags.PVP).equals(State.DENY)) {
+					if (world.getRegions(entity.getLocation().getPosition()).getFlag((Player) entity, this).equals(State.DENY)) {
 						return false;
 					}
 				}
@@ -130,7 +129,7 @@ public class FlagPvp extends StateFlag {
 	}
 	
 	public boolean onDamageEntity(WorldWorldGuard world, DamageEntityEvent event, Player player) {
-		if (world.getRegions(player.getLocation().getPosition()).getFlag(player, Flags.PVP).equals(State.DENY)) {
+		if (world.getRegions(player.getLocation().getPosition()).getFlag(player, this).equals(State.DENY)) {
 			event.setCancelled(true);
 			return true;
 		}

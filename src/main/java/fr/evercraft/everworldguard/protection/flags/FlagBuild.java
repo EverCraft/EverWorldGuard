@@ -52,7 +52,6 @@ import com.flowpowered.math.vector.Vector3d;
 import com.google.common.collect.Sets;
 
 import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
-import fr.evercraft.everapi.services.worldguard.flag.Flags;
 import fr.evercraft.everapi.services.worldguard.flag.type.StateFlag;
 import fr.evercraft.everapi.sponge.UtilsCause;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
@@ -116,11 +115,11 @@ public class FlagBuild extends StateFlag {
 		if (optPlayer.isPresent()) {
 			Player player = optPlayer.get();
 			
-			if (positions.anyMatch(position -> world.getRegions(position).getFlag(player, Flags.BUILD).equals(State.DENY))) {
+			if (positions.anyMatch(position -> world.getRegions(position).getFlag(player, this).equals(State.DENY))) {
 				event.setCancelled(true);
 			}
 		} else {
-			if (positions.anyMatch(position -> world.getRegions(position).getFlagDefault(Flags.BUILD).equals(State.DENY))) {
+			if (positions.anyMatch(position -> world.getRegions(position).getFlagDefault(this).equals(State.DENY))) {
 				event.setCancelled(true);
 			}
 		}
@@ -131,11 +130,11 @@ public class FlagBuild extends StateFlag {
 		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
 		if (optPlayer.isPresent()) {
 			Player player = optPlayer.get();
-			if (event.getLocations().stream().anyMatch(location -> world.getRegions(location.getPosition()).getFlag(player, Flags.BUILD).equals(State.DENY))) {
+			if (event.getLocations().stream().anyMatch(location -> world.getRegions(location.getPosition()).getFlag(player, this).equals(State.DENY))) {
 				event.setCancelled(true);
 			}
 		} else {
-			if (event.getLocations().stream().anyMatch(location -> world.getRegions(location.getPosition()).getFlagDefault(Flags.BUILD).equals(State.DENY))) {
+			if (event.getLocations().stream().anyMatch(location -> world.getRegions(location.getPosition()).getFlagDefault(this).equals(State.DENY))) {
 				event.setCancelled(true);
 			}
 		}
@@ -161,7 +160,7 @@ public class FlagBuild extends StateFlag {
 		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
 		if (optPlayer.isPresent()) {
 			Player player = optPlayer.get();
-			event.filter(location -> world.getRegions(location.getPosition()).getFlag(player, Flags.BUILD).equals(State.ALLOW))
+			event.filter(location -> world.getRegions(location.getPosition()).getFlag(player, this).equals(State.ALLOW))
 				.forEach(transaction -> transaction.getFinal().getLocation().ifPresent(location -> {
 					Entity entity = location.getExtent().createEntity(EntityTypes.ITEM, location.getPosition());
 					entity.offer(Keys.REPRESENTED_ITEM, ItemStack.builder().fromBlockSnapshot(transaction.getFinal()).build().createSnapshot());
@@ -173,7 +172,7 @@ public class FlagBuild extends StateFlag {
 						.named(UtilsCause.PLACE_EVENT, event).build());
 				}));
 		} else {			
-			event.filter(location -> world.getRegions(location.getPosition()).getFlagDefault(Flags.BUILD).equals(State.ALLOW))
+			event.filter(location -> world.getRegions(location.getPosition()).getFlagDefault(this).equals(State.ALLOW))
 				.forEach(transaction -> transaction.getFinal().getLocation().ifPresent(location -> {
 					Entity entity = location.getExtent().createEntity(EntityTypes.ITEM, location.getPosition());
 					entity.offer(Keys.REPRESENTED_ITEM, ItemStack.builder().fromBlockSnapshot(transaction.getFinal()).build().createSnapshot());
@@ -191,9 +190,9 @@ public class FlagBuild extends StateFlag {
 		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
 		if (optPlayer.isPresent()) {
 			Player player = optPlayer.get();
-			event.filter(location -> world.getRegions(location.getPosition()).getFlag(player, Flags.BUILD).equals(State.ALLOW));
+			event.filter(location -> world.getRegions(location.getPosition()).getFlag(player, this).equals(State.ALLOW));
 		} else {
-			event.filter(location -> world.getRegions(location.getPosition()).getFlagDefault(Flags.BUILD).equals(State.ALLOW));
+			event.filter(location -> world.getRegions(location.getPosition()).getFlagDefault(this).equals(State.ALLOW));
 		}
 	}
 	
@@ -213,7 +212,7 @@ public class FlagBuild extends StateFlag {
 	}
 	
 	private void onChangeBlockBreakPlayer(WorldWorldGuard world, ChangeBlockEvent.Break event, Player player) {		
-		if (!event.filter(location -> world.getRegions(location.getPosition()).getFlag(player, Flags.BUILD).equals(State.ALLOW)).isEmpty()) {
+		if (!event.filter(location -> world.getRegions(location.getPosition()).getFlag(player, this).equals(State.ALLOW)).isEmpty()) {
 			Optional<FallingBlock> falling = event.getCause().get(NamedCause.SOURCE, FallingBlock.class);
 			if (falling.isPresent()) {
 				falling.get().remove();
@@ -222,7 +221,7 @@ public class FlagBuild extends StateFlag {
 	}
 	
 	private void onChangeBlockBreakNatural(WorldWorldGuard world, ChangeBlockEvent.Break event) {		
-		if (!event.filter(location -> world.getRegions(location.getPosition()).getFlagDefault(Flags.BUILD).equals(State.ALLOW)).isEmpty()) {
+		if (!event.filter(location -> world.getRegions(location.getPosition()).getFlagDefault(this).equals(State.ALLOW)).isEmpty()) {
 			Optional<FallingBlock> falling = event.getCause().get(NamedCause.SOURCE, FallingBlock.class);
 			if (falling.isPresent()) {
 				falling.get().remove();
@@ -247,13 +246,13 @@ public class FlagBuild extends StateFlag {
 	}
 	
 	public void onInteractEntityPlayer(WorldWorldGuard world, InteractEntityEvent event, Player player) {
-		if (world.getRegions(event.getTargetEntity().getLocation().getPosition()).getFlag(player, Flags.BUILD).equals(State.DENY)) {
+		if (world.getRegions(event.getTargetEntity().getLocation().getPosition()).getFlag(player, this).equals(State.DENY)) {
 			event.setCancelled(true);
 		}
 	}
 	
 	public void onInteractEntityNatural(WorldWorldGuard world, InteractEntityEvent event) {
-		if (world.getRegions(event.getTargetEntity().getLocation().getPosition()).getFlagDefault(Flags.BUILD).equals(State.DENY)) {
+		if (world.getRegions(event.getTargetEntity().getLocation().getPosition()).getFlagDefault(this).equals(State.DENY)) {
 			event.setCancelled(true);
 		}
 	}
@@ -276,7 +275,7 @@ public class FlagBuild extends StateFlag {
 	public void onCollideEntityPlayer(WorldWorldGuard world, CollideEntityEvent event, Player player) {		
 		if (event.getCause().get(NamedCause.SOURCE, Projectile.class).isPresent()) {
 			event.filterEntities(entity -> {
-				if (this.entities.contains(entity) && world.getRegions(entity.getLocation().getPosition()).getFlag(player, Flags.BUILD).equals(State.DENY)) {
+				if (this.entities.contains(entity) && world.getRegions(entity.getLocation().getPosition()).getFlag(player, this).equals(State.DENY)) {
 					return false;
 				}
 				return true;
@@ -287,7 +286,7 @@ public class FlagBuild extends StateFlag {
 	public void onCollideEntityNatural(WorldWorldGuard world, CollideEntityEvent event) {
 		if (event.getCause().get(NamedCause.SOURCE, Projectile.class).isPresent()) {
 			event.filterEntities(entity -> {
-				if (this.entities.contains(entity) && world.getRegions(entity.getLocation().getPosition()).getFlagDefault(Flags.BUILD).equals(State.DENY)) {
+				if (this.entities.contains(entity) && world.getRegions(entity.getLocation().getPosition()).getFlagDefault(this).equals(State.DENY)) {
 					return false;
 				}
 				return true;
@@ -389,7 +388,7 @@ public class FlagBuild extends StateFlag {
 	}
 	
 	public boolean onDamageEntity(WorldWorldGuard world, DamageEntityEvent event, Entity entity, Player player) {
-		if (!world.getRegions(entity.getLocation().getPosition()).getFlag(player, Flags.INTERACT_ENTITY).contains(event.getTargetEntity(), player)) {
+		if (world.getRegions(entity.getLocation().getPosition()).getFlag(player, this).equals(State.DENY)) {
 			event.setCancelled(true);
 			return true;
 		}
@@ -397,7 +396,7 @@ public class FlagBuild extends StateFlag {
 	}
 	
 	public boolean onDamageEntity(WorldWorldGuard world, DamageEntityEvent event, Entity entity) {
-		if (!world.getRegions(entity.getLocation().getPosition()).getFlagDefault(Flags.INTERACT_ENTITY).contains(event.getTargetEntity())) {
+		if (world.getRegions(entity.getLocation().getPosition()).getFlagDefault(this).equals(State.DENY)) {
 			event.setCancelled(true);
 			return true;
 		}

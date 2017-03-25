@@ -136,13 +136,13 @@ public class FlagInteractBlock extends BlockTypeFlag {
 	}
 	
 	private void onChangeBlockPlayer(WorldWorldGuard world, InteractBlockEvent.Secondary event, Location<World> location, BlockType type, Player player) {		
-		if (this.getDefault().containsValue(type) && !world.getRegions(location.getPosition()).getFlag(player, Flags.INTERACT_BLOCK).containsValue(type)) {
+		if (this.getDefault().containsValue(type) && !world.getRegions(location.getPosition()).getFlag(player, this).containsValue(type)) {
 			event.setUseBlockResult(Tristate.FALSE);
 		}
 	}
 	
 	private void onChangeBlockNatural(WorldWorldGuard world, InteractBlockEvent.Secondary event, Location<World> location, BlockType type) {
-		if (this.getDefault().containsValue(type) && !world.getRegions(location.getPosition()).getFlagDefault(Flags.INTERACT_BLOCK).containsValue(type)) {
+		if (this.getDefault().containsValue(type) && !world.getRegions(location.getPosition()).getFlagDefault(this).containsValue(type)) {
 			event.setUseBlockResult(Tristate.FALSE);
 		}
 	}
@@ -166,7 +166,7 @@ public class FlagInteractBlock extends BlockTypeFlag {
 		event.getTransactions().forEach(transaction -> {
 			BlockType type = transaction.getOriginal().getState().getType();
 			
-			if (this.getDefault().containsValue(type) && !world.getRegions(transaction.getOriginal().getPosition()).getFlag(player, Flags.INTERACT_BLOCK).containsValue(type)) {
+			if (this.getDefault().containsValue(type) && !world.getRegions(transaction.getOriginal().getPosition()).getFlag(player, this).containsValue(type)) {
 				event.setCancelled(true);
 			}
 		});
@@ -176,7 +176,7 @@ public class FlagInteractBlock extends BlockTypeFlag {
 		event.getTransactions().forEach(transaction -> {
 			BlockType type = transaction.getOriginal().getState().getType();
 			
-			if (this.getDefault().containsValue(type) && !world.getRegions(transaction.getOriginal().getPosition()).getFlagDefault(Flags.INTERACT_BLOCK).containsValue(type)) {
+			if (this.getDefault().containsValue(type) && !world.getRegions(transaction.getOriginal().getPosition()).getFlagDefault(this).containsValue(type)) {
 				event.setCancelled(true);
 			}
 		});
