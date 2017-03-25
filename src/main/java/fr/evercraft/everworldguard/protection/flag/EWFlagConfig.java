@@ -48,6 +48,7 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 	public void loadDefault() {
 		this.loadInteractBlock();
 		this.loadInteractEntity();
+		this.loadBuild();
 	}
 	
 	public void loadInteractBlock() {
@@ -165,12 +166,23 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 				"evercraft:horse_owner"));
 		
 		interact_entity.put("GROUP_OTHERS", Arrays.asList(
+				EntityTypes.RIDEABLE_MINECART.getId(),
 				EntityTypes.MOB_SPAWNER_MINECART.getId(),
 				EntityTypes.COMMANDBLOCK_MINECART.getId(),
+				EntityTypes.TNT_MINECART.getId(),
 				EntityTypes.ENDER_CRYSTAL.getId(),
+				EntityTypes.BOAT.getId(),
 				EntityTypes.HOPPER_MINECART.getId(),
 				EntityTypes.ITEM_FRAME.getId()));
 		addDefault("INTERACT_ENTITY", interact_entity);
+	}
+	
+	public void loadBuild() {
+		Map<String, List<String>> interact_entity = new HashMap<String, List<String>>();
+		interact_entity.put("entities", Arrays.asList(
+				EntityTypes.PAINTING.getId(),
+				EntityTypes.ITEM_FRAME.getId()));
+		addDefault("BUILD", interact_entity);
 	}
 	
 	public Map<String, Set<BlockType>> getInteractBlock() {
@@ -207,5 +219,19 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 			groups.put(group.toString().toUpperCase(), entities);
 		});
 		return groups;
+	}
+
+	public Set<EntityType> getBuild() {
+		Set<EntityType> entities = new HashSet<EntityType>();
+		this.get("BUILD").getNode("entities").getChildrenList().forEach(entityConfig -> {
+			String entityString = entityConfig.getString("");
+			Optional<EntityType> entity = this.plugin.getGame().getRegistry().getType(EntityType.class, entityString);
+			if (entity.isPresent()) {
+				entities.add(entity.get());
+			} else {
+				this.plugin.getELogger().warn("[Flag][Config][BUILD] Error : EntityType '" + entityString + "'");
+			}
+		});
+		return entities;
 	}
 }

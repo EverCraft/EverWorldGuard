@@ -77,7 +77,7 @@ public class FlagPvp extends StateFlag {
 		}
 	}
 	
-	public void onPlayerDamage(WorldWorldGuard world, DamageEntityEvent event) {
+	public void onDamageEntity(WorldWorldGuard world, DamageEntityEvent event) {
 		if (event.isCancelled()) return;
 		if (!(event.getTargetEntity() instanceof Player)) return;
 		
@@ -89,27 +89,19 @@ public class FlagPvp extends StateFlag {
 			
 			Optional<UUID> creator = damageSource.getSource().getCreator();
 			if (creator.isPresent() && !creator.get().equals(player.getUniqueId())) {
-				if (world.getRegions(player.getLocation().getPosition()).getFlag(player, Flags.PVP).equals(State.DENY)) {
-					event.setCancelled(true);
-					
-				}
+				this.onDamageEntity(world, event, player);
 			}
 		} else if (source instanceof IndirectEntityDamageSource) {				
 			IndirectEntityDamageSource damageSource = (IndirectEntityDamageSource) source;
 			
 			if (damageSource.getIndirectSource() instanceof Player && !damageSource.getSource().equals(player)) {
-				if (world.getRegions(player.getLocation().getPosition()).getFlag(player, Flags.PVP).equals(State.DENY)) {
-					event.setCancelled(true);
-				}
+				this.onDamageEntity(world, event, player);
 			}
 		} else if (source instanceof EntityDamageSource) {				
 			EntityDamageSource damageSource = (EntityDamageSource) source;
 			
 			if (damageSource.getSource() instanceof Player && !damageSource.getSource().equals(player)) {
-				if (world.getRegions(player.getLocation().getPosition()).getFlag(player, Flags.PVP).equals(State.DENY)) {
-					event.setCancelled(true);
-					
-				}
+				this.onDamageEntity(world, event, player);
 			}
 		} else if (source instanceof BlockDamageSource) {
 			BlockDamageSource damageSource = (BlockDamageSource) source;
@@ -117,8 +109,7 @@ public class FlagPvp extends StateFlag {
 			// TODO Bug BUCKET : no creator
 			Optional<UUID> creator = damageSource.getBlockSnapshot().getCreator();
 			if (creator.isPresent() && !creator.get().equals(player.getUniqueId())) {
-				if (world.getRegions(player.getLocation().getPosition()).getFlag(player, Flags.PVP).equals(State.DENY)) {
-					event.setCancelled(true);
+				if (this.onDamageEntity(world, event, player)) {
 					// TODO Bug IgniteEntityEvent : no implemented
 					if (damageSource.getType().equals(DamageTypes.FIRE)) {
 						player.offer(Keys.FIRE_TICKS, 0);
@@ -132,9 +123,17 @@ public class FlagPvp extends StateFlag {
 				Location<World> location = player.getLocation().add(Vector3d.from(0, 2, 0));
 				Optional<UUID> creator = location.getExtent().getCreator(location.getBlockPosition());
 				if (creator.isPresent() && !creator.get().equals(player.getUniqueId())) {
-					event.setCancelled(true);
+					this.onDamageEntity(world, event, player);
 				}
 			}
 		}
+	}
+	
+	public boolean onDamageEntity(WorldWorldGuard world, DamageEntityEvent event, Player player) {
+		if (world.getRegions(player.getLocation().getPosition()).getFlag(player, Flags.PVP).equals(State.DENY)) {
+			event.setCancelled(true);
+			return true;
+		}
+		return false;
 	}
 }

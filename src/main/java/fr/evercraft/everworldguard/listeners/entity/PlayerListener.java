@@ -18,8 +18,6 @@ package fr.evercraft.everworldguard.listeners.entity;
 
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
-import org.spongepowered.api.event.entity.CollideEntityEvent;
-import org.spongepowered.api.event.entity.DamageEntityEvent;
 import org.spongepowered.api.event.entity.HealEntityEvent;
 import org.spongepowered.api.event.entity.IgniteEntityEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
@@ -57,20 +55,6 @@ public class PlayerListener {
 		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetEntity().getWorld());
 		
 		this.plugin.getManagerFlags().INVINCIBILITY.onPlayerHeal(world, event);
-	}
-	
-	@Listener(order=Order.FIRST)
-	public void onPlayerDamage(DamageEntityEvent event) {
-		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetEntity().getWorld());
-		
-		this.plugin.getManagerFlags().PVP.onPlayerDamage(world, event);
-	}
-	
-	@Listener(order=Order.FIRST)
-	public void onCollideEntity(CollideEntityEvent event) {
-		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetWorld());
-
-		this.plugin.getManagerFlags().PVP.onCollideEntity(world, event);
 	}
 	
 	@Listener

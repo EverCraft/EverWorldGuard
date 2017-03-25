@@ -22,14 +22,29 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.projectile.Projectile;
 import org.spongepowered.api.event.cause.NamedCause;
+import org.spongepowered.api.event.cause.entity.damage.DamageTypes;
+import org.spongepowered.api.event.cause.entity.damage.source.BlockDamageSource;
+import org.spongepowered.api.event.cause.entity.damage.source.DamageSource;
+import org.spongepowered.api.event.cause.entity.damage.source.EntityDamageSource;
+import org.spongepowered.api.event.cause.entity.damage.source.FallingBlockDamageSource;
+import org.spongepowered.api.event.cause.entity.damage.source.IndirectEntityDamageSource;
+import org.spongepowered.api.event.entity.CollideEntityEvent;
+import org.spongepowered.api.event.entity.DamageEntityEvent;
 import org.spongepowered.api.event.entity.InteractEntityEvent;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
+
+import com.flowpowered.math.vector.Vector3d;
 
 import fr.evercraft.everapi.services.entity.EntityTemplate;
 import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
@@ -114,9 +129,14 @@ public class FlagInteractEntity extends EntityTemplateFlag {
 		}
 		return new EntityPatternFlagValue<EntityTemplate, Entity>(keys, values);
 	}
+	
+	/*
+	 * InteractEntity
+	 */
 
 	public void onInteractEntity(WorldWorldGuard world, InteractEntityEvent event) {
 		if (event.isCancelled()) return;
+		if (!this.getDefault().contains(event.getTargetEntity())) return;
 		
 		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
 		if (optPlayer.isPresent()) {
@@ -127,45 +147,159 @@ public class FlagInteractEntity extends EntityTemplateFlag {
 	}
 	
 	public void onInteractEntityPlayer(WorldWorldGuard world, InteractEntityEvent event, Player player) {
-		if (this.getDefault().contains(event.getTargetEntity()) && 
-				!world.getRegions(event.getTargetEntity().getLocation().getPosition()).getFlag(player, Flags.INTERACT_ENTITY).contains(event.getTargetEntity(), player)) {
+		if (!world.getRegions(event.getTargetEntity().getLocation().getPosition()).getFlag(player, Flags.INTERACT_ENTITY).contains(event.getTargetEntity(), player)) {
 			event.setCancelled(true);
 		}
 	}
 	
 	public void onInteractEntityNatural(WorldWorldGuard world, InteractEntityEvent event) {
-		if (this.getDefault().contains(event.getTargetEntity()) && 
-				!world.getRegions(event.getTargetEntity().getLocation().getPosition()).getFlagDefault(Flags.INTERACT_ENTITY).contains(event.getTargetEntity())) {
+		if (!world.getRegions(event.getTargetEntity().getLocation().getPosition()).getFlagDefault(Flags.INTERACT_ENTITY).contains(event.getTargetEntity())) {
 			event.setCancelled(true);
 		}
 	}
 	
 	/*
-	 * InteractBlockEvent.Secondary
+	 * CollideEntity
 	 */
-
-	/*
-	public void onInteractBlockSecondary(WorldWorldGuard world, InteractBlockEvent.Secondary event, Location<World> location) {
+	
+	public void onCollideEntity(WorldWorldGuard world, CollideEntityEvent event) {
 		if (event.isCancelled()) return;
 		
-		BlockType type = event.getTargetBlock().getState().getType();
 		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
 		if (optPlayer.isPresent()) {
-			this.onChangeBlockPlayer(world, event, location, type, optPlayer.get());
+			this.onCollideEntityPlayer(world, event, optPlayer.get());
 		} else {
-			this.onChangeBlockNatural(world, event, location, type);
+			this.onCollideEntityNatural(world, event);
 		}
 	}
 	
-	private void onChangeBlockPlayer(WorldWorldGuard world, InteractBlockEvent.Secondary event, Location<World> location, BlockType type, Player player) {		
-		if (this.getDefault().containsValue(type) && !world.getRegions(location.getPosition()).getFlag(player, Flags.INTERACT_BLOCK).containsValue(type)) {
-			event.setUseBlockResult(Tristate.FALSE);
+	public void onCollideEntityPlayer(WorldWorldGuard world, CollideEntityEvent event, Player player) {
+		if (event.getCause().get(NamedCause.SOURCE, Projectile.class).isPresent()) {
+			event.filterEntities(entity -> {
+				if (this.getDefault().contains(entity) && !world.getRegions(entity.getLocation().getPosition()).getFlag(player, Flags.INTERACT_ENTITY).contains(entity)) {
+					return false;
+				}
+				return true;
+			});
 		}
 	}
 	
-	private void onChangeBlockNatural(WorldWorldGuard world, InteractBlockEvent.Secondary event, Location<World> location, BlockType type) {
-		if (this.getDefault().containsValue(type) && !world.getRegions(location.getPosition()).getFlagDefault(Flags.INTERACT_BLOCK).containsValue(type)) {
-			event.setUseBlockResult(Tristate.FALSE);
+	public void onCollideEntityNatural(WorldWorldGuard world, CollideEntityEvent event) {		
+		if (event.getCause().get(NamedCause.SOURCE, Projectile.class).isPresent()) {
+			event.filterEntities(entity -> {
+				if (this.getDefault().contains(entity) && !world.getRegions(entity.getLocation().getPosition()).getFlagDefault(Flags.INTERACT_ENTITY).contains(entity)) {
+					return false;
+				}
+				return true;
+			});
 		}
-	}*/
+	}
+	
+	/*
+	 * DamageEntity
+	 */
+	
+	public void onDamageEntity(WorldWorldGuard world, DamageEntityEvent event) {
+		if (event.isCancelled()) return;
+		if (!this.getDefault().contains(event.getTargetEntity())) return;
+		
+		Entity entity = event.getTargetEntity();
+		
+		Object source = event.getCause().root();
+		if (source instanceof FallingBlockDamageSource) {				
+			FallingBlockDamageSource damageSource = (FallingBlockDamageSource) source;
+			
+			Optional<UUID> creator = damageSource.getSource().getCreator();
+			if (creator.isPresent()) {
+				Optional<Player> player = this.plugin.getEServer().getPlayer(creator.get());
+				if (player.isPresent()) {
+					this.onDamageEntity(world, event, entity, player.get());
+				} else {
+					this.onDamageEntity(world, event, entity);
+				}
+			} else {
+				this.onDamageEntity(world, event, entity);
+			}
+		} else if (source instanceof IndirectEntityDamageSource) {				
+			IndirectEntityDamageSource damageSource = (IndirectEntityDamageSource) source;
+			
+			if (damageSource.getIndirectSource() instanceof Player) {
+				this.onDamageEntity(world, event, entity, (Player) damageSource.getIndirectSource());
+			} else {
+				this.onDamageEntity(world, event, entity);
+			}
+		} else if (source instanceof EntityDamageSource) {				
+			EntityDamageSource damageSource = (EntityDamageSource) source;
+			
+			if (damageSource.getSource() instanceof Player) {
+				this.onDamageEntity(world, event, entity, (Player) damageSource.getSource());
+			} else {
+				this.onDamageEntity(world, event, entity);
+			}
+		} else if (source instanceof BlockDamageSource) {
+			BlockDamageSource damageSource = (BlockDamageSource) source;
+			
+			// TODO Bug BUCKET : no creator
+			Optional<UUID> creator = damageSource.getBlockSnapshot().getCreator();
+			if (creator.isPresent()) {
+				Optional<Player> player = this.plugin.getEServer().getPlayer(creator.get());
+				
+				if (player.isPresent()) {
+					if (this.onDamageEntity(world, event, entity, player.get())) {
+						// TODO Bug IgniteEntityEvent : no implemented
+						if (damageSource.getType().equals(DamageTypes.FIRE)) {
+							entity.offer(Keys.FIRE_TICKS, 0);
+						}
+					}
+				} else {
+					if (this.onDamageEntity(world, event, entity)) {
+						// TODO Bug IgniteEntityEvent : no implemented
+						if (damageSource.getType().equals(DamageTypes.FIRE)) {
+							entity.offer(Keys.FIRE_TICKS, 0);
+						}
+					}
+				}
+			} else {
+				if (this.onDamageEntity(world, event, entity)) {
+					// TODO Bug IgniteEntityEvent : no implemented
+					if (damageSource.getType().equals(DamageTypes.FIRE)) {
+						entity.offer(Keys.FIRE_TICKS, 0);
+					}
+				}
+			}
+		} else if (source instanceof DamageSource) {
+			DamageSource damageSource = (DamageSource) source;
+			
+			if (damageSource.getType().equals(DamageTypes.SUFFOCATE)) {
+				Location<World> location = entity.getLocation().add(Vector3d.from(0, 2, 0));
+				Optional<UUID> creator = location.getExtent().getCreator(location.getBlockPosition());
+				if (creator.isPresent()) {
+					Optional<Player> player = this.plugin.getEServer().getPlayer(creator.get());
+					if (player.isPresent()) {
+						this.onDamageEntity(world, event, entity, player.get());
+					} else {
+						this.onDamageEntity(world, event, entity);
+					}
+				} else {
+					this.onDamageEntity(world, event, entity);
+				}
+			}
+		}
+	}
+	
+	public boolean onDamageEntity(WorldWorldGuard world, DamageEntityEvent event, Entity entity, Player player) {
+		if (!world.getRegions(entity.getLocation().getPosition()).getFlag(player, Flags.INTERACT_ENTITY).contains(event.getTargetEntity(), player)) {
+			event.setCancelled(true);
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean onDamageEntity(WorldWorldGuard world, DamageEntityEvent event, Entity entity) {
+		if (!world.getRegions(entity.getLocation().getPosition()).getFlagDefault(Flags.INTERACT_ENTITY).contains(event.getTargetEntity())) {
+			event.setCancelled(true);
+			return true;
+		}
+		return false;
+	}
 }
