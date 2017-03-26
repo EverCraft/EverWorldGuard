@@ -41,6 +41,7 @@ import fr.evercraft.everapi.services.worldguard.flag.Flags;
 import fr.evercraft.everapi.services.worldguard.flag.type.BlockTypeFlag;
 import fr.evercraft.everapi.services.worldguard.flag.value.EntryFlagValue;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
+import fr.evercraft.everworldguard.protection.EProtectionService;
 import fr.evercraft.everworldguard.EverWorldGuard;
 
 public class FlagInteractBlock extends BlockTypeFlag {
@@ -151,32 +152,36 @@ public class FlagInteractBlock extends BlockTypeFlag {
 	 * ChangeBlockEvent.Modify
 	 */
 	
-	public void onChangeBlockModify(WorldWorldGuard world, ChangeBlockEvent.Modify event) {
+	public void onChangeBlockModify(ChangeBlockEvent.Modify event) {
 		if (event.isCancelled()) return;
 		
 		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
 		if (optPlayer.isPresent()) {
-			this.onChangeBlockModifyPlayer(world, event, optPlayer.get());
+			this.onChangeBlockModifyPlayer(this.plugin.getProtectionService(), event, optPlayer.get());
 		} else {
-			this.onChangeBlockModifyNatural(world, event);
+			this.onChangeBlockModifyNatural(this.plugin.getProtectionService(), event);
 		}
 	}
 	
-	private void onChangeBlockModifyPlayer(WorldWorldGuard world, ChangeBlockEvent.Modify event, Player player) {
+	private void onChangeBlockModifyPlayer(EProtectionService service, ChangeBlockEvent.Modify event, Player player) {
 		event.getTransactions().forEach(transaction -> {
+			Location<World> location = transaction.getOriginal().getLocation().get();
 			BlockType type = transaction.getOriginal().getState().getType();
 			
-			if (this.getDefault().containsValue(type) && !world.getRegions(transaction.getOriginal().getPosition()).getFlag(player, this).containsValue(type)) {
+			if (this.getDefault().containsValue(type) && 
+					!service.getOrCreateWorld(location.getExtent()).getRegions(transaction.getOriginal().getPosition()).getFlag(player, this).containsValue(type)) {
 				event.setCancelled(true);
 			}
 		});
 	}
 	
-	private void onChangeBlockModifyNatural(WorldWorldGuard world, ChangeBlockEvent.Modify event) {
+	private void onChangeBlockModifyNatural(EProtectionService service, ChangeBlockEvent.Modify event) {
 		event.getTransactions().forEach(transaction -> {
+			Location<World> location = transaction.getOriginal().getLocation().get();
 			BlockType type = transaction.getOriginal().getState().getType();
 			
-			if (this.getDefault().containsValue(type) && !world.getRegions(transaction.getOriginal().getPosition()).getFlagDefault(this).containsValue(type)) {
+			if (this.getDefault().containsValue(type) && 
+					!service.getOrCreateWorld(location.getExtent()).getRegions(transaction.getOriginal().getPosition()).getFlagDefault(this).containsValue(type)) {
 				event.setCancelled(true);
 			}
 		});
@@ -186,33 +191,37 @@ public class FlagInteractBlock extends BlockTypeFlag {
 	 * Projectile
 	 */
 	
-	public void onChangeBlockBreak(WorldWorldGuard world, ChangeBlockEvent.Break event) {
+	public void onChangeBlockBreak(ChangeBlockEvent.Break event) {
 		if (event.isCancelled()) return;
 		if (!event.getCause().get(NamedCause.SOURCE, Projectile.class).isPresent()) return;
 		
 		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
 		if (optPlayer.isPresent()) {
-			this.onChangeBlockBreakPlayer(world, event, optPlayer.get());
+			this.onChangeBlockBreakPlayer(this.plugin.getProtectionService(), event, optPlayer.get());
 		} else {
-			this.onChangeBlockBreakNatural(world, event);
+			this.onChangeBlockBreakNatural(this.plugin.getProtectionService(), event);
 		}
 	}
 	
-	private void onChangeBlockBreakPlayer(WorldWorldGuard world, ChangeBlockEvent.Break event, Player player) {		
+	private void onChangeBlockBreakPlayer(EProtectionService service, ChangeBlockEvent.Break event, Player player) {	
 		event.getTransactions().forEach(transaction -> {
+			Location<World> location = transaction.getOriginal().getLocation().get();
 			BlockType type = transaction.getOriginal().getState().getType();
 			
-			if (this.getDefault().containsValue(type) && !world.getRegions(transaction.getOriginal().getPosition()).getFlag(player, Flags.INTERACT_BLOCK).containsValue(type)) {
+			if (this.getDefault().containsValue(type) && 
+					!service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, Flags.INTERACT_BLOCK).containsValue(type)) {
 				transaction.setValid(false);
 			}
 		});
 	}
 	
-	private void onChangeBlockBreakNatural(WorldWorldGuard world, ChangeBlockEvent.Break event) {
+	private void onChangeBlockBreakNatural(EProtectionService service, ChangeBlockEvent.Break event) {
 		event.getTransactions().forEach(transaction -> {
+			Location<World> location = transaction.getOriginal().getLocation().get();
 			BlockType type = transaction.getOriginal().getState().getType();
 			
-			if (this.getDefault().containsValue(type) && !world.getRegions(transaction.getOriginal().getPosition()).getFlagDefault(Flags.INTERACT_BLOCK).containsValue(type)) {
+			if (this.getDefault().containsValue(type) && 
+					!service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlagDefault(Flags.INTERACT_BLOCK).containsValue(type)) {
 				transaction.setValid(false);
 			}
 		});

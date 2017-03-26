@@ -60,6 +60,7 @@ import fr.evercraft.everapi.services.worldguard.flag.type.StateFlag;
 import fr.evercraft.everapi.sponge.UtilsCause;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EverWorldGuard;
+import fr.evercraft.everworldguard.protection.EProtectionService;
 
 public class FlagBuild extends StateFlag {
 	
@@ -104,49 +105,51 @@ public class FlagBuild extends StateFlag {
 	 * ChangeBlockEvent.Pre
 	 */
 	
-	public void onChangeBlockPre(WorldWorldGuard world, ChangeBlockEvent.Pre event) {
+	public void onChangeBlockPre(ChangeBlockEvent.Pre event) {
 		if (event.isCancelled()) return;
 		
 		Optional<LocatableBlock> piston = event.getCause().get(NamedCause.SOURCE, LocatableBlock.class);
 		if (piston.isPresent() && event.getCause().containsNamed(NamedCause.PISTON_EXTEND)) {
-			this.onChangeBlockPrePiston(world, event, piston.get());
+			this.onChangeBlockPrePiston(this.plugin.getProtectionService(), event, piston.get());
 		} else {
-			this.onChangeBlockPreOthers(world, event);
+			this.onChangeBlockPreOthers(this.plugin.getProtectionService(), event);
 		}
 	}
 	
 	// Il faut vérifer le block d'arrivé
-	private void onChangeBlockPrePiston(WorldWorldGuard world, ChangeBlockEvent.Pre event, LocatableBlock block) {
+	private void onChangeBlockPrePiston(EProtectionService service, ChangeBlockEvent.Pre event, LocatableBlock block) {
 		Vector3d direction = block.get(Keys.DIRECTION).orElse(Direction.NONE).asOffset();
-		Stream<Vector3d> positions = Stream.concat(
-				event.getLocations().stream().map(location -> location.getPosition()),
-				event.getLocations().stream().map(location -> location.getPosition().add(direction)))
+		Stream<Location<World>> locations = Stream.concat(
+				event.getLocations().stream().map(location -> location),
+				event.getLocations().stream().map(location -> location.add(direction)))
 				.distinct();
 		
 		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
 		if (optPlayer.isPresent()) {
 			Player player = optPlayer.get();
 			
-			if (positions.anyMatch(position -> world.getRegions(position).getFlag(player, this).equals(State.DENY))) {
+			if (locations.anyMatch(location -> service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, this).equals(State.DENY))) {
 				event.setCancelled(true);
 			}
 		} else {
-			if (positions.anyMatch(position -> world.getRegions(position).getFlagDefault(this).equals(State.DENY))) {
+			if (locations.anyMatch(location -> service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlagDefault(this).equals(State.DENY))) {
 				event.setCancelled(true);
 			}
 		}
 	}
 	
 	// Vérification des pistons...
-	private void onChangeBlockPreOthers(WorldWorldGuard world, ChangeBlockEvent.Pre event) {
+	private void onChangeBlockPreOthers(EProtectionService service, ChangeBlockEvent.Pre event) {
 		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
 		if (optPlayer.isPresent()) {
 			Player player = optPlayer.get();
-			if (event.getLocations().stream().anyMatch(location -> world.getRegions(location.getPosition()).getFlag(player, this).equals(State.DENY))) {
+			if (event.getLocations().stream().anyMatch(location -> 
+					service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, this).equals(State.DENY))) {
 				event.setCancelled(true);
 			}
 		} else {
-			if (event.getLocations().stream().anyMatch(location -> world.getRegions(location.getPosition()).getFlagDefault(this).equals(State.DENY))) {
+			if (event.getLocations().stream().anyMatch(location -> 
+					service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlagDefault(this).equals(State.DENY))) {
 				event.setCancelled(true);
 			}
 		}
@@ -156,23 +159,23 @@ public class FlagBuild extends StateFlag {
 	 * ChangeBlockEvent.Place
 	 */
 	
-	public void onChangeBlockPlace(WorldWorldGuard world, ChangeBlockEvent.Place event) {
+	public void onChangeBlockPlace(ChangeBlockEvent.Place event) {
 		if (event.isCancelled()) return;		
 		
 		Optional<FallingBlock> falling = event.getCause().get(NamedCause.SOURCE, FallingBlock.class);
 		if (falling.isPresent()) {
-			this.onChangeBlockPlaceFalling(world, event, falling.get());
+			this.onChangeBlockPlaceFalling(this.plugin.getProtectionService(), event, falling.get());
 		} else {
-			this.onChangeBlockPlaceNoFalling(world, event);
+			this.onChangeBlockPlaceNoFalling(this.plugin.getProtectionService(), event);
 		}
 	}
 	
 	// Drop l'item au sol pour le bloc avec gravité
-	private void onChangeBlockPlaceFalling(WorldWorldGuard world, ChangeBlockEvent.Place event, FallingBlock falling) {
+	private void onChangeBlockPlaceFalling(EProtectionService service, ChangeBlockEvent.Place event, FallingBlock falling) {
 		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
 		if (optPlayer.isPresent()) {
 			Player player = optPlayer.get();
-			event.filter(location -> world.getRegions(location.getPosition()).getFlag(player, this).equals(State.ALLOW))
+			event.filter(location -> service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, this).equals(State.ALLOW))
 				.forEach(transaction -> transaction.getFinal().getLocation().ifPresent(location -> {
 					Entity entity = location.getExtent().createEntity(EntityTypes.ITEM, location.getPosition());
 					entity.offer(Keys.REPRESENTED_ITEM, ItemStack.builder().fromBlockSnapshot(transaction.getFinal()).build().createSnapshot());
@@ -184,7 +187,7 @@ public class FlagBuild extends StateFlag {
 						.named(UtilsCause.PLACE_EVENT, event).build());
 				}));
 		} else {			
-			event.filter(location -> world.getRegions(location.getPosition()).getFlagDefault(this).equals(State.ALLOW))
+			event.filter(location -> service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlagDefault(this).equals(State.ALLOW))
 				.forEach(transaction -> transaction.getFinal().getLocation().ifPresent(location -> {
 					Entity entity = location.getExtent().createEntity(EntityTypes.ITEM, location.getPosition());
 					entity.offer(Keys.REPRESENTED_ITEM, ItemStack.builder().fromBlockSnapshot(transaction.getFinal()).build().createSnapshot());
@@ -198,18 +201,20 @@ public class FlagBuild extends StateFlag {
 	}
 	
 	// Placement de bloc
-	private void onChangeBlockPlaceNoFalling(WorldWorldGuard world, ChangeBlockEvent.Place event) {
+	private void onChangeBlockPlaceNoFalling(EProtectionService service, ChangeBlockEvent.Place event) {
 		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
 		if (optPlayer.isPresent()) {
 			Player player = optPlayer.get();
-			List<Transaction<BlockSnapshot>> filter = event.filter(location -> world.getRegions(location.getPosition()).getFlag(player, this).equals(State.ALLOW));
+			List<Transaction<BlockSnapshot>> filter = event.filter(location -> 
+				service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, this).equals(State.ALLOW));
 			
 			if (!filter.isEmpty()) {
 				// Message
 				this.sendMessage(player, filter.get(0).getOriginal().getPosition());
 			}
 		} else {
-			event.filter(location -> world.getRegions(location.getPosition()).getFlagDefault(this).equals(State.ALLOW));
+			event.filter(location -> 
+				service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlagDefault(this).equals(State.ALLOW));
 		}
 	}
 	
@@ -217,19 +222,20 @@ public class FlagBuild extends StateFlag {
 	 * ChangeBlockEvent.Break
 	 */
 	
-	public void onChangeBlockBreak(WorldWorldGuard world, ChangeBlockEvent.Break event) {
+	public void onChangeBlockBreak(ChangeBlockEvent.Break event) {
 		if (event.isCancelled()) return;
 		
 		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
 		if (optPlayer.isPresent()) {
-			this.onChangeBlockBreakPlayer(world, event, optPlayer.get());
+			this.onChangeBlockBreakPlayer(this.plugin.getProtectionService(), event, optPlayer.get());
 		} else {
-			this.onChangeBlockBreakNatural(world, event);
+			this.onChangeBlockBreakNatural(this.plugin.getProtectionService(), event);
 		}
 	}
 	
-	private void onChangeBlockBreakPlayer(WorldWorldGuard world, ChangeBlockEvent.Break event, Player player) {
-		List<Transaction<BlockSnapshot>> filter = event.filter(location -> world.getRegions(location.getPosition()).getFlag(player, this).equals(State.ALLOW));
+	private void onChangeBlockBreakPlayer(EProtectionService service, ChangeBlockEvent.Break event, Player player) {
+		List<Transaction<BlockSnapshot>> filter = event.filter(location -> 
+			service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, this).equals(State.ALLOW));
 		
 		if (!filter.isEmpty()) {
 			Optional<FallingBlock> falling = event.getCause().get(NamedCause.SOURCE, FallingBlock.class);
@@ -243,8 +249,9 @@ public class FlagBuild extends StateFlag {
 		}
 	}
 	
-	private void onChangeBlockBreakNatural(WorldWorldGuard world, ChangeBlockEvent.Break event) {		
-		if (!event.filter(location -> world.getRegions(location.getPosition()).getFlagDefault(this).equals(State.ALLOW)).isEmpty()) {
+	private void onChangeBlockBreakNatural(EProtectionService service, ChangeBlockEvent.Break event) {		
+		if (!event.filter(location -> 
+				service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlagDefault(this).equals(State.ALLOW)).isEmpty()) {
 			Optional<FallingBlock> falling = event.getCause().get(NamedCause.SOURCE, FallingBlock.class);
 			if (falling.isPresent()) {
 				falling.get().remove();

@@ -38,9 +38,7 @@ public class BlockListener {
 	
 	@Listener(order=Order.FIRST)
 	public void onChangeBlock(ChangeBlockEvent.Pre event) {
-		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetWorld());
-		
-		this.plugin.getManagerFlags().BUILD.onChangeBlockPre(world, event);
+		this.plugin.getManagerFlags().BUILD.onChangeBlockPre(event);
 		
 		// Debug
 		/*
@@ -57,10 +55,8 @@ public class BlockListener {
 	}
 	
 	@Listener(order=Order.FIRST)
-	public void onChangeBlock(ChangeBlockEvent.Place event) {
-		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetWorld());
-		
-		this.plugin.getManagerFlags().BUILD.onChangeBlockPlace(world, event);
+	public void onChangeBlock(ChangeBlockEvent.Place event) {		
+		this.plugin.getManagerFlags().BUILD.onChangeBlockPlace(event);
 		
 		// Debug
 		/*List<Text> list = new ArrayList<Text>();
@@ -78,10 +74,8 @@ public class BlockListener {
 	
 	@Listener(order=Order.FIRST)
 	public void onChangeBlock(ChangeBlockEvent.Break event) {
-		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetWorld());
-		
-		this.plugin.getManagerFlags().BUILD.onChangeBlockBreak(world, event);
-		this.plugin.getManagerFlags().INTERACT_BLOCK.onChangeBlockBreak(world, event);
+		this.plugin.getManagerFlags().BUILD.onChangeBlockBreak(event);
+		this.plugin.getManagerFlags().INTERACT_BLOCK.onChangeBlockBreak(event);
 		
 		// Debug
 		/*List<Text> list = new ArrayList<Text>();
@@ -100,9 +94,8 @@ public class BlockListener {
 	
 	@Listener(order=Order.FIRST)
 	public void onChangeBlock(ChangeBlockEvent.Modify event) {
-		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetWorld());
 		
-		this.plugin.getManagerFlags().INTERACT_BLOCK.onChangeBlockModify(world, event);
+		this.plugin.getManagerFlags().INTERACT_BLOCK.onChangeBlockModify(event);
 		
 		// Debug
 		/*List<Text> list = new ArrayList<Text>();
