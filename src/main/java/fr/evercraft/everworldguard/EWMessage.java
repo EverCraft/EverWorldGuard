@@ -23,6 +23,7 @@ import fr.evercraft.everapi.message.EMessageFormat;
 import fr.evercraft.everapi.message.format.EFormatString;
 import fr.evercraft.everapi.plugin.file.EMessage;
 import fr.evercraft.everapi.plugin.file.EnumMessage;
+import fr.evercraft.everapi.services.worldguard.WorldGuardService;
 
 public class EWMessage extends EMessage<EverWorldGuard> {
 
@@ -333,16 +334,33 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		REGION_SELECT_TEMPLATE("region.select.template",										"&cErreur : Impossible de sélectionner une région de type &6<type>&c."),
 		
 		
-		FLAG_BUILD("flag.build",						"Désactive/Active les constructions"),
-		FLAG_INTERACT_BLOCK("flag.interactBlock",		"Désactive/Active les interactions avec les blocs"),
-		FLAG_INTERACT_ENTITY("flag.interactEntity",		"Désactive/Active les interactions avec les entités"),
-		FLAG_DAMAGE_ENTITY("flag.damageEntity",			"Désactive/Active les damages infligés aux entités"),
-		FLAG_ENTRY("flag.entry",						""),
-		FLAG_EXIT("flag.exit",							""),
-		FLAG_INVINCIBILITY("flag.invincibity",			"Désactive/Active l'invincibilité"),
-		FLAG_PVP("flag.pvp",							"Désactive/Active le PVP"),
-		FLAG_TELEPORT("flag.teleport",					"Sauvegarde une position pour se téléporter à la région"),
-		FLAG_SPAWN("flag.spawn",						"Défini un spawn pour la région");
+		FLAG_BUILD_DESCRIPTION("flag.build.description",						"Désactive/Active les constructions"),
+		FLAG_BUILD_MESSAGE("flag.build.message",								EMessageFormat.builder()
+																					.actionbarMessage("&cConstruction désactivé (<x>, <y>, <z>)")
+																					.actionbarStay(3 * 1000)
+																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
+		
+		FLAG_INTERACT_BLOCK_DESCRIPTION("flag.interactBlock.description",		"Désactive/Active les interactions avec les blocs"),
+		FLAG_INTERACT_BLOCK_MESSAGE("flag.interactBlock.message",				"&cInteractions avec les blocs désactivé (<x>, <y>, <z>)"),
+		
+		FLAG_INTERACT_ENTITY_DESCRIPTION("flag.interactEntity.description",		"Désactive/Active les interactions avec les entités"),
+		FLAG_INTERACT_ENTITY_MESSAGE("flag.interactEntity.message",				"&cInteractions avec les entités désactivé (<x>, <y>, <z>)"),
+		
+		FLAG_DAMAGE_ENTITY_DESCRIPTION("flag.damageEntity.description",			"Désactive/Active les damages infligés aux entités"),
+		FLAG_DAMAGE_ENTITY_MESSAGE("flag.damageEntity.message",					"&cLes dégats infligés aux entités sont désactivé (<x>, <y>, <z>)"),
+		
+		FLAG_ENTRY_DESCRIPTION("flag.entry.description",						""),
+		
+		FLAG_EXIT_DESCRIPTION("flag.exit.description",							""),
+		
+		FLAG_INVINCIBILITY_DESCRIPTION("flag.invincibity.description",			"Désactive/Active l'invincibilité"),
+		
+		FLAG_PVP_DESCRIPTION("flag.pvp.description",							"Désactive/Active le PVP"),
+		FLAG_PVP_MESSAGE("flag.pvp.description",								"&cPVP désactivé (<x>, <y>, <z>)"),
+		
+		FLAG_TELEPORT_DESCRIPTION("flag.teleport.description",					"Sauvegarde une position pour se téléporter à la région"),
+		
+		FLAG_SPAWN_DESCRIPTION("flag.spawn.description",						"Défini un spawn pour la région");
 		
 		private final String path;
 	    private final EMessageBuilder french;

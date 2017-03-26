@@ -53,7 +53,7 @@ public class FlagPvp extends StateFlag {
 	
 	@Override
 	public String getDescription() {
-		return EWMessages.FLAG_PVP.getString();
+		return EWMessages.FLAG_PVP_DESCRIPTION.getString();
 	}
 
 	@Override

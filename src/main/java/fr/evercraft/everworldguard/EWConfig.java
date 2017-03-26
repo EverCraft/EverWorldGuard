@@ -50,7 +50,7 @@ public class EWConfig extends EConfig<EverWorldGuard> {
 		addDefault("SQL.prefix", "everworldguard_");
 		
 		addDefault("select.item", ItemTypes.WOODEN_AXE.getId());
-		addDefault("intervalMessage", 5);
+		addDefault("intervalMessage", 1);
 	}
 
 	public ItemType getSelectItem() {
@@ -67,6 +67,6 @@ public class EWConfig extends EConfig<EverWorldGuard> {
 	 * Millisecond
 	 */
 	public int getIntervalMessage() {
-		return this.get("intervalMessage").getInt(5) * 1000;
+		return this.get("intervalMessage").getInt(1) * 1000;
 	}
 }

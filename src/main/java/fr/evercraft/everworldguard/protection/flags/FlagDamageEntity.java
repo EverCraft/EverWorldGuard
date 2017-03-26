@@ -83,7 +83,7 @@ public class FlagDamageEntity extends EntityTemplateFlag {
 	
 	@Override
 	public String getDescription() {
-		return EWMessages.FLAG_DAMAGE_ENTITY.getString();
+		return EWMessages.FLAG_DAMAGE_ENTITY_DESCRIPTION.getString();
 	}
 
 	@Override

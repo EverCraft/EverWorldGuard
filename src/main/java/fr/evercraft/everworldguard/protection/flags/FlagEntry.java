@@ -31,7 +31,7 @@ public class FlagEntry extends StateFlag {
 	
 	@Override
 	public String getDescription() {
-		return EWMessages.FLAG_ENTRY.getString();
+		return EWMessages.FLAG_ENTRY_DESCRIPTION.getString();
 	}
 
 	@Override

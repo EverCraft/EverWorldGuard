@@ -31,7 +31,7 @@ public class FlagExit extends StateFlag {
 	
 	@Override
 	public String getDescription() {
-		return EWMessages.FLAG_EXIT.getString();
+		return EWMessages.FLAG_EXIT_DESCRIPTION.getString();
 	}
 
 	@Override

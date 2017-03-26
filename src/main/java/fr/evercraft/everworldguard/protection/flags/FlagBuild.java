@@ -16,11 +16,14 @@
  */
 package fr.evercraft.everworldguard.protection.flags;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import org.spongepowered.api.block.BlockSnapshot;
+import org.spongepowered.api.data.Transaction;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityType;
@@ -49,6 +52,7 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 import com.flowpowered.math.vector.Vector3d;
+import com.flowpowered.math.vector.Vector3i;
 import com.google.common.collect.Sets;
 
 import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
@@ -80,7 +84,15 @@ public class FlagBuild extends StateFlag {
 	
 	@Override
 	public String getDescription() {
-		return EWMessages.FLAG_BUILD.getString();
+		return EWMessages.FLAG_BUILD_DESCRIPTION.getString();
+	}
+	
+	public boolean sendMessage(Player player, Vector3i position) {
+		return this.plugin.getProtectionService().sendMessage(player, this,
+				EWMessages.FLAG_BUILD_MESSAGE.sender()
+					.replace("<x>", position.getX())
+					.replace("<y>", position.getY())
+					.replace("<z>", position.getZ()));
 	}
 
 	@Override
@@ -190,7 +202,12 @@ public class FlagBuild extends StateFlag {
 		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
 		if (optPlayer.isPresent()) {
 			Player player = optPlayer.get();
-			event.filter(location -> world.getRegions(location.getPosition()).getFlag(player, this).equals(State.ALLOW));
+			List<Transaction<BlockSnapshot>> filter = event.filter(location -> world.getRegions(location.getPosition()).getFlag(player, this).equals(State.ALLOW));
+			
+			if (!filter.isEmpty()) {
+				// Message
+				this.sendMessage(player, filter.get(0).getOriginal().getPosition());
+			}
 		} else {
 			event.filter(location -> world.getRegions(location.getPosition()).getFlagDefault(this).equals(State.ALLOW));
 		}
@@ -211,11 +228,17 @@ public class FlagBuild extends StateFlag {
 		}
 	}
 	
-	private void onChangeBlockBreakPlayer(WorldWorldGuard world, ChangeBlockEvent.Break event, Player player) {		
-		if (!event.filter(location -> world.getRegions(location.getPosition()).getFlag(player, this).equals(State.ALLOW)).isEmpty()) {
+	private void onChangeBlockBreakPlayer(WorldWorldGuard world, ChangeBlockEvent.Break event, Player player) {
+		List<Transaction<BlockSnapshot>> filter = event.filter(location -> world.getRegions(location.getPosition()).getFlag(player, this).equals(State.ALLOW));
+		
+		if (!filter.isEmpty()) {
 			Optional<FallingBlock> falling = event.getCause().get(NamedCause.SOURCE, FallingBlock.class);
 			if (falling.isPresent()) {
 				falling.get().remove();
+			} else {
+				
+				// Message
+				this.sendMessage(player, filter.get(0).getOriginal().getPosition());
 			}
 		}
 	}
@@ -248,6 +271,9 @@ public class FlagBuild extends StateFlag {
 	public void onInteractEntityPlayer(WorldWorldGuard world, InteractEntityEvent event, Player player) {
 		if (world.getRegions(event.getTargetEntity().getLocation().getPosition()).getFlag(player, this).equals(State.DENY)) {
 			event.setCancelled(true);
+			
+			// Message
+			this.sendMessage(player, event.getTargetEntity().getLocation().getPosition().toInt());
 		}
 	}
 	
@@ -274,12 +300,17 @@ public class FlagBuild extends StateFlag {
 	
 	public void onCollideEntityPlayer(WorldWorldGuard world, CollideEntityEvent event, Player player) {		
 		if (event.getCause().get(NamedCause.SOURCE, Projectile.class).isPresent()) {
-			event.filterEntities(entity -> {
+			List<? extends Entity> filter = event.filterEntities(entity -> {
 				if (this.entities.contains(entity) && world.getRegions(entity.getLocation().getPosition()).getFlag(player, this).equals(State.DENY)) {
 					return false;
 				}
 				return true;
 			});
+			
+			if (!filter.isEmpty()) {
+				// Message
+				this.sendMessage(player, filter.get(0).getLocation().getPosition().toInt());
+			}
 		}
 	}
 	
@@ -332,7 +363,10 @@ public class FlagBuild extends StateFlag {
 			EntityDamageSource damageSource = (EntityDamageSource) source;
 			
 			if (damageSource.getSource() instanceof Player) {
-				this.onDamageEntity(world, event, entity, (Player) damageSource.getSource());
+				if (this.onDamageEntity(world, event, entity, (Player) damageSource.getSource())) {
+					// Message
+					this.sendMessage((Player) damageSource.getSource(), event.getTargetEntity().getLocation().getPosition().toInt());
+				}
 			} else {
 				this.onDamageEntity(world, event, entity);
 			}

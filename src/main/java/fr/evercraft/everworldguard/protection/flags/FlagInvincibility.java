@@ -31,7 +31,7 @@ public class FlagInvincibility extends StateFlag {
 	
 	@Override
 	public String getDescription() {
-		return EWMessages.FLAG_INVINCIBILITY.getString();
+		return EWMessages.FLAG_INVINCIBILITY_DESCRIPTION.getString();
 	}
 
 	@Override

@@ -74,7 +74,7 @@ public class FlagInteractBlock extends BlockTypeFlag {
 	
 	@Override
 	public String getDescription() {
-		return EWMessages.FLAG_INTERACT_BLOCK.getString();
+		return EWMessages.FLAG_INTERACT_BLOCK_DESCRIPTION.getString();
 	}
 
 	@Override

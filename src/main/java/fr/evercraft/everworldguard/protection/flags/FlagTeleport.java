@@ -31,7 +31,7 @@ public class FlagTeleport extends LocationFlag {
 	
 	@Override
 	public String getDescription() {
-		return EWMessages.FLAG_TELEPORT.getString();
+		return EWMessages.FLAG_TELEPORT_DESCRIPTION.getString();
 	}
 
 	@Override

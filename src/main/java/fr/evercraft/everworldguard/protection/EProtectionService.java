@@ -20,9 +20,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.world.World;
 
+import fr.evercraft.everapi.message.EMessageSender;
+import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everapi.services.worldguard.SubjectWorldGuard;
 import fr.evercraft.everapi.services.worldguard.WorldGuardService;
 import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
@@ -54,6 +57,8 @@ public class EProtectionService implements WorldGuardService {
 		this.worlds = new EWorldList(this.plugin);
 		this.flagsRegister = new FlagRegister();
 		this.flagsConfig = new EWFlagConfig(this.plugin);
+		
+		this.reload();
 	}
 	
 	public void reload() {		
@@ -64,11 +69,24 @@ public class EProtectionService implements WorldGuardService {
 	}
 	
 	/*
-	 * 
+	 * Messages
 	 */
 	
 	public int getIntervalMessage() {
 		return this.intervalMessage;
+	}
+	
+	public boolean sendMessage(Player player, Flag<?> flag, EMessageSender message) {
+		return this.sendMessage(this.plugin.getEServer().getEPlayer(player), flag, message);
+	}
+	
+	public boolean sendMessage(EPlayer player, Flag<?> flag, EMessageSender message) {
+		Optional<EUserSubject> subject = this.getSubject(player.getUniqueId());
+		if (subject.isPresent()) {
+			subject.get().sendMessage(player, flag, message);
+			return true;
+		}
+		return false;
 	}
 	
 	/*

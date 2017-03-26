@@ -72,7 +72,11 @@ public class EUserSubject implements SubjectWorldGuard {
 			    });
 	}
 	
-	public boolean sendMessage(EPlayer player, EMessageSender message, Flag<?> flag) {
+	/*
+	 * Message
+	 */
+	
+	public boolean sendMessage(EPlayer player, Flag<?> flag, EMessageSender message) {
 		Long time = this.messages.getIfPresent(flag);
 		if (time != null && time > System.currentTimeMillis()) return false;
 			

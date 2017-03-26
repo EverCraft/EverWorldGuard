@@ -69,7 +69,7 @@ public class FlagInteractEntity extends EntityTemplateFlag {
 	
 	@Override
 	public String getDescription() {
-		return EWMessages.FLAG_INTERACT_ENTITY.getString();
+		return EWMessages.FLAG_INTERACT_ENTITY_DESCRIPTION.getString();
 	}
 
 	@Override

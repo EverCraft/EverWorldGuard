@@ -30,7 +30,7 @@ public class FlagSpawn extends LocationFlag {
 	
 	@Override
 	public String getDescription() {
-		return EWMessages.FLAG_SPAWN.getString();
+		return EWMessages.FLAG_SPAWN_DESCRIPTION.getString();
 	}
 
 	@Override
