@@ -146,7 +146,7 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 	public void loadEntity() {
 		Map<String, List<String>> interact_entity = new HashMap<String, List<String>>();
 		
-		interact_entity.put("INTERACT_ENTITY, DAMAGE_ENTITY", Stream.concat(
+		interact_entity.put("GROUP_ANIMAL", Stream.concat(
 			this.plugin.getGame().getRegistry().getAllOf(EntityType.class).stream()
 				.filter(entity -> !EntityTypes.UNKNOWN.equals(entity) && !EntityTypes.WOLF.equals(entity) && Animal.class.isAssignableFrom(entity.getEntityClass()))
 				.map(entity -> entity.getId()),
@@ -181,7 +181,7 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 				EntityTypes.HOPPER_MINECART.getId(),
 				EntityTypes.ITEM_FRAME.getId(),
 				EntityTypes.VILLAGER.getId()));
-		addDefault("INTERACT_ENTITY", interact_entity);
+		addDefault("INTERACT_ENTITY, DAMAGE_ENTITY", interact_entity);
 	}
 	
 	public void loadBuild() {

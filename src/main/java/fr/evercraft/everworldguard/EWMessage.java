@@ -341,13 +341,22 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		
 		FLAG_INTERACT_BLOCK_DESCRIPTION("flag.interactBlock.description",		"Désactive/Active les interactions avec les blocs"),
-		FLAG_INTERACT_BLOCK_MESSAGE("flag.interactBlock.message",				"&cInteractions avec les blocs désactivé (<x>, <y>, <z>)"),
+		FLAG_INTERACT_BLOCK_MESSAGE("flag.interactBlock.message",				EMessageFormat.builder()
+																					.actionbarMessage("&cInteractions avec les blocs désactivé (<x>, <y>, <z>)")
+																					.actionbarStay(3 * 1000)
+																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		
 		FLAG_INTERACT_ENTITY_DESCRIPTION("flag.interactEntity.description",		"Désactive/Active les interactions avec les entités"),
-		FLAG_INTERACT_ENTITY_MESSAGE("flag.interactEntity.message",				"&cInteractions avec les entités désactivé (<x>, <y>, <z>)"),
+		FLAG_INTERACT_ENTITY_MESSAGE("flag.interactEntity.message",				EMessageFormat.builder()
+																					.actionbarMessage("&cInteractions avec les entités désactivé (<x>, <y>, <z>)")
+																					.actionbarStay(3 * 1000)
+																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		
 		FLAG_DAMAGE_ENTITY_DESCRIPTION("flag.damageEntity.description",			"Désactive/Active les damages infligés aux entités"),
-		FLAG_DAMAGE_ENTITY_MESSAGE("flag.damageEntity.message",					"&cLes dégats infligés aux entités sont désactivé (<x>, <y>, <z>)"),
+		FLAG_DAMAGE_ENTITY_MESSAGE("flag.damageEntity.message",					EMessageFormat.builder()
+																					.actionbarMessage("&cLes dégats infligés aux entités sont désactivé (<x>, <y>, <z>)")
+																					.actionbarStay(3 * 1000)
+																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		
 		FLAG_ENTRY_DESCRIPTION("flag.entry.description",						""),
 		

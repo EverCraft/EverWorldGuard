@@ -44,6 +44,7 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 import com.flowpowered.math.vector.Vector3d;
+import com.flowpowered.math.vector.Vector3i;
 
 import fr.evercraft.everapi.services.entity.EntityTemplate;
 import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
@@ -84,6 +85,16 @@ public class FlagDamageEntity extends EntityTemplateFlag {
 	@Override
 	public String getDescription() {
 		return EWMessages.FLAG_DAMAGE_ENTITY_DESCRIPTION.getString();
+	}
+	
+	public boolean sendMessage(Player player, Entity entity) {
+		Vector3i position = entity.getLocation().getPosition().toInt();
+		return this.plugin.getProtectionService().sendMessage(player, this,
+				EWMessages.FLAG_DAMAGE_ENTITY_MESSAGE.sender()
+					.replace("<x>", position.getX())
+					.replace("<y>", position.getY())
+					.replace("<z>", position.getZ())
+					.replace("<entity>", entity.getType().getName()));
 	}
 
 	@Override
@@ -145,12 +156,16 @@ public class FlagDamageEntity extends EntityTemplateFlag {
 	
 	public void onCollideEntityPlayer(WorldWorldGuard world, CollideEntityEvent event, Player player) {
 		if (event.getCause().get(NamedCause.SOURCE, Projectile.class).isPresent()) {
-			event.filterEntities(entity -> {
+			List<? extends Entity> filter = event.filterEntities(entity -> {
 				if (this.getDefault().contains(entity) && !world.getRegions(entity.getLocation().getPosition()).getFlag(player, this).contains(entity)) {
 					return false;
 				}
 				return true;
 			});
+			
+			if (!filter.isEmpty()) {
+				this.sendMessage(player, filter.get(0));
+			}
 		}
 	}
 	
@@ -202,7 +217,10 @@ public class FlagDamageEntity extends EntityTemplateFlag {
 			EntityDamageSource damageSource = (EntityDamageSource) source;
 			
 			if (damageSource.getSource() instanceof Player) {
-				this.onDamageEntity(world, event, entity, (Player) damageSource.getSource());
+				if (this.onDamageEntity(world, event, entity, (Player) damageSource.getSource())) {
+					// Message
+					this.sendMessage((Player) damageSource.getSource(), entity);
+				}
 			} else {
 				this.onDamageEntity(world, event, entity);
 			}
