@@ -496,12 +496,12 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	public <V> Optional<V> getFlagInherit(Flag<V> flag, Group group) {
 		Preconditions.checkNotNull(flag);
 
-		Optional<V> value = this.getFlag(flag).get(group);
+		Optional<V> value = this.getFlag(flag).getInherit(group);
 		if (value.isPresent()) return value;
 
 		ProtectedRegion curParent = this.parent;
 		while (curParent != null) {
-			value = curParent.getFlag(flag).get(group);
+			value = curParent.getFlag(flag).getInherit(group);
 			if (value.isPresent()) return value;
 			
 			curParent = curParent.getParent().orElse(null);

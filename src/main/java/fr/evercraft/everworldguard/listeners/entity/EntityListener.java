@@ -16,12 +16,19 @@
  */
 package fr.evercraft.everworldguard.listeners.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
+import org.spongepowered.api.event.action.InteractEvent;
 import org.spongepowered.api.event.entity.CollideEntityEvent;
 import org.spongepowered.api.event.entity.DamageEntityEvent;
 import org.spongepowered.api.event.entity.InteractEntityEvent;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.action.TextActions;
 
+import fr.evercraft.everapi.plugin.EChat;
 import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
 import fr.evercraft.everworldguard.EverWorldGuard;
 
@@ -31,6 +38,19 @@ public class EntityListener {
 
 	public EntityListener(EverWorldGuard plugin) {
 		this.plugin = plugin;
+	}
+	
+	@Listener(order=Order.FIRST)
+	public void onInteractEntity(InteractEvent event) {		
+		// Debug
+		List<Text> list = new ArrayList<Text>();
+		event.getCause().getNamedCauses().forEach((key, value) -> {
+			list.add(Text.builder(key)
+					.onHover(TextActions.showText(Text.of(EChat.fixLength(value.toString(), 254))))
+					.onClick(TextActions.suggestCommand(EChat.fixLength(value.toString(), 254)))
+					.build());
+		});
+		this.plugin.getEServer().getBroadcastChannel().send(Text.of("InteractEvent : ").concat(Text.joinWith(Text.of(", "), list)));
 	}
 	
 	@Listener(order=Order.FIRST)

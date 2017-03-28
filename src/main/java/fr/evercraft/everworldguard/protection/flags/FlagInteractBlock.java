@@ -26,7 +26,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockType;
+import org.spongepowered.api.data.Transaction;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.projectile.Projectile;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
@@ -35,6 +37,8 @@ import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.util.Tristate;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
+
+import com.flowpowered.math.vector.Vector3i;
 
 import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
 import fr.evercraft.everapi.services.worldguard.flag.Flags;
@@ -76,6 +80,16 @@ public class FlagInteractBlock extends BlockTypeFlag {
 	@Override
 	public String getDescription() {
 		return EWMessages.FLAG_INTERACT_BLOCK_DESCRIPTION.getString();
+	}
+	
+	public boolean sendMessage(Player player, Location<World> location, BlockType type) {
+		Vector3i position = location.getPosition().toInt();
+		return this.plugin.getProtectionService().sendMessage(player, this,
+				EWMessages.FLAG_INTERACT_BLOCK_MESSAGE.sender()
+					.replace("<x>", position.getX())
+					.replace("<y>", position.getY())
+					.replace("<z>", position.getZ())
+					.replace("<block>", type.getName()));
 	}
 
 	@Override
@@ -128,7 +142,9 @@ public class FlagInteractBlock extends BlockTypeFlag {
 		if (event.isCancelled()) return;
 		
 		BlockType type = event.getTargetBlock().getState().getType();
-		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
+		if (!this.getDefault().containsValue(type)) return;
+		
+		Optional<Player> optPlayer = event.getCause().get(NamedCause.SOURCE, Player.class);
 		if (optPlayer.isPresent()) {
 			this.onChangeBlockPlayer(world, event, location, type, optPlayer.get());
 		} else {
@@ -137,13 +153,16 @@ public class FlagInteractBlock extends BlockTypeFlag {
 	}
 	
 	private void onChangeBlockPlayer(WorldWorldGuard world, InteractBlockEvent.Secondary event, Location<World> location, BlockType type, Player player) {		
-		if (this.getDefault().containsValue(type) && !world.getRegions(location.getPosition()).getFlag(player, this).containsValue(type)) {
+		if (!world.getRegions(location.getPosition()).getFlag(player, this).containsValue(type)) {
 			event.setUseBlockResult(Tristate.FALSE);
+			
+			// Message
+			this.sendMessage(player, location, type);
 		}
 	}
 	
 	private void onChangeBlockNatural(WorldWorldGuard world, InteractBlockEvent.Secondary event, Location<World> location, BlockType type) {
-		if (this.getDefault().containsValue(type) && !world.getRegions(location.getPosition()).getFlagDefault(this).containsValue(type)) {
+		if (!world.getRegions(location.getPosition()).getFlagDefault(this).containsValue(type)) {
 			event.setUseBlockResult(Tristate.FALSE);
 		}
 	}
@@ -164,15 +183,22 @@ public class FlagInteractBlock extends BlockTypeFlag {
 	}
 	
 	private void onChangeBlockModifyPlayer(EProtectionService service, ChangeBlockEvent.Modify event, Player player) {
-		event.getTransactions().forEach(transaction -> {
+		Optional<Transaction<BlockSnapshot>> filter = event.getTransactions().stream().filter(transaction -> {
 			Location<World> location = transaction.getOriginal().getLocation().get();
 			BlockType type = transaction.getOriginal().getState().getType();
 			
-			if (this.getDefault().containsValue(type) && 
-					!service.getOrCreateWorld(location.getExtent()).getRegions(transaction.getOriginal().getPosition()).getFlag(player, this).containsValue(type)) {
+			if (this.getDefault().containsValue(type) && !service.getOrCreateWorld(location.getExtent()).getRegions(transaction.getOriginal().getPosition()).getFlag(player, this).containsValue(type)) {
 				event.setCancelled(true);
+				return true;
 			}
-		});
+			return false;
+		}).findAny();
+		
+		if (filter.isPresent()) {
+			BlockSnapshot block = filter.get().getOriginal();
+			// Message
+			this.sendMessage(player, block.getLocation().get(), block.getState().getType());
+		}
 	}
 	
 	private void onChangeBlockModifyNatural(EProtectionService service, ChangeBlockEvent.Modify event) {
@@ -204,15 +230,24 @@ public class FlagInteractBlock extends BlockTypeFlag {
 	}
 	
 	private void onChangeBlockBreakPlayer(EProtectionService service, ChangeBlockEvent.Break event, Player player) {	
-		event.getTransactions().forEach(transaction -> {
+		List<Transaction<BlockSnapshot>> filter = event.getTransactions().stream().filter(transaction -> {
 			Location<World> location = transaction.getOriginal().getLocation().get();
 			BlockType type = transaction.getOriginal().getState().getType();
 			
 			if (this.getDefault().containsValue(type) && 
 					!service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, Flags.INTERACT_BLOCK).containsValue(type)) {
 				transaction.setValid(false);
+				
+				return true;
 			}
-		});
+			return false;
+		}).collect(Collectors.toList());
+		
+		if (!filter.isEmpty()) {
+			BlockSnapshot block = filter.get(0).getOriginal();
+			// Message
+			this.sendMessage(player, block.getLocation().get(), block.getState().getType());
+		}
 	}
 	
 	private void onChangeBlockBreakNatural(EProtectionService service, ChangeBlockEvent.Break event) {
