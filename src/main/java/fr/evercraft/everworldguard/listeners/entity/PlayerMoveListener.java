@@ -32,6 +32,7 @@ import org.spongepowered.api.world.World;
 
 import com.flowpowered.math.vector.Vector3d;
 
+import fr.evercraft.everapi.event.MoveRegionEvent;
 import fr.evercraft.everapi.services.worldguard.MoveType;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.protection.subject.EUserSubject;
@@ -95,7 +96,7 @@ public class PlayerMoveListener {
 		}
 	}
 	
-	@Listener(order=Order.BEFORE_POST, beforeModifications=true)
+	@Listener(order=Order.POST)
 	public void onMoveEntityPost(MoveEntityEvent event, @Getter("getTargetEntity") Player player_sponge) {
 		if (event.isCancelled()) return;
 		
@@ -103,5 +104,16 @@ public class PlayerMoveListener {
 		if (!optSubject.isPresent()) return;
 		
 		optSubject.get().moveToPost(player_sponge, event.getToTransform().getLocation(), MoveType.MOVE, event.getCause());
+	}
+	
+	@Listener(order=Order.FIRST)
+	public void onMoveRegionPreCancellable(MoveRegionEvent.Pre.Cancellable event) {
+		this.plugin.getManagerFlags().ENTRY.onMoveRegionPreCancellable(event);
+		this.plugin.getManagerFlags().EXIT.onMoveRegionPreCancellable(event);
+	}
+	
+	@Listener(order=Order.FIRST)
+	public void onMoveRegionPost(MoveRegionEvent.Post event) {
+		this.plugin.getManagerFlags().ENTRY_MESSAGE.onMoveRegionPost(event);
 	}
 }

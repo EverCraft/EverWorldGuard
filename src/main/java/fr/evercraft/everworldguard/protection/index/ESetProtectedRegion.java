@@ -74,4 +74,26 @@ public class ESetProtectedRegion implements SetProtectedRegion {
 		}
 		return flag.getDefault();
 	}
+	
+	@Override
+	public <V> Optional<V> getFlagIfPresent(User user, Set<Context> context, Flag<V> flag) {
+		for (ProtectedRegion region : this.regions) {
+			Optional<V> flag_value = region.getFlagInherit(flag, region.getGroup(user, context));
+			if (flag_value.isPresent()) {
+				return Optional.ofNullable(flag_value.get());
+			}
+		}
+		return Optional.empty();
+	}
+
+	@Override
+	public <V> Optional<V> getFlagDefaultIfPresent(Flag<V> flag) {
+		for (ProtectedRegion region : this.regions) {
+			Optional<V> flag_value = region.getFlagInherit(flag, Group.DEFAULT);
+			if (flag_value.isPresent()) {
+				return Optional.ofNullable(flag_value.get());
+			}
+		}
+		return Optional.empty();
+	}
 }

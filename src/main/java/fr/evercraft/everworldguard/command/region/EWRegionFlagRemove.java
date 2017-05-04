@@ -93,7 +93,7 @@ public class EWRegionFlagRemove extends ESubCommand<EverWorldGuard> {
 					return Arrays.asList();
 				}
 				
-				return flag.get().getSuggestRemove(args.getArgs(3));
+				return flag.get().getSuggestRemove(source, args.getArgs(3));
 			});
     }
 	

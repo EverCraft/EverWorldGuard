@@ -55,7 +55,7 @@ public class EWRegionRedefine extends ESubCommand<EverWorldGuard> {
 	private final Args.Builder pattern;
 	
 	public EWRegionRedefine(final EverWorldGuard plugin, final EWRegion command) {
-        super(plugin, command, "define");
+        super(plugin, command, "redefine");
         
         this.pattern = Args.builder()
 			.empty(MARKER_TEMPLATE)

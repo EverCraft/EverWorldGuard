@@ -27,6 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
@@ -107,7 +108,7 @@ public class FlagDamageEntity extends EntityTemplateFlag {
 	 */
 
 	@Override
-	public Collection<String> getSuggestAdd(List<String> args) {
+	public Collection<String> getSuggestAdd(CommandSource source, List<String> args) {
 		return Stream.concat(
 				this.groups.keySet().stream(),
 				Stream.of(ALL))

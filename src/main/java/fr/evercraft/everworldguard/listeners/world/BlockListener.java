@@ -19,6 +19,7 @@ package fr.evercraft.everworldguard.listeners.world;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
+import org.spongepowered.api.event.block.CollideBlockEvent;
 import org.spongepowered.api.event.block.InteractBlockEvent;
 
 import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
@@ -174,5 +175,25 @@ public class BlockListener {
 		
 			this.plugin.getManagerFlags().INTERACT_BLOCK.onInteractBlockSecondary(world, event, location);
 		});
+	}
+	
+	@Listener(order=Order.FIRST)
+	public void onCollideBlock(CollideBlockEvent event) {
+		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetLocation().getExtent());
+		
+		this.plugin.getManagerFlags().INTERACT_BLOCK.onCollideBlock(world, event);
+		
+		// Debug
+		/*List<Text> list = new ArrayList<Text>();
+		event.getCause().getNamedCauses().forEach((key, value) -> {
+			list.add(Text.builder(key)
+					.onHover(TextActions.showText(Text.of(EChat.fixLength(value.toString(), 254))))
+					.onClick(TextActions.suggestCommand(EChat.fixLength(value.toString(), 254)))
+					.build());
+		});
+		this.plugin.getEServer().getBroadcastChannel().send(Text.builder("CollideBlockEvent : ")
+				.onHover(TextActions.showText(Text.of(event.getClass().getName())))
+				.onClick(TextActions.suggestCommand(event.getClass().getName()))
+				.build().concat(Text.joinWith(Text.of(", "), list)));*/
 	}
 }

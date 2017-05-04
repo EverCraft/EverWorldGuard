@@ -28,10 +28,12 @@ import java.util.stream.Stream;
 
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockType;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.data.Transaction;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.projectile.Projectile;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
+import org.spongepowered.api.event.block.CollideBlockEvent;
 import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.util.Tristate;
@@ -102,7 +104,7 @@ public class FlagInteractBlock extends BlockTypeFlag {
 	 */
 
 	@Override
-	public Collection<String> getSuggestAdd(List<String> args) {
+	public Collection<String> getSuggestAdd(CommandSource source, List<String> args) {
 		return Stream.concat(
 				this.groups.keySet().stream(),
 				Stream.of(ALL))
@@ -164,6 +166,39 @@ public class FlagInteractBlock extends BlockTypeFlag {
 	private void onChangeBlockNatural(WorldWorldGuard world, InteractBlockEvent.Secondary event, Location<World> location, BlockType type) {
 		if (!world.getRegions(location.getPosition()).getFlagDefault(this).containsValue(type)) {
 			event.setUseBlockResult(Tristate.FALSE);
+		}
+	}
+	
+	/*
+	 * CollideBlockEvent
+	 */
+
+	public void onCollideBlock(WorldWorldGuard world, CollideBlockEvent event) {
+		if (event.isCancelled()) return;
+		
+		BlockType type = event.getTargetBlock().getType();
+		if (!this.getDefault().containsValue(type)) return;
+		
+		Optional<Player> optPlayer = event.getCause().get(NamedCause.SOURCE, Player.class);
+		if (optPlayer.isPresent()) {
+			this.onCollideBlockPlayer(world, event, type, optPlayer.get());
+		} else {
+			this.onCollideBlockNatural(world, event, type);
+		}
+	}
+	
+	private void onCollideBlockPlayer(WorldWorldGuard world, CollideBlockEvent event, BlockType type, Player player) {		
+		if (!world.getRegions(event.getTargetLocation().getPosition()).getFlag(player, this).containsValue(type)) {
+			event.setCancelled(true);
+			
+			// Message
+			this.sendMessage(player, event.getTargetLocation(), type);
+		}
+	}
+	
+	private void onCollideBlockNatural(WorldWorldGuard world, CollideBlockEvent event, BlockType type) {
+		if (!world.getRegions(event.getTargetLocation().getPosition()).getFlagDefault(this).containsValue(type)) {
+			event.setCancelled(true);
 		}
 	}
 	

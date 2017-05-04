@@ -98,7 +98,7 @@ public class EWRegionFlagAdd extends ESubCommand<EverWorldGuard> {
 					return Arrays.asList();
 				}
 				
-				return flag.get().getSuggestAdd(args.getArgs(3));
+				return flag.get().getSuggestAdd(source, args.getArgs(3));
 			});
 	}
 	

@@ -336,31 +336,41 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		
 		FLAG_BUILD_DESCRIPTION("flag.build.description",						"Désactive/Active les constructions"),
 		FLAG_BUILD_MESSAGE("flag.build.message",								EMessageFormat.builder()
-																					.actionbarMessage("&cConstruction désactivé (<x>, <y>, <z>)")
+																					.actionbarMessageString("&cConstruction désactivé (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
 																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		
 		FLAG_INTERACT_BLOCK_DESCRIPTION("flag.interactBlock.description",		"Désactive/Active les interactions avec les blocs"),
 		FLAG_INTERACT_BLOCK_MESSAGE("flag.interactBlock.message",				EMessageFormat.builder()
-																					.actionbarMessage("&cInteractions avec les blocs désactivé (<x>, <y>, <z>)")
+																					.actionbarMessageString("&cInteractions avec les blocs désactivé (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
 																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		
 		FLAG_INTERACT_ENTITY_DESCRIPTION("flag.interactEntity.description",		"Désactive/Active les interactions avec les entités"),
 		FLAG_INTERACT_ENTITY_MESSAGE("flag.interactEntity.message",				EMessageFormat.builder()
-																					.actionbarMessage("&cInteractions avec les entités désactivé (<x>, <y>, <z>)")
+																					.actionbarMessageString("&cInteractions avec les entités désactivé (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
 																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		
 		FLAG_DAMAGE_ENTITY_DESCRIPTION("flag.damageEntity.description",			"Désactive/Active les damages infligés aux entités"),
 		FLAG_DAMAGE_ENTITY_MESSAGE("flag.damageEntity.message",					EMessageFormat.builder()
-																					.actionbarMessage("&cLes dégats infligés aux entités sont désactivé (<x>, <y>, <z>)")
+																					.actionbarMessageString("&cLes dégats infligés aux entités sont désactivé (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
 																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		
 		FLAG_ENTRY_DESCRIPTION("flag.entry.description",						""),
 		
+		FLAG_ENTRY_MESSAGE_DESCRIPTION("flag.entryMessage.description",			""),
+		
+		FLAG_ENTRY_MESSAGE_DENY_DESCRIPTION("flag.entryMessageDeny.description",""),
+		FLAG_ENTRY_MESSAGE_DENY_DEFAULT("flag.entryMessageDeny.default",		""),
+		
 		FLAG_EXIT_DESCRIPTION("flag.exit.description",							""),
+		
+		FLAG_EXIT_MESSAGE_DESCRIPTION("flag.exitMessage.description",			""),
+		
+		FLAG_EXIT_MESSAGE_DENY_DESCRIPTION("flag.exitMessageDeny.description",	""),
+		FLAG_EXIT_MESSAGE_DENY_DEFAULT("flag.exitMessageDeny.default",			""),
 		
 		FLAG_INVINCIBILITY_DESCRIPTION("flag.invincibity.description",			"Désactive/Active l'invincibilité"),
 		
