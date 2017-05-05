@@ -31,6 +31,7 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.World;
 
 import fr.evercraft.everapi.EAMessage.EAMessages;
+import fr.evercraft.everapi.message.EMessageFormat;
 import fr.evercraft.everapi.plugin.command.Args;
 import fr.evercraft.everapi.plugin.command.ESubCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
@@ -202,13 +203,21 @@ public class EWRegionFlagAdd extends ESubCommand<EverWorldGuard> {
 		try {
 			value = flag.parseAdd(source, region, group, values);
 		} catch (IllegalArgumentException e) {
-			EWMessages.REGION_FLAG_ADD_ERROR.sender()
-				.replace("<region>", region.getIdentifier())
-				.replace("<group>", group.getNameFormat())
-				.replace("<flag>", flag.getNameFormat())
-				.replace("<world>", world.getName())
-				.replace("<value>", String.join(" ", values))
-				.sendTo(source);
+			if (e.getMessage() == null || e.getMessage().isEmpty()) {
+				EWMessages.REGION_FLAG_ADD_ERROR.sender()
+					.replace("<region>", region.getIdentifier())
+					.replace("<group>", group.getNameFormat())
+					.replace("<flag>", flag.getNameFormat())
+					.replace("<world>", world.getName())
+					.replace("<value>", String.join(" ", values))
+					.sendTo(source);
+			} else {
+				EMessageFormat.builder()
+					.prefix(EWMessages.PREFIX)
+					.chatMessageString(e.getMessage())
+					.build().sender()
+					.sendTo(source);
+			}
 			return false;
 		}
 		
