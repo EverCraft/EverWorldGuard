@@ -362,15 +362,21 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		
 		FLAG_ENTRY_MESSAGE_DESCRIPTION("flag.entryMessage.description",			""),
 		
-		FLAG_ENTRY_MESSAGE_DENY_DESCRIPTION("flag.entryMessageDeny.description",""),
-		FLAG_ENTRY_MESSAGE_DENY_DEFAULT("flag.entryMessageDeny.default",		""),
+		FLAG_ENTRY_DENY_MESSAGE_DESCRIPTION("flag.entryDenyMessage.description",""),
+		FLAG_ENTRY_DENY_MESSAGE_DEFAULT("flag.entryDenyMessage.default",		EMessageFormat.builder()
+																					.actionbarMessageString("&cImpossible d'entrer dans la région (<region>)")
+																					.actionbarStay(3 * 1000)
+																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		
 		FLAG_EXIT_DESCRIPTION("flag.exit.description",							""),
 		
 		FLAG_EXIT_MESSAGE_DESCRIPTION("flag.exitMessage.description",			""),
 		
-		FLAG_EXIT_MESSAGE_DENY_DESCRIPTION("flag.exitMessageDeny.description",	""),
-		FLAG_EXIT_MESSAGE_DENY_DEFAULT("flag.exitMessageDeny.default",			""),
+		FLAG_EXIT_DENY_MESSAGE_DESCRIPTION("flag.exitDenyMessage.description",	""),
+		FLAG_EXIT_DENY_MESSAGE_DEFAULT("flag.exitDenyMessage.default",			EMessageFormat.builder()
+																					.actionbarMessageString("&cImpossible de sortir dans la région (<region>)")
+																					.actionbarStay(3 * 1000)
+																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		
 		FLAG_INVINCIBILITY_DESCRIPTION("flag.invincibity.description",			"Désactive/Active l'invincibilité"),
 		
@@ -385,6 +391,7 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 	    private final EMessageBuilder french;
 	    private final EMessageBuilder english;
 	    private EMessageFormat message;
+	    private EMessageBuilder builder;
 	    
 	    private EWMessages(final String path, final String french) {   	
 	    	this(path, EMessageFormat.builder().chat(new EFormatString(french), true));
@@ -429,8 +436,13 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 			return this.message;
 		}
 		
-		public void set(EMessageFormat message) {
-			this.message = message;
+		public EMessageBuilder getBuilder() {
+			return this.builder;
+		}
+		
+		public void set(EMessageBuilder message) {
+			this.message = message.build();
+			this.builder = message;
 		}
 	}
 }

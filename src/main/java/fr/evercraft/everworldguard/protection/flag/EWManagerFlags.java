@@ -35,7 +35,10 @@ public class EWManagerFlags {
 	public final FlagDamageEntity DAMAGE_ENTITY;
 	public final FlagEntry ENTRY;
 	public final FlagEntryMessage ENTRY_MESSAGE;
+	public final FlagEntryDenyMessage ENTRY_DENY_MESSAGE;
 	public final FlagExit EXIT;
+	public final FlagExitMessage EXIT_MESSAGE;
+	public final FlagExitDenyMessage EXIT_DENY_MESSAGE;
 	public final FlagInvincibility INVINCIBILITY;
 	public final FlagPvp PVP;
 	
@@ -53,7 +56,10 @@ public class EWManagerFlags {
 		DAMAGE_ENTITY = new FlagDamageEntity(this.plugin);
 		ENTRY = new FlagEntry();
 		ENTRY_MESSAGE = new FlagEntryMessage();
+		ENTRY_DENY_MESSAGE = new FlagEntryDenyMessage();
 		EXIT = new FlagExit();
+		EXIT_MESSAGE = new FlagExitMessage();
+		EXIT_DENY_MESSAGE = new FlagExitDenyMessage();
 		INVINCIBILITY = new FlagInvincibility();
 		PVP = new FlagPvp(this.plugin);
 		

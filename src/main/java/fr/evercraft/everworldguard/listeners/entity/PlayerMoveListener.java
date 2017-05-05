@@ -107,13 +107,19 @@ public class PlayerMoveListener {
 	}
 	
 	@Listener(order=Order.FIRST)
-	public void onMoveRegionPreCancellable(MoveRegionEvent.Pre.Cancellable event) {
-		this.plugin.getManagerFlags().ENTRY.onMoveRegionPreCancellable(event);
+	public void onMoveRegionPreCancelled(MoveRegionEvent.Pre.Cancellable event) {
 		this.plugin.getManagerFlags().EXIT.onMoveRegionPreCancellable(event);
+		this.plugin.getManagerFlags().ENTRY.onMoveRegionPreCancellable(event);
+		
+		if (event.isCancelled()) {
+			this.plugin.getManagerFlags().EXIT_DENY_MESSAGE.onMoveRegionPreCancelled(event);
+			this.plugin.getManagerFlags().ENTRY_DENY_MESSAGE.onMoveRegionPreCancelled(event);
+		}
 	}
 	
 	@Listener(order=Order.FIRST)
 	public void onMoveRegionPost(MoveRegionEvent.Post event) {
+		this.plugin.getManagerFlags().EXIT_MESSAGE.onMoveRegionPost(event);
 		this.plugin.getManagerFlags().ENTRY_MESSAGE.onMoveRegionPost(event);
 	}
 }

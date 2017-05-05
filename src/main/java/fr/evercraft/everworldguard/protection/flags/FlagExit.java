@@ -16,7 +16,7 @@
  */
 package fr.evercraft.everworldguard.protection.flags;
 
-import fr.evercraft.everapi.event.MoveRegionEvent.Pre.Cancellable;
+import fr.evercraft.everapi.event.MoveRegionEvent;
 import fr.evercraft.everapi.services.worldguard.flag.type.StateFlag;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 
@@ -36,10 +36,9 @@ public class FlagExit extends StateFlag {
 		return State.ALLOW;
 	}
 	
-	public void onMoveRegionPreCancellable(Cancellable event) {
+	public void onMoveRegionPreCancellable(MoveRegionEvent.Pre.Cancellable event) {
 		if(event.getExitRegions().getFlag(event.getPlayer(), this).equals(State.DENY)) {
 			event.setCancelled(true);
-			event.getPlayer().sendMessage("MoveRegion : DENY");
 		}
 	}
 }

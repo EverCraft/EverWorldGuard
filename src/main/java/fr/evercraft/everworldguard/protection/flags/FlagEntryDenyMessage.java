@@ -23,27 +23,26 @@ import org.spongepowered.api.service.context.Context;
 
 import fr.evercraft.everapi.event.MoveRegionEvent;
 import fr.evercraft.everapi.message.EMessageBuilder;
-import fr.evercraft.everapi.message.EMessageFormat;
 import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everapi.services.worldguard.WorldGuardService;
 import fr.evercraft.everapi.services.worldguard.flag.type.MessageFlag;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 
-public class FlagEntryMessage extends MessageFlag {
+public class FlagEntryDenyMessage extends MessageFlag {
 	
-	public FlagEntryMessage() {
-		super("ENTRY_MESSAGE");
+	public FlagEntryDenyMessage() {
+		super("ENTRY_DENY_MESSAGE");
 	}
 	
 	@Override
 	public String getDescription() {
-		return EWMessages.FLAG_ENTRY_MESSAGE_DESCRIPTION.getString();
+		return EWMessages.FLAG_ENTRY_DENY_MESSAGE_DESCRIPTION.getString();
 	}
 
 	@Override
 	public EMessageBuilder getDefault() {
-		return EMessageFormat.builder();
+		return EWMessages.FLAG_ENTRY_DENY_MESSAGE_DEFAULT.getBuilder();
 	}
 	
 	private void sendMessage(EPlayer player, EMessageBuilder message, String region) {
@@ -54,7 +53,7 @@ public class FlagEntryMessage extends MessageFlag {
 			.sendTo(player);
 	}
 	
-	public void onMoveRegionPost(MoveRegionEvent.Post event) {
+	public void onMoveRegionPreCancelled(MoveRegionEvent.Pre.Cancellable event) {
 		Set<ProtectedRegion> regions = event.getEnterRegions().getAll();
 		if (regions.isEmpty()) return;
 		
@@ -68,5 +67,6 @@ public class FlagEntryMessage extends MessageFlag {
 				return;
 			}
 		}
-	}
+		this.sendMessage(player, this.getDefault(), regions.iterator().next().getIdentifier());
+ 	}
 }

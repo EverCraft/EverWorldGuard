@@ -39,7 +39,6 @@ public class FlagEntry extends StateFlag {
 	public void onMoveRegionPreCancellable(MoveRegionEvent.Pre.Cancellable event) {
 		if(event.getEnterRegions().getFlag(event.getPlayer(), this).equals(State.DENY)) {
 			event.setCancelled(true);
-			event.getPlayer().sendMessage("MoveRegion : DENY");
 		}
 	}
 }

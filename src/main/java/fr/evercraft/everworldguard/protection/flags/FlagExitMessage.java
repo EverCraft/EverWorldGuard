@@ -16,9 +16,18 @@
  */
 package fr.evercraft.everworldguard.protection.flags;
 
-import fr.evercraft.everapi.event.MoveRegionEvent.Post;
+import java.util.Optional;
+import java.util.Set;
+
+import org.spongepowered.api.service.context.Context;
+
+import fr.evercraft.everapi.event.MoveRegionEvent;
 import fr.evercraft.everapi.message.EMessageBuilder;
+import fr.evercraft.everapi.message.EMessageFormat;
+import fr.evercraft.everapi.server.player.EPlayer;
+import fr.evercraft.everapi.services.worldguard.WorldGuardService;
 import fr.evercraft.everapi.services.worldguard.flag.type.MessageFlag;
+import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 
 public class FlagExitMessage extends MessageFlag {
@@ -34,14 +43,30 @@ public class FlagExitMessage extends MessageFlag {
 
 	@Override
 	public EMessageBuilder getDefault() {
-		return EMessageBuilder.empty();
+		return EMessageFormat.builder();
 	}
 	
-	public void onMoveRegionPost(Post event) {
-		event.getEnterRegions().getFlagIfPresent(event.getPlayer(), this).ifPresent(message ->
-			message.prefix(EWMessages.PREFIX)
-				.build()
-				.sender()
-				.sendTo(event.getPlayer()));
+	private void sendMessage(EPlayer player, EMessageBuilder message, String region) {
+		message.prefix(EWMessages.PREFIX)
+			.build(WorldGuardService.MESSAGE_FLAG)
+			.sender()
+			.replace("<region>", region)
+			.sendTo(player);
+	}
+	
+	public void onMoveRegionPost(MoveRegionEvent.Post event) {
+		Set<ProtectedRegion> regions = event.getExitRegions().getAll();
+		if (regions.isEmpty()) return;
+		
+		EPlayer player = event.getPlayer();
+		Set<Context> context = player.getActiveContexts();
+		
+		for (ProtectedRegion region : regions) {
+			Optional<EMessageBuilder> flag_value = region.getFlagInherit(this, region.getGroup(player, context));
+			if (flag_value.isPresent()) {
+				this.sendMessage(player, flag_value.get(), region.getIdentifier());
+				return;
+			}
+		}
 	}
 }
