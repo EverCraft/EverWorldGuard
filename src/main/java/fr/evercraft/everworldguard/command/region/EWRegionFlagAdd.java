@@ -227,7 +227,7 @@ public class EWRegionFlagAdd extends ESubCommand<EverWorldGuard> {
 			.replace("<group>", group.getNameFormat())
 			.replace("<flag>", flag.getNameFormat())
 			.replace("<world>", world.getName())
-			.replace("<value>", flag.serialize(value))
+			.replace("<value>", flag.getValueFormat(value))
 			.sendTo(source);
 		
 		return true;

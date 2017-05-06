@@ -439,10 +439,10 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 							.toText("<flag>",  flag.getNameFormat().toBuilder()
 													.onShiftClick(TextActions.insertText(flag.getIdentifier()))
 													.build(),
-									"<value>", Text.builder(value_string)
+									"<value>", key.getValueFormat((T) value).toBuilder()
 													.onShiftClick(TextActions.insertText(value_string))
 													.onClick(TextActions.suggestCommand(
-						"/" + this.getParentName() + " removeflag -w \"" + world.getName() + "\" \"" + region.getIdentifier() + "\" \"" + flag.getName() + "\" \"" + association.name() + "\" \"" + value_string + "\""))
+						"/" + this.getParentName() + " removeflag -w \"" + world.getName() + "\" \"" + region.getIdentifier() + "\" \"" + flag.getName() + "\" \"" + association.name() + "\""))
 													.build());
 					if (association.equals(Group.DEFAULT)) {
 						flags_default.put(flag.getIdentifier(), message);
@@ -547,10 +547,10 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 				.toText("<flag>",  flag.getNameFormat().toBuilder()
 										.onShiftClick(TextActions.insertText(flag.getIdentifier()))
 										.build(),
-						"<value>", Text.builder(value_string)
+						"<value>", flag.getValueFormat(value).toBuilder()
 										.onShiftClick(TextActions.insertText(value_string))
 										.onClick(TextActions.suggestCommand(
-			"/" + this.getParentName() + " removeflag -w \"" + world.getName() + "\" \"" + curParent.getIdentifier() + "\" \"" + flag.getName() + "\" \"" + association.name() + "\" \"" + value_string + "\""))
+			"/" + this.getParentName() + " removeflag -w \"" + world.getName() + "\" \"" + curParent.getIdentifier() + "\" \"" + flag.getName() + "\" \"" + association.name() + "\""))
 										.build());
 		
 	}

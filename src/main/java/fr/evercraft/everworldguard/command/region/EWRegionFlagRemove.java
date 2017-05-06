@@ -198,7 +198,7 @@ public class EWRegionFlagRemove extends ESubCommand<EverWorldGuard> {
 		try {
 			value = flag.parseRemove(source, region, group, values);
 		} catch (IllegalArgumentException e) {
-			if (e.getMessage().isEmpty()) {
+			if (e.getMessage() == null || e.getMessage().isEmpty()) {
 				EWMessages.REGION_FLAG_REMOVE_ERROR.sender()
 					.replace("<region>", region.getIdentifier())
 					.replace("<group>", group.getNameFormat())
@@ -224,7 +224,7 @@ public class EWRegionFlagRemove extends ESubCommand<EverWorldGuard> {
 				.replace("<group>", group.getNameFormat())
 				.replace("<flag>", flag.getNameFormat())
 				.replace("<world>", world.getName())
-				.replace("<value>", flag.serialize(value.get()))
+				.replace("<value>", flag.getValueFormat(value.get()))
 				.sendTo(source);
 		} else {
 			EWMessages.REGION_FLAG_REMOVE_PLAYER.sender()

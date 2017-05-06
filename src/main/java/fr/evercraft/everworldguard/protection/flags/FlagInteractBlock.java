@@ -16,6 +16,7 @@
  */
 package fr.evercraft.everworldguard.protection.flags;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -36,12 +37,15 @@ import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.block.CollideBlockEvent;
 import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.cause.NamedCause;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.util.Tristate;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 import com.flowpowered.math.vector.Vector3i;
 
+import fr.evercraft.everapi.EAMessage.EAMessages;
 import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
 import fr.evercraft.everapi.services.worldguard.flag.Flags;
 import fr.evercraft.everapi.services.worldguard.flag.type.BlockTypeFlag;
@@ -134,6 +138,26 @@ public class FlagInteractBlock extends BlockTypeFlag {
 			}
 		}
 		return new EntryFlagValue<BlockType>(keys, values);
+	}
+	
+	@Override
+	public Text getValueFormat(EntryFlagValue<BlockType> value) {
+		if (value.getKeys().isEmpty()) {
+			return EAMessages.FLAG_BLOCKTYPE_EMPTY.getText();
+		}
+		
+		List<Text> groups = new ArrayList<Text>();
+		for (String group : value.getKeys()) {
+			List<Text> blocks = new ArrayList<Text>();
+			for (BlockType block : this.groups.get(group)) {
+				blocks.add(EAMessages.FLAG_BLOCKTYPE_HOVER.getFormat().toText("<block>", block.getName()));
+			}
+			groups.add(EAMessages.FLAG_BLOCKTYPE_GROUP.getFormat().toText("<group>", group).toBuilder()
+				.onHover(TextActions.showText(Text.joinWith(Text.of("\n"), blocks)))
+				.build());
+		}
+		
+		return Text.joinWith(EAMessages.FLAG_BLOCKTYPE_JOIN.getText(), groups);
 	}
 	
 	/*

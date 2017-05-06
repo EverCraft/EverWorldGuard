@@ -16,6 +16,7 @@
  */
 package fr.evercraft.everworldguard.protection.flags;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -31,7 +32,10 @@ import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.entity.InteractEntityEvent;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.action.TextActions;
 
+import fr.evercraft.everapi.EAMessage.EAMessages;
 import fr.evercraft.everapi.services.entity.EntityTemplate;
 import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
 import fr.evercraft.everapi.services.worldguard.flag.type.EntityTemplateFlag;
@@ -113,6 +117,26 @@ public class FlagInteractEntity extends EntityTemplateFlag {
 			}
 		}
 		return new EntityPatternFlagValue<EntityTemplate, Entity>(keys, values);
+	}
+	
+	@Override
+	public Text getValueFormat(EntityPatternFlagValue<EntityTemplate, Entity> value) {
+		if (value.getKeys().isEmpty()) {
+			return EAMessages.FLAG_ENTITYTEMPLATE_EMPTY.getText();
+		}
+		
+		List<Text> groups = new ArrayList<Text>();
+		for (String group : value.getKeys()) {
+			List<Text> entities = new ArrayList<Text>();
+			for (EntityTemplate entity : this.groups.get(group)) {
+				entities.add(EAMessages.FLAG_ENTITYTEMPLATE_HOVER.getFormat().toText("<block>", entity.getName()));
+			}
+			groups.add(EAMessages.FLAG_ENTITYTEMPLATE_GROUP.getFormat().toText("<group>", group).toBuilder()
+				.onHover(TextActions.showText(Text.joinWith(Text.of("\n"), entities)))
+				.build());
+		}
+		
+		return Text.joinWith(EAMessages.FLAG_ENTITYTEMPLATE_JOIN.getText(), groups);
 	}
 	
 	/*
