@@ -34,6 +34,7 @@ import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.entity.InteractEntityEvent;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
+import com.flowpowered.math.vector.Vector3i;
 
 import fr.evercraft.everapi.EAMessage.EAMessages;
 import fr.evercraft.everapi.services.entity.EntityTemplate;
@@ -75,6 +76,16 @@ public class FlagInteractEntity extends EntityTemplateFlag {
 	@Override
 	public String getDescription() {
 		return EWMessages.FLAG_INTERACT_ENTITY_DESCRIPTION.getString();
+	}
+	
+	public boolean sendMessage(Player player, Entity entity) {
+		Vector3i position = entity.getLocation().getPosition().toInt();
+		return this.plugin.getProtectionService().sendMessage(player, this,
+				EWMessages.FLAG_INTERACT_ENTITY_MESSAGE.sender()
+					.replace("<x>", position.getX())
+					.replace("<y>", position.getY())
+					.replace("<z>", position.getZ())
+					.replace("<entity>", entity.getType().getName()));
 	}
 
 	@Override
@@ -147,7 +158,7 @@ public class FlagInteractEntity extends EntityTemplateFlag {
 		if (event.isCancelled()) return;
 		if (!this.getDefault().contains(event.getTargetEntity())) return;
 		
-		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
+		Optional<Player> optPlayer = event.getCause().get(NamedCause.SOURCE, Player.class);
 		if (optPlayer.isPresent()) {
 			this.onInteractEntityPlayer(world, event, optPlayer.get());
 		} else {
@@ -158,6 +169,7 @@ public class FlagInteractEntity extends EntityTemplateFlag {
 	public void onInteractEntityPlayer(WorldWorldGuard world, InteractEntityEvent event, Player player) {
 		if (!world.getRegions(event.getTargetEntity().getLocation().getPosition()).getFlag(player, this).contains(event.getTargetEntity(), player)) {
 			event.setCancelled(true);
+			this.sendMessage(player, event.getTargetEntity());
 		}
 	}
 	

@@ -182,7 +182,7 @@ public class FlagDamageEntity extends EntityTemplateFlag {
 	public void onCollideEntityPlayer(WorldWorldGuard world, CollideEntityEvent event, Player player) {
 		if (event.getCause().get(NamedCause.SOURCE, Projectile.class).isPresent()) {
 			List<? extends Entity> filter = event.filterEntities(entity -> {
-				if (this.getDefault().contains(entity) && !world.getRegions(entity.getLocation().getPosition()).getFlag(player, this).contains(entity)) {
+				if (this.getDefault().contains(entity) && !world.getRegions(entity.getLocation().getPosition()).getFlag(player, this).contains(entity, player)) {
 					return false;
 				}
 				return true;

@@ -171,7 +171,9 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 		
 		interact_entity.put("GROUP_OWNER", Arrays.asList(
 				"evercraft:wolf_owner",
-				"evercraft:horse_owner"));
+				"evercraft:horse_owner",
+				"evercraft:mule_owner",
+				"evercraft:ocelot_owner"));
 		
 		interact_entity.put("GROUP_OTHERS", Arrays.asList(
 				EntityTypes.RIDEABLE_MINECART.getId(),
