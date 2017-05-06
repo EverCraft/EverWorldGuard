@@ -29,6 +29,7 @@ import java.util.stream.Stream;
 
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockType;
+import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.data.Transaction;
 import org.spongepowered.api.entity.living.player.Player;
@@ -40,6 +41,7 @@ import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.util.Tristate;
+import org.spongepowered.api.world.LocatableBlock;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -245,7 +247,6 @@ public class FlagInteractBlock extends BlockTypeFlag {
 		Optional<Transaction<BlockSnapshot>> filter = event.getTransactions().stream().filter(transaction -> {
 			Location<World> location = transaction.getOriginal().getLocation().get();
 			BlockType type = transaction.getOriginal().getState().getType();
-			
 			if (this.getDefault().containsValue(type) && !service.getOrCreateWorld(location.getExtent()).getRegions(transaction.getOriginal().getPosition()).getFlag(player, this).containsValue(type)) {
 				event.setCancelled(true);
 				return true;
@@ -270,6 +271,33 @@ public class FlagInteractBlock extends BlockTypeFlag {
 				event.setCancelled(true);
 			}
 		});
+	}
+	
+	/*
+	 * ChangeBlockEvent.Pre : Désactive les pistons si le bouton est à l'extérieur de la région
+	 */
+	
+	public void onChangeBlockPre(ChangeBlockEvent.Pre event) {
+		if (event.isCancelled()) return;
+		
+		Optional<LocatableBlock> block = event.getCause().get(NamedCause.SOURCE, LocatableBlock.class);
+		if (!block.isPresent()) return;
+		
+		BlockType type = block.get().getBlockState().getType();
+		if (!type.equals(BlockTypes.PISTON) && !type.equals(BlockTypes.STICKY_PISTON)) return;
+		if (!this.getDefault().containsValue(type)) return;
+			
+		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
+		Location<World> location = block.get().getLocation();
+		if (optPlayer.isPresent()) {
+			if (!this.plugin.getProtectionService().getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(optPlayer.get(), this).containsValue(type)) {
+				event.setCancelled(true);
+			}
+		} else {
+			if (!this.plugin.getProtectionService().getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlagDefault(this).containsValue(type)) {
+				event.setCancelled(true);
+			}
+		}
 	}
 	
 	/*

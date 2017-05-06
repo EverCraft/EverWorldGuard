@@ -57,7 +57,8 @@ public class EWRegionOwnerAdd extends ESubCommand<EverWorldGuard> {
         super(plugin, command, "addowner");
         
         this.pattern = Args.builder()
-			.empty(MARKER_OWNER_GROUP)
+    		.empty(MARKER_OWNER_GROUP,
+					(source, args) -> args.getArgs().size() == 2)
 			.value(MARKER_WORLD, 
 					(source, args) -> this.getAllWorlds(),
 					(source, args) -> args.getArgs().size() <= 1)
@@ -228,7 +229,7 @@ public class EWRegionOwnerAdd extends ESubCommand<EverWorldGuard> {
 			} else {
 				EAMessages.GROUP_NOT_FOUND.sender()
 					.prefix(EWMessages.PREFIX)
-					.replace("<player>", group_string)
+					.replace("<group>", group_string)
 					.sendTo(source);
 				return false;
 			}
@@ -248,7 +249,7 @@ public class EWRegionOwnerAdd extends ESubCommand<EverWorldGuard> {
 		EWMessages.REGION_OWNER_ADD_GROUPS.sender()
 			.replace("<region>", region.getIdentifier())
 			.replace("<world>", world.getName())
-			.replace("<players>", String.join(EWMessages.REGION_OWNER_ADD_GROUPS_JOIN.getString(), groups.stream().map(owner -> owner.getIdentifier()).collect(Collectors.toList())))
+			.replace("<groups>", String.join(EWMessages.REGION_OWNER_ADD_GROUPS_JOIN.getString(), groups.stream().map(owner -> owner.getIdentifier()).collect(Collectors.toList())))
 			.sendTo(source);
 		return true;
 	}
@@ -267,7 +268,7 @@ public class EWRegionOwnerAdd extends ESubCommand<EverWorldGuard> {
 		EWMessages.REGION_OWNER_ADD_GROUP.sender()
 			.replace("<region>", region.getIdentifier())
 			.replace("<world>", world.getName())
-			.replace("<player>", group.getIdentifier())
+			.replace("<group>", group.getIdentifier())
 			.sendTo(source);
 		return true;
 	}

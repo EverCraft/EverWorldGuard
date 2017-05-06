@@ -146,6 +146,7 @@ public class EWRegionRename extends ESubCommand<EverWorldGuard> {
 	}
 
 	private boolean commandRegionRename(final CommandSource player, WorldWorldGuard manager, ProtectedRegion region, String region_string, World world) {
+		String before_identifier = region.getIdentifier();
 		if (region.getType().equals(ProtectedRegion.Type.GLOBAL)) {
 			EWMessages.REGION_RENAME_ERROR_GLOBAL.sender()
 				.replace("<region>", region.getIdentifier())
@@ -169,7 +170,7 @@ public class EWRegionRename extends ESubCommand<EverWorldGuard> {
 			region.setIdentifier(region_string);
 		} catch (RegionIdentifierException e) {
 			EWMessages.REGION_RENAME_ERROR_IDENTIFIER_INVALID.sender()
-				.replace("<region>", region.getIdentifier())
+				.replace("<region>", before_identifier)
 				.replace("<identifier>", region_string)
 				.replace("<type>", region.getType().getNameFormat())
 				.replace("<world>", world.getName())
@@ -178,7 +179,7 @@ public class EWRegionRename extends ESubCommand<EverWorldGuard> {
 		}
 		
 		EWMessages.REGION_RENAME_SET.sender()
-			.replace("<region>", region.getIdentifier())
+			.replace("<region>", before_identifier)
 			.replace("<identifier>", region_string)
 			.replace("<type>", region.getType().getNameFormat())
 			.replace("<world>", world.getName())

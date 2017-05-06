@@ -437,7 +437,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 					String value_string = key.serialize((T) value);
 					Text message = EWMessages.REGION_INFO_ONE_FLAGS_LINE.getFormat()
 							.toText("<flag>",  flag.getNameFormat().toBuilder()
-													.onShiftClick(TextActions.insertText(flag.getIdentifier()))
+													.onShiftClick(TextActions.insertText(flag.getId()))
 													.build(),
 									"<value>", key.getValueFormat((T) value).toBuilder()
 													.onShiftClick(TextActions.insertText(value_string))
@@ -445,11 +445,11 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 						"/" + this.getParentName() + " removeflag -w \"" + world.getName() + "\" \"" + region.getIdentifier() + "\" \"" + flag.getName() + "\" \"" + association.name() + "\""))
 													.build());
 					if (association.equals(Group.DEFAULT)) {
-						flags_default.put(flag.getIdentifier(), message);
+						flags_default.put(flag.getId(), message);
 					} else if (association.equals(Group.MEMBER)) {
-						flags_member.put(flag.getIdentifier(), message);
+						flags_member.put(flag.getId(), message);
 					} else if (association.equals(Group.OWNER)) {
-						flags_owner.put(flag.getIdentifier(), message);
+						flags_owner.put(flag.getId(), message);
 					}
 				});
 			});
@@ -484,19 +484,19 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 					Flag<T> key = (Flag<T>) flag;
 					values.getAll().forEach((association, value) ->  {
 						if (association.equals(Group.DEFAULT)) {
-							if (!flags_default.containsKey(key.getIdentifier()) && 
-									!heritage_flags_default.containsKey(key.getIdentifier())) {
-								heritage_flags_default.put(key.getIdentifier(), this.getTextHeritagFlagsLine(key, (T) value, association, curParent, world));
+							if (!flags_default.containsKey(key.getId()) && 
+									!heritage_flags_default.containsKey(key.getId())) {
+								heritage_flags_default.put(key.getId(), this.getTextHeritagFlagsLine(key, (T) value, association, curParent, world));
 							}
 						} else if (association.equals(Group.MEMBER)) {
-							if (!flags_member.containsKey(key.getIdentifier()) && 
-									!heritage_flags_member.containsKey(key.getIdentifier())) {
-								heritage_flags_member.put(key.getIdentifier(), this.getTextHeritagFlagsLine(key, (T) value, association, curParent, world));
+							if (!flags_member.containsKey(key.getId()) && 
+									!heritage_flags_member.containsKey(key.getId())) {
+								heritage_flags_member.put(key.getId(), this.getTextHeritagFlagsLine(key, (T) value, association, curParent, world));
 							}
 						} else if (association.equals(Group.OWNER)) {
-							if (!flags_owner.containsKey(key.getIdentifier()) && 
-									!heritage_flags_owner.containsKey(key.getIdentifier())) {
-								heritage_flags_owner.put(key.getIdentifier(), this.getTextHeritagFlagsLine(key, (T) value, association, curParent, world));
+							if (!flags_owner.containsKey(key.getId()) && 
+									!heritage_flags_owner.containsKey(key.getId())) {
+								heritage_flags_owner.put(key.getId(), this.getTextHeritagFlagsLine(key, (T) value, association, curParent, world));
 							}
 						}
 					});
@@ -545,7 +545,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 		String value_string = flag.serialize(value);
 		return EWMessages.REGION_INFO_ONE_HERITAGE_FLAGS_LINE.getFormat()
 				.toText("<flag>",  flag.getNameFormat().toBuilder()
-										.onShiftClick(TextActions.insertText(flag.getIdentifier()))
+										.onShiftClick(TextActions.insertText(flag.getId()))
 										.build(),
 						"<value>", flag.getValueFormat(value).toBuilder()
 										.onShiftClick(TextActions.insertText(value_string))

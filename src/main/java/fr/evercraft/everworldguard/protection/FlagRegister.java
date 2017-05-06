@@ -24,15 +24,19 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.spongepowered.api.registry.AdditionalCatalogRegistryModule;
+
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
 
 import fr.evercraft.everapi.services.worldguard.exception.FlagRegisterException;
 import fr.evercraft.everapi.services.worldguard.flag.Flag;
+import fr.evercraft.everworldguard.EverWorldGuard;
 
 
-public class FlagRegister {
+@SuppressWarnings("rawtypes")
+public class FlagRegister implements AdditionalCatalogRegistryModule<Flag<?>> {
 	
 	private final ConcurrentMap<String, Flag<?>> flags;
 	private boolean initialized;
@@ -42,7 +46,8 @@ public class FlagRegister {
 	private final Lock write_lock;
 	private final Lock read_lock;
 	
-	public FlagRegister() {
+	@SuppressWarnings("unchecked")
+	public FlagRegister(EverWorldGuard plugin) {
 		this.flags = new ConcurrentHashMap<String, Flag<?>>();
 		this.initialized = false;
 		
@@ -50,13 +55,15 @@ public class FlagRegister {
 		this.lock = new ReentrantReadWriteLock();
 		this.write_lock = this.lock.writeLock();
 		this.read_lock = this.lock.readLock();
+		
+		plugin.getGame().getRegistry().registerModule(Flag.class, (AdditionalCatalogRegistryModule) this);
 	}
 
 	public void setInitialized(boolean initialized) {
 		this.initialized = initialized;
 	}
 	
-	public void register(Flag<?> flag) throws FlagRegisterException {
+	public void registerAdditionalCatalog(Flag flag) throws FlagRegisterException {
 		Preconditions.checkNotNull(flag, "flag");
 		
 		this.write_lock.lock();
@@ -65,36 +72,35 @@ public class FlagRegister {
 				throw new FlagRegisterException(FlagRegisterException.Type.INITIALIZED, flag);
 			}
 			
-			if (this.flags.containsKey(flag.getIdentifier())) {
+			if (this.flags.containsKey(flag.getId())) {
 				throw new FlagRegisterException(FlagRegisterException.Type.CONFLICT, flag);
 			}
-			
-			this.flags.put(flag.getIdentifier(), flag);
+			this.flags.put(flag.getId(), flag);
 		} finally {
 			this.write_lock.unlock();
 		}
 	}
 	
-	public void register(Set<Flag<?>> flags) throws FlagRegisterException {
+	public void registerAdditionalCatalog(Set<Flag<?>> flags) throws FlagRegisterException {
 		Preconditions.checkNotNull(flags, "flags");
 		
 		this.write_lock.lock();
 		try {
 			for (Flag<?> flag : flags) {
-				this.register(flag);
+				this.registerAdditionalCatalog(flag);
 			}
 		} finally {
 			this.write_lock.unlock();
 		}
 	}
 	
-	public Optional<Flag<?>> get(String name) {
-		Preconditions.checkNotNull(name, "name");
+	public Optional<Flag<?>> getById(String identifier) {
+		Preconditions.checkNotNull(identifier, "identifier");
 		Flag<?> flag;
 		
 		this.read_lock.lock();
 		try {
-			flag = this.flags.get(name.toLowerCase());
+			flag = this.flags.get(identifier.toLowerCase());
 		} finally {
 			this.read_lock.unlock();
 		}

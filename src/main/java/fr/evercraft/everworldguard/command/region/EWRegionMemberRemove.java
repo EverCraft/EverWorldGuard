@@ -57,7 +57,8 @@ public class EWRegionMemberRemove extends ESubCommand<EverWorldGuard> {
         super(plugin, command, "removemember");
 
 		this.pattern = Args.builder()
-			.empty(MARKER_MEMBER_GROUP)
+			.empty(MARKER_MEMBER_GROUP,
+					(source, args) -> args.getArgs().size() == 2)
 			.value(MARKER_WORLD, 
 					(source, args) -> this.getAllWorlds(),
 					(source, args) -> args.getArgs().size() <= 1)
@@ -196,7 +197,7 @@ public class EWRegionMemberRemove extends ESubCommand<EverWorldGuard> {
 			}
 		}
 		
-		if (players.size() == 1) {
+		if (players.size() > 1) {
 			return this.commandRegionMemberRemovePlayer(source, region, players, world);
 		} else {
 			return this.commandRegionMemberRemovePlayer(source, region, players.iterator().next(), world);
@@ -242,13 +243,13 @@ public class EWRegionMemberRemove extends ESubCommand<EverWorldGuard> {
 			} else {
 				EAMessages.GROUP_NOT_FOUND.sender()
 					.prefix(EWMessages.PREFIX)
-					.replace("<player>", group_string)
+					.replace("<group>", group_string)
 					.sendTo(source);
 				return false;
 			}
 		}
 		
-		if (groups.size() == 1) {
+		if (groups.size() > 1) {
 			return this.commandRegionMemberRemoveGroup(source, region, groups, world);
 		} else {
 			return this.commandRegionMemberRemoveGroup(source, region, groups.iterator().next(), world);
@@ -262,7 +263,7 @@ public class EWRegionMemberRemove extends ESubCommand<EverWorldGuard> {
 		EWMessages.REGION_MEMBER_REMOVE_GROUPS.sender()
 			.replace("<region>", region.getIdentifier())
 			.replace("<world>", world.getName())
-			.replace("<players>", String.join(EWMessages.REGION_MEMBER_REMOVE_GROUPS_JOIN.getString(), groups.stream().map(owner -> owner.getIdentifier()).collect(Collectors.toList())))
+			.replace("<groups>", String.join(EWMessages.REGION_MEMBER_REMOVE_GROUPS_JOIN.getString(), groups.stream().map(owner -> owner.getIdentifier()).collect(Collectors.toList())))
 			.sendTo(source);
 		return true;
 	}
@@ -281,7 +282,7 @@ public class EWRegionMemberRemove extends ESubCommand<EverWorldGuard> {
 		EWMessages.REGION_MEMBER_REMOVE_GROUP.sender()
 			.replace("<region>", region.getIdentifier())
 			.replace("<world>", world.getName())
-			.replace("<player>", group.getIdentifier())
+			.replace("<group>", group.getIdentifier())
 			.sendTo(source);
 		return true;
 	}

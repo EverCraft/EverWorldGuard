@@ -154,7 +154,7 @@ public class FlagDamageEntity extends EntityTemplateFlag {
 		for (String group : value.getKeys()) {
 			List<Text> entities = new ArrayList<Text>();
 			for (EntityTemplate entity : this.groups.get(group)) {
-				entities.add(EAMessages.FLAG_ENTITYTEMPLATE_HOVER.getFormat().toText("<block>", entity.getName()));
+				entities.add(EAMessages.FLAG_ENTITYTEMPLATE_HOVER.getFormat().toText("<entity>", entity.getId()));
 			}
 			groups.add(EAMessages.FLAG_ENTITYTEMPLATE_GROUP.getFormat().toText("<group>", group).toBuilder()
 				.onHover(TextActions.showText(Text.joinWith(Text.of("\n"), entities)))

@@ -302,11 +302,11 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 			for (Entry<Group, ?> value : flag.getValue().getAll().entrySet()) {
 				T val = (T) value.getValue();
 				if (value.getKey().equals(Group.DEFAULT)) {
-					flags_default.put(key.getIdentifier(), key.serialize(val));
+					flags_default.put(key.getId(), key.serialize(val));
 				} else if (value.getKey().equals(Group.MEMBER)) {
-					flags_member.put(key.getIdentifier(), key.serialize(val));
+					flags_member.put(key.getId(), key.serialize(val));
 				} else if (value.getKey().equals(Group.OWNER)) {
-					flags_default.put(key.getIdentifier(), key.serialize(val));
+					flags_default.put(key.getId(), key.serialize(val));
 				}
 			}
 		}
@@ -384,9 +384,9 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 		}
 		
 		if (value == null) {
-			config.removeChild(flag.getIdentifier());
+			config.removeChild(flag.getId());
 		} else {
-			config.getNode(flag.getIdentifier()).setValue(flag.serialize(value));
+			config.getNode(flag.getId()).setValue(flag.serialize(value));
 		}
 		this.save(true);
 	}

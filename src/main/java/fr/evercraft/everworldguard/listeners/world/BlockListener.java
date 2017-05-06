@@ -40,6 +40,7 @@ public class BlockListener {
 	@Listener(order=Order.FIRST)
 	public void onChangeBlock(ChangeBlockEvent.Pre event) {
 		this.plugin.getManagerFlags().BUILD.onChangeBlockPre(event);
+		this.plugin.getManagerFlags().INTERACT_BLOCK.onChangeBlockPre(event);
 		
 		// Debug
 		/*
@@ -175,6 +176,19 @@ public class BlockListener {
 		
 			this.plugin.getManagerFlags().INTERACT_BLOCK.onInteractBlockSecondary(world, event, location);
 		});
+		
+		// Debug
+		/*List<Text> list = new ArrayList<Text>();
+		event.getCause().getNamedCauses().forEach((key, value) -> {
+			list.add(Text.builder(key)
+					.onHover(TextActions.showText(Text.of(EChat.fixLength(value.toString(), 254))))
+					.onClick(TextActions.suggestCommand(EChat.fixLength(value.toString(), 254)))
+					.build());
+		});
+		this.plugin.getEServer().getBroadcastChannel().send(Text.builder("ChangeBlockEvent.Grow : ")
+				.onHover(TextActions.showText(Text.of(event.getClass().getName())))
+				.onClick(TextActions.suggestCommand(event.getClass().getName()))
+				.build().concat(Text.joinWith(Text.of(", "), list)));*/
 	}
 	
 	@Listener(order=Order.FIRST)

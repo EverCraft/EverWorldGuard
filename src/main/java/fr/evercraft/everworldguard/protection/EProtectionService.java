@@ -55,7 +55,7 @@ public class EProtectionService implements WorldGuardService {
 		
 		this.subjects = new EUserSubjectList(this.plugin);
 		this.worlds = new EWorldList(this.plugin);
-		this.flagsRegister = new FlagRegister();
+		this.flagsRegister = new FlagRegister(this.plugin);
 		this.flagsConfig = new EWFlagConfig(this.plugin);
 		
 		this.reload();
@@ -138,22 +138,22 @@ public class EProtectionService implements WorldGuardService {
 	 */
 
 	public boolean hasPermissionFlag(Subject subject, Flag<?> flag) {
-		return subject.hasPermission(EWPermissions.FLAGS.get() + "." + flag.getIdentifier());
+		return subject.hasPermission(EWPermissions.FLAGS.get() + "." + flag.getId());
 	}
 	
 	@Override
 	public Optional<Flag<?>> getFlag(String name) {
-		return this.flagsRegister.get(name);
+		return this.flagsRegister.getById(name);
 	}
 
 	@Override
 	public void registerFlag(Flag<?> flag) {
-		this.flagsRegister.register(flag);
+		this.flagsRegister.registerAdditionalCatalog(flag);
 	}
 	
 	@Override
 	public void registerFlag(Set<Flag<?>> flags) {
-		this.flagsRegister.register(flags);
+		this.flagsRegister.registerAdditionalCatalog(flags);
 	}
 
 	@Override

@@ -106,7 +106,9 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 				BlockTypes.POWERED_COMPARATOR,
 				BlockTypes.UNPOWERED_COMPARATOR,
 				BlockTypes.NOTEBLOCK,
-				BlockTypes.DETECTOR_RAIL)
+				BlockTypes.DETECTOR_RAIL,
+				BlockTypes.PISTON,
+				BlockTypes.STICKY_PISTON)
 					.stream().map(block -> block.getId()).collect(Collectors.toList()));
 		
 		interact_block.put("GROUP_DOOR", Arrays.asList(
@@ -132,7 +134,7 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 					.stream().map(block -> block.getId()).collect(Collectors.toList()));
 		interact_block.put("GROUP_OTHERS", Arrays.asList(
 				BlockTypes.BED,
-				BlockTypes.END_PORTAL,
+				BlockTypes.END_PORTAL_FRAME,
 				BlockTypes.BEACON,
 				BlockTypes.MOB_SPAWNER,
 				BlockTypes.JUKEBOX,
