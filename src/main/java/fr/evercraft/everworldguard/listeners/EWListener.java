@@ -40,6 +40,7 @@ public class EWListener {
 		this.register(new EntityListener(this.plugin));
 		this.register(new PlayerListener(this.plugin));
 		this.register(new PlayerMoveListener(this.plugin));
+		this.register(new ItemStackListener(this.plugin));
 	}
 	
 	public void register(Object listener) {

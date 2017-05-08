@@ -36,6 +36,7 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		DESCRIPTION("description",		"Gestionnaire des régions"), 
 		
 		GROUP_NOT_FOUND("groupNotFound",		"&cErreur : Le group '&6<group>&c' est introuvable."), 
+		GROUP_INCOMPATIBLE("groupImcompatible",	"&cErreur : Le group '&6<group>&c' est incompatible avec le flag <flag>."), 
 		FLAG_NOT_FOUND("flagNotFound",			"&cErreur : Le flag '&6<flag>&c' est introuvable."), 
 		
 		SELECT_DESCRIPTION("select.description",					"Permet de sélectionner une région"),
@@ -340,6 +341,20 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 																					.actionbarStay(3 * 1000)
 																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		
+		FLAG_DAMAGE_ENTITY_DESCRIPTION("flag.damageEntity.description",			"Désactive/Active les damages infligés aux entités"),
+		FLAG_DAMAGE_ENTITY_MESSAGE("flag.damageEntity.message",					EMessageFormat.builder()
+																					.actionbarMessageString("&cLes dégats infligés aux entités sont désactivé (<x>, <y>, <z>)")
+																					.actionbarStay(3 * 1000)
+																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
+		FLAG_ENDERPEARL_DESCRIPTION("flag.enderpearl.description",				""),
+		FLAG_ENDERPEARL_MESSAGE("flag.enderpearl.message",						EMessageFormat.builder()
+																						.actionbarMessageString("&cL'utilisation des enderpearls est désactivé (<x>, <y>, <z>)")
+																						.actionbarStay(3 * 1000)
+																						.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
+		
+		FLAG_ENDERMAN_GRIEF_DESCRIPTION("flag.endermanGrief.description",		""),
+		
+		
 		FLAG_INTERACT_BLOCK_DESCRIPTION("flag.interactBlock.description",		"Désactive/Active les interactions avec les blocs"),
 		FLAG_INTERACT_BLOCK_MESSAGE("flag.interactBlock.message",				EMessageFormat.builder()
 																					.actionbarMessageString("&cInteractions avec les blocs désactivé (<x>, <y>, <z>)")
@@ -349,12 +364,6 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		FLAG_INTERACT_ENTITY_DESCRIPTION("flag.interactEntity.description",		"Désactive/Active les interactions avec les entités"),
 		FLAG_INTERACT_ENTITY_MESSAGE("flag.interactEntity.message",				EMessageFormat.builder()
 																					.actionbarMessageString("&cInteractions avec les entités désactivé (<x>, <y>, <z>)")
-																					.actionbarStay(3 * 1000)
-																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
-		
-		FLAG_DAMAGE_ENTITY_DESCRIPTION("flag.damageEntity.description",			"Désactive/Active les damages infligés aux entités"),
-		FLAG_DAMAGE_ENTITY_MESSAGE("flag.damageEntity.message",					EMessageFormat.builder()
-																					.actionbarMessageString("&cLes dégats infligés aux entités sont désactivé (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
 																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		

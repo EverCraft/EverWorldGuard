@@ -182,7 +182,7 @@ public class EWRegionFlagAdd extends ESubCommand<EverWorldGuard> {
 		Optional<Flag<?>> flag = this.plugin.getProtectionService().getFlag(args_string.get(1));
 		if (!flag.isPresent()) {
 			EWMessages.FLAG_NOT_FOUND.sender()
-				.replace("<group>", args_string.get(1))
+				.replace("<flag>", args_string.get(1))
 				.sendTo(source);
 			return false;
 		}
@@ -191,6 +191,14 @@ public class EWRegionFlagAdd extends ESubCommand<EverWorldGuard> {
 		if (!group.isPresent()) {
 			EWMessages.GROUP_NOT_FOUND.sender()
 				.replace("<group>", args_string.get(2))
+				.sendTo(source);
+			return false;
+		}
+		
+		if (!flag.get().getGroups().contains(group.get())) {
+			EWMessages.GROUP_INCOMPATIBLE.sender()
+				.replace("<flag>", flag.get().getName())
+				.replace("<group>", group.get().getName())
 				.sendTo(source);
 			return false;
 		}

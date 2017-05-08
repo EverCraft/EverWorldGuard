@@ -30,9 +30,11 @@ public class EWManagerFlags {
 	private final EverWorldGuard plugin;
 	
 	public final FlagBuild BUILD;
+	public final FlagDamageEntity DAMAGE_ENTITY;
+	public final FlagEndermanGrief ENDERMAN_GRIEF;
+	public final FlagEnderPearl ENDERPEARL;
 	public final FlagInteractBlock INTERACT_BLOCK;
 	public final FlagInteractEntity INTERACT_ENTITY;
-	public final FlagDamageEntity DAMAGE_ENTITY;
 	public final FlagEntry ENTRY;
 	public final FlagEntryMessage ENTRY_MESSAGE;
 	public final FlagEntryDenyMessage ENTRY_DENY_MESSAGE;
@@ -51,6 +53,8 @@ public class EWManagerFlags {
 		this.register();
 
 		BUILD = new FlagBuild(this.plugin);
+		ENDERMAN_GRIEF = new FlagEndermanGrief(this.plugin);
+		ENDERPEARL = new FlagEnderPearl(this.plugin);
 		INTERACT_BLOCK = new FlagInteractBlock(this.plugin);
 		INTERACT_ENTITY = new FlagInteractEntity(this.plugin);
 		DAMAGE_ENTITY = new FlagDamageEntity(this.plugin);

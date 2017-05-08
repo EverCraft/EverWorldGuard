@@ -16,6 +16,8 @@
  */
 package fr.evercraft.everworldguard.listeners.entity;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.spongepowered.api.entity.Entity;
@@ -27,13 +29,17 @@ import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEvent;
 import org.spongepowered.api.event.filter.Getter;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 import com.flowpowered.math.vector.Vector3d;
 
 import fr.evercraft.everapi.event.MoveRegionEvent;
+import fr.evercraft.everapi.plugin.EChat;
 import fr.evercraft.everapi.services.worldguard.MoveType;
+import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.protection.subject.EUserSubject;
 
@@ -121,5 +127,21 @@ public class PlayerMoveListener {
 	public void onMoveRegionPost(MoveRegionEvent.Post event) {
 		this.plugin.getManagerFlags().EXIT_MESSAGE.onMoveRegionPost(event);
 		this.plugin.getManagerFlags().ENTRY_MESSAGE.onMoveRegionPost(event);
+	}
+	
+	@Listener(order=Order.FIRST)
+	public void onMoveEntityTeleport(MoveEntityEvent.Teleport event, @Getter("getTargetEntity") Player player_sponge) {
+		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(player_sponge.getWorld());
+		
+		this.plugin.getManagerFlags().ENDERPEARL.onMoveEntityTeleport(event, world, player_sponge);
+		
+		List<Text> list = new ArrayList<Text>();
+		event.getCause().getNamedCauses().forEach((key, value) -> {
+			list.add(Text.builder(key)
+					.onHover(TextActions.showText(Text.of(EChat.fixLength(value.toString(), 254))))
+					.onClick(TextActions.suggestCommand(EChat.fixLength(value.toString(), 254)))
+					.build());
+		});
+		this.plugin.getEServer().getBroadcastChannel().send(Text.of("MoveEntityEvent.Teleport : ").concat(Text.joinWith(Text.of(", "), list)));
 	}
 }
