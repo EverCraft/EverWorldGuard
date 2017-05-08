@@ -16,17 +16,10 @@
  */
 package fr.evercraft.everworldguard.listeners;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.item.inventory.InteractItemEvent;
 import org.spongepowered.api.event.item.inventory.UseItemStackEvent;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.action.TextActions;
-
-import fr.evercraft.everapi.plugin.EChat;
 import fr.evercraft.everworldguard.EverWorldGuard;
 
 public class ItemStackListener {
@@ -55,14 +48,14 @@ public class ItemStackListener {
 		this.plugin.getManagerFlags().ENDERPEARL.onInteractItem(event);
 		
 		// Debug
-		List<Text> list = new ArrayList<Text>();
+		/*List<Text> list = new ArrayList<Text>();
 		event.getCause().getNamedCauses().forEach((key, value) -> {
 			list.add(Text.builder(key)
 					.onHover(TextActions.showText(Text.of(EChat.fixLength(value.toString(), 254))))
 					.onClick(TextActions.suggestCommand(EChat.fixLength(value.toString(), 254)))
 					.build());
 		});
-		this.plugin.getEServer().getBroadcastChannel().send(Text.of("InteractItemEvent : ").concat(Text.joinWith(Text.of(", "), list)));
+		this.plugin.getEServer().getBroadcastChannel().send(Text.of("InteractItemEvent : ").concat(Text.joinWith(Text.of(", "), list)));*/
 	}
 
 }
