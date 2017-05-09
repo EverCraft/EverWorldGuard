@@ -390,7 +390,10 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		FLAG_INVINCIBILITY_DESCRIPTION("flag.invincibity.description",			"Désactive/Active l'invincibilité"),
 		
 		FLAG_PVP_DESCRIPTION("flag.pvp.description",							"Désactive/Active le PVP"),
-		FLAG_PVP_MESSAGE("flag.pvp.description",								"&cPVP désactivé (<x>, <y>, <z>)"),
+		FLAG_PVP_MESSAGE("flag.pvp.message",									EMessageFormat.builder()
+																					.actionbarMessageString("&cPVP désactivé (<x>, <y>, <z>)")
+																					.actionbarStay(3 * 1000)
+																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		
 		FLAG_TELEPORT_DESCRIPTION("flag.teleport.description",					"Sauvegarde une position pour se téléporter à la région"),
 		

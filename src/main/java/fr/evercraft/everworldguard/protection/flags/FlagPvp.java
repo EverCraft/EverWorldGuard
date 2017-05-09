@@ -35,6 +35,7 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 import com.flowpowered.math.vector.Vector3d;
+import com.flowpowered.math.vector.Vector3i;
 
 import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
 import fr.evercraft.everapi.services.worldguard.flag.type.StateFlag;
@@ -43,7 +44,6 @@ import fr.evercraft.everworldguard.EWMessage.EWMessages;
 
 public class FlagPvp extends StateFlag {
 	
-	@SuppressWarnings("unused")
 	private final EverWorldGuard plugin;
 
 	public FlagPvp(EverWorldGuard plugin) {
@@ -61,19 +61,33 @@ public class FlagPvp extends StateFlag {
 		return State.ALLOW;
 	}
 	
+	public boolean sendMessage(Player player, Vector3i position) {
+		return this.plugin.getProtectionService().sendMessage(player, this,
+				EWMessages.FLAG_PVP_MESSAGE.sender()
+					.replace("<x>", position.getX())
+					.replace("<y>", position.getY())
+					.replace("<z>", position.getZ()));
+	}
+
+	
 	public void onCollideEntity(WorldWorldGuard world, CollideEntityEvent event) {
 		if (event.isCancelled()) return;
 		
-		if (event.getCause().get(NamedCause.SOURCE, Projectile.class).isPresent() && event.getCause().get(NamedCause.OWNER, Player.class).isPresent()) {
-			event.filterEntities(entity -> {
-				if (entity instanceof Player) {
-					if (world.getRegions(entity.getLocation().getPosition()).getFlag((Player) entity, this).equals(State.DENY)) {
-						return false;
-					}
+		if (!event.getCause().get(NamedCause.SOURCE, Projectile.class).isPresent()) return;
+		
+		Optional<Player> player = event.getCause().get(NamedCause.OWNER, Player.class);
+		if (!player.isPresent()) return;
+		
+		event.filterEntities(entity -> {
+			if (entity instanceof Player) {
+				if (world.getRegions(entity.getLocation().getPosition()).getFlag((Player) entity, this).equals(State.DENY)) {
+					return false;
 				}
-				return true;
-			});
-		}
+			}
+			return true;
+		}).stream()
+		.findAny()
+		.ifPresent(entity -> this.sendMessage(player.get(), entity.getLocation().getPosition().toInt()));
 	}
 	
 	public void onDamageEntity(WorldWorldGuard world, DamageEntityEvent event) {
@@ -100,7 +114,9 @@ public class FlagPvp extends StateFlag {
 			EntityDamageSource damageSource = (EntityDamageSource) source;
 			
 			if (damageSource.getSource() instanceof Player && !damageSource.getSource().equals(player)) {
-				this.onDamageEntity(world, event, player);
+				if (this.onDamageEntity(world, event, player)) {
+					this.sendMessage((Player) damageSource.getSource(), player.getLocation().getPosition().toInt());
+				}
 			}
 		} else if (source instanceof BlockDamageSource) {
 			BlockDamageSource damageSource = (BlockDamageSource) source;

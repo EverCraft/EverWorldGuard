@@ -76,7 +76,7 @@ public class FlagEnderPearl extends StateFlag {
 	public void onInteractItem(InteractItemEvent event) {
 		if (event.isCancelled()) return;
 		
-		if (event.getItemStack().equals(ItemTypes.ENDER_PEARL)) return;
+		if (!event.getItemStack().getType().equals(ItemTypes.ENDER_PEARL)) return;
 		
 		Optional<Player> optPlayer = event.getCause().get(NamedCause.SOURCE, Player.class);
 		if (!optPlayer.isPresent()) return;
