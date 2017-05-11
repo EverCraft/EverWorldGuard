@@ -19,7 +19,6 @@ package fr.evercraft.everworldguard.protection.flags;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.projectile.Projectile;
 import org.spongepowered.api.event.cause.NamedCause;
@@ -68,85 +67,93 @@ public class FlagPvp extends StateFlag {
 					.replace("<y>", position.getY())
 					.replace("<z>", position.getZ()));
 	}
-
+	
+	/*
+	 * CollideEntityEvent : Pour les arcs Flame
+	 */
 	
 	public void onCollideEntity(WorldWorldGuard world, CollideEntityEvent event) {
 		if (event.isCancelled()) return;
 		
 		if (!event.getCause().get(NamedCause.SOURCE, Projectile.class).isPresent()) return;
 		
-		Optional<Player> player = event.getCause().get(NamedCause.OWNER, Player.class);
-		if (!player.isPresent()) return;
+		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
+		if (!optPlayer.isPresent()) return;
+		Player player = optPlayer.get();
 		
-		event.filterEntities(entity -> {
-			if (entity instanceof Player) {
-				if (world.getRegions(entity.getLocation().getPosition()).getFlag((Player) entity, this).equals(State.DENY)) {
-					return false;
+		// Le joueur n'est pas dans une region où il a le droit de PVP
+		if (world.getRegions(player.getLocation().getPosition()).getFlag(player, this).equals(State.DENY)) {
+			event.filterEntities(entity -> !(entity instanceof Player) || entity.equals(player));
+		
+		// Le joueur est dans une region où il a le droit de PVP donc on vérifie la position de la cible
+		} else {
+			event.filterEntities(entity -> {
+				if (entity instanceof Player && !entity.equals(player)) {
+					if (world.getRegions(entity.getLocation().getPosition()).getFlag(player, this).equals(State.DENY)) {
+						return false;
+					}
 				}
-			}
-			return true;
-		}).stream()
-		.findAny()
-		.ifPresent(entity -> this.sendMessage(player.get(), entity.getLocation().getPosition().toInt()));
+				return true;
+			});
+		}
 	}
 	
 	public void onDamageEntity(WorldWorldGuard world, DamageEntityEvent event) {
 		if (event.isCancelled()) return;
 		if (!(event.getTargetEntity() instanceof Player)) return;
 		
-		Player player = (Player) event.getTargetEntity();
+		Player target = (Player) event.getTargetEntity();
 		
 		Object source = event.getCause().root();
 		 if (source instanceof FallingBlockDamageSource) {				
 			FallingBlockDamageSource damageSource = (FallingBlockDamageSource) source;
 			
 			Optional<UUID> creator = damageSource.getSource().getCreator();
-			if (creator.isPresent() && !creator.get().equals(player.getUniqueId())) {
-				this.onDamageEntity(world, event, player);
+			if (creator.isPresent() && !creator.get().equals(target.getUniqueId())) {
+				this.plugin.getEServer().getPlayer(creator.get())
+					.ifPresent(player -> this.onDamageEntity(world, event, player, target, false));
 			}
 		} else if (source instanceof IndirectEntityDamageSource) {				
 			IndirectEntityDamageSource damageSource = (IndirectEntityDamageSource) source;
 			
-			if (damageSource.getIndirectSource() instanceof Player && !damageSource.getSource().equals(player)) {
-				this.onDamageEntity(world, event, player);
+			if (damageSource.getIndirectSource() instanceof Player && !damageSource.getSource().equals(target)) {
+				this.onDamageEntity(world, event, (Player) damageSource.getIndirectSource(), target, false);
 			}
 		} else if (source instanceof EntityDamageSource) {				
 			EntityDamageSource damageSource = (EntityDamageSource) source;
 			
-			if (damageSource.getSource() instanceof Player && !damageSource.getSource().equals(player)) {
-				if (this.onDamageEntity(world, event, player)) {
-					this.sendMessage((Player) damageSource.getSource(), player.getLocation().getPosition().toInt());
-				}
+			if (damageSource.getSource() instanceof Player && !damageSource.getSource().equals(target)) {
+				this.onDamageEntity(world, event, (Player) damageSource.getSource(), target, true);
 			}
 		} else if (source instanceof BlockDamageSource) {
-			BlockDamageSource damageSource = (BlockDamageSource) source;
-			
 			// TODO Bug BUCKET : no creator
-			Optional<UUID> creator = damageSource.getBlockSnapshot().getCreator();
-			if (creator.isPresent() && !creator.get().equals(player.getUniqueId())) {
-				if (this.onDamageEntity(world, event, player)) {
-					// TODO Bug IgniteEntityEvent : no implemented
-					if (damageSource.getType().equals(DamageTypes.FIRE)) {
-						player.offer(Keys.FIRE_TICKS, 0);
-					}
-				}
-			}
+			// TODO Bug IgniteEntityEvent : no implemented
 		} else if (source instanceof DamageSource){
 			DamageSource damageSource = (DamageSource) source;
 			
 			if (damageSource.getType().equals(DamageTypes.SUFFOCATE)) {
-				Location<World> location = player.getLocation().add(Vector3d.from(0, 2, 0));
+				Location<World> location = target.getLocation().add(Vector3d.from(0, 2, 0));
 				Optional<UUID> creator = location.getExtent().getCreator(location.getBlockPosition());
-				if (creator.isPresent() && !creator.get().equals(player.getUniqueId())) {
-					this.onDamageEntity(world, event, player);
+				if (creator.isPresent() && !creator.get().equals(target.getUniqueId())) {
+					this.plugin.getEServer().getPlayer(creator.get())
+						.ifPresent(player -> this.onDamageEntity(world, event, player, target, false));
 				}
 			}
 		}
 	}
 	
-	public boolean onDamageEntity(WorldWorldGuard world, DamageEntityEvent event, Player player) {
+	public boolean onDamageEntity(WorldWorldGuard world, DamageEntityEvent event, Player player, Player target, boolean message) {
 		if (world.getRegions(player.getLocation().getPosition()).getFlag(player, this).equals(State.DENY)) {
 			event.setCancelled(true);
+			if (message) {
+				this.sendMessage(player, player.getLocation().getPosition().toInt());
+			}
+			return true;
+		} else if (world.getRegions(target.getLocation().getPosition()).getFlag(player, this).equals(State.DENY)) {
+			event.setCancelled(true);
+			if (message) {
+				this.sendMessage(player, target.getLocation().getPosition().toInt());
+			}
 			return true;
 		}
 		return false;

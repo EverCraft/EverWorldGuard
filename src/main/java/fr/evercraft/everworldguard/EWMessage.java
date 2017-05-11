@@ -352,6 +352,8 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 																						.actionbarStay(3 * 1000)
 																						.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		
+		FLAG_ENTITY_DAMAGE_DESCRIPTION("flag.entityDamage.description",			"Désactive/Active les damages infligés par entités"),
+		
 		FLAG_ENDERMAN_GRIEF_DESCRIPTION("flag.endermanGrief.description",		""),
 		
 		
@@ -397,7 +399,13 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		
 		FLAG_TELEPORT_DESCRIPTION("flag.teleport.description",					"Sauvegarde une position pour se téléporter à la région"),
 		
-		FLAG_SPAWN_DESCRIPTION("flag.spawn.description",						"Défini un spawn pour la région");
+		FLAG_SPAWN_DESCRIPTION("flag.spawn.description",						"Défini un spawn pour la région"),
+		
+		FLAG_SPAWN_ENTITY_DESCRIPTION("flag.spawnEntity.description",			""),
+		FLAG_SPAWN_ENTITY_MESSAGE("flag.spawnEntity.message",					EMessageFormat.builder()
+																					.actionbarMessageString("&cLe spawn des <entity> est désactivé (<x>, <y>, <z>)")
+																					.actionbarStay(3 * 1000)
+																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG));
 		
 		private final String path;
 	    private final EMessageBuilder french;

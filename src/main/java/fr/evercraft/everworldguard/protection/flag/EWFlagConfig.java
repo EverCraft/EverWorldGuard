@@ -152,7 +152,9 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 			this.plugin.getGame().getRegistry().getAllOf(EntityType.class).stream()
 				.filter(entity -> !EntityTypes.UNKNOWN.equals(entity) && !EntityTypes.WOLF.equals(entity) && Animal.class.isAssignableFrom(entity.getEntityClass()))
 				.map(entity -> entity.getId()),
-			Arrays.asList("evercraft:wolf_passive").stream())
+			Arrays.asList(
+					EntityTypes.SQUID.getId(),
+					"evercraft:wolf_passive").stream())
 			.collect(Collectors.toList()));
 		
 		interact_entity.put("GROUP_MONSTER", Stream.concat(
@@ -160,7 +162,9 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 				.filter(entity -> !EntityTypes.UNKNOWN.equals(entity) && 
 						(Monster.class.isAssignableFrom(entity.getEntityClass()) || Golem.class.isAssignableFrom(entity.getEntityClass())))
 				.map(entity -> entity.getId()),
-			Arrays.asList("evercraft:wolf_angry").stream())
+			Arrays.asList(
+					EntityTypes.GUARDIAN.getId(),
+					"evercraft:wolf_angry").stream())
 			.collect(Collectors.toList()));
 		
 		interact_entity.put("GROUP_INVENTORY", Arrays.asList(
@@ -185,7 +189,7 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 				EntityTypes.HOPPER_MINECART.getId(),
 				EntityTypes.ITEM_FRAME.getId(),
 				EntityTypes.VILLAGER.getId()));
-		addDefault("INTERACT_ENTITY, DAMAGE_ENTITY", interact_entity);
+		addDefault("INTERACT_ENTITY, DAMAGE_ENTITY, ENTITY_DAMAGE, ENTITY_SPAWNING", interact_entity);
 	}
 	
 	public void loadBuild() {
@@ -247,7 +251,45 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 				if (entityTemplate.isPresent()) {
 					entities.add(entityTemplate.get());
 				} else {
-					this.plugin.getELogger().warn("[Flag][Config][INTERACT_ENTITY] Error : EntityTemplate '" + entityString + "'");
+					this.plugin.getELogger().warn("[Flag][Config][DAMAGE_ENTITY] Error : EntityTemplate '" + entityString + "'");
+				}
+			});
+			groups.put(group.toString().toUpperCase(), entities);
+		});
+		return groups;
+	}
+	
+	public Map<String, Set<EntityTemplate>> getEntityDamage() {
+		Map<String, Set<EntityTemplate>> groups = new HashMap<String, Set<EntityTemplate>>();
+		this.getContains("ENTITY_DAMAGE").getChildrenMap().forEach((group, list) -> {
+			Set<EntityTemplate> entities = new HashSet<EntityTemplate>();
+			list.getChildrenList().forEach(entity_config -> {
+				String entityString = entity_config.getString("");
+				
+				Optional<EntityTemplate> entityTemplate = this.plugin.getEverAPI().getManagerService().getEntity().getForAll(entityString);
+				if (entityTemplate.isPresent()) {
+					entities.add(entityTemplate.get());
+				} else {
+					this.plugin.getELogger().warn("[Flag][Config][ENTITY_DAMAGE] Error : EntityTemplate '" + entityString + "'");
+				}
+			});
+			groups.put(group.toString().toUpperCase(), entities);
+		});
+		return groups;
+	}
+	
+	public Map<String, Set<EntityTemplate>> getEntitySpawning() {
+		Map<String, Set<EntityTemplate>> groups = new HashMap<String, Set<EntityTemplate>>();
+		this.getContains("ENTITY_SPAWNING").getChildrenMap().forEach((group, list) -> {
+			Set<EntityTemplate> entities = new HashSet<EntityTemplate>();
+			list.getChildrenList().forEach(entity_config -> {
+				String entityString = entity_config.getString("");
+				
+				Optional<EntityTemplate> entityTemplate = this.plugin.getEverAPI().getManagerService().getEntity().getForAll(entityString);
+				if (entityTemplate.isPresent()) {
+					entities.add(entityTemplate.get());
+				} else {
+					this.plugin.getELogger().warn("[Flag][Config][ENTITY_SPAWNING] Error : EntityTemplate '" + entityString + "'");
 				}
 			});
 			groups.put(group.toString().toUpperCase(), entities);

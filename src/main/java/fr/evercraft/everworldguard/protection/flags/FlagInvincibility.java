@@ -16,7 +16,9 @@
  */
 package fr.evercraft.everworldguard.protection.flags;
 
+import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.event.entity.DamageEntityEvent;
 import org.spongepowered.api.event.entity.HealEntityEvent;
 
 import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
@@ -39,15 +41,27 @@ public class FlagInvincibility extends StateFlag {
 		return State.DENY;
 	}
 	
-	public void onPlayerHeal(WorldWorldGuard world, HealEntityEvent event) {
+	public void onHealEntity(WorldWorldGuard world, HealEntityEvent event) {
 		if (event.isCancelled()) return;
 		
-		if (event.getTargetEntity() instanceof Player && event.getBaseHealAmount() > event.getFinalHealAmount()) {
-			Player player = (Player) event.getTargetEntity();
-			
-			if (world.getRegions(player.getLocation().getPosition()).getFlag(player, this).equals(State.ALLOW)) {
-				event.setCancelled(true);
-			}
+		if(event.getBaseHealAmount() > event.getFinalHealAmount()) return;
+		if (!(event.getTargetEntity() instanceof Player)) return;
+		Player player = (Player) event.getTargetEntity();
+		
+		if (world.getRegions(player.getLocation().getPosition()).getFlag(player, this).equals(State.ALLOW)) {
+			event.setCancelled(true);
+		}
+	}
+	
+	public void onDamageEntity(WorldWorldGuard world, DamageEntityEvent event) {
+		if (event.isCancelled()) return;
+		
+		if (!(event.getTargetEntity() instanceof Player)) return;
+		Player player = (Player) event.getTargetEntity();
+		
+		if (world.getRegions(player.getLocation().getPosition()).getFlag(player, this).equals(State.ALLOW)) {
+			event.setCancelled(true);
+			player.offer(Keys.FIRE_TICKS, 0);
 		}
 	}
 }

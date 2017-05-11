@@ -18,10 +18,14 @@ package fr.evercraft.everworldguard.listeners.entity;
 
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
-import org.spongepowered.api.event.action.InteractEvent;
+import org.spongepowered.api.event.entity.ChangeEntityPotionEffectEvent;
 import org.spongepowered.api.event.entity.CollideEntityEvent;
 import org.spongepowered.api.event.entity.DamageEntityEvent;
+import org.spongepowered.api.event.entity.HealEntityEvent;
 import org.spongepowered.api.event.entity.InteractEntityEvent;
+import org.spongepowered.api.event.entity.SpawnEntityEvent;
+import org.spongepowered.api.event.entity.projectile.TargetProjectileEvent;
+
 import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
 import fr.evercraft.everworldguard.EverWorldGuard;
 
@@ -34,19 +38,6 @@ public class EntityListener {
 	}
 	
 	@Listener(order=Order.FIRST)
-	public void onInteractEntity(InteractEvent event) {		
-		// Debug
-		/*List<Text> list = new ArrayList<Text>();
-		event.getCause().getNamedCauses().forEach((key, value) -> {
-			list.add(Text.builder(key)
-					.onHover(TextActions.showText(Text.of(EChat.fixLength(value.toString(), 254))))
-					.onClick(TextActions.suggestCommand(EChat.fixLength(value.toString(), 254)))
-					.build());
-		});
-		this.plugin.getEServer().getBroadcastChannel().send(Text.of("InteractEvent : ").concat(Text.joinWith(Text.of(", "), list)));*/
-	}
-	
-	@Listener(order=Order.FIRST)
 	public void onInteractEntity(InteractEntityEvent.Secondary event) {
 		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetEntity().getWorld());
 		
@@ -55,12 +46,30 @@ public class EntityListener {
 	}
 	
 	@Listener(order=Order.FIRST)
-	public void onPlayerDamage(DamageEntityEvent event) {
+	public void onDamageEntity(DamageEntityEvent event) {
 		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetEntity().getWorld());
 		
 		this.plugin.getManagerFlags().PVP.onDamageEntity(world, event);
+		this.plugin.getManagerFlags().INVINCIBILITY.onDamageEntity(world, event);
 		this.plugin.getManagerFlags().DAMAGE_ENTITY.onDamageEntity(world, event);
+		this.plugin.getManagerFlags().ENTITY_DAMAGE.onDamageEntity(world, event);
 		this.plugin.getManagerFlags().BUILD.onDamageEntity(world, event);
+		
+		//UtilsCause.debug(event.getCause(), "DamageEntityEvent");
+	}
+	
+	@Listener(order=Order.FIRST)
+	public void onSpawnEntity(SpawnEntityEvent event) {
+		this.plugin.getManagerFlags().ENTITY_SPAWNING.onSpawnEntity(event);
+		
+		// Debug UtilsCause.debug(event.getCause(), "SpawnEntityEvent");
+	}
+	
+	@Listener(order=Order.FIRST)
+	public void onPlayerHeal(HealEntityEvent event) {
+		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetEntity().getWorld());
+		
+		this.plugin.getManagerFlags().INVINCIBILITY.onHealEntity(world, event);
 	}
 	
 	@Listener(order=Order.FIRST)
@@ -71,5 +80,17 @@ public class EntityListener {
 		this.plugin.getManagerFlags().PVP.onCollideEntity(world, event);
 		this.plugin.getManagerFlags().DAMAGE_ENTITY.onCollideEntity(world, event);
 		this.plugin.getManagerFlags().BUILD.onCollideEntity(world, event);
+		
+		//UtilsCause.debug(event.getCause(), "CollideEntityEvent");
+	}
+	
+	@Listener(order=Order.FIRST)
+	public void onChangeEntityPotionEffect(ChangeEntityPotionEffectEvent event) {
+		//UtilsCause.debug(event.getCause(), "ChangeEntityPotionEffectEvent");
+	}
+	
+	@Listener(order=Order.FIRST)
+	public void onTargetProjectile(TargetProjectileEvent event) {
+		//UtilsCause.debug(event.getCause(), "TargetProjectileEvent");
 	}
 }

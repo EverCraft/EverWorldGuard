@@ -101,6 +101,8 @@ public class FlagBuild extends StateFlag {
 		return State.ALLOW;
 	}
 	
+	// TODO TNT
+	
 	/*
 	 * ChangeBlockEvent.Pre
 	 */

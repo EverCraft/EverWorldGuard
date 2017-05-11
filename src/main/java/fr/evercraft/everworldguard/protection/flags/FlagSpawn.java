@@ -18,7 +18,6 @@ package fr.evercraft.everworldguard.protection.flags;
 
 import fr.evercraft.everapi.server.location.VirtualTransform;
 import fr.evercraft.everapi.services.worldguard.flag.type.LocationFlag;
-import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 
@@ -35,11 +34,6 @@ public class FlagSpawn extends LocationFlag {
 
 	@Override
 	public VirtualTransform getDefault() {
-		return VirtualTransform.empty();
-	}
-	
-	@Override
-	public VirtualTransform getDefault(ProtectedRegion region) {
 		return VirtualTransform.empty();
 	}
 }

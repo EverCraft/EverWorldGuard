@@ -17,12 +17,9 @@
 package fr.evercraft.everworldguard.listeners.entity;
 
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.Order;
-import org.spongepowered.api.event.entity.HealEntityEvent;
 import org.spongepowered.api.event.entity.IgniteEntityEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 
-import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.protection.subject.EUserSubject;
 
@@ -50,15 +47,8 @@ public class PlayerListener {
 		this.plugin.getProtectionService().getSubjectList().removePlayer(event.getTargetEntity().getUniqueId());
 	}
 	
-	@Listener(order=Order.FIRST)
-	public void onPlayerHeal(HealEntityEvent event) {
-		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetEntity().getWorld());
-		
-		this.plugin.getManagerFlags().INVINCIBILITY.onPlayerHeal(world, event);
-	}
-	
 	@Listener
-	public void onCollideEntity(IgniteEntityEvent event) {		
+	public void onIgniteEntity(IgniteEntityEvent event) {		
 		/*List<Text> list = new ArrayList<Text>();
 		event.getCause().getNamedCauses().forEach((key, value) -> {
 			list.add(Text.builder(key)

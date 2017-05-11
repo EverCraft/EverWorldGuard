@@ -52,6 +52,7 @@ import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
 import fr.evercraft.everapi.services.worldguard.flag.Flags;
 import fr.evercraft.everapi.services.worldguard.flag.type.BlockTypeFlag;
 import fr.evercraft.everapi.services.worldguard.flag.value.EntryFlagValue;
+import fr.evercraft.everapi.sponge.UtilsBlockType;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.protection.EProtectionService;
 import fr.evercraft.everworldguard.EverWorldGuard;
@@ -97,7 +98,7 @@ public class FlagInteractBlock extends BlockTypeFlag {
 					.replace("<x>", position.getX())
 					.replace("<y>", position.getY())
 					.replace("<z>", position.getZ())
-					.replace("<block>", type.getName()));
+					.replace("<block>", type.getTranslation()));
 	}
 
 	@Override
@@ -218,7 +219,9 @@ public class FlagInteractBlock extends BlockTypeFlag {
 			event.setCancelled(true);
 			
 			// Message
-			this.sendMessage(player, event.getTargetLocation(), type);
+			if (UtilsBlockType.BLOCK_COLLISION.contains(type)) {
+				this.sendMessage(player, event.getTargetLocation(), type);
+			}
 		}
 	}
 	

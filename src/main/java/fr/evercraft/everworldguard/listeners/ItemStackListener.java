@@ -44,8 +44,9 @@ public class ItemStackListener {
 	}
 	
 	@Listener(order=Order.FIRST)
-	public void onInteractItem(InteractItemEvent event) {
+	public void onInteractItem(InteractItemEvent.Secondary event) {
 		this.plugin.getManagerFlags().ENDERPEARL.onInteractItem(event);
+		this.plugin.getManagerFlags().ENTITY_SPAWNING.onInteractItem(event);
 		
 		// Debug
 		/*List<Text> list = new ArrayList<Text>();

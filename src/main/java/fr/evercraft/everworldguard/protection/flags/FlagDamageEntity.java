@@ -16,19 +16,11 @@
  */
 package fr.evercraft.everworldguard.protection.flags;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
@@ -42,49 +34,32 @@ import org.spongepowered.api.event.cause.entity.damage.source.FallingBlockDamage
 import org.spongepowered.api.event.cause.entity.damage.source.IndirectEntityDamageSource;
 import org.spongepowered.api.event.entity.CollideEntityEvent;
 import org.spongepowered.api.event.entity.DamageEntityEvent;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
 
-import fr.evercraft.everapi.EAMessage.EAMessages;
 import fr.evercraft.everapi.services.entity.EntityTemplate;
 import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
 import fr.evercraft.everapi.services.worldguard.flag.type.EntityTemplateFlag;
-import fr.evercraft.everapi.services.worldguard.flag.value.EntityPatternFlagValue;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EverWorldGuard;
 
 public class FlagDamageEntity extends EntityTemplateFlag {
 	
-	private static final String ALL = "ALL";
-	
 	private final EverWorldGuard plugin;
-	private final Map<String, Set<EntityTemplate>> groups;
-	private EntityPatternFlagValue<EntityTemplate, Entity> defaults;
 	
 	public FlagDamageEntity(EverWorldGuard plugin) {
 		super("DAMAGE_ENTITY");
 		
 		this.plugin = plugin;
-		
-		this.groups = new ConcurrentHashMap<String, Set<EntityTemplate>>();
-		this.defaults = new EntityPatternFlagValue<EntityTemplate, Entity>();
-		
 		this.reload();
 	}
 	
-	public void reload() {
-		this.groups.clear();
-		this.groups.putAll(this.plugin.getProtectionService().getConfigFlags().getDamageEntity());
-		
-		Set<String> keys = this.groups.keySet();
-		Set<EntityTemplate> values = new HashSet<EntityTemplate>();
-		this.groups.values().forEach(value -> values.addAll(value));
-		this.defaults = new EntityPatternFlagValue<EntityTemplate, Entity>(keys, values);
+	@Override
+	protected Map<String, Set<EntityTemplate>> getConfig() {
+		return this.plugin.getProtectionService().getConfigFlags().getDamageEntity();
 	}
 	
 	@Override
@@ -99,110 +74,29 @@ public class FlagDamageEntity extends EntityTemplateFlag {
 					.replace("<x>", position.getX())
 					.replace("<y>", position.getY())
 					.replace("<z>", position.getZ())
-					.replace("<entity>", entity.getType().getName()));
-	}
-
-	@Override
-	public EntityPatternFlagValue<EntityTemplate, Entity> getDefault() {
-		return this.defaults;
+					.replace("<entity>", entity.getType().getTranslation()));
 	}
 	
 	/*
-	 * Suggest
+	 * CollideEntityEvent : Pour les arcs Flame
 	 */
-
-	@Override
-	public Collection<String> getSuggestAdd(CommandSource source, List<String> args) {
-		return Stream.concat(
-				this.groups.keySet().stream(),
-				Stream.of(ALL))
-			.filter(suggest -> !args.stream().anyMatch(arg -> arg.equalsIgnoreCase(suggest)))
-			.collect(Collectors.toList());
-	}
-	
-	@Override
-	public String serialize(EntityPatternFlagValue<EntityTemplate, Entity> value) {
-		return String.join(",", value.getKeys());
-	}
-
-	@Override
-	public EntityPatternFlagValue<EntityTemplate, Entity> deserialize(String value) throws IllegalArgumentException {
-		if (value.equalsIgnoreCase(ALL)) return this.defaults;
-		if (value.isEmpty()) return new EntityPatternFlagValue<EntityTemplate, Entity>();
-		
-		Set<String> keys = new HashSet<String>();
-		Set<EntityTemplate> values = new HashSet<EntityTemplate>();
-		for (String key : value.split(PATTERN_SPLIT)) {
-			Set<EntityTemplate> blocks = this.groups.get(key.toUpperCase());
-			if (blocks != null) {
-				keys.add(key.toUpperCase());
-				values.addAll(blocks);
-			} else {
-				throw new IllegalArgumentException();
-			}
-		}
-		return new EntityPatternFlagValue<EntityTemplate, Entity>(keys, values);
-	}
-	
-	@Override
-	public Text getValueFormat(EntityPatternFlagValue<EntityTemplate, Entity> value) {
-		if (value.getKeys().isEmpty()) {
-			return EAMessages.FLAG_ENTITYTEMPLATE_EMPTY.getText();
-		}
-		
-		List<Text> groups = new ArrayList<Text>();
-		for (String group : value.getKeys()) {
-			List<Text> entities = new ArrayList<Text>();
-			for (EntityTemplate entity : this.groups.get(group)) {
-				entities.add(EAMessages.FLAG_ENTITYTEMPLATE_HOVER.getFormat().toText("<entity>", entity.getId()));
-			}
-			groups.add(EAMessages.FLAG_ENTITYTEMPLATE_GROUP.getFormat().toText("<group>", group).toBuilder()
-				.onHover(TextActions.showText(Text.joinWith(Text.of("\n"), entities)))
-				.build());
-		}
-		
-		return Text.joinWith(EAMessages.FLAG_ENTITYTEMPLATE_JOIN.getText(), groups);
-	}
-	
-	/*
-	 * CollideEntity
-	 */
-	
 	public void onCollideEntity(WorldWorldGuard world, CollideEntityEvent event) {
 		if (event.isCancelled()) return;
 		
+		// TODO Owner == Cible ?
 		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
-		if (optPlayer.isPresent()) {
-			this.onCollideEntityPlayer(world, event, optPlayer.get());
-		} else {
-			this.onCollideEntityNatural(world, event);
-		}
-	}
-	
-	public void onCollideEntityPlayer(WorldWorldGuard world, CollideEntityEvent event, Player player) {
-		if (event.getCause().get(NamedCause.SOURCE, Projectile.class).isPresent()) {
-			List<? extends Entity> filter = event.filterEntities(entity -> {
-				if (this.getDefault().contains(entity) && !world.getRegions(entity.getLocation().getPosition()).getFlag(player, this).contains(entity, player)) {
-					return false;
-				}
-				return true;
-			});
-			
-			if (!filter.isEmpty()) {
-				this.sendMessage(player, filter.get(0));
+		if (!optPlayer.isPresent()) return;
+		Player player = optPlayer.get();
+		
+		if (!event.getCause().get(NamedCause.SOURCE, Projectile.class).isPresent()) return;
+		
+		event.filterEntities(entity -> {
+			if (this.getDefault().contains(entity) && !world.getRegions(entity.getLocation().getPosition()).getFlag(player, this).contains(entity, player)) {
+				System.out.println("entity : " + entity.getType());
+				return false;
 			}
-		}
-	}
-	
-	public void onCollideEntityNatural(WorldWorldGuard world, CollideEntityEvent event) {		
-		if (event.getCause().get(NamedCause.SOURCE, Projectile.class).isPresent()) {
-			event.filterEntities(entity -> {
-				if (this.getDefault().contains(entity) && !world.getRegions(entity.getLocation().getPosition()).getFlagDefault(this).contains(entity)) {
-					return false;
-				}
-				return true;
-			});
-		}
+			return true;
+		});
 	}
 	
 	/*
