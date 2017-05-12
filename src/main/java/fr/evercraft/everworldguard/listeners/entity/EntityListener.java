@@ -61,8 +61,10 @@ public class EntityListener {
 	@Listener(order=Order.FIRST)
 	public void onSpawnEntity(SpawnEntityEvent event) {
 		this.plugin.getManagerFlags().ENTITY_SPAWNING.onSpawnEntity(event);
+		this.plugin.getManagerFlags().EXP_DROP.onSpawnEntity(event);
 		
-		// Debug UtilsCause.debug(event.getCause(), "SpawnEntityEvent");
+		// Debug 
+		//UtilsCause.debug(event.getCause(), "SpawnEntityEvent");
 	}
 	
 	@Listener(order=Order.FIRST)

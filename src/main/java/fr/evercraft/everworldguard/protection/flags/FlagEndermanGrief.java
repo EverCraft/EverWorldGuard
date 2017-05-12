@@ -70,7 +70,6 @@ public class FlagEndermanGrief extends StateFlag {
 		if (!event.filter(location -> 
 			service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlagDefault(this).equals(State.ALLOW)).isEmpty()) {
 			event.setCancelled(true);
-			System.out.println("enderman");
 			// TODO L'enderman garde l'item dans la main mais l'inventaire n'est pas encore implémenté
 			//enderman.get().getInventory().clear();
 		}

@@ -92,7 +92,6 @@ public class FlagDamageEntity extends EntityTemplateFlag {
 		
 		event.filterEntities(entity -> {
 			if (this.getDefault().contains(entity) && !world.getRegions(entity.getLocation().getPosition()).getFlag(player, this).contains(entity, player)) {
-				System.out.println("entity : " + entity.getType());
 				return false;
 			}
 			return true;
@@ -128,7 +127,10 @@ public class FlagDamageEntity extends EntityTemplateFlag {
 			IndirectEntityDamageSource damageSource = (IndirectEntityDamageSource) source;
 			
 			if (damageSource.getIndirectSource() instanceof Player) {
-				this.onDamageEntity(world, event, entity, (Player) damageSource.getIndirectSource());
+				if (this.onDamageEntity(world, event, entity, (Player) damageSource.getIndirectSource())) {
+					// Message
+					this.sendMessage((Player) damageSource.getIndirectSource(), entity);
+				}
 			} else {
 				this.onDamageEntity(world, event, entity);
 			}

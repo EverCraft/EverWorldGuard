@@ -30,6 +30,8 @@ public class EWManagerFlags {
 	private final EverWorldGuard plugin;
 	
 	public final FlagBuild BUILD;
+	public final FlagChatReceive CHAT_RECEIVE;
+	public final FlagChatSend CHAT_SEND;
 	public final FlagDamageEntity DAMAGE_ENTITY;
 	public final FlagEndermanGrief ENDERMAN_GRIEF;
 	public final FlagEnderPearl ENDERPEARL;
@@ -43,6 +45,7 @@ public class EWManagerFlags {
 	public final FlagExit EXIT;
 	public final FlagExitMessage EXIT_MESSAGE;
 	public final FlagExitDenyMessage EXIT_DENY_MESSAGE;
+	public final FlagExpDrop EXP_DROP;
 	public final FlagInvincibility INVINCIBILITY;
 	public final FlagPvp PVP;
 	public final FlagSpawn SPAWN;
@@ -54,6 +57,8 @@ public class EWManagerFlags {
 		this.register();
 
 		BUILD = new FlagBuild(this.plugin);
+		CHAT_RECEIVE = new FlagChatReceive(this.plugin);
+		CHAT_SEND = new FlagChatSend(this.plugin);
 		DAMAGE_ENTITY = new FlagDamageEntity(this.plugin);
 		ENDERMAN_GRIEF = new FlagEndermanGrief(this.plugin);
 		ENDERPEARL = new FlagEnderPearl(this.plugin);
@@ -67,6 +72,7 @@ public class EWManagerFlags {
 		EXIT = new FlagExit();
 		EXIT_MESSAGE = new FlagExitMessage();
 		EXIT_DENY_MESSAGE = new FlagExitDenyMessage();
+		EXP_DROP = new FlagExpDrop(this.plugin);
 		INVINCIBILITY = new FlagInvincibility();
 		PVP = new FlagPvp(this.plugin);
 		SPAWN = new FlagSpawn(this.plugin);

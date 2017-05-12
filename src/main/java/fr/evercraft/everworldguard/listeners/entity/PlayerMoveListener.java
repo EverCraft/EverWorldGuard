@@ -24,9 +24,12 @@ import org.spongepowered.api.entity.living.Living;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
+import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
+import org.spongepowered.api.event.entity.RideEntityEvent;
 import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEvent;
 import org.spongepowered.api.event.filter.Getter;
+import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -65,34 +68,38 @@ public class PlayerMoveListener {
 	}
 	
 	@Listener(order=Order.FIRST)
-	public void onMoveEntityFirst(MoveEntityEvent event, @Getter("getTargetEntity") Player player_sponge) {
+	public void onMoveEntityFirst(MoveEntityEvent event, @Getter("getTargetEntity") Player player) {
 		if (event.isCancelled()) return;
-			
-		Optional<EUserSubject> optSubject = this.plugin.getProtectionService().getSubject(player_sponge.getUniqueId());
+		
+		Optional<EUserSubject> optSubject = this.plugin.getProtectionService().getSubject(player.getUniqueId());
 		if (!optSubject.isPresent()) return;
 		
-		Location<World> location = optSubject.get().moveToPre(player_sponge, event.getToTransform().getLocation(), MoveType.MOVE, event.getCause()).orElse(null);
+		Location<World> location = optSubject.get().moveToPre(player, event.getToTransform().getLocation(), MoveType.MOVE, event.getCause()).orElse(null);
 		if (location != null) {			
 			Transform<World> transform = event.getFromTransform()
 					.setLocation(location.add(Vector3d.from(0.5, 0, 0.5)));
 			event.setToTransform(transform);
 			
-			Entity vehicle = player_sponge.getVehicle().orElse(null);
+			Entity vehicle = player.getVehicle().orElse(null);
 			if (vehicle != null) {
 				while (vehicle != null) {
 					vehicle.clearPassengers();
 					vehicle.setVelocity(Vector3d.ZERO);
 					
-					if (vehicle instanceof Living) {
-						vehicle.setTransform(transform);
-					} else {
-						vehicle.setTransform(transform.addTranslation(Vector3d.from(0, 1, 0)));
+					// Permet de pas teleport les entités en dehors de la region
+					// TODO Minecart : Source == Player
+					if (event.getCause().get(NamedCause.SOURCE, vehicle.getClass()).isPresent()) {
+						if (vehicle instanceof Living) {
+							vehicle.setTransform(transform);
+						} else {
+							vehicle.setTransform(transform.addTranslation(Vector3d.from(0, 1, 0)));
+						}
 					}
 					
 					vehicle = vehicle.getVehicle().orElse(null);
 				}
 				event.setCancelled(true);
-				player_sponge.setTransform(transform.addTranslation(Vector3d.from(0, 1, 0)));
+				player.setTransform(transform.addTranslation(Vector3d.from(0, 1, 0)));
 			}
 		}
 	}
@@ -129,6 +136,24 @@ public class PlayerMoveListener {
 		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(player_sponge.getWorld());
 		
 		this.plugin.getManagerFlags().ENDERPEARL.onMoveEntityTeleport(event, world, player_sponge);
+		
+		// Debug
+		/*List<Text> list = new ArrayList<Text>();
+		event.getCause().getNamedCauses().forEach((key, value) -> {
+			list.add(Text.builder(key)
+					.onHover(TextActions.showText(Text.of(EChat.fixLength(value.toString(), 254))))
+					.onClick(TextActions.suggestCommand(EChat.fixLength(value.toString(), 254)))
+					.build());
+		});
+		this.plugin.getEServer().getBroadcastChannel().send(Text.of("MoveEntityEvent.Teleport : ").concat(Text.joinWith(Text.of(", "), list)));*/
+	}
+	
+	@Listener(order=Order.FIRST)
+	public void onRideEntityMount(RideEntityEvent.Mount event, @First Player player_sponge) {
+		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(player_sponge.getWorld());
+		
+		this.plugin.getManagerFlags().EXIT_MESSAGE.onRideEntityMount(event, world, player_sponge);
+		//this.plugin.getManagerFlags().ENTRY_MESSAGE.onRideEntityMount(event, world, player_sponge);
 		
 		// Debug
 		/*List<Text> list = new ArrayList<Text>();

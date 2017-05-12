@@ -16,10 +16,17 @@
  */
 package fr.evercraft.everworldguard.listeners.entity;
 
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.Order;
+import org.spongepowered.api.event.entity.DestructEntityEvent;
 import org.spongepowered.api.event.entity.IgniteEntityEvent;
+import org.spongepowered.api.event.filter.Getter;
+import org.spongepowered.api.event.filter.cause.First;
+import org.spongepowered.api.event.message.MessageChannelEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 
+import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.protection.subject.EUserSubject;
 
@@ -45,6 +52,18 @@ public class PlayerListener {
 	@Listener
 	public void onClientConnectionEvent(final ClientConnectionEvent.Disconnect event) {
 		this.plugin.getProtectionService().getSubjectList().removePlayer(event.getTargetEntity().getUniqueId());
+	}
+	
+	@Listener(order=Order.FIRST)
+	public void onDestructEntityDeath(DestructEntityEvent.Death event, @Getter("getTargetEntity") Player player) {
+	}
+	
+	@Listener
+	public void onMessageChannelChat(MessageChannelEvent.Chat event, @First Player player) {
+		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(player.getWorld());
+		
+		this.plugin.getManagerFlags().CHAT_SEND.onMessageChannelChat(event, world, player);
+		this.plugin.getManagerFlags().CHAT_RECEIVE.onMessageChannelChat(event, world, player);
 	}
 	
 	@Listener
