@@ -20,6 +20,7 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.entity.ChangeEntityPotionEffectEvent;
 import org.spongepowered.api.event.entity.CollideEntityEvent;
+import org.spongepowered.api.event.entity.ConstructEntityEvent;
 import org.spongepowered.api.event.entity.DamageEntityEvent;
 import org.spongepowered.api.event.entity.HealEntityEvent;
 import org.spongepowered.api.event.entity.InteractEntityEvent;
@@ -61,10 +62,20 @@ public class EntityListener {
 	@Listener(order=Order.FIRST)
 	public void onSpawnEntity(SpawnEntityEvent event) {
 		this.plugin.getManagerFlags().ENTITY_SPAWNING.onSpawnEntity(event);
-		this.plugin.getManagerFlags().EXP_DROP.onSpawnEntity(event);
+		//this.plugin.getManagerFlags().EXP_DROP.onSpawnEntity(event);
 		
 		// Debug 
-		//UtilsCause.debug(event.getCause(), "SpawnEntityEvent");
+		//UtilsCause.debug(event.getCause(), "SpawnEntityEvent : " + String.join(", ", event.getEntities().stream().map(entity -> entity.getType().getName()).collect(Collectors.toList())));
+	}
+	
+	@Listener(order=Order.FIRST)
+	public void onConstructEntityPre(ConstructEntityEvent.Pre event) {
+		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTransform().getExtent());
+		
+		this.plugin.getManagerFlags().LIGHTNING.onConstructEntityPre(world, event);
+		
+		// Debug 
+		//UtilsCause.debug(event.getCause(), "ConstructEntityEvent.Pre : " + event.getTargetType().getName());
 	}
 	
 	@Listener(order=Order.FIRST)

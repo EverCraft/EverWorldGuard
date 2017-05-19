@@ -18,7 +18,6 @@ package fr.evercraft.everworldguard.protection.flag;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -27,7 +26,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.spongepowered.api.block.BlockType;
+import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.EntityTypes;
@@ -35,6 +34,8 @@ import org.spongepowered.api.entity.living.animal.Animal;
 import org.spongepowered.api.entity.living.golem.Golem;
 import org.spongepowered.api.entity.living.monster.Monster;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import fr.evercraft.everapi.plugin.file.EConfig;
 import fr.evercraft.everapi.services.entity.EntityTemplate;
 import fr.evercraft.everworldguard.EverWorldGuard;
@@ -200,115 +201,74 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 		addDefault("BUILD", interact_entity);
 	}
 	
+	public void loadBock() {
+		Map<String, List<String>> blocks = new HashMap<String, List<String>>();
+		blocks.put("GROUP_TNT", Arrays.asList(
+				BlockTypes.TNT.getId()));
+		blocks.put("GROUP_PISTON", Arrays.asList(
+				BlockTypes.PISTON.getId(),
+				BlockTypes.STICKY_PISTON.getId()));
+		
+		blocks.put("GROUP_LAVA", Arrays.asList(
+				BlockTypes.LAVA.getId()));
+		blocks.put("GROUP_WATER", Arrays.asList(
+				BlockTypes.WATER.getId()));
+		
+		blocks.put("GROUP_BEDROCK", Arrays.asList(
+				BlockTypes.BEDROCK.getId()));
+		
+		blocks.put("GROUP_OTHERS", 
+				this.plugin.getGame().getRegistry().getAllOf(BlockType.class).stream()
+					.filter(getById -> {
+						for (List<BlockType> blocks : blocks.values()) {
+							if (blocks.contains(block)) {
+								return false;
+							}
+						}
+						return true;
+					}))
+				.map(entity -> entity.getById()),
+				.collect(Collectors.toList()));
+		
+		addDefault("BLOCK_PLACE, BLOCK_BREAK", blocks);
+	}
+	
 	/*
 	 * Accesseurs
 	 */
 	
-	public Map<String, Set<BlockType>> getInteractBlock() {
-		Map<String, Set<BlockType>> groups = new HashMap<String, Set<BlockType>>();
-		this.getContains("INTERACT_BLOCK").getChildrenMap().forEach((group, list) -> {
-			Set<BlockType> blocks = new HashSet<BlockType>();
-			list.getChildrenList().forEach(block_config -> {
-				Optional<BlockType> block = this.plugin.getGame().getRegistry().getType(BlockType.class, block_config.getString(""));
-				if (block.isPresent()) {
-					blocks.add(block.get());
+	public <T extends CatalogType> Map<String, Set<T>> get(String name, Class<T> type) {
+		ImmutableMap.Builder<String, Set<T>> groups = ImmutableMap.builder();
+		this.getContains(name).getChildrenMap().forEach((group, list) -> {
+			ImmutableSet.Builder<T> set = ImmutableSet.builder();
+			list.getChildrenList().forEach(config -> {
+				Optional<T> optional = this.plugin.getGame().getRegistry().getType(type, config.getString(""));
+				if (optional.isPresent()) {
+					set.add(optional.get());
 				} else {
-					this.plugin.getELogger().warn("[Flag][Config][INTERACT_BLOCK] Error : BlockType '" + block_config.getString("") + "'");
+					this.plugin.getELogger().warn("[Flag][Config][" + name + "] Error : " + type.getSimpleName() + " '" + config.getString("") + "'");
 				}
 			});
-			groups.put(group.toString().toUpperCase(), blocks);
+			groups.put(group.toString().toUpperCase(), set.build());
 		});
-		return groups;
+		return groups.build();
 	}
 	
-	public Map<String, Set<EntityTemplate>> getInteractEntity() {
-		Map<String, Set<EntityTemplate>> groups = new HashMap<String, Set<EntityTemplate>>();
-		this.getContains("INTERACT_ENTITY").getChildrenMap().forEach((group, list) -> {
-			Set<EntityTemplate> entities = new HashSet<EntityTemplate>();
-			list.getChildrenList().forEach(entity_config -> {
-				String entityString = entity_config.getString("");
-				
-				Optional<EntityTemplate> entityTemplate = this.plugin.getEverAPI().getManagerService().getEntity().getForAll(entityString);
-				if (entityTemplate.isPresent()) {
-					entities.add(entityTemplate.get());
+	public Map<String, Set<EntityTemplate>> getEntities(String name) {
+		ImmutableMap.Builder<String, Set<EntityTemplate>> groups = ImmutableMap.builder();
+		this.getContains(name).getChildrenMap().forEach((group, list) -> {
+			ImmutableSet.Builder<EntityTemplate> set = ImmutableSet.builder();
+			list.getChildrenList().forEach(config -> {
+				Optional<EntityTemplate> optional = this.plugin.getEverAPI().getManagerService().getEntity().getForAll(config.getString(""));
+				if (optional.isPresent()) {
+					set.add(optional.get());
 				} else {
-					this.plugin.getELogger().warn("[Flag][Config][INTERACT_ENTITY] Error : EntityTemplate '" + entityString + "'");
+					this.plugin.getELogger().warn("[Flag][Config][" + name + "] Error : EntityTemplate '" + config.getString("") + "'");
 				}
 			});
-			groups.put(group.toString().toUpperCase(), entities);
+			groups.put(group.toString().toUpperCase(), set.build());
 		});
-		return groups;
-	}
-	
-	public Map<String, Set<EntityTemplate>> getDamageEntity() {
-		Map<String, Set<EntityTemplate>> groups = new HashMap<String, Set<EntityTemplate>>();
-		this.getContains("DAMAGE_ENTITY").getChildrenMap().forEach((group, list) -> {
-			Set<EntityTemplate> entities = new HashSet<EntityTemplate>();
-			list.getChildrenList().forEach(entity_config -> {
-				String entityString = entity_config.getString("");
-				
-				Optional<EntityTemplate> entityTemplate = this.plugin.getEverAPI().getManagerService().getEntity().getForAll(entityString);
-				if (entityTemplate.isPresent()) {
-					entities.add(entityTemplate.get());
-				} else {
-					this.plugin.getELogger().warn("[Flag][Config][DAMAGE_ENTITY] Error : EntityTemplate '" + entityString + "'");
-				}
-			});
-			groups.put(group.toString().toUpperCase(), entities);
-		});
-		return groups;
-	}
-	
-	public Map<String, Set<EntityTemplate>> getEntityDamage() {
-		Map<String, Set<EntityTemplate>> groups = new HashMap<String, Set<EntityTemplate>>();
-		this.getContains("ENTITY_DAMAGE").getChildrenMap().forEach((group, list) -> {
-			Set<EntityTemplate> entities = new HashSet<EntityTemplate>();
-			list.getChildrenList().forEach(entity_config -> {
-				String entityString = entity_config.getString("");
-				
-				Optional<EntityTemplate> entityTemplate = this.plugin.getEverAPI().getManagerService().getEntity().getForAll(entityString);
-				if (entityTemplate.isPresent()) {
-					entities.add(entityTemplate.get());
-				} else {
-					this.plugin.getELogger().warn("[Flag][Config][ENTITY_DAMAGE] Error : EntityTemplate '" + entityString + "'");
-				}
-			});
-			groups.put(group.toString().toUpperCase(), entities);
-		});
-		return groups;
-	}
-	
-	public Map<String, Set<EntityTemplate>> getEntitySpawning() {
-		Map<String, Set<EntityTemplate>> groups = new HashMap<String, Set<EntityTemplate>>();
-		this.getContains("ENTITY_SPAWNING").getChildrenMap().forEach((group, list) -> {
-			Set<EntityTemplate> entities = new HashSet<EntityTemplate>();
-			list.getChildrenList().forEach(entity_config -> {
-				String entityString = entity_config.getString("");
-				
-				Optional<EntityTemplate> entityTemplate = this.plugin.getEverAPI().getManagerService().getEntity().getForAll(entityString);
-				if (entityTemplate.isPresent()) {
-					entities.add(entityTemplate.get());
-				} else {
-					this.plugin.getELogger().warn("[Flag][Config][ENTITY_SPAWNING] Error : EntityTemplate '" + entityString + "'");
-				}
-			});
-			groups.put(group.toString().toUpperCase(), entities);
-		});
-		return groups;
-	}
-
-	public Set<EntityType> getBuild() {
-		Set<EntityType> entities = new HashSet<EntityType>();
-		this.getContains("BUILD").getNode("entities").getChildrenList().forEach(entityConfig -> {
-			String entityString = entityConfig.getString("");
-			Optional<EntityType> entity = this.plugin.getGame().getRegistry().getType(EntityType.class, entityString);
-			if (entity.isPresent()) {
-				entities.add(entity.get());
-			} else {
-				this.plugin.getELogger().warn("[Flag][Config][BUILD] Error : EntityType '" + entityString + "'");
-			}
-		});
-		return entities;
+		return groups.build();
 	}
 	
 	public ConfigurationNode getContains(String name) {

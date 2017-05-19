@@ -19,18 +19,19 @@ package fr.evercraft.everworldguard.protection.flags;
 import java.util.Optional;
 
 import org.spongepowered.api.entity.ExperienceOrb;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.cause.NamedCause;
-import org.spongepowered.api.event.cause.entity.spawn.SpawnCause;
+import org.spongepowered.api.event.cause.entity.spawn.EntitySpawnCause;
 import org.spongepowered.api.event.cause.entity.spawn.SpawnTypes;
 import org.spongepowered.api.event.entity.SpawnEntityEvent;
 
 import fr.evercraft.everapi.services.worldguard.flag.type.StateFlag;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EverWorldGuard;
+import fr.evercraft.everworldguard.protection.EProtectionService;
 
 public class FlagExpDrop extends StateFlag {
 	
-	@SuppressWarnings("unused")
 	private final EverWorldGuard plugin;
 
 	public FlagExpDrop(EverWorldGuard plugin) {
@@ -51,15 +52,21 @@ public class FlagExpDrop extends StateFlag {
 	public void onSpawnEntity(SpawnEntityEvent event) {
 		if (event.isCancelled()) return;
 		
-		Optional<SpawnCause> optCause = event.getCause().get(NamedCause.SOURCE, SpawnCause.class);
-		if (!optCause.isPresent()) return;
-		SpawnCause cause = optCause.get();
+		// TODO Bug : SpawnTypes.EXPERIENCE
 		
-		if (!cause.getType().equals(SpawnTypes.CUSTOM)) return;
+		Optional<EntitySpawnCause> optCause = event.getCause().get(NamedCause.SOURCE, EntitySpawnCause.class);
+		if (!optCause.isPresent()) return;
+		EntitySpawnCause cause = optCause.get();
+		
+		if (!cause.getType().equals(SpawnTypes.EXPERIENCE)) return;
+		
+		if (!(cause.getEntity() instanceof Player)) return;
+		Player player = (Player) cause.getEntity();
+		EProtectionService service = this.plugin.getProtectionService();
 		
 		event.filterEntities(entity -> {
 			if (entity instanceof ExperienceOrb) {
-				return false;
+				return service.getOrCreateWorld(entity.getWorld()).getRegions(entity.getLocation().getPosition()).getFlag(player, this).equals(State.ALLOW);
 			}
 			return true;
 		});

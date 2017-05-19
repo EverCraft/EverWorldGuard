@@ -78,7 +78,7 @@ public class FlagInteractBlock extends BlockTypeFlag {
 	
 	public void reload() {
 		this.groups.clear();
-		this.groups.putAll(this.plugin.getProtectionService().getConfigFlags().getInteractBlock());
+		this.groups.putAll(this.plugin.getProtectionService().getConfigFlags().get(this.getName(), BlockType.class));
 		
 		Set<String> keys = this.groups.keySet();
 		Set<BlockType> values = new HashSet<BlockType>();

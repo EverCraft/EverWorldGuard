@@ -52,7 +52,7 @@ public class FlagEntitySpawning extends EntityTemplateFlag {
 	
 	@Override
 	protected Map<String, Set<EntityTemplate>> getConfig() {
-		return this.plugin.getProtectionService().getConfigFlags().getEntitySpawning();
+		return this.plugin.getProtectionService().getConfigFlags().getEntities(this.getName());
 	}
 	
 	@Override

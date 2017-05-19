@@ -17,6 +17,7 @@
 package fr.evercraft.everworldguard.protection.flags;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -26,7 +27,6 @@ import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.data.Transaction;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.Entity;
-import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.FallingBlock;
 import org.spongepowered.api.entity.living.player.Player;
@@ -55,6 +55,7 @@ import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.collect.Sets;
 
+import fr.evercraft.everapi.services.entity.EntityTemplate;
 import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
 import fr.evercraft.everapi.services.worldguard.flag.type.StateFlag;
 import fr.evercraft.everapi.sponge.UtilsCause;
@@ -66,7 +67,7 @@ public class FlagBuild extends StateFlag {
 	
 	private final EverWorldGuard plugin;
 	
-	private final Set<EntityType> entities;
+	private final Set<EntityTemplate> entities;
 
 	public FlagBuild(EverWorldGuard plugin) {
 		super("BUILD");
@@ -80,7 +81,10 @@ public class FlagBuild extends StateFlag {
 	public void reload() {
 		this.entities.clear();
 		
-		this.entities.addAll(this.plugin.getProtectionService().getConfigFlags().getBuild());
+		Map<String, Set<EntityTemplate>> config = this.plugin.getProtectionService().getConfigFlags().get("BUILD", EntityTemplate.class);
+		if (config.containsKey("entities")) {
+			this.entities.addAll(config.get("entities"));
+		}
 	}
 	
 	@Override
@@ -99,6 +103,18 @@ public class FlagBuild extends StateFlag {
 	@Override
 	public State getDefault() {
 		return State.ALLOW;
+	}
+	
+	public boolean containsEntity(Entity value) {
+		return this.entities.stream()
+			.filter(element -> element.contains(value))
+			.findAny().isPresent();
+	}
+	
+	public boolean containsEntity(Entity value, Player player) {
+		return this.entities.stream()
+			.filter(element -> element.contains(value, player))
+			.findAny().isPresent();
 	}
 	
 	// TODO TNT
@@ -267,7 +283,6 @@ public class FlagBuild extends StateFlag {
 
 	public void onInteractEntity(WorldWorldGuard world, InteractEntityEvent event) {
 		if (event.isCancelled()) return;
-		if (!this.entities.contains(event.getTargetEntity().getType())) return;
 		
 		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
 		if (optPlayer.isPresent()) {
@@ -278,6 +293,8 @@ public class FlagBuild extends StateFlag {
 	}
 	
 	public void onInteractEntityPlayer(WorldWorldGuard world, InteractEntityEvent event, Player player) {
+		if (!this.containsEntity(event.getTargetEntity(), player)) return;
+		
 		if (world.getRegions(event.getTargetEntity().getLocation().getPosition()).getFlag(player, this).equals(State.DENY)) {
 			event.setCancelled(true);
 			
@@ -287,6 +304,8 @@ public class FlagBuild extends StateFlag {
 	}
 	
 	public void onInteractEntityNatural(WorldWorldGuard world, InteractEntityEvent event) {
+		if (!this.containsEntity(event.getTargetEntity())) return;
+		
 		if (world.getRegions(event.getTargetEntity().getLocation().getPosition()).getFlagDefault(this).equals(State.DENY)) {
 			event.setCancelled(true);
 		}
@@ -310,7 +329,7 @@ public class FlagBuild extends StateFlag {
 	public void onCollideEntityPlayer(WorldWorldGuard world, CollideEntityEvent event, Player player) {		
 		if (event.getCause().get(NamedCause.SOURCE, Projectile.class).isPresent()) {
 			List<? extends Entity> filter = event.filterEntities(entity -> {
-				if (this.entities.contains(entity) && world.getRegions(entity.getLocation().getPosition()).getFlag(player, this).equals(State.DENY)) {
+				if (this.containsEntity(entity, player) && world.getRegions(entity.getLocation().getPosition()).getFlag(player, this).equals(State.DENY)) {
 					return false;
 				}
 				return true;
@@ -326,7 +345,7 @@ public class FlagBuild extends StateFlag {
 	public void onCollideEntityNatural(WorldWorldGuard world, CollideEntityEvent event) {
 		if (event.getCause().get(NamedCause.SOURCE, Projectile.class).isPresent()) {
 			event.filterEntities(entity -> {
-				if (this.entities.contains(entity) && world.getRegions(entity.getLocation().getPosition()).getFlagDefault(this).equals(State.DENY)) {
+				if (this.containsEntity(entity) && world.getRegions(entity.getLocation().getPosition()).getFlagDefault(this).equals(State.DENY)) {
 					return false;
 				}
 				return true;
@@ -341,7 +360,6 @@ public class FlagBuild extends StateFlag {
 	// TODO Bug : Painting, ItemFrame ...
 	public void onDamageEntity(WorldWorldGuard world, DamageEntityEvent event) {
 		if (event.isCancelled()) return;
-		if (!this.entities.contains(event.getTargetEntity().getType())) return;
 		
 		Entity entity = event.getTargetEntity();
 		
@@ -431,6 +449,8 @@ public class FlagBuild extends StateFlag {
 	}
 	
 	public boolean onDamageEntity(WorldWorldGuard world, DamageEntityEvent event, Entity entity, Player player) {
+		if (!this.containsEntity(event.getTargetEntity(), player)) return false;
+		
 		if (world.getRegions(entity.getLocation().getPosition()).getFlag(player, this).equals(State.DENY)) {
 			event.setCancelled(true);
 			return true;
@@ -439,6 +459,8 @@ public class FlagBuild extends StateFlag {
 	}
 	
 	public boolean onDamageEntity(WorldWorldGuard world, DamageEntityEvent event, Entity entity) {
+		if (!this.containsEntity(event.getTargetEntity())) return false;
+		
 		if (world.getRegions(entity.getLocation().getPosition()).getFlagDefault(this).equals(State.DENY)) {
 			event.setCancelled(true);
 			return true;
