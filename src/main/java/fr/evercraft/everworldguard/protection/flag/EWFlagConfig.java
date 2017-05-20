@@ -52,6 +52,7 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 		this.loadInteractBlock();
 		this.loadEntity();
 		this.loadBuild();
+		this.loadBlock();
 	}
 	
 	/*
@@ -201,7 +202,7 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 		addDefault("BUILD", interact_entity);
 	}
 	
-	public void loadBock() {
+	public void loadBlock() {
 		Map<String, List<String>> blocks = new HashMap<String, List<String>>();
 		blocks.put("GROUP_TNT", Arrays.asList(
 				BlockTypes.TNT.getId()));
@@ -216,19 +217,6 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 		
 		blocks.put("GROUP_BEDROCK", Arrays.asList(
 				BlockTypes.BEDROCK.getId()));
-		
-		blocks.put("GROUP_OTHERS", 
-				this.plugin.getGame().getRegistry().getAllOf(BlockType.class).stream()
-					.filter(getById -> {
-						for (List<BlockType> blocks : blocks.values()) {
-							if (blocks.contains(block)) {
-								return false;
-							}
-						}
-						return true;
-					}))
-				.map(entity -> entity.getById()),
-				.collect(Collectors.toList()));
 		
 		addDefault("BLOCK_PLACE, BLOCK_BREAK", blocks);
 	}

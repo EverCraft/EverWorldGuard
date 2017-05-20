@@ -335,6 +335,18 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		REGION_SELECT_TEMPLATE("region.select.template",										"&cErreur : Impossible de sélectionner une région de type &6<type>&c."),
 		
 		
+		FLAG_BLOCK_PLACE_DESCRIPTION("flag.blockPlace.description",				""),
+		FLAG_BLOCK_PLACE_MESSAGE("flag.blockPlace.message",						EMessageFormat.builder()
+																					.actionbarMessageString("&cPlacer des blocs de <block> est interdit (<x>, <y>, <z>)")
+																					.actionbarStay(3 * 1000)
+																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
+		
+		FLAG_BLOCK_BREAK_DESCRIPTION("flag.blockBreak.description",				""),
+		FLAG_BLOCK_BREAK_MESSAGE("flag.blockBreak.message",						EMessageFormat.builder()
+																					.actionbarMessageString("&cCasser des blocs de <block> est interdit (<x>, <y>, <z>)")
+																					.actionbarStay(3 * 1000)
+																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
+		
 		FLAG_BUILD_DESCRIPTION("flag.build.description",						"Désactive/Active les constructions"),
 		FLAG_BUILD_MESSAGE("flag.build.message",								EMessageFormat.builder()
 																					.actionbarMessageString("&cConstruction désactivé (<x>, <y>, <z>)")
