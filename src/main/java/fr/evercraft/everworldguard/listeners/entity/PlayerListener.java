@@ -21,6 +21,7 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.entity.DestructEntityEvent;
 import org.spongepowered.api.event.entity.IgniteEntityEvent;
+import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEvent;
 import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.item.inventory.ChangeInventoryEvent;
@@ -53,6 +54,11 @@ public class PlayerListener {
 	@Listener
 	public void onClientConnectionEvent(final ClientConnectionEvent.Disconnect event) {
 		this.plugin.getProtectionService().getSubjectList().removePlayer(event.getTargetEntity().getUniqueId());
+	}
+	
+	@Listener(order=Order.FIRST)
+	public void onRespawnPlayer(RespawnPlayerEvent event) {
+		this.plugin.getManagerFlags().INVENTORY_DROP.onRespawnPlayer(event);
 	}
 	
 	@Listener(order=Order.FIRST)

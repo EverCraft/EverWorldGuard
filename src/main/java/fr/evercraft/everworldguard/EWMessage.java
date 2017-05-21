@@ -408,6 +408,8 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		
 		FLAG_EXP_DROP_DESCRIPTION("flag.expDrop.description",					""),
 		
+		FLAG_INVENTORY_DROP_DESCRIPTION("flag.inventoryDrop.description",		""),
+		
 		FLAG_INVINCIBILITY_DESCRIPTION("flag.invincibity.description",			"Désactive/Active l'invincibilité"),
 		
 		FLAG_ITEM_DROP_DESCRIPTION("flag.itemDrop.description",					""),

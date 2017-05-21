@@ -39,8 +39,6 @@ public class EWManagerFlags {
 	public final FlagEnderPearl ENDERPEARL;
 	public final FlagEntityDamage ENTITY_DAMAGE;
 	public final FlagEntitySpawning ENTITY_SPAWNING;
-	public final FlagInteractBlock INTERACT_BLOCK;
-	public final FlagInteractEntity INTERACT_ENTITY;
 	public final FlagEntry ENTRY;
 	public final FlagEntryMessage ENTRY_MESSAGE;
 	public final FlagEntryDenyMessage ENTRY_DENY_MESSAGE;
@@ -48,6 +46,9 @@ public class EWManagerFlags {
 	public final FlagExitMessage EXIT_MESSAGE;
 	public final FlagExitDenyMessage EXIT_DENY_MESSAGE;
 	public final FlagExpDrop EXP_DROP;
+	public final FlagInteractBlock INTERACT_BLOCK;
+	public final FlagInteractEntity INTERACT_ENTITY;
+	public final FlagInventoryDrop INVENTORY_DROP;
 	public final FlagInvincibility INVINCIBILITY;
 	public final FlagItemDrop ITEM_DROP;
 	public final FlagItemPickup ITEM_PICKUP;
@@ -71,8 +72,6 @@ public class EWManagerFlags {
 		ENDERPEARL = new FlagEnderPearl(this.plugin);
 		ENTITY_DAMAGE = new FlagEntityDamage(this.plugin);
 		ENTITY_SPAWNING = new FlagEntitySpawning(this.plugin);
-		INTERACT_BLOCK = new FlagInteractBlock(this.plugin);
-		INTERACT_ENTITY = new FlagInteractEntity(this.plugin);
 		ENTRY = new FlagEntry();
 		ENTRY_MESSAGE = new FlagEntryMessage();
 		ENTRY_DENY_MESSAGE = new FlagEntryDenyMessage();
@@ -80,6 +79,9 @@ public class EWManagerFlags {
 		EXIT_MESSAGE = new FlagExitMessage();
 		EXIT_DENY_MESSAGE = new FlagExitDenyMessage();
 		EXP_DROP = new FlagExpDrop(this.plugin);
+		INTERACT_BLOCK = new FlagInteractBlock(this.plugin);
+		INTERACT_ENTITY = new FlagInteractEntity(this.plugin);
+		INVENTORY_DROP = new FlagInventoryDrop(this.plugin);
 		INVINCIBILITY = new FlagInvincibility();
 		ITEM_DROP = new FlagItemDrop(this.plugin);
 		ITEM_PICKUP = new FlagItemPickup(this.plugin);

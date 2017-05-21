@@ -84,5 +84,4 @@ public class FlagItemPickup extends CatalogTypeFlag<ItemType> {
 			this.sendMessage(player, player.getLocation(), type);
 		}
 	}
-
 }

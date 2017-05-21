@@ -72,6 +72,7 @@ public class EntityListener {
 	
 	@Listener(order=Order.FIRST)
 	public void onDropItemPre(DropItemEvent.Pre event) {
+		this.plugin.getManagerFlags().INVENTORY_DROP.onDropItemPre(event);
 		this.plugin.getManagerFlags().ITEM_DROP.onDropItemPre(event);
 		
 		// Debug 
