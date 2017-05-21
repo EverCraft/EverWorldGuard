@@ -410,6 +410,19 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		
 		FLAG_INVINCIBILITY_DESCRIPTION("flag.invincibity.description",			"Désactive/Active l'invincibilité"),
 		
+		FLAG_ITEM_DROP_DESCRIPTION("flag.itemDrop.description",					""),
+		FLAG_ITEM_DROP_MESSAGE("flag.itemDrop.message",							EMessageFormat.builder()
+																					.actionbarMessageString("&cJeter les objets de <item> est interdit  (<x>, <y>, <z>)")
+																					.actionbarStay(3 * 1000)
+																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
+		
+		FLAG_ITEM_PICKUP_DESCRIPTION("flag.itemPickup.description",				""),
+		FLAG_ITEM_PICKUP_MESSAGE("flag.itemPickup.message",						EMessageFormat.builder()
+																					.actionbarMessageString("&cRamasser les objets de <item> est interdit  (<x>, <y>, <z>)")
+																					.actionbarStay(3 * 1000)
+																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
+		
+		
 		FLAG_LIGHTNING_DESCRIPTION("flag.invincibity.description",				"Désactive/Active la foudre"),
 		
 		FLAG_PVP_DESCRIPTION("flag.pvp.description",							"Désactive/Active le PVP"),

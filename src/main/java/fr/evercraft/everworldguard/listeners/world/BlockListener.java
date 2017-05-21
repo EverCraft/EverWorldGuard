@@ -40,20 +40,12 @@ public class BlockListener {
 	@Listener(order=Order.FIRST)
 	public void onChangeBlock(ChangeBlockEvent.Pre event) {
 		this.plugin.getManagerFlags().BUILD.onChangeBlockPre(event);
+		this.plugin.getManagerFlags().BLOCK_BREAK.onChangeBlockPre(event);
+		this.plugin.getManagerFlags().BLOCK_PLACE.onChangeBlockPre(event);
 		this.plugin.getManagerFlags().INTERACT_BLOCK.onChangeBlockPre(event);
 		
 		// Debug
-		/*
-		List<Text> list = new ArrayList<Text>();
-		event.getCause().getNamedCauses().forEach((key, value) -> {
-			list.add(Text.builder(key)
-					.onHover(TextActions.showText(Text.of(EChat.fixLength(value.toString(), 254))))
-					.onClick(TextActions.suggestCommand(EChat.fixLength(value.toString(), 254)))
-					.build());
-		});
-		this.plugin.getEServer().getBroadcastChannel().send(Text.of("ChangeBlockEvent.Pre : ").concat(Text.joinWith(Text.of(", "), list)));
-		
-		event.getLocations().forEach(location -> this.plugin.getEServer().getBroadcastChannel().send(Text.of("   - " + location.getPosition())));*/
+		//UtilsCause.debug(event.getCause(), "ChangeBlockEvent.Pre");
 	}
 	
 	@Listener(order=Order.FIRST)
@@ -63,17 +55,7 @@ public class BlockListener {
 		this.plugin.getManagerFlags().ENDERMAN_GRIEF.onChangeBlockPlace(event);
 		
 		// Debug
-		/*List<Text> list = new ArrayList<Text>();
-		event.getCause().getNamedCauses().forEach((key, value) -> {
-			list.add(Text.builder(key)
-					.onHover(TextActions.showText(Text.of(EChat.fixLength(value.toString(), 254))))
-					.onClick(TextActions.suggestCommand(EChat.fixLength(value.toString(), 254)))
-					.build());
-		});
-		this.plugin.getEServer().getBroadcastChannel().send(Text.builder("ChangeBlockEvent.Place : ")
-				.onHover(TextActions.showText(Text.of(event.getClass().getName())))
-				.onClick(TextActions.suggestCommand(event.getClass().getName()))
-				.build().concat(Text.joinWith(Text.of(", "), list)));*/
+		//UtilsCause.debug(event.getCause(), "ChangeBlockEvent.Place");
 	}
 	
 	@Listener(order=Order.FIRST)
@@ -84,18 +66,7 @@ public class BlockListener {
 		this.plugin.getManagerFlags().ENDERMAN_GRIEF.onChangeBlockBreak(event);
 		
 		// Debug
-		/*List<Text> list = new ArrayList<Text>();
-		event.getCause().getNamedCauses().forEach((key, value) -> {
-			list.add(Text.builder(key)
-					.onHover(TextActions.showText(Text.of(EChat.fixLength(value.toString(), 254))))
-					.onClick(TextActions.suggestCommand(EChat.fixLength(value.toString(), 254)))
-					.build());
-		});
-		this.plugin.getEServer().getBroadcastChannel().send(Text.builder("ChangeBlockEvent.Break : ")
-				.onHover(TextActions.showText(Text.of(event.getClass().getName())))
-				.onClick(TextActions.suggestCommand(event.getClass().getName()))
-				.build().concat(Text.joinWith(Text.of(", "), list)));*/
-		
+		//UtilsCause.debug(event.getCause(), "ChangeBlockEvent.Break");
 	}
 	
 	@Listener(order=Order.FIRST)
@@ -104,17 +75,7 @@ public class BlockListener {
 		this.plugin.getManagerFlags().INTERACT_BLOCK.onChangeBlockModify(event);
 		
 		// Debug
-		/*List<Text> list = new ArrayList<Text>();
-		event.getCause().getNamedCauses().forEach((key, value) -> {
-			list.add(Text.builder(key)
-					.onHover(TextActions.showText(Text.of(EChat.fixLength(value.toString(), 254))))
-					.onClick(TextActions.suggestCommand(EChat.fixLength(value.toString(), 254)))
-					.build());
-		});
-		this.plugin.getEServer().getBroadcastChannel().send(Text.builder("ChangeBlockEvent.Modify : ")
-				.onHover(TextActions.showText(Text.of(event.getClass().getName())))
-				.onClick(TextActions.suggestCommand(event.getClass().getName()))
-				.build().concat(Text.joinWith(Text.of(", "), list)));*/
+		//UtilsCause.debug(event.getCause(), "ChangeBlockEvent.Modify");
 	}
 	
 	@Listener(order=Order.FIRST)
@@ -122,18 +83,7 @@ public class BlockListener {
 		//WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetWorld());
 		
 		// Debug
-		/*List<Text> list = new ArrayList<Text>();
-		event.getCause().getNamedCauses().forEach((key, value) -> {
-			list.add(Text.builder(key)
-					.onHover(TextActions.showText(Text.of(EChat.fixLength(value.toString(), 254))))
-					.onClick(TextActions.suggestCommand(EChat.fixLength(value.toString(), 254)))
-					.build());
-		});
-		this.plugin.getEServer().getBroadcastChannel().send(Text.builder("ChangeBlockEvent.Decay : ")
-				.onHover(TextActions.showText(Text.of(event.getClass().getName())))
-				.onClick(TextActions.suggestCommand(event.getClass().getName()))
-				.build().concat(Text.joinWith(Text.of(", "), list)));*/
-				
+		//UtilsCause.debug(event.getCause(), "ChangeBlockEvent.Decay");	
 	}
 	
 	@Listener(order=Order.FIRST)
@@ -141,17 +91,7 @@ public class BlockListener {
 		//WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetWorld());
 		
 		// Debug
-		/*List<Text> list = new ArrayList<Text>();
-		event.getCause().getNamedCauses().forEach((key, value) -> {
-			list.add(Text.builder(key)
-					.onHover(TextActions.showText(Text.of(EChat.fixLength(value.toString(), 254))))
-					.onClick(TextActions.suggestCommand(EChat.fixLength(value.toString(), 254)))
-					.build());
-		});
-		this.plugin.getEServer().getBroadcastChannel().send(Text.builder("ChangeBlockEvent.Post : ")
-				.onHover(TextActions.showText(Text.of(event.getClass().getName())))
-				.onClick(TextActions.suggestCommand(event.getClass().getName()))
-				.build().concat(Text.joinWith(Text.of(", "), list)));*/
+		//UtilsCause.debug(event.getCause(), "ChangeBlockEvent.Post");
 				
 	}
 	
@@ -160,17 +100,7 @@ public class BlockListener {
 		//WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetWorld());
 		
 		// Debug
-		/*List<Text> list = new ArrayList<Text>();
-		event.getCause().getNamedCauses().forEach((key, value) -> {
-			list.add(Text.builder(key)
-					.onHover(TextActions.showText(Text.of(EChat.fixLength(value.toString(), 254))))
-					.onClick(TextActions.suggestCommand(EChat.fixLength(value.toString(), 254)))
-					.build());
-		});
-		this.plugin.getEServer().getBroadcastChannel().send(Text.builder("ChangeBlockEvent.Grow : ")
-				.onHover(TextActions.showText(Text.of(event.getClass().getName())))
-				.onClick(TextActions.suggestCommand(event.getClass().getName()))
-				.build().concat(Text.joinWith(Text.of(", "), list)));*/
+		//UtilsCause.debug(event.getCause(), "ChangeBlockEvent.Grow");
 	}
 	
 	@Listener(order=Order.FIRST)
@@ -182,17 +112,7 @@ public class BlockListener {
 		});
 		
 		// Debug
-		/*List<Text> list = new ArrayList<Text>();
-		event.getCause().getNamedCauses().forEach((key, value) -> {
-			list.add(Text.builder(key)
-					.onHover(TextActions.showText(Text.of(EChat.fixLength(value.toString(), 254))))
-					.onClick(TextActions.suggestCommand(EChat.fixLength(value.toString(), 254)))
-					.build());
-		});
-		this.plugin.getEServer().getBroadcastChannel().send(Text.builder("ChangeBlockEvent.Grow : ")
-				.onHover(TextActions.showText(Text.of(event.getClass().getName())))
-				.onClick(TextActions.suggestCommand(event.getClass().getName()))
-				.build().concat(Text.joinWith(Text.of(", "), list)));*/
+		//UtilsCause.debug(event.getCause(), "InteractBlockEvent.Secondary");
 	}
 	
 	@Listener(order=Order.FIRST)
@@ -202,16 +122,6 @@ public class BlockListener {
 		this.plugin.getManagerFlags().INTERACT_BLOCK.onCollideBlock(world, event);
 		
 		// Debug
-		/*List<Text> list = new ArrayList<Text>();
-		event.getCause().getNamedCauses().forEach((key, value) -> {
-			list.add(Text.builder(key)
-					.onHover(TextActions.showText(Text.of(EChat.fixLength(value.toString(), 254))))
-					.onClick(TextActions.suggestCommand(EChat.fixLength(value.toString(), 254)))
-					.build());
-		});
-		this.plugin.getEServer().getBroadcastChannel().send(Text.builder("CollideBlockEvent : ")
-				.onHover(TextActions.showText(Text.of(event.getClass().getName())))
-				.onClick(TextActions.suggestCommand(event.getClass().getName()))
-				.build().concat(Text.joinWith(Text.of(", "), list)));*/
+		//UtilsCause.debug(event.getCause(), "CollideBlockEvent");
 	}
 }

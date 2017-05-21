@@ -23,6 +23,7 @@ import org.spongepowered.api.event.entity.DestructEntityEvent;
 import org.spongepowered.api.event.entity.IgniteEntityEvent;
 import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.filter.cause.First;
+import org.spongepowered.api.event.item.inventory.ChangeInventoryEvent;
 import org.spongepowered.api.event.message.MessageChannelEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 
@@ -64,6 +65,13 @@ public class PlayerListener {
 		
 		this.plugin.getManagerFlags().CHAT_SEND.onMessageChannelChat(event, world, player);
 		this.plugin.getManagerFlags().CHAT_RECEIVE.onMessageChannelChat(event, world, player);
+	}
+	
+	@Listener
+	public void onChangeInventoryPickup(ChangeInventoryEvent.Pickup event, @First Player player) {
+		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(player.getWorld());
+		
+		this.plugin.getManagerFlags().ITEM_PICKUP.onChangeInventoryPickup(event, world, player);
 	}
 	
 	@Listener

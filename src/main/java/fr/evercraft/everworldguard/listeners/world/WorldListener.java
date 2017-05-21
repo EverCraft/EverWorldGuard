@@ -40,5 +40,4 @@ public class WorldListener {
 	public void onUnloadWorld(UnloadWorldEvent event) {
 		this.plugin.getProtectionService().unLoadWorld(event.getTargetWorld());
 	}
-
 }

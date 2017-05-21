@@ -49,6 +49,8 @@ public class EWManagerFlags {
 	public final FlagExitDenyMessage EXIT_DENY_MESSAGE;
 	public final FlagExpDrop EXP_DROP;
 	public final FlagInvincibility INVINCIBILITY;
+	public final FlagItemDrop ITEM_DROP;
+	public final FlagItemPickup ITEM_PICKUP;
 	public final FlagLightning LIGHTNING;
 	public final FlagPvp PVP;
 	public final FlagSpawn SPAWN;
@@ -79,6 +81,8 @@ public class EWManagerFlags {
 		EXIT_DENY_MESSAGE = new FlagExitDenyMessage();
 		EXP_DROP = new FlagExpDrop(this.plugin);
 		INVINCIBILITY = new FlagInvincibility();
+		ITEM_DROP = new FlagItemDrop(this.plugin);
+		ITEM_PICKUP = new FlagItemPickup(this.plugin);
 		LIGHTNING = new FlagLightning(this.plugin);
 		PVP = new FlagPvp(this.plugin);
 		SPAWN = new FlagSpawn(this.plugin);

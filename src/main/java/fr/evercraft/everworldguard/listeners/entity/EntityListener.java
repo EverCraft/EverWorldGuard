@@ -26,6 +26,7 @@ import org.spongepowered.api.event.entity.HealEntityEvent;
 import org.spongepowered.api.event.entity.InteractEntityEvent;
 import org.spongepowered.api.event.entity.SpawnEntityEvent;
 import org.spongepowered.api.event.entity.projectile.TargetProjectileEvent;
+import org.spongepowered.api.event.item.inventory.DropItemEvent;
 
 import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
 import fr.evercraft.everworldguard.EverWorldGuard;
@@ -62,10 +63,19 @@ public class EntityListener {
 	@Listener(order=Order.FIRST)
 	public void onSpawnEntity(SpawnEntityEvent event) {
 		this.plugin.getManagerFlags().ENTITY_SPAWNING.onSpawnEntity(event);
+		this.plugin.getManagerFlags().ITEM_DROP.onSpawnEntity(event);
 		//this.plugin.getManagerFlags().EXP_DROP.onSpawnEntity(event);
 		
 		// Debug 
 		//UtilsCause.debug(event.getCause(), "SpawnEntityEvent : " + String.join(", ", event.getEntities().stream().map(entity -> entity.getType().getName()).collect(Collectors.toList())));
+	}
+	
+	@Listener(order=Order.FIRST)
+	public void onDropItemPre(DropItemEvent.Pre event) {
+		this.plugin.getManagerFlags().ITEM_DROP.onDropItemPre(event);
+		
+		// Debug 
+		//UtilsCause.debug(event.getCause(), "DropItemEvent : " + String.join(", ", event.getDroppedItems().stream().map(entity -> entity.getType().getName()).collect(Collectors.toList())));
 	}
 	
 	@Listener(order=Order.FIRST)

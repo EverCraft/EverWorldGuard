@@ -18,6 +18,7 @@ package fr.evercraft.everworldguard.protection.flag;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -33,6 +34,7 @@ import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.animal.Animal;
 import org.spongepowered.api.entity.living.golem.Golem;
 import org.spongepowered.api.entity.living.monster.Monster;
+import org.spongepowered.api.item.ItemTypes;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -53,6 +55,7 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 		this.loadEntity();
 		this.loadBuild();
 		this.loadBlock();
+		this.loadItem();
 	}
 	
 	/*
@@ -203,7 +206,7 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 	}
 	
 	public void loadBlock() {
-		Map<String, List<String>> blocks = new HashMap<String, List<String>>();
+		Map<String, Object> blocks = new HashMap<String, Object>();
 		blocks.put("GROUP_TNT", Arrays.asList(
 				BlockTypes.TNT.getId()));
 		blocks.put("GROUP_PISTON", Arrays.asList(
@@ -218,7 +221,32 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 		blocks.put("GROUP_BEDROCK", Arrays.asList(
 				BlockTypes.BEDROCK.getId()));
 		
+		blocks.put("GROUP_OTHERS", "*");
+		
 		addDefault("BLOCK_PLACE, BLOCK_BREAK", blocks);
+	}
+	
+	public void loadItem() {
+		Map<String, Object> items = new HashMap<String, Object>();
+		items.put("GROUP_TNT", Arrays.asList(
+				ItemTypes.TNT.getId()));
+		items.put("GROUP_PISTON", Arrays.asList(
+				ItemTypes.PISTON.getId(),
+				ItemTypes.STICKY_PISTON.getId()));
+		
+		items.put("GROUP_SWORD", Arrays.asList(
+				ItemTypes.DIAMOND_SWORD.getId(),
+				ItemTypes.GOLDEN_SWORD.getId(),
+				ItemTypes.IRON_SWORD.getId(),
+				ItemTypes.STONE_SWORD.getId(),
+				ItemTypes.WOODEN_SWORD.getId()));
+		
+		items.put("GROUP_BEDROCK", Arrays.asList(
+				ItemTypes.BEDROCK.getId()));
+		
+		items.put("GROUP_OTHERS", "*");
+		
+		addDefault("ITEM_PICKUP, ITEM_DROP", items);
 	}
 	
 	/*
@@ -227,19 +255,42 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 	
 	public <T extends CatalogType> Map<String, Set<T>> get(String name, Class<T> type) {
 		ImmutableMap.Builder<String, Set<T>> groups = ImmutableMap.builder();
-		this.getContains(name).getChildrenMap().forEach((group, list) -> {
-			ImmutableSet.Builder<T> set = ImmutableSet.builder();
-			list.getChildrenList().forEach(config -> {
-				Optional<T> optional = this.plugin.getGame().getRegistry().getType(type, config.getString(""));
-				if (optional.isPresent()) {
-					set.add(optional.get());
-				} else {
-					this.plugin.getELogger().warn("[Flag][Config][" + name + "] Error : " + type.getSimpleName() + " '" + config.getString("") + "'");
+		Set<T> all = null;
+		for (Entry<Object, ? extends ConfigurationNode> group : this.getContains(name).getChildrenMap().entrySet()) {
+			if (group.getValue().getString("").equalsIgnoreCase("*")) {
+				all = new HashSet<T>();
+				groups.put(group.getKey().toString().toUpperCase(), all);
+			} else {
+				Set<T> set = new HashSet<T>();
+				for (ConfigurationNode config : group.getValue().getChildrenList()) {
+					if (group.getValue().getString("").equalsIgnoreCase("*")) {
+						all = set;
+					} else {
+						Optional<T> optional = this.plugin.getGame().getRegistry().getType(type, config.getString(""));
+						if (optional.isPresent()) {
+							set.add(optional.get());
+						} else {
+							this.plugin.getELogger().warn("[Flag][Config][" + name + "] Error : " + type.getSimpleName() + " '" + config.getString("") + "'");
+						}
+					}
 				}
-			});
-			groups.put(group.toString().toUpperCase(), set.build());
-		});
-		return groups.build();
+				groups.put(group.getKey().toString().toUpperCase(), set);
+			}
+		}
+		Map<String, Set<T>> map = groups.build();
+		
+		if (all != null) {
+			all.addAll(this.plugin.getGame().getRegistry().getAllOf(type).stream()
+				.filter(element -> {
+					for (Set<T> set : map.values()) {
+						if (set.contains(element)) {
+							return false;
+						}
+					}
+					return true;
+				}).collect(Collectors.toSet()));
+		}
+		return map;
 	}
 	
 	public Map<String, Set<EntityTemplate>> getEntities(String name) {
