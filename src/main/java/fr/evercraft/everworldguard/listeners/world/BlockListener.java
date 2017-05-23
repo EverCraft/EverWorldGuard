@@ -33,10 +33,6 @@ public class BlockListener {
 		this.plugin = plugin;
 	}
 	
-	/*
-	 * Debug
-	 */
-	
 	@Listener(order=Order.FIRST)
 	public void onChangeBlock(ChangeBlockEvent.Pre event) {
 		this.plugin.getManagerFlags().BUILD.onChangeBlockPre(event);
@@ -52,6 +48,7 @@ public class BlockListener {
 	public void onChangeBlock(ChangeBlockEvent.Place event) {		
 		this.plugin.getManagerFlags().BUILD.onChangeBlockPlace(event);
 		this.plugin.getManagerFlags().BLOCK_PLACE.onChangeBlockPlace(event);
+		this.plugin.getManagerFlags().BLOCK_BREAK.onChangeBlockPlace(event);
 		this.plugin.getManagerFlags().ENDERMAN_GRIEF.onChangeBlockPlace(event);
 		
 		// Debug
@@ -64,7 +61,6 @@ public class BlockListener {
 		this.plugin.getManagerFlags().BLOCK_BREAK.onChangeBlockBreak(event);
 		this.plugin.getManagerFlags().INTERACT_BLOCK.onChangeBlockBreak(event);
 		this.plugin.getManagerFlags().ENDERMAN_GRIEF.onChangeBlockBreak(event);
-		this.plugin.getManagerFlags().ENDER_DRAGON.onChangeBlockBreak(event);
 		
 		// Debug
 		//UtilsCause.debug(event.getCause(), "ChangeBlockEvent.Break");

@@ -151,7 +151,7 @@ public class FlagBlockPlace extends CatalogTypeFlag<BlockType> {
 			Player player = optPlayer.get();
 			event.getTransactions().stream().filter(transaction -> this.onChangeBlockPlace(service, transaction, player))
 				.forEach(transaction -> {
-					BlockSnapshot block = transaction.getCustom().orElse(transaction.getFinal());
+					BlockSnapshot block = transaction.getFinal();
 					Location<World> location = block.getLocation().get();
 					
 					Entity entity = location.getExtent().createEntity(EntityTypes.ITEM, location.getPosition());
