@@ -42,7 +42,7 @@ public class FlagEnderDragon extends StateFlag {
 	
 	@Override
 	public String getDescription() {
-		return EWMessages.FLAG_ENDER_DRAGON_DESCRIPTION.getString();
+		return EWMessages.FLAG_ENDERDRAGON_GRIEF_DESCRIPTION.getString();
 	}
 
 	@Override

@@ -335,13 +335,13 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		REGION_SELECT_TEMPLATE("region.select.template",										"&cErreur : Impossible de sélectionner une région de type &6<type>&c."),
 		
 		
-		FLAG_BLOCK_PLACE_DESCRIPTION("flag.blockPlace.description",				""),
+		FLAG_BLOCK_PLACE_DESCRIPTION("flag.blockPlace.description",				"Active/Désactive l'action de placer des blocs"),
 		FLAG_BLOCK_PLACE_MESSAGE("flag.blockPlace.message",						EMessageFormat.builder()
 																					.actionbarMessageString("&cPlacer des blocs de <block> est interdit (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
 																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		
-		FLAG_BLOCK_BREAK_DESCRIPTION("flag.blockBreak.description",				""),
+		FLAG_BLOCK_BREAK_DESCRIPTION("flag.blockBreak.description",				"Active/Désactive l'action de détruire des blocs"),
 		FLAG_BLOCK_BREAK_MESSAGE("flag.blockBreak.message",						EMessageFormat.builder()
 																					.actionbarMessageString("&cCasser des blocs de <block> est interdit (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
@@ -355,8 +355,8 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		
 		FLAG_CHAT_RECEIVE_DESCRIPTION("flag.chatReceive.description",			"Désactive/Active la réception de message"),
 		
-		FLAG_CHAT_SEND_DESCRIPTION("flag.chatSend.description",					"Désactive/Active l'envoie de message"),
-		FLAG_CHAT_SEND_MESSAGE("flag.chatSend.message",							"&cL'envoie de message est désactivé dans cette région (<x>, <y>, <z>)"),
+		FLAG_CHAT_SEND_DESCRIPTION("flag.chatSend.description",					"Désactive/Active l'envoi de message"),
+		FLAG_CHAT_SEND_MESSAGE("flag.chatSend.message",							"&cL'envoi de message est désactivé dans cette région (<x>, <y>, <z>)"),
 		
 		FLAG_DAMAGE_ENTITY_DESCRIPTION("flag.damageEntity.description",			"Désactive/Active les damages infligés aux entités"),
 		FLAG_DAMAGE_ENTITY_MESSAGE("flag.damageEntity.message",					EMessageFormat.builder()
@@ -364,19 +364,18 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 																					.actionbarStay(3 * 1000)
 																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		
-		FLAG_ENDER_DRAGON_DESCRIPTION("flag.enderDragon.description",			""),
+		FLAG_ENDERDRAGON_GRIEF_DESCRIPTION("flag.enderDragonGrief.description",	"Désactive/Active le grief de l'EnderDragon"),
 		
-		FLAG_ENDERPEARL_DESCRIPTION("flag.enderpearl.description",				""),
+		FLAG_ENDERPEARL_DESCRIPTION("flag.enderpearl.description",				"Désactive/Active la téléportation avec une enderpearl"),
 		FLAG_ENDERPEARL_MESSAGE("flag.enderpearl.message",						EMessageFormat.builder()
 																						.actionbarMessageString("&cL'utilisation des enderpearls est désactivé (<x>, <y>, <z>)")
 																						.actionbarStay(3 * 1000)
 																						.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		
-		FLAG_ENTITY_DAMAGE_DESCRIPTION("flag.entityDamage.description",			"Désactive/Active les damages infligés par entités"),
+		FLAG_ENTITY_DAMAGE_DESCRIPTION("flag.entityDamage.description",			"Désactive/Active les dégats infligés par entités"),
 		
-		FLAG_ENDERMAN_GRIEF_DESCRIPTION("flag.endermanGrief.description",		""),
-		
-		
+		FLAG_ENDERMAN_GRIEF_DESCRIPTION("flag.endermanGrief.description",		"Désactive/Active le grief de l'Enderman"),
+			
 		FLAG_INTERACT_BLOCK_DESCRIPTION("flag.interactBlock.description",		"Désactive/Active les interactions avec les blocs"),
 		FLAG_INTERACT_BLOCK_MESSAGE("flag.interactBlock.message",				EMessageFormat.builder()
 																					.actionbarMessageString("&cInteractions avec les blocs désactivé (<x>, <y>, <z>)")
@@ -389,52 +388,52 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 																					.actionbarStay(3 * 1000)
 																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		
-		FLAG_ENTRY_DESCRIPTION("flag.entry.description",						""),
+		FLAG_ENTRY_DESCRIPTION("flag.entry.description",						"Autorise/Interdit le joueur d'entrer dans la région"),
 		
-		FLAG_ENTRY_MESSAGE_DESCRIPTION("flag.entryMessage.description",			""),
+		FLAG_ENTRY_MESSAGE_DESCRIPTION("flag.entryMessage.description",			"Autorise/Interdit le joueur d'entrer dans la région"),
 		
-		FLAG_ENTRY_DENY_MESSAGE_DESCRIPTION("flag.entryDenyMessage.description",""),
+		FLAG_ENTRY_DENY_MESSAGE_DESCRIPTION("flag.entryDenyMessage.description","Interdit le joueur d'entrer dans la région"),
 		FLAG_ENTRY_DENY_MESSAGE_DEFAULT("flag.entryDenyMessage.default",		EMessageFormat.builder()
 																					.actionbarMessageString("&cImpossible d'entrer dans la région (<region>)")
 																					.actionbarStay(3 * 1000)
 																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		
-		FLAG_EXIT_DESCRIPTION("flag.exit.description",							""),
+		FLAG_EXIT_DESCRIPTION("flag.exit.description",							"Autorise/Interdit le joueur de sortir dans la région"),
 		
-		FLAG_EXIT_MESSAGE_DESCRIPTION("flag.exitMessage.description",			""),
+		FLAG_EXIT_MESSAGE_DESCRIPTION("flag.exitMessage.description",			"Autorise/Interdit le joueur de sortir dans la région"),
 		
-		FLAG_EXIT_DENY_MESSAGE_DESCRIPTION("flag.exitDenyMessage.description",	""),
+		FLAG_EXIT_DENY_MESSAGE_DESCRIPTION("flag.exitDenyMessage.description",	"Interdit le joueur de sortir dans la région"),
 		FLAG_EXIT_DENY_MESSAGE_DEFAULT("flag.exitDenyMessage.default",			EMessageFormat.builder()
 																					.actionbarMessageString("&cImpossible de sortir dans la région (<region>)")
 																					.actionbarStay(3 * 1000)
 																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		
-		FLAG_EXP_DROP_DESCRIPTION("flag.expDrop.description",					""),
+		FLAG_EXP_DROP_DESCRIPTION("flag.expDrop.description",					"Active/Désactive "),
 		
-		FLAG_EXPLOSION_DESCRIPTION("flag.explosion.description",				""),
+		FLAG_EXPLOSION_DESCRIPTION("flag.explosion.description",				"Désactive/Active les explosions dans la région"),
 		
-		FLAG_EXPLOSION_BLOCK_DESCRIPTION("flag.explosionBlock.description",		""),
+		FLAG_EXPLOSION_BLOCK_DESCRIPTION("flag.explosionBlock.description",		"Désactive/Active la destruction des blocs lors d'une explosion"),
 		
-		FLAG_EXPLOSION_DAMAGE_DESCRIPTION("flag.explosionDamage.description",	""),
+		FLAG_EXPLOSION_DAMAGE_DESCRIPTION("flag.explosionDamage.description",	"Désactive/Active les dégats lors d'une explosion"),
 		
-		FLAG_FIRE_DESCRIPTION("flag.fire.description",							""),
+		FLAG_FIRE_DESCRIPTION("flag.fire.description",							"Désactive/Active le fait d'allumer un feu"),
 		
 		FLAG_FIRE_MESSAGE_DEFAULT("flag.exitDenyMessage.default",			EMessageFormat.builder()
 																					.actionbarMessageString("&cLe feu est désactivé (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
 																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		
-		FLAG_INVENTORY_DROP_DESCRIPTION("flag.inventoryDrop.description",		""),
+		FLAG_INVENTORY_DROP_DESCRIPTION("flag.inventoryDrop.description",		"Désactive/Active la perte d'inventaire"),
 		
 		FLAG_INVINCIBILITY_DESCRIPTION("flag.invincibity.description",			"Désactive/Active l'invincibilité"),
 		
-		FLAG_ITEM_DROP_DESCRIPTION("flag.itemDrop.description",					""),
+		FLAG_ITEM_DROP_DESCRIPTION("flag.itemDrop.description",					"Désactive/Active le fait de jeter des objets"),
 		FLAG_ITEM_DROP_MESSAGE("flag.itemDrop.message",							EMessageFormat.builder()
 																					.actionbarMessageString("&cJeter les objets de <item> est interdit (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
 																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		
-		FLAG_ITEM_PICKUP_DESCRIPTION("flag.itemPickup.description",				""),
+		FLAG_ITEM_PICKUP_DESCRIPTION("flag.itemPickup.description",				"Désactive/Active le fait de rammasser des objets"),
 		FLAG_ITEM_PICKUP_MESSAGE("flag.itemPickup.message",						EMessageFormat.builder()
 																					.actionbarMessageString("&cRamasser les objets de <item> est interdit (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
