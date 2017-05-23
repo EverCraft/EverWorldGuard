@@ -57,7 +57,7 @@ public class FlagLightning extends StateFlag {
 		if (event.isCancelled()) return;
 		if (!event.getTargetType().equals(EntityTypes.LIGHTNING)) return;
 		
-		if (world.getRegions(event.getTransform().getPosition()).getFlagDefault(this).equals(State.ALLOW)) {
+		if (world.getRegions(event.getTransform().getPosition()).getFlagDefault(this).equals(State.DENY)) {
 			event.setCancelled(true);
 		}
 	}

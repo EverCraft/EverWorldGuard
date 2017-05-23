@@ -227,6 +227,10 @@ public class FlagBuild extends StateFlag {
 				service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, this).equals(State.ALLOW));
 			
 			if (!filter.isEmpty()) {
+				// Vérifie que c'est une action directe
+				Optional<Player> optSource = event.getCause().get(NamedCause.SOURCE, Player.class);
+				if(!optSource.isPresent() || !optSource.get().equals(player)) return;
+				
 				// Message
 				this.sendMessage(player, filter.get(0).getOriginal().getPosition());
 			}
@@ -260,6 +264,10 @@ public class FlagBuild extends StateFlag {
 			if (falling.isPresent()) {
 				falling.get().remove();
 			} else {
+				
+				// Vérifie que c'est une action directe
+				Optional<Player> optSource = event.getCause().get(NamedCause.SOURCE, Player.class);
+				if(!optSource.isPresent() || !optSource.get().equals(player)) return;
 				
 				// Message
 				this.sendMessage(player, filter.get(0).getOriginal().getPosition());
@@ -297,6 +305,10 @@ public class FlagBuild extends StateFlag {
 		
 		if (world.getRegions(event.getTargetEntity().getLocation().getPosition()).getFlag(player, this).equals(State.DENY)) {
 			event.setCancelled(true);
+			
+			// Vérifie que c'est une action directe
+			Optional<Player> optSource = event.getCause().get(NamedCause.SOURCE, Player.class);
+			if(!optSource.isPresent() || !optSource.get().equals(player)) return;
 			
 			// Message
 			this.sendMessage(player, event.getTargetEntity().getLocation().getPosition().toInt());

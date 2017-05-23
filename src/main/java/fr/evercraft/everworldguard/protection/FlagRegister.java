@@ -72,10 +72,10 @@ public class FlagRegister implements AdditionalCatalogRegistryModule<Flag<?>> {
 				throw new FlagRegisterException(FlagRegisterException.Type.INITIALIZED, flag);
 			}
 			
-			if (this.flags.containsKey(flag.getId())) {
+			if (this.flags.containsKey(flag.getId().toLowerCase())) {
 				throw new FlagRegisterException(FlagRegisterException.Type.CONFLICT, flag);
 			}
-			this.flags.put(flag.getId(), flag);
+			this.flags.put(flag.getId().toLowerCase(), flag);
 		} finally {
 			this.write_lock.unlock();
 		}

@@ -77,8 +77,13 @@ public class EWRegionFlagRemove extends ESubCommand<EverWorldGuard> {
 					return Arrays.asList();
 				}
 				
+				Optional<Flag<?>> flag = this.plugin.getProtectionService().getFlag(flag_string.get());
+				if (!flag_string.isPresent()) {
+					return Arrays.asList();
+				}
+				
 				List<String> suggests = new ArrayList<String>();
-				for(Group group : Group.values()) {
+				for(Group group : flag.get().getGroups()) {
 					suggests.add(group.name());
 				}
 				return suggests;

@@ -23,6 +23,7 @@ import org.spongepowered.api.event.block.CollideBlockEvent;
 import org.spongepowered.api.event.block.InteractBlockEvent;
 
 import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
+import fr.evercraft.everapi.sponge.UtilsCause;
 import fr.evercraft.everworldguard.EverWorldGuard;
 
 public class BlockListener {
@@ -41,7 +42,7 @@ public class BlockListener {
 		this.plugin.getManagerFlags().INTERACT_BLOCK.onChangeBlockPre(event);
 		
 		// Debug
-		//UtilsCause.debug(event.getCause(), "ChangeBlockEvent.Pre");
+		UtilsCause.debug(event.getCause(), "ChangeBlockEvent.Pre");
 	}
 	
 	@Listener(order=Order.FIRST)
@@ -52,7 +53,7 @@ public class BlockListener {
 		this.plugin.getManagerFlags().ENDERMAN_GRIEF.onChangeBlockPlace(event);
 		
 		// Debug
-		//UtilsCause.debug(event.getCause(), "ChangeBlockEvent.Place");
+		UtilsCause.debug(event.getCause(), "ChangeBlockEvent.Place");
 	}
 	
 	@Listener(order=Order.FIRST)
@@ -80,7 +81,7 @@ public class BlockListener {
 		//WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetWorld());
 		
 		// Debug
-		//UtilsCause.debug(event.getCause(), "ChangeBlockEvent.Decay");	
+		UtilsCause.debug(event.getCause(), "ChangeBlockEvent.Decay");	
 	}
 	
 	@Listener(order=Order.FIRST)
@@ -97,7 +98,7 @@ public class BlockListener {
 		//WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetWorld());
 		
 		// Debug
-		//UtilsCause.debug(event.getCause(), "ChangeBlockEvent.Grow");
+		UtilsCause.debug(event.getCause(), "ChangeBlockEvent.Grow");
 	}
 	
 	@Listener(order=Order.FIRST)

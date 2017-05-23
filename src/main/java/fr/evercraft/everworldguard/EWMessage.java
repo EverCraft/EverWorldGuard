@@ -417,19 +417,26 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		
 		FLAG_EXPLOSION_DAMAGE_DESCRIPTION("flag.explosionDamage.description",	""),
 		
+		FLAG_FIRE_DESCRIPTION("flag.fire.description",							""),
+		
+		FLAG_FIRE_MESSAGE_DEFAULT("flag.exitDenyMessage.default",			EMessageFormat.builder()
+																					.actionbarMessageString("&cLe feu est désactivé (<x>, <y>, <z>)")
+																					.actionbarStay(3 * 1000)
+																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
+		
 		FLAG_INVENTORY_DROP_DESCRIPTION("flag.inventoryDrop.description",		""),
 		
 		FLAG_INVINCIBILITY_DESCRIPTION("flag.invincibity.description",			"Désactive/Active l'invincibilité"),
 		
 		FLAG_ITEM_DROP_DESCRIPTION("flag.itemDrop.description",					""),
 		FLAG_ITEM_DROP_MESSAGE("flag.itemDrop.message",							EMessageFormat.builder()
-																					.actionbarMessageString("&cJeter les objets de <item> est interdit  (<x>, <y>, <z>)")
+																					.actionbarMessageString("&cJeter les objets de <item> est interdit (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
 																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		
 		FLAG_ITEM_PICKUP_DESCRIPTION("flag.itemPickup.description",				""),
 		FLAG_ITEM_PICKUP_MESSAGE("flag.itemPickup.message",						EMessageFormat.builder()
-																					.actionbarMessageString("&cRamasser les objets de <item> est interdit  (<x>, <y>, <z>)")
+																					.actionbarMessageString("&cRamasser les objets de <item> est interdit (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
 																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		
