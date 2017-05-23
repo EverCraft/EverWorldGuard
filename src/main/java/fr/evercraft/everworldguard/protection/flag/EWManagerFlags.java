@@ -35,7 +35,7 @@ public class EWManagerFlags {
 	public final FlagChatReceive CHAT_RECEIVE;
 	public final FlagChatSend CHAT_SEND;
 	public final FlagDamageEntity DAMAGE_ENTITY;
-	public final FlagEnderDragon ENDER_DRAGON;
+	public final FlagEnderDragonGrief ENDERDRAGON_GRIEF;
 	public final FlagEndermanGrief ENDERMAN_GRIEF;
 	public final FlagEnderPearl ENDERPEARL;
 	public final FlagEntityDamage ENTITY_DAMAGE;
@@ -72,7 +72,7 @@ public class EWManagerFlags {
 		CHAT_RECEIVE = new FlagChatReceive(this.plugin);
 		CHAT_SEND = new FlagChatSend(this.plugin);
 		DAMAGE_ENTITY = new FlagDamageEntity(this.plugin);
-		ENDER_DRAGON = new FlagEnderDragon(this.plugin);
+		ENDERDRAGON_GRIEF = new FlagEnderDragonGrief(this.plugin);
 		ENDERMAN_GRIEF = new FlagEndermanGrief(this.plugin);
 		ENDERPEARL = new FlagEnderPearl(this.plugin);
 		ENTITY_DAMAGE = new FlagEntityDamage(this.plugin);

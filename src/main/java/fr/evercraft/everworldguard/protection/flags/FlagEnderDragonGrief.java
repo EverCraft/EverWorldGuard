@@ -30,12 +30,12 @@ import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.protection.EProtectionService;
 
-public class FlagEnderDragon extends StateFlag {
+public class FlagEnderDragonGrief extends StateFlag {
 
 	private final EverWorldGuard plugin;
 
-	public FlagEnderDragon(EverWorldGuard plugin) {
-		super("ENDER_DRAGON");
+	public FlagEnderDragonGrief(EverWorldGuard plugin) {
+		super("ENDERDRAGON_GRIEF");
 		
 		this.plugin = plugin;
 	}
