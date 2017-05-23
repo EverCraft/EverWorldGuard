@@ -182,6 +182,10 @@ public class FlagItemDrop extends CatalogTypeFlag<ItemType> {
 					.build()));
 		}*/
 		
+		if (!items.isEmpty()) {
+			this.sendMessage(player, player.getLocation(), items.get(0).getType());
+		}
+		
 		// Bug : https://github.com/SpongePowered/SpongeCommon/issues/1363
 		if (event.getDroppedItems().isEmpty()) {
 			event.setCancelled(true);

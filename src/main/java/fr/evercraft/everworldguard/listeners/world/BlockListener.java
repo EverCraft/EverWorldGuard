@@ -64,6 +64,7 @@ public class BlockListener {
 		this.plugin.getManagerFlags().BLOCK_BREAK.onChangeBlockBreak(event);
 		this.plugin.getManagerFlags().INTERACT_BLOCK.onChangeBlockBreak(event);
 		this.plugin.getManagerFlags().ENDERMAN_GRIEF.onChangeBlockBreak(event);
+		this.plugin.getManagerFlags().ENDER_DRAGON.onChangeBlockBreak(event);
 		
 		// Debug
 		//UtilsCause.debug(event.getCause(), "ChangeBlockEvent.Break");

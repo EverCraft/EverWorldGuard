@@ -56,6 +56,7 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 		this.loadBuild();
 		this.loadBlock();
 		this.loadItem();
+		this.loadExplosion();
 	}
 	
 	/*
@@ -247,6 +248,19 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 		items.put("GROUP_OTHERS", "*");
 		
 		addDefault("ITEM_PICKUP, ITEM_DROP", items);
+	}
+	
+	public void loadExplosion() {
+		Map<String, List<String>> interact_entity = new HashMap<String, List<String>>();
+		interact_entity.put("CREEPER", Arrays.asList(EntityTypes.CREEPER.getId()));
+		interact_entity.put("TNT", Arrays.asList(EntityTypes.PRIMED_TNT.getId()));
+		interact_entity.put("GHAST", Arrays.asList(EntityTypes.GHAST.getId()));
+		interact_entity.put("ENDER_CRYSTAL", Arrays.asList(EntityTypes.ENDER_CRYSTAL.getId()));
+		interact_entity.put("WITHER", Arrays.asList(
+				EntityTypes.WITHER.getId(),
+				EntityTypes.WITHER_SKULL.getId()));
+		
+		addDefault("EXPLOSION, EXPLOSION_DAMAGE, EXPLOSION_BLOCK", interact_entity);
 	}
 	
 	/*

@@ -18,9 +18,11 @@ package fr.evercraft.everworldguard.listeners.world;
 
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
+import org.spongepowered.api.event.entity.explosive.DetonateExplosiveEvent;
 import org.spongepowered.api.event.world.LoadWorldEvent;
 import org.spongepowered.api.event.world.UnloadWorldEvent;
 
+import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
 import fr.evercraft.everworldguard.EverWorldGuard;
 
 public class WorldListener {
@@ -39,5 +41,18 @@ public class WorldListener {
 	@Listener(order=Order.PRE)
 	public void onUnloadWorld(UnloadWorldEvent event) {
 		this.plugin.getProtectionService().unLoadWorld(event.getTargetWorld());
+	}
+	
+	@Listener(order=Order.FIRST)
+	public void onDetonateExplosive(DetonateExplosiveEvent event) {
+		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetEntity().getLocation().getExtent());
+		
+		this.plugin.getManagerFlags().EXPLOSION.onDetonateExplosive(event, world);
+		this.plugin.getManagerFlags().EXPLOSION_BLOCK.onDetonateExplosive(event, world);
+		this.plugin.getManagerFlags().EXPLOSION_DAMAGE.onDetonateExplosive(event, world);
+		
+		
+		// Debug
+		//UtilsCause.debug(event.getCause(), "DetonateExplosiveEvent : " + event.getTargetEntity().getClass().getSimpleName() + " : shouldDamageEntities " + event.getExplosionBuilder().build().shouldDamageEntities());
 	}
 }

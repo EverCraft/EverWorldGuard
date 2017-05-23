@@ -363,6 +363,9 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 																					.actionbarMessageString("&cLes dégats infligés aux entités sont désactivé (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
 																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
+		
+		FLAG_ENDER_DRAGON_DESCRIPTION("flag.enderDragon.description",			""),
+		
 		FLAG_ENDERPEARL_DESCRIPTION("flag.enderpearl.description",				""),
 		FLAG_ENDERPEARL_MESSAGE("flag.enderpearl.message",						EMessageFormat.builder()
 																						.actionbarMessageString("&cL'utilisation des enderpearls est désactivé (<x>, <y>, <z>)")
@@ -407,6 +410,12 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		
 		FLAG_EXP_DROP_DESCRIPTION("flag.expDrop.description",					""),
+		
+		FLAG_EXPLOSION_DESCRIPTION("flag.explosion.description",				""),
+		
+		FLAG_EXPLOSION_BLOCK_DESCRIPTION("flag.explosionBlock.description",		""),
+		
+		FLAG_EXPLOSION_DAMAGE_DESCRIPTION("flag.explosionDamage.description",	""),
 		
 		FLAG_INVENTORY_DROP_DESCRIPTION("flag.inventoryDrop.description",		""),
 		

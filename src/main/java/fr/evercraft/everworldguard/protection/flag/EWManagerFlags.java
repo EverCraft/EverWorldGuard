@@ -35,6 +35,7 @@ public class EWManagerFlags {
 	public final FlagChatReceive CHAT_RECEIVE;
 	public final FlagChatSend CHAT_SEND;
 	public final FlagDamageEntity DAMAGE_ENTITY;
+	public final FlagEnderDragon ENDER_DRAGON;
 	public final FlagEndermanGrief ENDERMAN_GRIEF;
 	public final FlagEnderPearl ENDERPEARL;
 	public final FlagEntityDamage ENTITY_DAMAGE;
@@ -50,6 +51,9 @@ public class EWManagerFlags {
 	public final FlagInteractEntity INTERACT_ENTITY;
 	public final FlagInventoryDrop INVENTORY_DROP;
 	public final FlagInvincibility INVINCIBILITY;
+	public final FlagExplosion EXPLOSION;
+	public final FlagExplosionBlock EXPLOSION_BLOCK;
+	public final FlagExplosionDamage EXPLOSION_DAMAGE;
 	public final FlagItemDrop ITEM_DROP;
 	public final FlagItemPickup ITEM_PICKUP;
 	public final FlagLightning LIGHTNING;
@@ -68,6 +72,7 @@ public class EWManagerFlags {
 		CHAT_RECEIVE = new FlagChatReceive(this.plugin);
 		CHAT_SEND = new FlagChatSend(this.plugin);
 		DAMAGE_ENTITY = new FlagDamageEntity(this.plugin);
+		ENDER_DRAGON = new FlagEnderDragon(this.plugin);
 		ENDERMAN_GRIEF = new FlagEndermanGrief(this.plugin);
 		ENDERPEARL = new FlagEnderPearl(this.plugin);
 		ENTITY_DAMAGE = new FlagEntityDamage(this.plugin);
@@ -78,6 +83,9 @@ public class EWManagerFlags {
 		EXIT = new FlagExit();
 		EXIT_MESSAGE = new FlagExitMessage();
 		EXIT_DENY_MESSAGE = new FlagExitDenyMessage();
+		EXPLOSION = new FlagExplosion(this.plugin);
+		EXPLOSION_BLOCK = new FlagExplosionBlock(this.plugin);
+		EXPLOSION_DAMAGE = new FlagExplosionDamage(this.plugin);
 		EXP_DROP = new FlagExpDrop(this.plugin);
 		INTERACT_BLOCK = new FlagInteractBlock(this.plugin);
 		INTERACT_ENTITY = new FlagInteractEntity(this.plugin);
