@@ -24,6 +24,8 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 import org.spongepowered.api.block.BlockSnapshot;
+import org.spongepowered.api.block.BlockType;
+import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.data.Transaction;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.Entity;
@@ -32,6 +34,7 @@ import org.spongepowered.api.entity.FallingBlock;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.projectile.Projectile;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
+import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.cause.entity.damage.DamageTypes;
@@ -45,6 +48,8 @@ import org.spongepowered.api.event.cause.entity.spawn.SpawnTypes;
 import org.spongepowered.api.event.entity.CollideEntityEvent;
 import org.spongepowered.api.event.entity.DamageEntityEvent;
 import org.spongepowered.api.event.entity.InteractEntityEvent;
+import org.spongepowered.api.item.ItemType;
+import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.util.Direction;
 import org.spongepowered.api.world.LocatableBlock;
@@ -117,7 +122,32 @@ public class FlagBuild extends StateFlag {
 			.findAny().isPresent();
 	}
 	
-	// TODO TNT
+	/*
+	 * InteractBlockEvent.Secondary : TODO : Fix le bug de la TNT
+	 */
+	public void onInteractBlockSecondary(WorldWorldGuard world, InteractBlockEvent.Secondary event, Location<World> location) {
+		if (event.isCancelled()) return;
+		
+		Optional<Player> optPlayer = event.getCause().get(NamedCause.SOURCE, Player.class);
+		if (!optPlayer.isPresent()) return;
+		Player player = optPlayer.get();
+		
+		BlockType type = event.getTargetBlock().getState().getType();
+		if (!type.equals(BlockTypes.TNT)) return;
+		
+		Optional<ItemStack> itemstack = player.getItemInHand(event.getHandType());
+		if (!itemstack.isPresent()) return;
+		
+		ItemType itemtype = itemstack.get().getItem();
+		if (!itemtype.equals(ItemTypes.FLINT_AND_STEEL) && !itemtype.equals(ItemTypes.FIRE_CHARGE)) return;
+		
+		if (world.getRegions(location.getPosition()).getFlag(player, this).equals(State.DENY)) {
+			event.setCancelled(true);
+			
+			// Message
+			this.sendMessage(player, location.getPosition().toInt());
+		}
+	}
 	
 	/*
 	 * ChangeBlockEvent.Pre
@@ -143,33 +173,23 @@ public class FlagBuild extends StateFlag {
 				.distinct();
 		
 		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
-		if (optPlayer.isPresent()) {
-			Player player = optPlayer.get();
+		if (!optPlayer.isPresent()) return;
+		Player player = optPlayer.get();
 			
-			if (locations.anyMatch(location -> service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, this).equals(State.DENY))) {
-				event.setCancelled(true);
-			}
-		} else {
-			if (locations.anyMatch(location -> service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlagDefault(this).equals(State.DENY))) {
-				event.setCancelled(true);
-			}
+		if (locations.anyMatch(location -> service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, this).equals(State.DENY))) {
+			event.setCancelled(true);
 		}
 	}
 	
 	// Vérification des pistons...
 	private void onChangeBlockPreOthers(EProtectionService service, ChangeBlockEvent.Pre event) {
 		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
-		if (optPlayer.isPresent()) {
-			Player player = optPlayer.get();
-			if (event.getLocations().stream().anyMatch(location -> 
-					service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, this).equals(State.DENY))) {
-				event.setCancelled(true);
-			}
-		} else {
-			if (event.getLocations().stream().anyMatch(location -> 
-					service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlagDefault(this).equals(State.DENY))) {
-				event.setCancelled(true);
-			}
+		if (!optPlayer.isPresent()) return;
+		Player player = optPlayer.get();
+		
+		if (event.getLocations().stream().anyMatch(location -> 
+				service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, this).equals(State.DENY))) {
+			event.setCancelled(true);
 		}
 	}
 	
@@ -191,52 +211,38 @@ public class FlagBuild extends StateFlag {
 	// Drop l'item au sol pour le bloc avec gravité
 	private void onChangeBlockPlaceFalling(EProtectionService service, ChangeBlockEvent.Place event, FallingBlock falling) {
 		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
-		if (optPlayer.isPresent()) {
-			Player player = optPlayer.get();
-			event.filter(location -> service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, this).equals(State.ALLOW))
-				.forEach(transaction -> transaction.getFinal().getLocation().ifPresent(location -> {
-					Entity entity = location.getExtent().createEntity(EntityTypes.ITEM, location.getPosition());
-					entity.offer(Keys.REPRESENTED_ITEM, ItemStack.builder().fromBlockSnapshot(transaction.getFinal()).build().createSnapshot());
-					entity.setCreator(player.getUniqueId());
-					
-					location.getExtent().spawnEntity(entity, Cause.source(
-						EntitySpawnCause.builder().entity(entity).type(SpawnTypes.PLUGIN).build())
-						.from(event.getCause())
-						.named(UtilsCause.PLACE_EVENT, event).build());
-				}));
-		} else {			
-			event.filter(location -> service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlagDefault(this).equals(State.ALLOW))
-				.forEach(transaction -> transaction.getFinal().getLocation().ifPresent(location -> {
-					Entity entity = location.getExtent().createEntity(EntityTypes.ITEM, location.getPosition());
-					entity.offer(Keys.REPRESENTED_ITEM, ItemStack.builder().fromBlockSnapshot(transaction.getFinal()).build().createSnapshot());
-					
-					location.getExtent().spawnEntity(entity, Cause
-						.source(EntitySpawnCause.builder().entity(entity).type(SpawnTypes.PLUGIN).build())
-						.from(event.getCause())
-						.named(UtilsCause.PLACE_EVENT, event).build());
-				}));
-		}
+		if (!optPlayer.isPresent()) return;
+		Player player = optPlayer.get();
+		
+		event.filter(location -> service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, this).equals(State.ALLOW))
+			.forEach(transaction -> transaction.getFinal().getLocation().ifPresent(location -> {
+				Entity entity = location.getExtent().createEntity(EntityTypes.ITEM, location.getPosition());
+				entity.offer(Keys.REPRESENTED_ITEM, ItemStack.builder().fromBlockSnapshot(transaction.getFinal()).build().createSnapshot());
+				entity.setCreator(player.getUniqueId());
+				
+				location.getExtent().spawnEntity(entity, Cause.source(
+					EntitySpawnCause.builder().entity(entity).type(SpawnTypes.PLUGIN).build())
+					.from(event.getCause())
+					.named(UtilsCause.PLACE_EVENT, event).build());
+			}));
 	}
 	
 	// Placement de bloc
 	private void onChangeBlockPlaceNoFalling(EProtectionService service, ChangeBlockEvent.Place event) {
 		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
-		if (optPlayer.isPresent()) {
-			Player player = optPlayer.get();
-			List<Transaction<BlockSnapshot>> filter = event.filter(location -> 
-				service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, this).equals(State.ALLOW));
+		if (!optPlayer.isPresent()) return;
+		Player player = optPlayer.get();
+		
+		List<Transaction<BlockSnapshot>> filter = event.filter(location -> 
+			service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, this).equals(State.ALLOW));
+		
+		if (!filter.isEmpty()) {
+			// Vérifie que c'est une action directe
+			Optional<Player> optSource = event.getCause().get(NamedCause.SOURCE, Player.class);
+			if(!optSource.isPresent() || !optSource.get().equals(player)) return;
 			
-			if (!filter.isEmpty()) {
-				// Vérifie que c'est une action directe
-				Optional<Player> optSource = event.getCause().get(NamedCause.SOURCE, Player.class);
-				if(!optSource.isPresent() || !optSource.get().equals(player)) return;
-				
-				// Message
-				this.sendMessage(player, filter.get(0).getOriginal().getPosition());
-			}
-		} else {
-			event.filter(location -> 
-				service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlagDefault(this).equals(State.ALLOW));
+			// Message
+			this.sendMessage(player, filter.get(0).getOriginal().getPosition());
 		}
 	}
 	
@@ -248,17 +254,13 @@ public class FlagBuild extends StateFlag {
 		if (event.isCancelled()) return;
 		
 		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
-		if (optPlayer.isPresent()) {
-			this.onChangeBlockBreakPlayer(this.plugin.getProtectionService(), event, optPlayer.get());
-		} else {
-			this.onChangeBlockBreakNatural(this.plugin.getProtectionService(), event);
-		}
-	}
-	
-	private void onChangeBlockBreakPlayer(EProtectionService service, ChangeBlockEvent.Break event, Player player) {
+		if (!optPlayer.isPresent()) return;
+		Player player = optPlayer.get();
+		
+		EProtectionService service = this.plugin.getProtectionService();
 		List<Transaction<BlockSnapshot>> filter = event.filter(location -> 
 			service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, this).equals(State.ALLOW));
-		
+	
 		if (!filter.isEmpty()) {
 			Optional<FallingBlock> falling = event.getCause().get(NamedCause.SOURCE, FallingBlock.class);
 			if (falling.isPresent()) {
@@ -275,16 +277,6 @@ public class FlagBuild extends StateFlag {
 		}
 	}
 	
-	private void onChangeBlockBreakNatural(EProtectionService service, ChangeBlockEvent.Break event) {		
-		if (!event.filter(location -> 
-				service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlagDefault(this).equals(State.ALLOW)).isEmpty()) {
-			Optional<FallingBlock> falling = event.getCause().get(NamedCause.SOURCE, FallingBlock.class);
-			if (falling.isPresent()) {
-				falling.get().remove();
-			}
-		}
-	}
-	
 	/*
 	 * InteractEntity
 	 */
@@ -293,14 +285,9 @@ public class FlagBuild extends StateFlag {
 		if (event.isCancelled()) return;
 		
 		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
-		if (optPlayer.isPresent()) {
-			this.onInteractEntityPlayer(world, event, optPlayer.get());
-		} else {
-			this.onInteractEntityNatural(world, event);
-		}
-	}
-	
-	public void onInteractEntityPlayer(WorldWorldGuard world, InteractEntityEvent event, Player player) {
+		if (!optPlayer.isPresent()) return;
+		Player player = optPlayer.get();
+		
 		if (!this.containsEntity(event.getTargetEntity(), player)) return;
 		
 		if (world.getRegions(event.getTargetEntity().getLocation().getPosition()).getFlag(player, this).equals(State.DENY)) {
@@ -315,14 +302,6 @@ public class FlagBuild extends StateFlag {
 		}
 	}
 	
-	public void onInteractEntityNatural(WorldWorldGuard world, InteractEntityEvent event) {
-		if (!this.containsEntity(event.getTargetEntity())) return;
-		
-		if (world.getRegions(event.getTargetEntity().getLocation().getPosition()).getFlagDefault(this).equals(State.DENY)) {
-			event.setCancelled(true);
-		}
-	}
-	
 	/*
 	 * CollideEntity
 	 */
@@ -331,14 +310,9 @@ public class FlagBuild extends StateFlag {
 		if (event.isCancelled()) return;
 		
 		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
-		if (optPlayer.isPresent()) {
-			this.onCollideEntityPlayer(world, event, optPlayer.get());
-		} else {
-			this.onCollideEntityNatural(world, event);
-		}
-	}
-	
-	public void onCollideEntityPlayer(WorldWorldGuard world, CollideEntityEvent event, Player player) {		
+		if (!optPlayer.isPresent()) return;
+		Player player = optPlayer.get();
+		
 		if (event.getCause().get(NamedCause.SOURCE, Projectile.class).isPresent()) {
 			List<? extends Entity> filter = event.filterEntities(entity -> {
 				if (this.containsEntity(entity, player) && world.getRegions(entity.getLocation().getPosition()).getFlag(player, this).equals(State.DENY)) {
@@ -351,17 +325,6 @@ public class FlagBuild extends StateFlag {
 				// Message
 				this.sendMessage(player, filter.get(0).getLocation().getPosition().toInt());
 			}
-		}
-	}
-	
-	public void onCollideEntityNatural(WorldWorldGuard world, CollideEntityEvent event) {
-		if (event.getCause().get(NamedCause.SOURCE, Projectile.class).isPresent()) {
-			event.filterEntities(entity -> {
-				if (this.containsEntity(entity) && world.getRegions(entity.getLocation().getPosition()).getFlagDefault(this).equals(State.DENY)) {
-					return false;
-				}
-				return true;
-			});
 		}
 	}
 	
@@ -384,19 +347,13 @@ public class FlagBuild extends StateFlag {
 				Optional<Player> player = this.plugin.getEServer().getPlayer(creator.get());
 				if (player.isPresent()) {
 					this.onDamageEntity(world, event, entity, player.get());
-				} else {
-					this.onDamageEntity(world, event, entity);
 				}
-			} else {
-				this.onDamageEntity(world, event, entity);
 			}
 		} else if (source instanceof IndirectEntityDamageSource) {				
 			IndirectEntityDamageSource damageSource = (IndirectEntityDamageSource) source;
 			
 			if (damageSource.getIndirectSource() instanceof Player) {
 				this.onDamageEntity(world, event, entity, (Player) damageSource.getIndirectSource());
-			} else {
-				this.onDamageEntity(world, event, entity);
 			}
 		} else if (source instanceof EntityDamageSource) {				
 			EntityDamageSource damageSource = (EntityDamageSource) source;
@@ -406,8 +363,6 @@ public class FlagBuild extends StateFlag {
 					// Message
 					this.sendMessage((Player) damageSource.getSource(), event.getTargetEntity().getLocation().getPosition().toInt());
 				}
-			} else {
-				this.onDamageEntity(world, event, entity);
 			}
 		} else if (source instanceof BlockDamageSource) {
 			BlockDamageSource damageSource = (BlockDamageSource) source;
@@ -424,20 +379,6 @@ public class FlagBuild extends StateFlag {
 							entity.offer(Keys.FIRE_TICKS, 0);
 						}
 					}
-				} else {
-					if (this.onDamageEntity(world, event, entity)) {
-						// TODO Bug IgniteEntityEvent : no implemented
-						if (damageSource.getType().equals(DamageTypes.FIRE)) {
-							entity.offer(Keys.FIRE_TICKS, 0);
-						}
-					}
-				}
-			} else {
-				if (this.onDamageEntity(world, event, entity)) {
-					// TODO Bug IgniteEntityEvent : no implemented
-					if (damageSource.getType().equals(DamageTypes.FIRE)) {
-						entity.offer(Keys.FIRE_TICKS, 0);
-					}
 				}
 			}
 		} else if (source instanceof DamageSource) {
@@ -450,11 +391,7 @@ public class FlagBuild extends StateFlag {
 					Optional<Player> player = this.plugin.getEServer().getPlayer(creator.get());
 					if (player.isPresent()) {
 						this.onDamageEntity(world, event, entity, player.get());
-					} else {
-						this.onDamageEntity(world, event, entity);
 					}
-				} else {
-					this.onDamageEntity(world, event, entity);
 				}
 			}
 		}
@@ -464,16 +401,6 @@ public class FlagBuild extends StateFlag {
 		if (!this.containsEntity(event.getTargetEntity(), player)) return false;
 		
 		if (world.getRegions(entity.getLocation().getPosition()).getFlag(player, this).equals(State.DENY)) {
-			event.setCancelled(true);
-			return true;
-		}
-		return false;
-	}
-	
-	public boolean onDamageEntity(WorldWorldGuard world, DamageEntityEvent event, Entity entity) {
-		if (!this.containsEntity(event.getTargetEntity())) return false;
-		
-		if (world.getRegions(entity.getLocation().getPosition()).getFlagDefault(this).equals(State.DENY)) {
 			event.setCancelled(true);
 			return true;
 		}

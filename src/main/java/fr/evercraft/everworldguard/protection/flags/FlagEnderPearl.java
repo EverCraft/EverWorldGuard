@@ -22,7 +22,6 @@ import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.cause.entity.teleport.EntityTeleportCause;
-import org.spongepowered.api.event.entity.HealEntityEvent;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.item.inventory.InteractItemEvent;
 import org.spongepowered.api.item.ItemTypes;
@@ -59,18 +58,6 @@ public class FlagEnderPearl extends StateFlag {
 					.replace("<x>", position.getX())
 					.replace("<y>", position.getY())
 					.replace("<z>", position.getZ()));
-	}
-	
-	public void onPlayerHeal(WorldWorldGuard world, HealEntityEvent event) {
-		if (event.isCancelled()) return;
-		
-		if (event.getTargetEntity() instanceof Player && event.getBaseHealAmount() > event.getFinalHealAmount()) {
-			Player player = (Player) event.getTargetEntity();
-			
-			if (world.getRegions(player.getLocation().getPosition()).getFlag(player, this).equals(State.ALLOW)) {
-				event.setCancelled(true);
-			}
-		}
 	}
 
 	public void onInteractItem(InteractItemEvent event) {

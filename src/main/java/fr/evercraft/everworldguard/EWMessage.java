@@ -368,9 +368,9 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		
 		FLAG_ENDERPEARL_DESCRIPTION("flag.enderpearl.description",				"Désactive/Active la téléportation avec une enderpearl"),
 		FLAG_ENDERPEARL_MESSAGE("flag.enderpearl.message",						EMessageFormat.builder()
-																						.actionbarMessageString("&cL'utilisation des enderpearls est désactivé (<x>, <y>, <z>)")
-																						.actionbarStay(3 * 1000)
-																						.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
+																					.actionbarMessageString("&cL'utilisation des enderpearls est désactivé (<x>, <y>, <z>)")
+																					.actionbarStay(3 * 1000)
+																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		
 		FLAG_ENTITY_DAMAGE_DESCRIPTION("flag.entityDamage.description",			"Désactive/Active les dégats infligés par entités"),
 		
@@ -418,7 +418,7 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		
 		FLAG_FIRE_DESCRIPTION("flag.fire.description",							"Désactive/Active le fait d'allumer un feu"),
 		
-		FLAG_FIRE_MESSAGE_DEFAULT("flag.exitDenyMessage.default",			EMessageFormat.builder()
+		FLAG_FIRE_MESSAGE("flag.fire.message",									EMessageFormat.builder()
 																					.actionbarMessageString("&cLe feu est désactivé (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
 																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),

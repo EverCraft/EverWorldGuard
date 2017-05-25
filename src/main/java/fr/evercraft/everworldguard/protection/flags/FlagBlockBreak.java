@@ -32,10 +32,13 @@ import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.FallingBlock;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
+import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.cause.entity.spawn.EntitySpawnCause;
 import org.spongepowered.api.event.cause.entity.spawn.SpawnTypes;
+import org.spongepowered.api.item.ItemType;
+import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.world.LocatableBlock;
 import org.spongepowered.api.world.Location;
@@ -79,6 +82,35 @@ public class FlagBlockBreak extends CatalogTypeFlag<BlockType> {
 					.replace("<y>", position.getY())
 					.replace("<z>", position.getZ())
 					.replace("<block>", type.getTranslation()));
+	}
+
+	/*
+	 * InteractBlockEvent.Secondary : TODO : Fix le bug de la TNT
+	 */
+	public void onInteractBlockSecondary(WorldWorldGuard world, InteractBlockEvent.Secondary event, Location<World> location) {
+		if (event.isCancelled()) return;
+		
+		Optional<Player> optPlayer = event.getCause().get(NamedCause.SOURCE, Player.class);
+		if (!optPlayer.isPresent()) return;
+		Player player = optPlayer.get();
+		
+		BlockType type = event.getTargetBlock().getState().getType();
+		if (!type.equals(BlockTypes.TNT)) return;
+		
+		Optional<ItemStack> itemstack = player.getItemInHand(event.getHandType());
+		if (!itemstack.isPresent()) return;
+		
+		ItemType itemtype = itemstack.get().getItem();
+		if (!itemtype.equals(ItemTypes.FLINT_AND_STEEL) && !itemtype.equals(ItemTypes.FIRE_CHARGE)) return;
+		
+		if (!this.getDefault().containsValue(type)) return;
+		
+		if (!world.getRegions(location.getPosition()).getFlag(player, this).containsValue(type)) {
+			event.setCancelled(true);
+			
+			// Message
+			this.sendMessage(player, location, type);
+		}
 	}
 	
 	/*

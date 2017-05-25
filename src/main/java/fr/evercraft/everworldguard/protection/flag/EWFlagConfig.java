@@ -40,6 +40,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import fr.evercraft.everapi.plugin.file.EConfig;
 import fr.evercraft.everapi.services.entity.EntityTemplate;
+import fr.evercraft.everapi.services.entity.EntityTemplates;
+import fr.evercraft.everapi.services.fire.FireType;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import ninja.leaping.configurate.ConfigurationNode;
 
@@ -57,6 +59,7 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 		this.loadBlock();
 		this.loadItem();
 		this.loadExplosion();
+		this.loadFire();
 	}
 	
 	/*
@@ -160,7 +163,7 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 				.map(entity -> entity.getId()),
 			Arrays.asList(
 					EntityTypes.SQUID.getId(),
-					"evercraft:wolf_passive").stream())
+					EntityTemplates.WOLF_PASSIVE.getId()).stream())
 			.collect(Collectors.toList()));
 		
 		interact_entity.put("GROUP_MONSTER", Stream.concat(
@@ -170,7 +173,7 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 				.map(entity -> entity.getId()),
 			Arrays.asList(
 					EntityTypes.GUARDIAN.getId(),
-					"evercraft:wolf_angry").stream())
+					EntityTemplates.WOLF_ANGRY.getId()).stream())
 			.collect(Collectors.toList()));
 		
 		interact_entity.put("GROUP_INVENTORY", Arrays.asList(
@@ -180,10 +183,11 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 				EntityTypes.HOPPER_MINECART.getId()));
 		
 		interact_entity.put("GROUP_OWNER", Arrays.asList(
-				"evercraft:wolf_owner",
-				"evercraft:horse_owner",
-				"evercraft:mule_owner",
-				"evercraft:ocelot_owner"));
+				EntityTemplates.WOLF_OWNER.getId(),
+				EntityTemplates.HORSE_OWNER.getId(),
+				EntityTemplates.MULE_OWNER.getId(),
+				EntityTemplates.DONKEY_OWNER.getId(),
+				EntityTemplates.OCELOT_OWNER.getId()));
 		
 		interact_entity.put("GROUP_OTHERS", Arrays.asList(
 				EntityTypes.RIDEABLE_MINECART.getId(),
@@ -261,6 +265,16 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 				EntityTypes.WITHER_SKULL.getId()));
 		
 		addDefault("EXPLOSION, EXPLOSION_DAMAGE, EXPLOSION_BLOCK", interact_entity);
+	}
+	
+	public void loadFire() {
+		Map<String, List<String>> fires = new HashMap<String, List<String>>();
+		
+		for (FireType fire : this.plugin.getGame().getRegistry().getAllOf(FireType.class)) {
+			fires.put(fire.getName(), Arrays.asList(fire.getId()));
+		}
+		
+		addDefault("FIRE", fires);
 	}
 	
 	/*

@@ -50,6 +50,7 @@ public class BlockListener {
 		this.plugin.getManagerFlags().BLOCK_PLACE.onChangeBlockPlace(event);
 		this.plugin.getManagerFlags().BLOCK_BREAK.onChangeBlockPlace(event);
 		this.plugin.getManagerFlags().ENDERMAN_GRIEF.onChangeBlockPlace(event);
+		this.plugin.getManagerFlags().FIRE.onChangeBlockPlace(event);
 		
 		// Debug
 		//UtilsCause.debug(event.getCause(), "ChangeBlockEvent.Place");
@@ -105,7 +106,10 @@ public class BlockListener {
 		event.getTargetBlock().getLocation().ifPresent(location -> {
 			WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(location.getExtent());
 		
+			this.plugin.getManagerFlags().BUILD.onInteractBlockSecondary(world, event, location);
+			this.plugin.getManagerFlags().BLOCK_BREAK.onInteractBlockSecondary(world, event, location);
 			this.plugin.getManagerFlags().INTERACT_BLOCK.onInteractBlockSecondary(world, event, location);
+			this.plugin.getManagerFlags().FIRE.onInteractBlockSecondary(world, event, location);
 		});
 		
 		// Debug

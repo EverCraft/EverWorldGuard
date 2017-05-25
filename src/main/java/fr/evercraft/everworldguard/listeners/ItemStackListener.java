@@ -20,6 +20,7 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.item.inventory.InteractItemEvent;
 import org.spongepowered.api.event.item.inventory.UseItemStackEvent;
+
 import fr.evercraft.everworldguard.EverWorldGuard;
 
 public class ItemStackListener {
@@ -33,14 +34,7 @@ public class ItemStackListener {
 	@Listener(order=Order.FIRST)
 	public void onInteractEntity(UseItemStackEvent.Start event) {		
 		// Debug
-		/*List<Text> list = new ArrayList<Text>();
-		event.getCause().getNamedCauses().forEach((key, value) -> {
-			list.add(Text.builder(key)
-					.onHover(TextActions.showText(Text.of(EChat.fixLength(value.toString(), 254))))
-					.onClick(TextActions.suggestCommand(EChat.fixLength(value.toString(), 254)))
-					.build());
-		});
-		this.plugin.getEServer().getBroadcastChannel().send(Text.of("UseItemStackEvent.Start : ").concat(Text.joinWith(Text.of(", "), list)));*/
+		//UtilsCause.debug(event.getCause(), "UseItemStackEvent.Start");
 	}
 	
 	@Listener(order=Order.FIRST)
@@ -49,14 +43,7 @@ public class ItemStackListener {
 		this.plugin.getManagerFlags().ENTITY_SPAWNING.onInteractItem(event);
 		
 		// Debug
-		/*List<Text> list = new ArrayList<Text>();
-		event.getCause().getNamedCauses().forEach((key, value) -> {
-			list.add(Text.builder(key)
-					.onHover(TextActions.showText(Text.of(EChat.fixLength(value.toString(), 254))))
-					.onClick(TextActions.suggestCommand(EChat.fixLength(value.toString(), 254)))
-					.build());
-		});
-		this.plugin.getEServer().getBroadcastChannel().send(Text.of("InteractItemEvent : ").concat(Text.joinWith(Text.of(", "), list)));*/
+		//UtilsCause.debug(event.getCause(), "InteractItemEvent.Secondary");
 	}
 
 }
