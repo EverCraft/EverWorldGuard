@@ -74,7 +74,7 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 
 	@Override
 	public Text description(final CommandSource source) {
-		return EWMessages.REGION_INFO_DESCRIPTION.getText();
+		return EWMessages.REGION_DEFINE_DESCRIPTION.getText();
 	}
 
 	@Override

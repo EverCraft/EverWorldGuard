@@ -51,6 +51,7 @@ public class EWManagerFlags {
 	public final FlagExplosionBlock EXPLOSION_BLOCK;
 	public final FlagExplosionDamage EXPLOSION_DAMAGE;
 	public final FlagFire FIRE;
+	public final FlagIce ICE;
 	public final FlagInteractBlock INTERACT_BLOCK;
 	public final FlagInteractEntity INTERACT_ENTITY;
 	public final FlagInventoryDrop INVENTORY_DROP;
@@ -59,6 +60,7 @@ public class EWManagerFlags {
 	public final FlagItemPickup ITEM_PICKUP;
 	public final FlagLightning LIGHTNING;
 	public final FlagPvp PVP;
+	public final FlagSnow SNOW;
 	public final FlagSpawn SPAWN;
 	public final FlagTeleport TELEPORT;
 	
@@ -89,6 +91,7 @@ public class EWManagerFlags {
 		EXPLOSION_BLOCK = new FlagExplosionBlock(this.plugin);
 		EXPLOSION_DAMAGE = new FlagExplosionDamage(this.plugin);
 		FIRE = new FlagFire(this.plugin);
+		ICE = new FlagIce(this.plugin);
 		INTERACT_BLOCK = new FlagInteractBlock(this.plugin);
 		INTERACT_ENTITY = new FlagInteractEntity(this.plugin);
 		INVENTORY_DROP = new FlagInventoryDrop(this.plugin);
@@ -97,6 +100,7 @@ public class EWManagerFlags {
 		ITEM_PICKUP = new FlagItemPickup(this.plugin);
 		LIGHTNING = new FlagLightning(this.plugin);
 		PVP = new FlagPvp(this.plugin);
+		SNOW = new FlagSnow(this.plugin);
 		SPAWN = new FlagSpawn(this.plugin);
 		TELEPORT = new FlagTeleport(this.plugin);
 		

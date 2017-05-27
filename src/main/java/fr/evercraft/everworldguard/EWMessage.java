@@ -423,6 +423,8 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 																					.actionbarStay(3 * 1000)
 																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		
+		FLAG_ICE_DESCRIPTION("flag.ice.description",							"Désactive/Active la glace"),
+		
 		FLAG_INVENTORY_DROP_DESCRIPTION("flag.inventoryDrop.description",		"Désactive/Active la perte d'inventaire"),
 		
 		FLAG_INVINCIBILITY_DESCRIPTION("flag.invincibity.description",			"Désactive/Active l'invincibilité"),
@@ -447,6 +449,8 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 																					.actionbarMessageString("&cPVP désactivé (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
 																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
+		
+		FLAG_SNOW_DESCRIPTION("flag.snow.description",							"Désactive/Active la neige"),
 		
 		FLAG_TELEPORT_DESCRIPTION("flag.teleport.description",					"Sauvegarde une position pour se téléporter à la région"),
 		

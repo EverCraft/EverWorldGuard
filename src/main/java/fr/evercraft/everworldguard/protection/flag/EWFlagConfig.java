@@ -42,6 +42,8 @@ import fr.evercraft.everapi.plugin.file.EConfig;
 import fr.evercraft.everapi.services.entity.EntityTemplate;
 import fr.evercraft.everapi.services.entity.EntityTemplates;
 import fr.evercraft.everapi.services.fire.FireType;
+import fr.evercraft.everapi.services.ice.IceType;
+import fr.evercraft.everapi.services.snow.SnowType;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import ninja.leaping.configurate.ConfigurationNode;
 
@@ -60,6 +62,8 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 		this.loadItem();
 		this.loadExplosion();
 		this.loadFire();
+		this.loadSnow();
+		this.loadIce();
 	}
 	
 	/*
@@ -275,6 +279,26 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 		}
 		
 		addDefault("FIRE", fires);
+	}
+	
+	public void loadSnow() {
+		Map<String, List<String>> snows = new HashMap<String, List<String>>();
+		
+		for (SnowType snow : this.plugin.getGame().getRegistry().getAllOf(SnowType.class)) {
+			snows.put(snow.getName(), Arrays.asList(snow.getId()));
+		}
+		
+		addDefault("SNOW", snows);
+	}
+	
+	public void loadIce() {
+		Map<String, List<String>> ices = new HashMap<String, List<String>>();
+		
+		for (IceType ice : this.plugin.getGame().getRegistry().getAllOf(IceType.class)) {
+			ices.put(ice.getName(), Arrays.asList(ice.getId()));
+		}
+		
+		addDefault("ICE", ices);
 	}
 	
 	/*

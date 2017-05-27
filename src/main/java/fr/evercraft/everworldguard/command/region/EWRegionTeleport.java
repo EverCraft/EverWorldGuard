@@ -78,7 +78,7 @@ public class EWRegionTeleport extends ESubCommand<EverWorldGuard> {
 
 	@Override
 	public Text description(final CommandSource source) {
-		return EWMessages.REGION_LIST_DESCRIPTION.getText();
+		return EWMessages.REGION_TELEPORT_DESCRIPTION.getText();
 	}
 
 	@Override

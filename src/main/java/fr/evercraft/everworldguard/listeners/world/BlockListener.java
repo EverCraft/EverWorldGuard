@@ -51,6 +51,8 @@ public class BlockListener {
 		this.plugin.getManagerFlags().BLOCK_BREAK.onChangeBlockPlace(event);
 		this.plugin.getManagerFlags().ENDERMAN_GRIEF.onChangeBlockPlace(event);
 		this.plugin.getManagerFlags().FIRE.onChangeBlockPlace(event);
+		this.plugin.getManagerFlags().ICE.onChangeBlockPlace(event);
+		this.plugin.getManagerFlags().SNOW.onChangeBlockPlace(event);
 		
 		// Debug
 		//UtilsCause.debug(event.getCause(), "ChangeBlockEvent.Place");
@@ -62,6 +64,7 @@ public class BlockListener {
 		this.plugin.getManagerFlags().BLOCK_BREAK.onChangeBlockBreak(event);
 		this.plugin.getManagerFlags().INTERACT_BLOCK.onChangeBlockBreak(event);
 		this.plugin.getManagerFlags().ENDERMAN_GRIEF.onChangeBlockBreak(event);
+		this.plugin.getManagerFlags().SNOW.onChangeBlockBreak(event);
 		
 		// Debug
 		//UtilsCause.debug(event.getCause(), "ChangeBlockEvent.Break");
@@ -71,6 +74,7 @@ public class BlockListener {
 	public void onChangeBlock(ChangeBlockEvent.Modify event) {
 		
 		this.plugin.getManagerFlags().INTERACT_BLOCK.onChangeBlockModify(event);
+		this.plugin.getManagerFlags().SNOW.onChangeBlockModify(event);
 		
 		// Debug
 		//UtilsCause.debug(event.getCause(), "ChangeBlockEvent.Modify");

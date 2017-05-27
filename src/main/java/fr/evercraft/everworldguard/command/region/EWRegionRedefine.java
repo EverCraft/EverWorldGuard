@@ -81,7 +81,7 @@ public class EWRegionRedefine extends ESubCommand<EverWorldGuard> {
 
 	@Override
 	public Text description(final CommandSource source) {
-		return EWMessages.REGION_INFO_DESCRIPTION.getText();
+		return EWMessages.REGION_REDEFINE_DESCRIPTION.getText();
 	}
 
 	@Override

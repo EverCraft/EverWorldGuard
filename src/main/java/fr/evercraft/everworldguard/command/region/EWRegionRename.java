@@ -74,7 +74,7 @@ public class EWRegionRename extends ESubCommand<EverWorldGuard> {
 
 	@Override
 	public Text description(final CommandSource source) {
-		return EWMessages.REGION_PARENT_DESCRIPTION.getText();
+		return EWMessages.REGION_RENAME_DESCRIPTION.getText();
 	}
 
 	@Override
