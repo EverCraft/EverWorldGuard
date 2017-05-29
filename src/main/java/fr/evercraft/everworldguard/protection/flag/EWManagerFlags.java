@@ -32,8 +32,7 @@ public class EWManagerFlags {
 	public final FlagBlockBreak BLOCK_BREAK;
 	public final FlagBlockPlace BLOCK_PLACE;
 	public final FlagBuild BUILD;
-	public final FlagChatReceive CHAT_RECEIVE;
-	public final FlagChatSend CHAT_SEND;
+	public final FlagChat CHAT;
 	public final FlagDamageEntity DAMAGE_ENTITY;
 	public final FlagEnderDragonGrief ENDERDRAGON_GRIEF;
 	public final FlagEndermanGrief ENDERMAN_GRIEF;
@@ -72,8 +71,7 @@ public class EWManagerFlags {
 		BLOCK_BREAK = new FlagBlockBreak(this.plugin);
 		BLOCK_PLACE = new FlagBlockPlace(this.plugin);
 		BUILD = new FlagBuild(this.plugin);
-		CHAT_RECEIVE = new FlagChatReceive(this.plugin);
-		CHAT_SEND = new FlagChatSend(this.plugin);
+		CHAT = new FlagChat(this.plugin);
 		DAMAGE_ENTITY = new FlagDamageEntity(this.plugin);
 		ENDERDRAGON_GRIEF = new FlagEnderDragonGrief(this.plugin);
 		ENDERMAN_GRIEF = new FlagEndermanGrief(this.plugin);

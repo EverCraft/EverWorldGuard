@@ -165,8 +165,13 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 				Optional<Flag<?>> optFlag = this.plugin.getProtectionService().getFlag((String) config_flags.getKey());
 				if (optFlag.isPresent()) {
 					Flag<T> flag = (Flag<T>) optFlag.get();
-					T value = flag.deserialize(config_flags.getValue().getString(""));
-					flags.put(flag, this.putFlags((EFlagValue<T>) flags.get(flag), Group.DEFAULT, value));
+					try {
+						T value = flag.deserialize(config_flags.getValue().getString(""));
+						flags.put(flag, this.putFlags((EFlagValue<T>) flags.get(flag), Group.DEFAULT, value));
+					} catch(Exception e) {
+						this.plugin.getELogger().warn("FlagDefault error : " + config_flags.getKey().toString() + " (id:'" + identifier + "') : ");
+						e.printStackTrace();
+					}
 				} else {
 					this.plugin.getELogger().warn("FlagDefault no register : " + config_flags.getKey().toString() + " (id:'" + identifier + "')");
 				}

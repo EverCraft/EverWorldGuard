@@ -29,8 +29,8 @@ import org.spongepowered.api.world.World;
 
 import com.google.common.collect.ImmutableSet;
 
-import fr.evercraft.everapi.services.ice.IceType;
-import fr.evercraft.everapi.services.ice.IceTypes;
+import fr.evercraft.everapi.registers.IceType;
+import fr.evercraft.everapi.registers.IceType.IceTypes;
 import fr.evercraft.everapi.services.worldguard.flag.type.CatalogTypeFlag;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion.Group;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;

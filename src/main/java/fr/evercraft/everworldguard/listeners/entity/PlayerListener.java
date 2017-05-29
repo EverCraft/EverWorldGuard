@@ -69,8 +69,7 @@ public class PlayerListener {
 	public void onMessageChannelChat(MessageChannelEvent.Chat event, @First Player player) {
 		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(player.getWorld());
 		
-		this.plugin.getManagerFlags().CHAT_SEND.onMessageChannelChat(event, world, player);
-		this.plugin.getManagerFlags().CHAT_RECEIVE.onMessageChannelChat(event, world, player);
+		this.plugin.getManagerFlags().CHAT.onMessageChannelChat(event, world, player);
 	}
 	
 	@Listener

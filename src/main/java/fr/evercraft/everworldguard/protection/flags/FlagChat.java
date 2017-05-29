@@ -18,53 +18,85 @@ package fr.evercraft.everworldguard.protection.flags;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.message.MessageChannelEvent;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.channel.MessageReceiver;
 
+import com.flowpowered.math.vector.Vector3i;
 import com.google.common.collect.Lists;
 
+import fr.evercraft.everapi.registers.ChatType;
+import fr.evercraft.everapi.registers.ChatType.ChatTypes;
 import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
-import fr.evercraft.everapi.services.worldguard.flag.type.StateFlag;
+import fr.evercraft.everapi.services.worldguard.flag.type.CatalogTypeFlag;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
-import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.protection.EProtectionService;
+import fr.evercraft.everworldguard.EverWorldGuard;
 
-public class FlagChatReceive extends StateFlag {
+public class FlagChat extends CatalogTypeFlag<ChatType> {
 	
 	private final EverWorldGuard plugin;
 
-	public FlagChatReceive(EverWorldGuard plugin) {
-		super("CHAT_RECEIVE");
+	public FlagChat(EverWorldGuard plugin) {
+		super("CHAT");
 		this.plugin = plugin;
+		
+		this.reload();
+	}
+	
+	@Override
+	protected Map<String, Set<ChatType>> getConfig() {
+		return this.plugin.getProtectionService().getConfigFlags().get(this.getName(), ChatType.class);
 	}
 	
 	@Override
 	public String getDescription() {
-		return EWMessages.FLAG_CHAT_RECEIVE_DESCRIPTION.getString();
-	}
-
-	@Override
-	public State getDefault() {
-		return State.ALLOW;
+		return EWMessages.FLAG_CHAT_DESCRIPTION.getString();
 	}
 	
-	@Listener
+	public boolean sendMessage(Player player, Vector3i position) {
+		return this.plugin.getProtectionService().sendMessage(player, this,
+				EWMessages.FLAG_CHAT_SEND_MESSAGE.sender()
+					.replace("<x>", position.getX())
+					.replace("<y>", position.getY())
+					.replace("<z>", position.getZ()));
+	}
+	
     public void onMessageChannelChat(MessageChannelEvent.Chat event, WorldWorldGuard worldSender, Player playerSender) {
+		this.onMessageChannelChatSend(event, worldSender, playerSender);
+		this.onMessageChannelChatReceive(event, worldSender, playerSender);
+	}
+		
+	public void onMessageChannelChatSend(MessageChannelEvent.Chat event, WorldWorldGuard worldSender, Player playerSender) {
 		if (event.isCancelled()) return;
+		
+		if (!this.getDefault().containsValue(ChatTypes.SEND)) return;
+		
+		if (!worldSender.getRegions(playerSender.getLocation().getPosition()).getFlag(playerSender, this).containsValue(ChatTypes.SEND)) {
+			event.setCancelled(true);
+			this.sendMessage(playerSender, playerSender.getLocation().getPosition().toInt());
+			return;
+		}
+	}
+		
+	public void onMessageChannelChatReceive(MessageChannelEvent.Chat event, WorldWorldGuard worldSender, Player playerSender) {
+		if (event.isCancelled()) return;
+		
+		if (!this.getDefault().containsValue(ChatTypes.RECEIVE)) return;
 		
 		EProtectionService service = this.plugin.getProtectionService();
 		
 		Collection<MessageReceiver> members = event.getChannel().orElse(event.getOriginalChannel()).getMembers();
 		List<MessageReceiver> list = Lists.newArrayList(members);
         list.removeIf(messageReceiver -> {
-        	if(messageReceiver instanceof Player) {
+        	if(messageReceiver instanceof Player && !playerSender.equals(messageReceiver)) {
         		Player playerReceiver = (Player) messageReceiver;
         		WorldWorldGuard worldReceiver = service.getOrCreateWorld(playerReceiver.getWorld());
-        		return worldReceiver.getRegions(playerReceiver.getLocation().getPosition()).getFlag(playerReceiver, this).equals(State.DENY);
+        		return worldReceiver.getRegions(playerReceiver.getLocation().getPosition()).getFlag(playerReceiver, this).containsValue(ChatTypes.RECEIVE);
         	}
         	return false;
         });

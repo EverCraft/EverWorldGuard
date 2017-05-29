@@ -39,11 +39,12 @@ import org.spongepowered.api.item.ItemTypes;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import fr.evercraft.everapi.plugin.file.EConfig;
+import fr.evercraft.everapi.registers.ChatType;
+import fr.evercraft.everapi.registers.IceType;
+import fr.evercraft.everapi.registers.SnowType;
 import fr.evercraft.everapi.services.entity.EntityTemplate;
 import fr.evercraft.everapi.services.entity.EntityTemplates;
 import fr.evercraft.everapi.services.fire.FireType;
-import fr.evercraft.everapi.services.ice.IceType;
-import fr.evercraft.everapi.services.snow.SnowType;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import ninja.leaping.configurate.ConfigurationNode;
 
@@ -64,6 +65,7 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 		this.loadFire();
 		this.loadSnow();
 		this.loadIce();
+		this.loadChat();
 	}
 	
 	/*
@@ -269,6 +271,16 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 				EntityTypes.WITHER_SKULL.getId()));
 		
 		addDefault("EXPLOSION, EXPLOSION_DAMAGE, EXPLOSION_BLOCK", interact_entity);
+	}
+	
+	public void loadChat() {
+		Map<String, List<String>> chats = new HashMap<String, List<String>>();
+		
+		for (ChatType chat : this.plugin.getGame().getRegistry().getAllOf(ChatType.class)) {
+			chats.put(chat.getName(), Arrays.asList(chat.getId()));
+		}
+		
+		addDefault("CHAT", chats);
 	}
 	
 	public void loadFire() {

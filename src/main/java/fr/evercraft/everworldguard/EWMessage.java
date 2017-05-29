@@ -352,11 +352,9 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 																					.actionbarMessageString("&cConstruction désactivé (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
 																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
-		
-		FLAG_CHAT_RECEIVE_DESCRIPTION("flag.chatReceive.description",			"Désactive/Active la réception de message"),
-		
-		FLAG_CHAT_SEND_DESCRIPTION("flag.chatSend.description",					"Désactive/Active l'envoi de message"),
-		FLAG_CHAT_SEND_MESSAGE("flag.chatSend.message",							"&cL'envoi de message est désactivé dans cette région (<x>, <y>, <z>)"),
+				
+		FLAG_CHAT_DESCRIPTION("flag.chatSend.description",						"Désactive/Active l'envoi et la réception de message"),
+		FLAG_CHAT_SEND_MESSAGE("flag.chatSend.sendMessage",						"&cL'envoi de message est désactivé dans cette région (<x>, <y>, <z>)"),
 		
 		FLAG_DAMAGE_ENTITY_DESCRIPTION("flag.damageEntity.description",			"Désactive/Active les damages infligés aux entités"),
 		FLAG_DAMAGE_ENTITY_MESSAGE("flag.damageEntity.message",					EMessageFormat.builder()
