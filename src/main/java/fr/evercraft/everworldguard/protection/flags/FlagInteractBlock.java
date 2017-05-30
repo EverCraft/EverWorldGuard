@@ -163,8 +163,13 @@ public class FlagInteractBlock extends CatalogTypeFlag<BlockType> {
 	
 	private void onChangeBlockModifyPlayer(EProtectionService service, ChangeBlockEvent.Modify event, Player player) {
 		Optional<Transaction<BlockSnapshot>> filter = event.getTransactions().stream().filter(transaction -> {
-			Location<World> location = transaction.getOriginal().getLocation().get();
 			BlockType type = transaction.getOriginal().getState().getType();
+			
+			// Fix : Bug d'affichage des coffres
+			if (type.equals(BlockTypes.CHEST) || type.equals(BlockTypes.TRAPPED_CHEST)) return false;
+			
+			Location<World> location = transaction.getOriginal().getLocation().get();
+			
 			if (this.getDefault().containsValue(type) && !service.getOrCreateWorld(location.getExtent()).getRegions(transaction.getOriginal().getPosition()).getFlag(player, this).containsValue(type)) {
 				event.setCancelled(true);
 				return true;
@@ -181,8 +186,12 @@ public class FlagInteractBlock extends CatalogTypeFlag<BlockType> {
 	
 	private void onChangeBlockModifyNatural(EProtectionService service, ChangeBlockEvent.Modify event) {
 		event.getTransactions().forEach(transaction -> {
-			Location<World> location = transaction.getOriginal().getLocation().get();
 			BlockType type = transaction.getOriginal().getState().getType();
+			
+			// Fix : Bug d'affichage des coffres
+			if (type.equals(BlockTypes.CHEST) || type.equals(BlockTypes.TRAPPED_CHEST)) return;
+			
+			Location<World> location = transaction.getOriginal().getLocation().get();
 			
 			if (this.getDefault().containsValue(type) && 
 					!service.getOrCreateWorld(location.getExtent()).getRegions(transaction.getOriginal().getPosition()).getFlagDefault(this).containsValue(type)) {

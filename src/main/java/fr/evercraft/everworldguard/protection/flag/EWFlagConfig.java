@@ -66,6 +66,7 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 		this.loadSnow();
 		this.loadIce();
 		this.loadChat();
+		this.loadPropagation();
 	}
 	
 	/*
@@ -271,6 +272,18 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 				EntityTypes.WITHER_SKULL.getId()));
 		
 		addDefault("EXPLOSION, EXPLOSION_DAMAGE, EXPLOSION_BLOCK", interact_entity);
+	}
+	
+	public void loadPropagation() {
+		Map<String, List<String>> propagation = new HashMap<String, List<String>>();
+		propagation.put("VINE", Arrays.asList(BlockTypes.VINE.getId()));
+		propagation.put("GRASS", Arrays.asList(BlockTypes.GRASS.getId()));
+		propagation.put("MYCELIUM", Arrays.asList(BlockTypes.MYCELIUM.getId()));
+		propagation.put("MUSHROOM", Arrays.asList(
+				BlockTypes.RED_MUSHROOM.getId(),
+				BlockTypes.BROWN_MUSHROOM.getId()));
+		
+		addDefault("PROPAGATION", propagation);
 	}
 	
 	public void loadChat() {

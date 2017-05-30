@@ -442,6 +442,12 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		
 		FLAG_LIGHTNING_DESCRIPTION("flag.invincibity.description",				"Désactive/Active la foudre"),
 		
+		FLAG_PROPAGATION_DESCRIPTION("flag.propagation.description",			"Désactive/Active la propagation"),
+		FLAG_PROPAGATION_MESSAGE("flag.propagation.message",					EMessageFormat.builder()
+																					.actionbarMessageString("&cPVP désactivé (<x>, <y>, <z>)")
+																					.actionbarStay(3 * 1000)
+																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
+		
 		FLAG_PVP_DESCRIPTION("flag.pvp.description",							"Désactive/Active le PVP"),
 		FLAG_PVP_MESSAGE("flag.pvp.message",									EMessageFormat.builder()
 																					.actionbarMessageString("&cPVP désactivé (<x>, <y>, <z>)")

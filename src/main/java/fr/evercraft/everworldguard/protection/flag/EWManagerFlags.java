@@ -58,6 +58,7 @@ public class EWManagerFlags {
 	public final FlagItemDrop ITEM_DROP;
 	public final FlagItemPickup ITEM_PICKUP;
 	public final FlagLightning LIGHTNING;
+	public final FlagPropagation PROPAGATION;
 	public final FlagPvp PVP;
 	public final FlagSnow SNOW;
 	public final FlagSpawn SPAWN;
@@ -97,6 +98,7 @@ public class EWManagerFlags {
 		ITEM_DROP = new FlagItemDrop(this.plugin);
 		ITEM_PICKUP = new FlagItemPickup(this.plugin);
 		LIGHTNING = new FlagLightning(this.plugin);
+		PROPAGATION = new FlagPropagation(this.plugin);
 		PVP = new FlagPvp(this.plugin);
 		SNOW = new FlagSnow(this.plugin);
 		SPAWN = new FlagSpawn(this.plugin);

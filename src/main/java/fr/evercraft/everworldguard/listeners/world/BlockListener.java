@@ -53,6 +53,7 @@ public class BlockListener {
 		this.plugin.getManagerFlags().FIRE.onChangeBlockPlace(event);
 		this.plugin.getManagerFlags().ICE.onChangeBlockPlace(event);
 		this.plugin.getManagerFlags().SNOW.onChangeBlockPlace(event);
+		this.plugin.getManagerFlags().PROPAGATION.onChangeBlockPlace(event);
 		
 		// Debug
 		//UtilsCause.debug(event.getCause(), "ChangeBlockEvent.Place");

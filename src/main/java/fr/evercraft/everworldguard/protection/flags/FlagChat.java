@@ -96,7 +96,7 @@ public class FlagChat extends CatalogTypeFlag<ChatType> {
         	if(messageReceiver instanceof Player && !playerSender.equals(messageReceiver)) {
         		Player playerReceiver = (Player) messageReceiver;
         		WorldWorldGuard worldReceiver = service.getOrCreateWorld(playerReceiver.getWorld());
-        		return worldReceiver.getRegions(playerReceiver.getLocation().getPosition()).getFlag(playerReceiver, this).containsValue(ChatTypes.RECEIVE);
+        		return !worldReceiver.getRegions(playerReceiver.getLocation().getPosition()).getFlag(playerReceiver, this).containsValue(ChatTypes.RECEIVE);
         	}
         	return false;
         });
