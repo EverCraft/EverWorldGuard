@@ -63,10 +63,10 @@ public class FlagEntryDenyMessage extends MessageFlag {
 		for (ProtectedRegion region : regions) {
 			Optional<EMessageBuilder> flag_value = region.getFlagInherit(this, region.getGroup(player, context));
 			if (flag_value.isPresent()) {
-				this.sendMessage(player, flag_value.get(), region.getIdentifier());
+				this.sendMessage(player, flag_value.get(), region.getName());
 				return;
 			}
 		}
-		this.sendMessage(player, this.getDefault(), regions.iterator().next().getIdentifier());
+		this.sendMessage(player, this.getDefault(), regions.iterator().next().getName());
  	}
 }

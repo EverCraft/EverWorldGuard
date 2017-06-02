@@ -356,6 +356,9 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		FLAG_CHAT_DESCRIPTION("flag.chatSend.description",						"Désactive/Active l'envoi et la réception de message"),
 		FLAG_CHAT_SEND_MESSAGE("flag.chatSend.sendMessage",						"&cL'envoi de message est désactivé dans cette région (<x>, <y>, <z>)"),
 		
+		FLAG_COMMAND_DESCRIPTION("flag.commands.description",					"Désactive/Active des commandes"),
+		FLAG_COMMAND_MESSAGE("flag.commands.message",							"&cLa commande <command> est désactivé dans cette région (<x>, <y>, <z>)"),
+		
 		FLAG_DAMAGE_ENTITY_DESCRIPTION("flag.damageEntity.description",			"Désactive/Active les damages infligés aux entités"),
 		FLAG_DAMAGE_ENTITY_MESSAGE("flag.damageEntity.message",					EMessageFormat.builder()
 																					.actionbarMessageString("&cLes dégats infligés aux entités sont désactivé (<x>, <y>, <z>)")
@@ -441,6 +444,12 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		
 		
 		FLAG_LIGHTNING_DESCRIPTION("flag.invincibity.description",				"Désactive/Active la foudre"),
+		
+		FLAG_POTION_SPLASH_DESCRIPTION("flag.potionSplash.description",				"Désactive/Active les potions splash"),
+		FLAG_POTION_SPLASH_MESSAGE("flag.potionSplash.message",						EMessageFormat.builder()
+																					.actionbarMessageString("&cL'utilisation des potions <potion> sont désactivé (<x>, <y>, <z>)")
+																					.actionbarStay(3 * 1000)
+																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		
 		FLAG_PROPAGATION_DESCRIPTION("flag.propagation.description",			"Désactive/Active la propagation"),
 		FLAG_PROPAGATION_MESSAGE("flag.propagation.message",					EMessageFormat.builder()

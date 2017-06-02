@@ -121,7 +121,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	 */
 	
 	@Override
-	public void setIdentifier(String identifier) throws RegionIdentifierException {
+	public void setName(String identifier) throws RegionIdentifierException {
 		if (this.identifier.equals(identifier)) return;
 		if (!ProtectedRegion.isValidId(identifier)) throw new RegionIdentifierException();
 		if (!this.world.setIdentifier(this, identifier)) throw new RegionIdentifierException();
@@ -314,7 +314,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	 */
 	
 	@Override
-	public String getIdentifier() {
+	public String getName() {
 		return this.identifier;
 	}
 	
@@ -655,7 +655,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 			return -1;
 		}
 		
-		return this.getIdentifier().compareTo(other.getIdentifier());
+		return this.getName().compareTo(other.getName());
 	}
 
 	@Override
@@ -668,7 +668,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 		if (!(obj instanceof EProtectedRegion)) return false;
 
 		EProtectedRegion other = (EProtectedRegion) obj;
-		return other.getIdentifier().equals(getIdentifier());
+		return other.getName().equals(getName());
 	}
 
 	@Override

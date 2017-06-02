@@ -61,7 +61,7 @@ public class EWRegionPriority extends ESubCommand<EverWorldGuard> {
 				}
 				
 				return this.plugin.getProtectionService().getOrCreateWorld(world.get()).getAll().stream()
-							.map(region -> region.getIdentifier())
+							.map(region -> region.getName())
 							.collect(Collectors.toSet());
 			})
 			.args((source, args) -> Arrays.asList("0", "1", "2", "3"));
@@ -138,7 +138,7 @@ public class EWRegionPriority extends ESubCommand<EverWorldGuard> {
 		
 		if (!this.hasPermission(source, region.get(), world)) {
 			EWMessages.REGION_NO_PERMISSION.sender()
-				.replace("<region>", region.get().getIdentifier())
+				.replace("<region>", region.get().getName())
 				.sendTo(source);
 			return false;
 		}
@@ -159,7 +159,7 @@ public class EWRegionPriority extends ESubCommand<EverWorldGuard> {
 		region.setPriority(priority);
 		
 		EWMessages.REGION_PRIORITY_SET.sender()
-			.replace("<region>", region.getIdentifier())
+			.replace("<region>", region.getName())
 			.replace("<priority>", priority.toString())
 			.replace("<world>", world.getName())
 			.sendTo(source);		
@@ -167,7 +167,7 @@ public class EWRegionPriority extends ESubCommand<EverWorldGuard> {
 	}
 	
 	private boolean hasPermission(final CommandSource source, final ProtectedRegion region, final World world) {
-		if (source.hasPermission(EWPermissions.REGION_PRIORITY_REGIONS.get() + "." + region.getIdentifier().toLowerCase())) {
+		if (source.hasPermission(EWPermissions.REGION_PRIORITY_REGIONS.get() + "." + region.getName().toLowerCase())) {
 			return true;
 		}
 		

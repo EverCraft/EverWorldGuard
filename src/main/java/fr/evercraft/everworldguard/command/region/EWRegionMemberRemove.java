@@ -69,7 +69,7 @@ public class EWRegionMemberRemove extends ESubCommand<EverWorldGuard> {
 				}
 				
 				return this.plugin.getProtectionService().getOrCreateWorld(world.get()).getAll().stream()
-							.map(region -> region.getIdentifier())
+							.map(region -> region.getName())
 							.collect(Collectors.toSet());
 			})
 			.args((source, args) -> {
@@ -170,7 +170,7 @@ public class EWRegionMemberRemove extends ESubCommand<EverWorldGuard> {
 		
 		if (!this.hasPermission(source, region.get(), world)) {
 			EWMessages.REGION_NO_PERMISSION.sender()
-				.replace("<region>", region.get().getIdentifier())
+				.replace("<region>", region.get().getName())
 				.sendTo(source);
 			return false;
 		}
@@ -209,7 +209,7 @@ public class EWRegionMemberRemove extends ESubCommand<EverWorldGuard> {
 				.map(user -> user.getUniqueId())
 				.collect(Collectors.toSet()));
 		EWMessages.REGION_MEMBER_REMOVE_PLAYERS.sender()
-			.replace("<region>", region.getIdentifier())
+			.replace("<region>", region.getName())
 			.replace("<world>", world.getName())
 			.replace("<players>", String.join(EWMessages.REGION_MEMBER_REMOVE_PLAYERS_JOIN.getString(), players.stream().map(owner -> owner.getName()).collect(Collectors.toList())))
 			.sendTo(source);
@@ -219,14 +219,14 @@ public class EWRegionMemberRemove extends ESubCommand<EverWorldGuard> {
 	private boolean commandRegionMemberRemovePlayer(final CommandSource source, ProtectedRegion region, User player, World world) {
 		if (region.getMembers().containsPlayer(player)) {
 			EWMessages.REGION_MEMBER_REMOVE_PLAYER_ERROR.sender()
-				.replace("<region>", region.getIdentifier())
+				.replace("<region>", region.getName())
 				.replace("<world>", world.getName())
 				.replace("<player>", player.getName())
 				.sendTo(source);
 		} else {
 			region.removePlayerMember(ImmutableSet.of(player.getUniqueId()));
 			EWMessages.REGION_MEMBER_REMOVE_PLAYER.sender()
-				.replace("<region>", region.getIdentifier())
+				.replace("<region>", region.getName())
 				.replace("<world>", world.getName())
 				.replace("<player>", player.getName())
 				.sendTo(source);
@@ -261,7 +261,7 @@ public class EWRegionMemberRemove extends ESubCommand<EverWorldGuard> {
 				.map(group -> group.getIdentifier())
 				.collect(Collectors.toSet()));
 		EWMessages.REGION_MEMBER_REMOVE_GROUPS.sender()
-			.replace("<region>", region.getIdentifier())
+			.replace("<region>", region.getName())
 			.replace("<world>", world.getName())
 			.replace("<groups>", String.join(EWMessages.REGION_MEMBER_REMOVE_GROUPS_JOIN.getString(), groups.stream().map(owner -> owner.getIdentifier()).collect(Collectors.toList())))
 			.sendTo(source);
@@ -271,7 +271,7 @@ public class EWRegionMemberRemove extends ESubCommand<EverWorldGuard> {
 	private boolean commandRegionMemberRemoveGroup(final CommandSource source, ProtectedRegion region, Subject group, World world) {
 		if (region.getMembers().containsGroup(group)) {
 			EWMessages.REGION_MEMBER_REMOVE_GROUP_ERROR.sender()
-				.replace("<region>", region.getIdentifier())
+				.replace("<region>", region.getName())
 				.replace("<world>", world.getName())
 				.replace("<group>", group.getIdentifier())
 				.sendTo(source);
@@ -280,7 +280,7 @@ public class EWRegionMemberRemove extends ESubCommand<EverWorldGuard> {
 			
 		region.removeGroupMember(ImmutableSet.of(group.getIdentifier()));
 		EWMessages.REGION_MEMBER_REMOVE_GROUP.sender()
-			.replace("<region>", region.getIdentifier())
+			.replace("<region>", region.getName())
 			.replace("<world>", world.getName())
 			.replace("<group>", group.getIdentifier())
 			.sendTo(source);
@@ -288,7 +288,7 @@ public class EWRegionMemberRemove extends ESubCommand<EverWorldGuard> {
 	}
 	
 	private boolean hasPermission(final CommandSource source, final ProtectedRegion region, final World world) {
-		if (source.hasPermission(EWPermissions.REGION_MEMBER_REMOVE_REGIONS.get() + "." + region.getIdentifier().toLowerCase())) {
+		if (source.hasPermission(EWPermissions.REGION_MEMBER_REMOVE_REGIONS.get() + "." + region.getName().toLowerCase())) {
 			return true;
 		}
 		

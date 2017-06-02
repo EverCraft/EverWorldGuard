@@ -176,14 +176,14 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 		List<Text> list = new ArrayList<Text>();
 		for (ProtectedRegion region : this.plugin.getProtectionService().getOrCreateWorld(world).getAll()) {
 			list.add(EWMessages.REGION_LIST_ALL_LINE.getFormat()
-					.toText("<region>", Text.builder(region.getIdentifier())
-								.onShiftClick(TextActions.insertText(region.getIdentifier()))
+					.toText("<region>", Text.builder(region.getName())
+								.onShiftClick(TextActions.insertText(region.getName()))
 								.build(),
 							"<type>", region.getType().getNameFormat(),
 							"<priority>", String.valueOf(region.getPriority()))
 					.toBuilder()
 					.onClick(TextActions.suggestCommand(
-							"/" + this.getParentName() + " info -w \"" + world.getName() + "\" \"" + region.getIdentifier() + "\""))
+							"/" + this.getParentName() + " info -w \"" + world.getName() + "\" \"" + region.getName() + "\""))
 					.build());
 		}
 		
@@ -220,14 +220,14 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 		for (ProtectedRegion region : this.plugin.getProtectionService().getOrCreateWorld(world).getAll()) {
 			if (region.isOwnerOrMember(user, UtilsContexts.get(world.getName()))) {
 				list.add(EWMessages.REGION_LIST_PLAYER_LINE.getFormat()
-						.toText("<region>", Text.builder(region.getIdentifier())
-									.onShiftClick(TextActions.insertText(region.getIdentifier()))
+						.toText("<region>", Text.builder(region.getName())
+									.onShiftClick(TextActions.insertText(region.getName()))
 									.build(),
 								"<type>", region.getType().getNameFormat(),
 								"<priority>", String.valueOf(region.getPriority()))
 						.toBuilder()
 						.onClick(TextActions.suggestCommand(
-								"/" + this.getParentName() + " info -w \"" + world.getName() + "\" \"" + region.getIdentifier() + "\""))
+								"/" + this.getParentName() + " info -w \"" + world.getName() + "\" \"" + region.getName() + "\""))
 						.build());
 			}
 		}
@@ -269,14 +269,14 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 		for (ProtectedRegion region : this.plugin.getProtectionService().getOrCreateWorld(world).getAll()) {
 			if (region.isOwnerOrMember(group)) {
 				list.add(EWMessages.REGION_LIST_GROUP_LINE.getFormat()
-						.toText("<region>", Text.builder(region.getIdentifier())
-									.onShiftClick(TextActions.insertText(region.getIdentifier()))
+						.toText("<region>", Text.builder(region.getName())
+									.onShiftClick(TextActions.insertText(region.getName()))
 									.build(),
 								"<type>", region.getType().getNameFormat(),
 								"<priority>", String.valueOf(region.getPriority()))
 						.toBuilder()
 						.onClick(TextActions.suggestCommand(
-								"/" + this.getParentName() + " info -w \"" + world.getName() + "\" \"" + region.getIdentifier() + "\""))
+								"/" + this.getParentName() + " info -w \"" + world.getName() + "\" \"" + region.getName() + "\""))
 						.build());
 			}
 		}

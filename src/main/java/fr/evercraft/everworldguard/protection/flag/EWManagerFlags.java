@@ -33,6 +33,7 @@ public class EWManagerFlags {
 	public final FlagBlockPlace BLOCK_PLACE;
 	public final FlagBuild BUILD;
 	public final FlagChat CHAT;
+	public final FlagCommand COMMAND;
 	public final FlagDamageEntity DAMAGE_ENTITY;
 	public final FlagEnderDragonGrief ENDERDRAGON_GRIEF;
 	public final FlagEndermanGrief ENDERMAN_GRIEF;
@@ -58,6 +59,7 @@ public class EWManagerFlags {
 	public final FlagItemDrop ITEM_DROP;
 	public final FlagItemPickup ITEM_PICKUP;
 	public final FlagLightning LIGHTNING;
+	public final FlagPotionSplash POTION_SPLASH;
 	public final FlagPropagation PROPAGATION;
 	public final FlagPvp PVP;
 	public final FlagSnow SNOW;
@@ -73,6 +75,7 @@ public class EWManagerFlags {
 		BLOCK_PLACE = new FlagBlockPlace(this.plugin);
 		BUILD = new FlagBuild(this.plugin);
 		CHAT = new FlagChat(this.plugin);
+		COMMAND = new FlagCommand(this.plugin);
 		DAMAGE_ENTITY = new FlagDamageEntity(this.plugin);
 		ENDERDRAGON_GRIEF = new FlagEnderDragonGrief(this.plugin);
 		ENDERMAN_GRIEF = new FlagEndermanGrief(this.plugin);
@@ -98,6 +101,7 @@ public class EWManagerFlags {
 		ITEM_DROP = new FlagItemDrop(this.plugin);
 		ITEM_PICKUP = new FlagItemPickup(this.plugin);
 		LIGHTNING = new FlagLightning(this.plugin);
+		POTION_SPLASH = new FlagPotionSplash(this.plugin);
 		PROPAGATION = new FlagPropagation(this.plugin);
 		PVP = new FlagPvp(this.plugin);
 		SNOW = new FlagSnow(this.plugin);

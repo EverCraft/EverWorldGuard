@@ -69,7 +69,7 @@ public class EWRegionSelect extends ESubCommand<EverWorldGuard> {
 				}
 				
 				return this.plugin.getProtectionService().getOrCreateWorld(world.get()).getAll().stream()
-							.map(region -> region.getIdentifier())
+							.map(region -> region.getName())
 							.collect(Collectors.toSet());
 			});
     }
@@ -150,7 +150,7 @@ public class EWRegionSelect extends ESubCommand<EverWorldGuard> {
 		
 		if (!this.hasPermission(source, region.get(), world)) {
 			EWMessages.REGION_NO_PERMISSION.sender()
-				.replace("<region>", region.get().getIdentifier())
+				.replace("<region>", region.get().getName())
 				.sendTo(source);
 			return false;
 		}
@@ -166,13 +166,13 @@ public class EWRegionSelect extends ESubCommand<EverWorldGuard> {
 			return this.commandRegionSelectPolygonal(player, region, world);
 		} else if (type.equals(Type.GLOBAL)) {
 			EWMessages.REGION_SELECT_GLOBAL.sender()
-				.replace("<region>", region.getIdentifier())
+				.replace("<region>", region.getName())
 				.replace("<world>", world.getName())
 				.replace("<type>", type.getNameFormat())
 				.sendTo(player);
 		} else if (type.equals(Type.TEMPLATE)) {
 			EWMessages.REGION_SELECT_TEMPLATE.sender()
-				.replace("<region>", region.getIdentifier())
+				.replace("<region>", region.getName())
 				.replace("<world>", world.getName())
 				.replace("<type>", type.getNameFormat())
 				.sendTo(player);
@@ -197,7 +197,7 @@ public class EWRegionSelect extends ESubCommand<EverWorldGuard> {
 		replaces.put("<max_x>", EReplace.of(String.valueOf(max.getX())));
 		replaces.put("<max_y>", EReplace.of(String.valueOf(max.getY())));
 		replaces.put("<max_z>", EReplace.of(String.valueOf(max.getZ())));
-		replaces.put("<region>", EReplace.of(region.getIdentifier()));
+		replaces.put("<region>", EReplace.of(region.getName()));
 		replaces.put("<type>", EReplace.of(region.getType().getNameFormat()));
 		
 		EWMessages.REGION_SELECT_CUBOID.sender()
@@ -233,7 +233,7 @@ public class EWRegionSelect extends ESubCommand<EverWorldGuard> {
 		replaces.put("<max_x>", EReplace.of(String.valueOf(max.getX())));
 		replaces.put("<max_y>", EReplace.of(String.valueOf(max.getY())));
 		replaces.put("<max_z>", EReplace.of(String.valueOf(max.getZ())));
-		replaces.put("<region>", EReplace.of(region.getIdentifier()));
+		replaces.put("<region>", EReplace.of(region.getName()));
 		replaces.put("<type>", EReplace.of(region.getType().getNameFormat()));
 		
 		for(Vector3i pos : region.getPoints()) {
@@ -256,7 +256,7 @@ public class EWRegionSelect extends ESubCommand<EverWorldGuard> {
 	}
 	
 	private boolean hasPermission(final CommandSource source, final ProtectedRegion region, final World world) {
-		if (source.hasPermission(EWPermissions.REGION_SELECT_REGIONS.get() + "." + region.getIdentifier().toLowerCase())) {
+		if (source.hasPermission(EWPermissions.REGION_SELECT_REGIONS.get() + "." + region.getName().toLowerCase())) {
 			return true;
 		}
 		

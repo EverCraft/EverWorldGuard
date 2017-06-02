@@ -19,6 +19,7 @@ package fr.evercraft.everworldguard.listeners.entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
+import org.spongepowered.api.event.command.SendCommandEvent;
 import org.spongepowered.api.event.entity.DestructEntityEvent;
 import org.spongepowered.api.event.entity.IgniteEntityEvent;
 import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEvent;
@@ -65,11 +66,16 @@ public class PlayerListener {
 	public void onDestructEntityDeath(DestructEntityEvent.Death event, @Getter("getTargetEntity") Player player) {
 	}
 	
-	@Listener
+	@Listener(order=Order.FIRST)
 	public void onMessageChannelChat(MessageChannelEvent.Chat event, @First Player player) {
 		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(player.getWorld());
 		
 		this.plugin.getManagerFlags().CHAT.onMessageChannelChat(event, world, player);
+	}
+	
+	@Listener(order=Order.FIRST)
+	public void onSendCommand(SendCommandEvent event) {		
+		this.plugin.getManagerFlags().COMMAND.onSendCommand(event);
 	}
 	
 	@Listener

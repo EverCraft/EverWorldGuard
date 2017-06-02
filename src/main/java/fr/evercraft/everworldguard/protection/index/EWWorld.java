@@ -86,7 +86,7 @@ public class EWWorld implements WorldWorldGuard {
 		this.plugin.getELogger().info("Loading region for world '" + this.world.getName() + "' ...");
 		
 		this.regions.clear();
-		this.storage.getAll().forEach(region -> this.regions.put(region.getIdentifier().toLowerCase(), region));
+		this.storage.getAll().forEach(region -> this.regions.put(region.getName().toLowerCase(), region));
 		
 		this.plugin.getELogger().info("Loading " + this.regions.size() + " region(s) for world '" + this.world.getName() + "'.");
 	}
@@ -242,7 +242,7 @@ public class EWWorld implements WorldWorldGuard {
 	}
 	
 	private void removeRegionChildren(EProtectedRegion region) {
-		this.regions.remove(region.getIdentifier());
+		this.regions.remove(region.getName());
 		
 		for (EProtectedRegion children : this.regions.values()) {
 			Optional<ProtectedRegion> parent = children.getParent();
@@ -259,7 +259,7 @@ public class EWWorld implements WorldWorldGuard {
 	public boolean setIdentifier(EProtectedRegion region, String identifier) {
 		if (this.regions.containsKey(identifier)) return false;
 		
-		this.regions.remove(region.getIdentifier().toLowerCase());
+		this.regions.remove(region.getName().toLowerCase());
 		this.regions.put(identifier.toLowerCase(), region);
 		return true;
 	}

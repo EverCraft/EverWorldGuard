@@ -306,7 +306,7 @@ public class FlagBuild extends StateFlag {
 	 * CollideEntity
 	 */
 	
-	public void onCollideEntity(WorldWorldGuard world, CollideEntityEvent event) {
+	public void onCollideEntityImpact(WorldWorldGuard world, CollideEntityEvent event) {
 		if (event.isCancelled()) return;
 		
 		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);

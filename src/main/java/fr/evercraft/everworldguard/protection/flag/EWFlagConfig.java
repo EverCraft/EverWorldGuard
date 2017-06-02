@@ -29,6 +29,7 @@ import java.util.stream.Stream;
 
 import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.block.BlockTypes;
+import org.spongepowered.api.effect.potion.PotionEffectTypes;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.animal.Animal;
@@ -67,6 +68,8 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 		this.loadIce();
 		this.loadChat();
 		this.loadPropagation();
+		this.loadPotion();
+		this.loadCommand();
 	}
 	
 	/*
@@ -326,6 +329,58 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 		addDefault("ICE", ices);
 	}
 	
+	public void loadPotion() {
+		Map<String, Object> potions = new HashMap<String, Object>();
+		potions.put("GROUP_BONUS", Arrays.asList(
+				PotionEffectTypes.ABSORPTION,
+				PotionEffectTypes.FIRE_RESISTANCE,
+				PotionEffectTypes.GLOWING,
+				PotionEffectTypes.HASTE,
+				PotionEffectTypes.HEALTH_BOOST,
+				PotionEffectTypes.INSTANT_HEALTH,
+				PotionEffectTypes.INVISIBILITY,
+				PotionEffectTypes.JUMP_BOOST,
+				PotionEffectTypes.LUCK,
+				PotionEffectTypes.NIGHT_VISION,
+				PotionEffectTypes.REGENERATION,
+				PotionEffectTypes.RESISTANCE,
+				PotionEffectTypes.SATURATION,
+				PotionEffectTypes.SPEED,
+				PotionEffectTypes.STRENGTH,
+				PotionEffectTypes.WATER_BREATHING)
+					.stream().map(block -> block.getId()).collect(Collectors.toList()));
+		potions.put("GROUP_MALUS", Arrays.asList(
+				PotionEffectTypes.BLINDNESS,
+				PotionEffectTypes.HUNGER,
+				PotionEffectTypes.INSTANT_DAMAGE,
+				PotionEffectTypes.LEVITATION,
+				PotionEffectTypes.MINING_FATIGUE,
+				PotionEffectTypes.NAUSEA,
+				PotionEffectTypes.POISON,
+				PotionEffectTypes.SLOWNESS,
+				PotionEffectTypes.UNLUCK,
+				PotionEffectTypes.WEAKNESS,
+				PotionEffectTypes.WITHER)
+					.stream().map(block -> block.getId()).collect(Collectors.toList()));
+		
+		addDefault("POTION_SPLASH", potions);
+	}
+	
+	public void loadCommand() {
+		Map<String, Object> commands = new HashMap<String, Object>();
+		commands.put("ADD_ALL", Arrays.asList("*"));
+		commands.put("REMOVE_ALL", Arrays.asList("-"));
+		commands.put("ADD_ESSENTIALS", Arrays.asList(
+				"home",
+				"spawn",
+				"teleport"));
+		commands.put("REMOVE_ESSENTIALS", Arrays.asList(
+				"-home",
+				"-spawn",
+				"-teleport"));
+		addDefault("COMMAND", commands);
+	}
+	
 	/*
 	 * Accesseurs
 	 */
@@ -394,5 +449,21 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 			}
 		}
 		return this.get(name);
+	}
+
+	public Map<String, Set<String>> getString(String name) {
+		ImmutableMap.Builder<String, Set<String>> groups = ImmutableMap.builder();
+		for (Entry<Object, ? extends ConfigurationNode> group : this.getContains(name).getChildrenMap().entrySet()) {
+			Set<String> set = new HashSet<String>();
+			if (group.getValue().getString("").equalsIgnoreCase("*")) {
+				groups.put(group.getKey().toString().toUpperCase(), ImmutableSet.of("*"));
+			} else {
+				for (ConfigurationNode config : group.getValue().getChildrenList()) {
+					set.add(config.getString(""));
+				}
+				groups.put(group.getKey().toString().toUpperCase(), set);
+			}
+		}
+		return groups.build();
 	}
 }

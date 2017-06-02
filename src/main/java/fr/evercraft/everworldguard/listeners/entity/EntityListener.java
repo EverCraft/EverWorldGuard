@@ -18,6 +18,7 @@ package fr.evercraft.everworldguard.listeners.entity;
 
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
+import org.spongepowered.api.event.action.CollideEvent;
 import org.spongepowered.api.event.entity.ChangeEntityPotionEffectEvent;
 import org.spongepowered.api.event.entity.CollideEntityEvent;
 import org.spongepowered.api.event.entity.ConstructEntityEvent;
@@ -64,6 +65,7 @@ public class EntityListener {
 	public void onSpawnEntity(SpawnEntityEvent event) {
 		this.plugin.getManagerFlags().ENTITY_SPAWNING.onSpawnEntity(event);
 		this.plugin.getManagerFlags().ITEM_DROP.onSpawnEntity(event);
+		this.plugin.getManagerFlags().POTION_SPLASH.onSpawnEntity(event);
 		//this.plugin.getManagerFlags().EXP_DROP.onSpawnEntity(event);
 		
 		// Debug 
@@ -97,15 +99,24 @@ public class EntityListener {
 	}
 	
 	@Listener(order=Order.FIRST)
-	public void onCollideEntity(CollideEntityEvent event) {
+	public void onCollideEntityImpact(CollideEntityEvent.Impact event) {
 		if (event.getEntities().isEmpty()) return;
 		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getEntities().get(0).getWorld());
 
-		this.plugin.getManagerFlags().PVP.onCollideEntity(world, event);
-		this.plugin.getManagerFlags().DAMAGE_ENTITY.onCollideEntity(world, event);
-		this.plugin.getManagerFlags().BUILD.onCollideEntity(world, event);
+		this.plugin.getManagerFlags().PVP.onCollideEntityImpact(world, event);
+		this.plugin.getManagerFlags().DAMAGE_ENTITY.onCollideEntityImpact(world, event);
+		this.plugin.getManagerFlags().BUILD.onCollideEntityImpact(world, event);
 		
-		//UtilsCause.debug(event.getCause(), "CollideEntityEvent");
+		//UtilsCause.debug(event.getCause(), "CollideEntityEvent.Impact");
+	}
+	
+	@Listener(order=Order.FIRST)
+	public void onCollideEntityImpact(CollideEvent.Impact event) {
+		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getImpactPoint().getExtent());
+
+		this.plugin.getManagerFlags().POTION_SPLASH.onCollideImpact(world, event);
+		
+		//UtilsCause.debug(event.getCause(), "CollideEvent.Impact");
 	}
 	
 	@Listener(order=Order.FIRST)

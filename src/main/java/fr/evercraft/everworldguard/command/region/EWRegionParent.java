@@ -64,7 +64,7 @@ public class EWRegionParent extends ESubCommand<EverWorldGuard> {
 				}
 				
 				return this.plugin.getProtectionService().getOrCreateWorld(world.get()).getAll().stream()
-							.map(region -> region.getIdentifier())
+							.map(region -> region.getName())
 							.collect(Collectors.toSet());
 			})
 			.arg((source, args) -> {
@@ -74,7 +74,7 @@ public class EWRegionParent extends ESubCommand<EverWorldGuard> {
 				}
 				
 				Set<String> suggests = this.plugin.getProtectionService().getOrCreateWorld(optWorld.get()).getAll().stream()
-					.map(region -> region.getIdentifier())
+					.map(region -> region.getName())
 					.collect(Collectors.toSet());
 				suggests.remove(args.getArg(0).get());
 				suggests.add(MARKER_EMPTY);
@@ -153,7 +153,7 @@ public class EWRegionParent extends ESubCommand<EverWorldGuard> {
 		
 		if (!this.hasPermission(source, region.get(), world)) {
 			EWMessages.REGION_NO_PERMISSION.sender()
-				.replace("<region>", region.get().getIdentifier())
+				.replace("<region>", region.get().getName())
 				.sendTo(source);
 			return false;
 		}
@@ -180,8 +180,8 @@ public class EWRegionParent extends ESubCommand<EverWorldGuard> {
 		
 		if (region.equals(parent)) {
 			EWMessages.REGION_PARENT_SET_EQUALS.sender()
-				.replace("<region>", region.getIdentifier())
-				.replace("<parent>", parent.getIdentifier())
+				.replace("<region>", region.getName())
+				.replace("<parent>", parent.getName())
 				.replace("<world>", world.getName())
 				.sendTo(source);
 			return false;
@@ -190,8 +190,8 @@ public class EWRegionParent extends ESubCommand<EverWorldGuard> {
 		Optional<ProtectedRegion> region_parent = region.getParent();
 		if (region_parent.isPresent() && region_parent.get().equals(parent)) {
 			EWMessages.REGION_PARENT_SET_EQUALS_PARENT.sender()
-				.replace("<region>", region.getIdentifier())
-				.replace("<parent>", parent.getIdentifier())
+				.replace("<region>", region.getName())
+				.replace("<parent>", parent.getName())
 				.replace("<world>", world.getName())
 				.sendTo(source);
 			return false;
@@ -201,8 +201,8 @@ public class EWRegionParent extends ESubCommand<EverWorldGuard> {
 			region.setParent(parent);
 		} catch (CircularInheritanceException e) {
 			EWMessages.REGION_PARENT_SET_CIRCULAR.sender()
-				.replace("<region>", region.getIdentifier())
-				.replace("<parent>", parent.getIdentifier())
+				.replace("<region>", region.getName())
+				.replace("<parent>", parent.getName())
 				.replace("<world>", world.getName())
 				.sendTo(source);
 			return false;
@@ -216,8 +216,8 @@ public class EWRegionParent extends ESubCommand<EverWorldGuard> {
 			
 		if (parents == null || parents.size() == 1) {
 			EWMessages.REGION_PARENT_SET.sender()
-				.replace("<region>", region.getIdentifier())
-				.replace("<parent>", parent.getIdentifier())
+				.replace("<region>", region.getName())
+				.replace("<parent>", parent.getName())
 				.replace("<world>", world.getName())
 				.sendTo(source);
 		} else {
@@ -229,17 +229,17 @@ public class EWRegionParent extends ESubCommand<EverWorldGuard> {
 				
 				ProtectedRegion curParent = parents.get(cpt);
 				messages.add(padding.concat(EWMessages.REGION_PARENT_SET_HERITAGE_LINE.getFormat()
-					.toText("<region>", Text.builder(curParent.getIdentifier())
-								.onShiftClick(TextActions.insertText(curParent.getIdentifier()))
-								.onClick(TextActions.runCommand("/" + this.getName() + " -w \"" + world.getName() + "\" \"" + curParent.getIdentifier() + "\" "))
+					.toText("<region>", Text.builder(curParent.getName())
+								.onShiftClick(TextActions.insertText(curParent.getName()))
+								.onClick(TextActions.runCommand("/" + this.getName() + " -w \"" + world.getName() + "\" \"" + curParent.getName() + "\" "))
 								.build(),
 							"<type>", curParent.getType().getNameFormat(),
 							"<priority>", String.valueOf(curParent.getPriority()))));
 			}
 			
 			EWMessages.REGION_PARENT_SET_HERITAGE.sender()
-				.replace("<region>", region.getIdentifier())
-				.replace("<parent>", parent.getIdentifier())
+				.replace("<region>", region.getName())
+				.replace("<parent>", parent.getName())
 				.replace("<world>", world.getName())
 				.replace("<heritage>", Text.joinWith(Text.of("\n"), messages))
 				.sendTo(source);
@@ -250,7 +250,7 @@ public class EWRegionParent extends ESubCommand<EverWorldGuard> {
 	private boolean commandRegionRemoveParent(final CommandSource source, ProtectedRegion region, World world) {
 		if (!region.getParent().isPresent()) {
 			EWMessages.REGION_PARENT_REMOVE_EMPTY.sender()
-				.replace("<region>", region.getIdentifier())
+				.replace("<region>", region.getName())
 				.replace("<world>", world.getName())
 				.sendTo(source);
 			return false;
@@ -258,14 +258,14 @@ public class EWRegionParent extends ESubCommand<EverWorldGuard> {
 		
 		region.clearParent();
 		EWMessages.REGION_PARENT_REMOVE.sender()
-			.replace("<region>", region.getIdentifier())
+			.replace("<region>", region.getName())
 			.replace("<world>", world.getName())
 			.sendTo(source);
 		return true;
 	}
 	
 	private boolean hasPermission(final CommandSource source, final ProtectedRegion region, final World world) {
-		if (source.hasPermission(EWPermissions.REGION_PARENT_REGIONS.get() + "." + region.getIdentifier().toLowerCase())) {
+		if (source.hasPermission(EWPermissions.REGION_PARENT_REGIONS.get() + "." + region.getName().toLowerCase())) {
 			return true;
 		}
 		

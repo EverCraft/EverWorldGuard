@@ -66,7 +66,7 @@ public class EWRegionRemove extends ESubCommand<EverWorldGuard> {
 				}
 				
 				Set<String> suggests = this.plugin.getProtectionService().getOrCreateWorld(world.get()).getAll().stream()
-							.map(region -> region.getIdentifier())
+							.map(region -> region.getName())
 							.collect(Collectors.toSet());
 				suggests.remove(EProtectionService.GLOBAL_REGION);
 				return suggests;
@@ -142,14 +142,14 @@ public class EWRegionRemove extends ESubCommand<EverWorldGuard> {
 		
 		if (!this.hasPermission(source, region.get(), world)) {
 			EWMessages.REGION_NO_PERMISSION.sender()
-				.replace("<region>", region.get().getIdentifier())
+				.replace("<region>", region.get().getName())
 				.sendTo(source);
 			return false;
 		}
 		
 		if (region.get().getType().equals(ProtectedRegion.Type.GLOBAL)) {
 			EWMessages.REGION_REMOVE_ERROR_GLOBAL.sender()
-				.replace("<region>", region.get().getIdentifier())
+				.replace("<region>", region.get().getName())
 				.replace("<type>", region.get().getType().getNameFormat())
 				.replace("<world>", world.getName())
 				.sendTo(source);
@@ -173,44 +173,44 @@ public class EWRegionRemove extends ESubCommand<EverWorldGuard> {
 			Optional<ProtectedRegion> parent = others.getParent();
 			if (parent.isPresent() && parent.get().equals(region)) {
 				EWMessages.REGION_REMOVE_ERROR_CHILDREN.sender()
-					.replace("<region>", region.getIdentifier())
-					.replace("<children>", others.getIdentifier())
+					.replace("<region>", region.getName())
+					.replace("<children>", others.getName())
 					.replace("<world>", world.getName())
 					.sendTo(player);
 				return false;
 			}
 		}
 		
-		this.plugin.getProtectionService().getOrCreateWorld(world).removeRegion(region.getIdentifier(), RemoveType.UNSET_PARENT_IN_CHILDREN);
+		this.plugin.getProtectionService().getOrCreateWorld(world).removeRegion(region.getName(), RemoveType.UNSET_PARENT_IN_CHILDREN);
 		EWMessages.REGION_REMOVE_REGION.sender()
-			.replace("<region>", region.getIdentifier())
+			.replace("<region>", region.getName())
 			.replace("<world>", world.getName())
 			.sendTo(player);
 		return false;
 	}
 	
 	private boolean commandRegionRemoveForce(final CommandSource player, final ProtectedRegion region, final World world) {
-		this.plugin.getProtectionService().getOrCreateWorld(world).removeRegion(region.getIdentifier(), RemoveType.REMOVE_CHILDREN);
+		this.plugin.getProtectionService().getOrCreateWorld(world).removeRegion(region.getName(), RemoveType.REMOVE_CHILDREN);
 		
 		EWMessages.REGION_REMOVE_CHILDREN_REMOVE.sender()
-			.replace("<region>", region.getIdentifier())
+			.replace("<region>", region.getName())
 			.replace("<world>", world.getName())
 			.sendTo(player);
 		return false;
 	}
 	
 	private boolean commandRegionRemoveUnset(final CommandSource player, final ProtectedRegion region, final World world) {
-		this.plugin.getProtectionService().getOrCreateWorld(world).removeRegion(region.getIdentifier(), RemoveType.UNSET_PARENT_IN_CHILDREN);
+		this.plugin.getProtectionService().getOrCreateWorld(world).removeRegion(region.getName(), RemoveType.UNSET_PARENT_IN_CHILDREN);
 		
 		EWMessages.REGION_REMOVE_CHILDREN_UNSET.sender()
-			.replace("<region>", region.getIdentifier())
+			.replace("<region>", region.getName())
 			.replace("<world>", world.getName())
 			.sendTo(player);
 		return false;
 	}
 	
 	private boolean hasPermission(final CommandSource source, final ProtectedRegion region, final World world) {
-		if (source.hasPermission(EWPermissions.REGION_REMOVE_REGIONS.get() + "." + region.getIdentifier().toLowerCase())) {
+		if (source.hasPermission(EWPermissions.REGION_REMOVE_REGIONS.get() + "." + region.getName().toLowerCase())) {
 			return true;
 		}
 		

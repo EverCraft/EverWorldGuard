@@ -69,7 +69,7 @@ public class EWRegionRedefine extends ESubCommand<EverWorldGuard> {
 				}
 				
 				return this.plugin.getProtectionService().getOrCreateWorld(world.get()).getAll().stream()
-							.map(region -> region.getIdentifier())
+							.map(region -> region.getName())
 							.collect(Collectors.toSet());
 			});
     }
@@ -128,14 +128,14 @@ public class EWRegionRedefine extends ESubCommand<EverWorldGuard> {
 		
 		if (!this.hasPermission(source, region.get(), player.getWorld())) {
 			EWMessages.REGION_NO_PERMISSION.sender()
-				.replace("<region>", region.get().getIdentifier())
+				.replace("<region>", region.get().getName())
 				.sendTo(source);
 			return false;
 		}
 		
 		if (region.get().getType().equals(ProtectedRegion.Type.GLOBAL)) {
 			EWMessages.REGION_REDEFINE_ERROR_GLOBAL.sender()
-				.replace("<region>", region.get().getIdentifier())
+				.replace("<region>", region.get().getName())
 				.replace("<type>", region.get().getType().getNameFormat())
 				.replace("<world>", player.getWorld().getName())
 				.sendTo(source);
@@ -156,7 +156,7 @@ public class EWRegionRedefine extends ESubCommand<EverWorldGuard> {
 			return this.commandRegionRedefinePolygonal(player, region);
 		} else {
 			EWMessages.REGION_REDEFINE_ERROR_SELECT_TYPE.sender()
-				.replace("<region>", region.getIdentifier())
+				.replace("<region>", region.getName())
 				.replace("<type>", player.getSelectorType().getName())
 				.sendTo(player);
 			return false;
@@ -167,7 +167,7 @@ public class EWRegionRedefine extends ESubCommand<EverWorldGuard> {
 		Optional<SelectionRegion.Cuboid> selector = player.getSelectorRegion(SelectionRegion.Cuboid.class);
 		if (!selector.isPresent()) {
 			EWMessages.REGION_REDEFINE_CUBOID_ERROR_POSITION.sender()
-				.replace("<region>", region.getIdentifier())
+				.replace("<region>", region.getName())
 				.replace("<type>", ProtectedRegion.Type.CUBOID.getNameFormat())
 				.sendTo(player);
 			return false;
@@ -194,7 +194,7 @@ public class EWRegionRedefine extends ESubCommand<EverWorldGuard> {
 		replaces.put("<max_z>", EReplace.of(String.valueOf(max.getZ())));		
 		
 		EWMessages.REGION_REDEFINE_CUBOID_CREATE.sender()
-			.replace("<region>", region.getIdentifier())
+			.replace("<region>", region.getName())
 			.replace("<type>", region_new.get().getType().getNameFormat())
 			.replace("<positions>", EWMessages.REGION_REDEFINE_CUBOID_POINTS.getFormat()
 					.toText2(replaces).toBuilder()
@@ -209,7 +209,7 @@ public class EWRegionRedefine extends ESubCommand<EverWorldGuard> {
 		Optional<SelectionRegion.Polygonal> selector = player.getSelectorRegion(SelectionRegion.Polygonal.class);
 		if (!selector.isPresent()) {
 			EWMessages.REGION_REDEFINE_POLYGONAL_ERROR_POSITION.sender()
-				.replace("<region>", region.getIdentifier())
+				.replace("<region>", region.getName())
 				.replace("<type>", ProtectedRegion.Type.POLYGONAL.getNameFormat())
 				.sendTo(player);
 			return false;
@@ -243,7 +243,7 @@ public class EWRegionRedefine extends ESubCommand<EverWorldGuard> {
 		replaces.put("<positions>", EReplace.of(Text.joinWith(EWMessages.REGION_REDEFINE_POLYGONAL_POINTS_HOVER_JOIN.getText(), positions_text)));
 		
 		EWMessages.REGION_REDEFINE_POLYGONAL_CREATE.sender()
-			.replace("<region>", region.getIdentifier())
+			.replace("<region>", region.getName())
 			.replace("<type>", region_new.get().getType().getNameFormat())
 			.replace("<positions>", EWMessages.REGION_REDEFINE_POLYGONAL_POINTS.getFormat()
 					.toText2(replaces).toBuilder()
@@ -264,14 +264,14 @@ public class EWRegionRedefine extends ESubCommand<EverWorldGuard> {
 		}
 		
 		EWMessages.REGION_REDEFINE_TEMPLATE_CREATE.sender()
-			.replace("<region>", region.getIdentifier())
+			.replace("<region>", region.getName())
 			.replace("<type>", region.getType().getNameFormat())
 			.sendTo(player);
 		return true;
 	}
 	
 	private boolean hasPermission(final CommandSource source, final ProtectedRegion region, final World world) {
-		if (source.hasPermission(EWPermissions.REGION_REDEFINE_REGIONS.get() + "." + region.getIdentifier().toLowerCase())) {
+		if (source.hasPermission(EWPermissions.REGION_REDEFINE_REGIONS.get() + "." + region.getName().toLowerCase())) {
 			return true;
 		}
 		

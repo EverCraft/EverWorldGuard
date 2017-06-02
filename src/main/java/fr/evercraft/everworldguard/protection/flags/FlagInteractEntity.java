@@ -30,7 +30,6 @@ import com.flowpowered.math.vector.Vector3i;
 import fr.evercraft.everapi.services.entity.EntityTemplate;
 import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
 import fr.evercraft.everapi.services.worldguard.flag.type.EntityTemplateFlag;
-import fr.evercraft.everapi.services.worldguard.flag.value.EntityPatternFlagValue;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EverWorldGuard;
 
@@ -63,11 +62,6 @@ public class FlagInteractEntity extends EntityTemplateFlag {
 					.replace("<y>", position.getY())
 					.replace("<z>", position.getZ())
 					.replace("<entity>", entity.getType().getTranslation()));
-	}
-
-	@Override
-	public EntityPatternFlagValue<EntityTemplate, Entity> getDefault() {
-		return this.defaults;
 	}
 	
 	/*

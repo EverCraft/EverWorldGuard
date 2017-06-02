@@ -72,7 +72,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
     protected void loadGlobal() {
 		try {
 			EProtectedRegion global = new EProtectedGlobalRegion(this.world, EProtectionService.GLOBAL_REGION);
-			if (this.getNode().getNode(global.getIdentifier()).isVirtual()) {
+			if (this.getNode().getNode(global.getName()).isVirtual()) {
 				this.add(global);
 			}
 		} catch (RegionIdentifierException e) {}
@@ -84,7 +84,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 		for (Entry<Object, ? extends ConfigurationNode> config : this.getNode().getChildrenMap().entrySet()) {
 			if (config.getKey() instanceof String) {
 				this.get((String) config.getKey(), config.getValue())
-					.ifPresent(region -> regions.put(region.getIdentifier().toLowerCase(), region));
+					.ifPresent(region -> regions.put(region.getName().toLowerCase(), region));
 			} else {
 				this.plugin.getELogger().warn("Nom de la région incorrect : " + config.getKey().toString());
 			}
@@ -272,7 +272,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 	
 	@Override
 	public void add(EProtectedRegion region) {
-		this.add(region, this.getNode().getNode(region.getIdentifier()));
+		this.add(region, this.getNode().getNode(region.getName()));
 		this.save(true);
 	}
 
@@ -341,44 +341,44 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 
 	@Override
 	public void remove(EProtectedRegion region) {
-		this.getNode().removeChild(region.getIdentifier());
+		this.getNode().removeChild(region.getName());
 		this.save(true);
 	}
 	
 	@Override
 	public void remove(Set<EProtectedRegion> regions) {
-		regions.stream().forEach(region -> this.getNode().removeChild(region.getIdentifier()));
+		regions.stream().forEach(region -> this.getNode().removeChild(region.getName()));
 		this.save(true);
 	}
 
 	@Override
 	public void setIdentifier(EProtectedRegion region, String identifier) {
-		this.getNode().removeChild(region.getIdentifier());
+		this.getNode().removeChild(region.getName());
 		this.add(region, this.getNode().getNode(identifier));
 		this.save(true);
 	}
 
 	@Override
 	public void setPriority(EProtectedRegion region, int priority) {
-		ConfigurationNode config = this.getNode().getNode(region.getIdentifier());
+		ConfigurationNode config = this.getNode().getNode(region.getName());
 		config.getNode("priority").setValue(priority);
 		this.save(true);
 	}
 
 	@Override
 	public void setParent(EProtectedRegion region, ProtectedRegion parent) {
-		ConfigurationNode config = this.getNode().getNode(region.getIdentifier());
+		ConfigurationNode config = this.getNode().getNode(region.getName());
         if (parent  == null) {
             config.removeChild("parent");
         } else {
-            config.getNode("parent").setValue(parent.getIdentifier());
+            config.getNode("parent").setValue(parent.getName());
         }
 		this.save(true);
 	}
 
 	@Override
 	public <V> void setFlag(EProtectedRegion region, Flag<V> flag, Group group, V value) {
-		ConfigurationNode config = this.getNode().getNode(region.getIdentifier());
+		ConfigurationNode config = this.getNode().getNode(region.getName());
 		
 		if (group.equals(Group.OWNER)) {
 			config = config.getNode("flags-owner");
@@ -398,7 +398,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 
 	@Override
 	public void addOwnerPlayer(EProtectedRegion region, Set<UUID> players) {
-		ConfigurationNode config = this.getNode().getNode(region.getIdentifier());
+		ConfigurationNode config = this.getNode().getNode(region.getName());
 		
 		Set<UUID> all = new HashSet<UUID>();
 		all.addAll(region.getMembers().getPlayers());
@@ -412,7 +412,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 
 	@Override
 	public void addOwnerGroup(EProtectedRegion region, Set<String> groups) {
-		ConfigurationNode config = this.getNode().getNode(region.getIdentifier());
+		ConfigurationNode config = this.getNode().getNode(region.getName());
 		
 		Set<String> all = new HashSet<String>();
 		all.addAll(region.getMembers().getGroups());
@@ -424,7 +424,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 
 	@Override
 	public void addMemberPlayer(EProtectedRegion region, Set<UUID> players) {
-		ConfigurationNode config = this.getNode().getNode(region.getIdentifier());
+		ConfigurationNode config = this.getNode().getNode(region.getName());
 		
 		Set<UUID> all = new HashSet<UUID>();
 		all.addAll(region.getMembers().getPlayers());
@@ -438,7 +438,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 
 	@Override
 	public void addMemberGroup(EProtectedRegion region, Set<String> groups) {
-		ConfigurationNode config = this.getNode().getNode(region.getIdentifier());
+		ConfigurationNode config = this.getNode().getNode(region.getName());
 		
 		Set<String> all = new HashSet<String>();
 		all.addAll(region.getMembers().getGroups());
@@ -450,7 +450,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 
 	@Override
 	public void removeOwnerPlayer(EProtectedRegion region, Set<UUID> players) {
-		ConfigurationNode config = this.getNode().getNode(region.getIdentifier());
+		ConfigurationNode config = this.getNode().getNode(region.getName());
 		
 		Set<UUID> all = new HashSet<UUID>();
 		all.addAll(region.getMembers().getPlayers());
@@ -464,7 +464,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 
 	@Override
 	public void removeOwnerGroup(EProtectedRegion region, Set<String> groups) {
-		ConfigurationNode config = this.getNode().getNode(region.getIdentifier());
+		ConfigurationNode config = this.getNode().getNode(region.getName());
 		
 		Set<String> all = new HashSet<String>();
 		all.addAll(region.getMembers().getGroups());
@@ -476,7 +476,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 
 	@Override
 	public void removeMemberPlayer(EProtectedRegion region, Set<UUID> players) {
-		ConfigurationNode config = this.getNode().getNode(region.getIdentifier());
+		ConfigurationNode config = this.getNode().getNode(region.getName());
 		
 		Set<UUID> all = new HashSet<UUID>();
 		all.addAll(region.getMembers().getPlayers());
@@ -490,7 +490,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 
 	@Override
 	public void removeMemberGroup(EProtectedRegion region, Set<String> groups) {
-		ConfigurationNode config = this.getNode().getNode(region.getIdentifier());
+		ConfigurationNode config = this.getNode().getNode(region.getName());
 		
 		Set<String> all = new HashSet<String>();
 		all.addAll(region.getMembers().getGroups());

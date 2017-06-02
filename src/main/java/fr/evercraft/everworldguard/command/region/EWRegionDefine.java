@@ -205,7 +205,7 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 		replaces.put("<max_x>", EReplace.of(String.valueOf(max.getX())));
 		replaces.put("<max_y>", EReplace.of(String.valueOf(max.getY())));
 		replaces.put("<max_z>", EReplace.of(String.valueOf(max.getZ())));
-		replaces.put("<region>", EReplace.of(region.getIdentifier()));
+		replaces.put("<region>", EReplace.of(region.getName()));
 		replaces.put("<type>", EReplace.of(region.getType().getNameFormat()));
 		
 		EWMessages.REGION_DEFINE_CUBOID_CREATE.sender()
@@ -250,7 +250,7 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 		replaces.put("<max_x>", EReplace.of(String.valueOf(max.getX())));
 		replaces.put("<max_y>", EReplace.of(String.valueOf(max.getY())));
 		replaces.put("<max_z>", EReplace.of(String.valueOf(max.getZ())));
-		replaces.put("<region>", EReplace.of(region.getIdentifier()));
+		replaces.put("<region>", EReplace.of(region.getName()));
 		replaces.put("<type>", EReplace.of(region.getType().getNameFormat()));
 		
 		int num = 1;
@@ -295,7 +295,7 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 		}
 		
 		EWMessages.REGION_DEFINE_TEMPLATE_CREATE.sender()
-			.replace("<region>", region.getIdentifier())
+			.replace("<region>", region.getName())
 			.replace("<type>", region.getType().getNameFormat())
 			.sendTo(player);
 		return true;

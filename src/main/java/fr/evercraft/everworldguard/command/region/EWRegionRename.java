@@ -61,7 +61,7 @@ public class EWRegionRename extends ESubCommand<EverWorldGuard> {
 				}
 				
 				return this.plugin.getProtectionService().getOrCreateWorld(world.get()).getAll().stream()
-							.map(region -> region.getIdentifier())
+							.map(region -> region.getName())
 							.collect(Collectors.toSet());
 			})
 			.arg((source, args) -> Arrays.asList("region..."));
@@ -137,7 +137,7 @@ public class EWRegionRename extends ESubCommand<EverWorldGuard> {
 		
 		if (!this.hasPermission(source, region.get(), world)) {
 			EWMessages.REGION_NO_PERMISSION.sender()
-				.replace("<region>", region.get().getIdentifier())
+				.replace("<region>", region.get().getName())
 				.sendTo(source);
 			return false;
 		}
@@ -146,10 +146,10 @@ public class EWRegionRename extends ESubCommand<EverWorldGuard> {
 	}
 
 	private boolean commandRegionRename(final CommandSource player, WorldWorldGuard manager, ProtectedRegion region, String region_string, World world) {
-		String before_identifier = region.getIdentifier();
+		String before_identifier = region.getName();
 		if (region.getType().equals(ProtectedRegion.Type.GLOBAL)) {
 			EWMessages.REGION_RENAME_ERROR_GLOBAL.sender()
-				.replace("<region>", region.getIdentifier())
+				.replace("<region>", region.getName())
 				.replace("<type>", region.getType().getNameFormat())
 				.replace("<world>", world.getName())
 				.sendTo(player);
@@ -158,7 +158,7 @@ public class EWRegionRename extends ESubCommand<EverWorldGuard> {
 		
 		if (manager.getRegion(region_string).isPresent()) {
 			EWMessages.REGION_RENAME_ERROR_IDENTIFIER_EQUALS.sender()
-				.replace("<region>", region.getIdentifier())
+				.replace("<region>", region.getName())
 				.replace("<identifier>", region_string)
 				.replace("<type>", region.getType().getNameFormat())
 				.replace("<world>", world.getName())
@@ -167,7 +167,7 @@ public class EWRegionRename extends ESubCommand<EverWorldGuard> {
 		}
 		
 		try {
-			region.setIdentifier(region_string);
+			region.setName(region_string);
 		} catch (RegionIdentifierException e) {
 			EWMessages.REGION_RENAME_ERROR_IDENTIFIER_INVALID.sender()
 				.replace("<region>", before_identifier)
@@ -188,7 +188,7 @@ public class EWRegionRename extends ESubCommand<EverWorldGuard> {
 	}
 	
 	private boolean hasPermission(final CommandSource source, final ProtectedRegion region, final World world) {
-		if (source.hasPermission(EWPermissions.REGION_RENAME_REGIONS.get() + "." + region.getIdentifier().toLowerCase())) {
+		if (source.hasPermission(EWPermissions.REGION_RENAME_REGIONS.get() + "." + region.getName().toLowerCase())) {
 			return true;
 		}
 		

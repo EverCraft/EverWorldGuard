@@ -24,11 +24,13 @@ import java.util.Set;
 
 import org.spongepowered.api.block.tileentity.TileEntity;
 import org.spongepowered.api.block.tileentity.carrier.TileEntityCarrier;
+import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.Item;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.cause.entity.spawn.BlockSpawnCause;
+import org.spongepowered.api.event.cause.entity.spawn.EntitySpawnCause;
 import org.spongepowered.api.event.cause.entity.spawn.SpawnCause;
 import org.spongepowered.api.event.entity.SpawnEntityEvent;
 import org.spongepowered.api.event.item.inventory.DropItemEvent;
@@ -108,12 +110,11 @@ public class FlagItemDrop extends CatalogTypeFlag<ItemType> {
 			}
 			return true;
 		});
+		if (filter.isEmpty()) return;
 		
 		if (spawn instanceof BlockSpawnCause) {
 			this.onSpawnEntityDispense((BlockSpawnCause) spawn, filter);
-		}
-		
-		if (!filter.isEmpty()) {
+		} else if (spawn instanceof EntitySpawnCause && ((EntitySpawnCause) spawn).getEntity().equals(player)) {			
 			this.sendMessage(player, filter.get(0).getLocation(), ((Item) filter.get(0)).getItemType());
 		}
 	}
@@ -129,6 +130,7 @@ public class FlagItemDrop extends CatalogTypeFlag<ItemType> {
 			}
 			return true;
 		});
+		if (filter.isEmpty()) return;
 		
 		if (spawn instanceof BlockSpawnCause) {
 			this.onSpawnEntityDispense((BlockSpawnCause) spawn, filter);
@@ -145,8 +147,11 @@ public class FlagItemDrop extends CatalogTypeFlag<ItemType> {
 		
 		Inventory inventory = ((TileEntityCarrier) tile).getInventory();
 		filter.forEach(entity -> {
+			Optional<ItemStackSnapshot> item = entity.get(Keys.REPRESENTED_ITEM);
+			if (!item.isPresent()) return;
+			
 			inventory.offer(ItemStack.builder()
-				.fromSnapshot(((Item) entity).item().get())
+				.fromSnapshot(item.get())
 				.build());
 		});
 	}

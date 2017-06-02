@@ -66,7 +66,7 @@ public class EWRegionTeleport extends ESubCommand<EverWorldGuard> {
 				}
 				
 				return this.plugin.getProtectionService().getOrCreateWorld(world.get()).getAll().stream()
-							.map(region -> region.getIdentifier())
+							.map(region -> region.getName())
 							.collect(Collectors.toSet());
 			});
     }
@@ -148,7 +148,7 @@ public class EWRegionTeleport extends ESubCommand<EverWorldGuard> {
 		
 		if (!this.hasPermission(source, region.get(), world)) {
 			EWMessages.REGION_NO_PERMISSION.sender()
-				.replace("<region>", region.get().getIdentifier())
+				.replace("<region>", region.get().getName())
 				.sendTo(source);
 			return false;
 		}
@@ -167,7 +167,7 @@ public class EWRegionTeleport extends ESubCommand<EverWorldGuard> {
 		
 		if (location.isEmpty()) {
 			EWMessages.REGION_TELEPORT_TELEPORT_ERROR.sender()
-				.replace("<region>", region.getIdentifier())
+				.replace("<region>", region.getName())
 				.replace("<world>", world.getName())
 				.sendTo(player);
 			return false;
@@ -179,7 +179,7 @@ public class EWRegionTeleport extends ESubCommand<EverWorldGuard> {
 		}
 		
 		EWMessages.REGION_TELEPORT_TELEPORT.sender()
-			.replace("<region>", region.getIdentifier())
+			.replace("<region>", region.getName())
 			.replace("<world>", world.getName())
 			.replace("<position>", () -> this.getTeleportHover(location)) 
 			.sendTo(player);
@@ -211,7 +211,7 @@ public class EWRegionTeleport extends ESubCommand<EverWorldGuard> {
 		Optional<VirtualTransform> optLocation = region.getFlag(Flags.SPAWN).getInherit(region.getGroup(player, UtilsContexts.get(world.getName())));
 		if (!optLocation.isPresent()) {
 			EWMessages.REGION_TELEPORT_SPAWN_EMPTY.sender()
-				.replace("<region>", region.getIdentifier())
+				.replace("<region>", region.getName())
 				.replace("<world>", world.getName())
 				.sendTo(player);
 			return false;
@@ -220,7 +220,7 @@ public class EWRegionTeleport extends ESubCommand<EverWorldGuard> {
 		
 		if (location.isEmpty()) {
 			EWMessages.REGION_TELEPORT_SPAWN_ERROR.sender()
-				.replace("<region>", region.getIdentifier())
+				.replace("<region>", region.getName())
 				.replace("<world>", world.getName())
 				.sendTo(player);
 			return false;
@@ -232,7 +232,7 @@ public class EWRegionTeleport extends ESubCommand<EverWorldGuard> {
 		}
 		
 		EWMessages.REGION_TELEPORT_SPAWN.sender()
-			.replace("<region>", region.getIdentifier())
+			.replace("<region>", region.getName())
 			.replace("<world>", world.getName())
 			.replace("<position>", () -> this.getSpawnHover(location)) 
 			.sendTo(player);
@@ -254,7 +254,7 @@ public class EWRegionTeleport extends ESubCommand<EverWorldGuard> {
 	}
 	
 	private boolean hasPermission(final CommandSource source, final ProtectedRegion region, final World world) {
-		if (source.hasPermission(EWPermissions.REGION_TELEPORT_REGIONS.get() + "." + region.getIdentifier().toLowerCase())) {
+		if (source.hasPermission(EWPermissions.REGION_TELEPORT_REGIONS.get() + "." + region.getName().toLowerCase())) {
 			return true;
 		}
 		

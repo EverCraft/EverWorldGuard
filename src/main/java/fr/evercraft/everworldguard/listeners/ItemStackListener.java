@@ -41,6 +41,7 @@ public class ItemStackListener {
 	public void onInteractItem(InteractItemEvent.Secondary event) {
 		this.plugin.getManagerFlags().ENDERPEARL.onInteractItem(event);
 		this.plugin.getManagerFlags().ENTITY_SPAWNING.onInteractItem(event);
+		this.plugin.getManagerFlags().POTION_SPLASH.onInteractItemSecondary(event);
 		
 		// Debug
 		//UtilsCause.debug(event.getCause(), "InteractItemEvent.Secondary");

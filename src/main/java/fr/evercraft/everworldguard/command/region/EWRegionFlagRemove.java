@@ -63,7 +63,7 @@ public class EWRegionFlagRemove extends ESubCommand<EverWorldGuard> {
 				}
 				
 				return this.plugin.getProtectionService().getOrCreateWorld(world.get()).getAll().stream()
-							.map(region -> region.getIdentifier())
+							.map(region -> region.getName())
 							.collect(Collectors.toSet());
 			})
 			.arg((source, args) -> {
@@ -174,7 +174,7 @@ public class EWRegionFlagRemove extends ESubCommand<EverWorldGuard> {
 		
 		if (!this.hasPermission(source, region.get(), world)) {
 			EWMessages.REGION_NO_PERMISSION.sender()
-				.replace("<region>", region.get().getIdentifier())
+				.replace("<region>", region.get().getName())
 				.sendTo(source);
 			return false;
 		}
@@ -205,7 +205,7 @@ public class EWRegionFlagRemove extends ESubCommand<EverWorldGuard> {
 		} catch (IllegalArgumentException e) {
 			if (e.getMessage() == null || e.getMessage().isEmpty()) {
 				EWMessages.REGION_FLAG_REMOVE_ERROR.sender()
-					.replace("<region>", region.getIdentifier())
+					.replace("<region>", region.getName())
 					.replace("<group>", group.getNameFormat())
 					.replace("<flag>", flag.getNameFormat())
 					.replace("<world>", world.getName())
@@ -225,7 +225,7 @@ public class EWRegionFlagRemove extends ESubCommand<EverWorldGuard> {
 		
 		if (value.isPresent()) {
 			EWMessages.REGION_FLAG_REMOVE_UPDATE.sender()
-				.replace("<region>", region.getIdentifier())
+				.replace("<region>", region.getName())
 				.replace("<group>", group.getNameFormat())
 				.replace("<flag>", flag.getNameFormat())
 				.replace("<world>", world.getName())
@@ -233,7 +233,7 @@ public class EWRegionFlagRemove extends ESubCommand<EverWorldGuard> {
 				.sendTo(source);
 		} else {
 			EWMessages.REGION_FLAG_REMOVE_PLAYER.sender()
-				.replace("<region>", region.getIdentifier())
+				.replace("<region>", region.getName())
 				.replace("<group>", group.getNameFormat())
 				.replace("<flag>", flag.getNameFormat())
 				.replace("<world>", world.getName())
@@ -243,7 +243,7 @@ public class EWRegionFlagRemove extends ESubCommand<EverWorldGuard> {
 	}
 	
 	private boolean hasPermission(final CommandSource source, final ProtectedRegion region, final World world) {
-		if (source.hasPermission(EWPermissions.REGION_FLAG_REMOVE_REGIONS.get() + "." + region.getIdentifier().toLowerCase())) {
+		if (source.hasPermission(EWPermissions.REGION_FLAG_REMOVE_REGIONS.get() + "." + region.getName().toLowerCase())) {
 			return true;
 		}
 		

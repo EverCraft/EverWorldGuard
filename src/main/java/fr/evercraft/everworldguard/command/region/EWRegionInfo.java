@@ -75,7 +75,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 				}
 				
 				return this.plugin.getProtectionService().getOrCreateWorld(world.get()).getAll().stream()
-							.map(region -> region.getIdentifier())
+							.map(region -> region.getName())
 							.collect(Collectors.toSet());
 			});
     }
@@ -206,7 +206,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 		
 		if (!this.hasPermission(player, region.get(), world)) {
 			EWMessages.REGION_NO_PERMISSION.sender()
-				.replace("<region>", region.get().getIdentifier())
+				.replace("<region>", region.get().getName())
 				.sendTo(player);
 			return false;
 		}		
@@ -219,15 +219,15 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 		
 		for (ProtectedRegion region : regions) {
 			this.addLine(list, EWMessages.REGION_INFO_LIST_LINE.getFormat()
-					.toText("<region>", Text.builder(region.getIdentifier())
-								.onShiftClick(TextActions.insertText(region.getIdentifier()))
+					.toText("<region>", Text.builder(region.getName())
+								.onShiftClick(TextActions.insertText(region.getName()))
 								.onClick(TextActions.suggestCommand(
-									"/" + this.getName() + " -w \"" + world.getName() + "\" \"" + region.getIdentifier() + "\""))
+									"/" + this.getName() + " -w \"" + world.getName() + "\" \"" + region.getName() + "\""))
 								.build(),
 							"<type>", region.getType().getNameFormat(),
 							"<priority>", Text.builder(String.valueOf(region.getPriority()))
 								.onClick(TextActions.suggestCommand(
-									"/" + this.getParentName() + " setpriority -w \"" + world.getName() + "\" \"" + region.getIdentifier() + "\" " + region.getPriority()))
+									"/" + this.getParentName() + " setpriority -w \"" + world.getName() + "\" \"" + region.getName() + "\" " + region.getPriority()))
 								.build()));
 		}
 		
@@ -257,7 +257,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 		this.addLine(list, EWMessages.REGION_INFO_ONE_PRIORITY.getFormat()
 				.toText("<prority>", Text.builder(String.valueOf(region.getPriority()))
 					.onClick(TextActions.suggestCommand(
-						"/" + this.getParentName() + " setpriority -w \"" + world.getName() + "\" \"" + region.getIdentifier() + "\" " + region.getPriority()))
+						"/" + this.getParentName() + " setpriority -w \"" + world.getName() + "\" \"" + region.getName() + "\" " + region.getPriority()))
 					.build()));
 		
 		// Points
@@ -306,10 +306,10 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 		Optional<ProtectedRegion> parent = region.getParent();
 		if (parent.isPresent()) {
 			this.addLine(list, EWMessages.REGION_INFO_ONE_PARENT.getFormat()
-					.toText("<parent>", Text.builder(parent.get().getIdentifier())
-						.onShiftClick(TextActions.insertText(region.getIdentifier()))
+					.toText("<parent>", Text.builder(parent.get().getName())
+						.onShiftClick(TextActions.insertText(region.getName()))
 						.onClick(TextActions.suggestCommand(
-							"/" + this.getParentName() + " setparent -w \"" + world.getName() + "\" \"" + region.getIdentifier() + "\" \"" + parent.get().getIdentifier() + "\""))
+							"/" + this.getParentName() + " setparent -w \"" + world.getName() + "\" \"" + region.getName() + "\" \"" + parent.get().getName() + "\""))
 						.build()));
 		}
 		
@@ -330,9 +330,9 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 					
 					ProtectedRegion curParent = parents.get(cpt);
 					message = message.concat(EWMessages.REGION_INFO_ONE_HERITAGE_LINE.getFormat()
-						.toText("<region>", Text.builder(curParent.getIdentifier())
-									.onShiftClick(TextActions.insertText(curParent.getIdentifier()))
-									.onClick(TextActions.runCommand("/" + this.getName() + " -w \"" + world.getName() + "\" \"" + curParent.getIdentifier() + "\" "))
+						.toText("<region>", Text.builder(curParent.getName())
+									.onShiftClick(TextActions.insertText(curParent.getName()))
+									.onClick(TextActions.runCommand("/" + this.getName() + " -w \"" + world.getName() + "\" \"" + curParent.getName() + "\" "))
 									.build(),
 								"<type>", curParent.getType().getNameFormat(),
 								"<priority>", String.valueOf(curParent.getPriority())));
@@ -352,13 +352,13 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 					messages.add(Text.builder(user.get().getName())
 										.onShiftClick(TextActions.insertText(user.get().getName()))
 										.onClick(TextActions.suggestCommand(
-										"/" + this.getParentName() + " removeowner -w \"" + world.getName() + "\" \"" + region.getIdentifier() + "\" " + user.get().getName()))
+										"/" + this.getParentName() + " removeowner -w \"" + world.getName() + "\" \"" + region.getName() + "\" " + user.get().getName()))
 										.build());
 				} else {
 					messages.add(Text.builder(owner.toString())
 							.onShiftClick(TextActions.insertText(owner.toString()))
 							.onClick(TextActions.suggestCommand(
-									"/" + this.getParentName() + " removeowner -w \"" + world.getName() + "\" \"" + region.getIdentifier() + "\" " + owner.toString()))
+									"/" + this.getParentName() + " removeowner -w \"" + world.getName() + "\" \"" + region.getName() + "\" " + owner.toString()))
 							.build());
 				}
 			}
@@ -375,7 +375,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 				messages.add(Text.builder(owner)
 					.onShiftClick(TextActions.insertText(owner))
 					.onClick(TextActions.suggestCommand(
-							"/" + this.getParentName() + " removeowner -w \"" + world.getName() + "\" \"" + region.getIdentifier() + "\" -g \"" + owner + "\""))
+							"/" + this.getParentName() + " removeowner -w \"" + world.getName() + "\" \"" + region.getName() + "\" -g \"" + owner + "\""))
 					.build());
 			}
 			
@@ -393,13 +393,13 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 					messages.add(Text.builder(user.get().getName())
 						.onShiftClick(TextActions.insertText(user.get().getName()))
 						.onClick(TextActions.suggestCommand(
-								"/" + this.getParentName() + " removemember -w \"" + world.getName() + "\" \"" + region.getIdentifier() + "\" " + user.get().getName()))
+								"/" + this.getParentName() + " removemember -w \"" + world.getName() + "\" \"" + region.getName() + "\" " + user.get().getName()))
 						.build());
 				} else {
 					messages.add(Text.builder(member.toString())
 						.onShiftClick(TextActions.insertText(member.toString()))
 						.onClick(TextActions.suggestCommand(
-								"/" + this.getParentName() + " removemember -w \"" + world.getName() + "\" \"" + region.getIdentifier() + "\" " + member.toString()))
+								"/" + this.getParentName() + " removemember -w \"" + world.getName() + "\" \"" + region.getName() + "\" " + member.toString()))
 						.build());
 				}
 			}
@@ -416,7 +416,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 				messages.add(Text.builder(member)
 					.onShiftClick(TextActions.insertText(member))
 					.onClick(TextActions.suggestCommand(
-							"/" + this.getParentName() + " removemember -w \"" + world.getName() + "\" \"" + region.getIdentifier() + "\" -g \"" + member + "\""))
+							"/" + this.getParentName() + " removemember -w \"" + world.getName() + "\" \"" + region.getName() + "\" -g \"" + member + "\""))
 					.build());
 			}
 			
@@ -442,7 +442,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 									"<value>", key.getValueFormat((T) value).toBuilder()
 													.onShiftClick(TextActions.insertText(value_string))
 													.onClick(TextActions.suggestCommand(
-						"/" + this.getParentName() + " removeflag -w \"" + world.getName() + "\" \"" + region.getIdentifier() + "\" \"" + flag.getName() + "\" \"" + association.name() + "\""))
+						"/" + this.getParentName() + " removeflag -w \"" + world.getName() + "\" \"" + region.getName() + "\" \"" + flag.getName() + "\" \"" + association.name() + "\""))
 													.build());
 					if (association.equals(Group.DEFAULT)) {
 						flags_default.put(flag.getId(), message);
@@ -526,9 +526,9 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 		
 		this.plugin.getEverAPI().getManagerService().getEPagination().sendTo(
 				EWMessages.REGION_INFO_ONE_TITLE.getFormat()
-					.toText("<region>", region.getIdentifier())
+					.toText("<region>", region.getName())
 					.toBuilder()
-					.onClick(TextActions.runCommand("/" + this.getName() + " -w \"" + world.getName() + "\" \"" + region.getIdentifier() + "\" "))
+					.onClick(TextActions.runCommand("/" + this.getName() + " -w \"" + world.getName() + "\" \"" + region.getName() + "\" "))
 					.build(), 
 				list, player);
 		
@@ -550,13 +550,13 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 						"<value>", flag.getValueFormat(value).toBuilder()
 										.onShiftClick(TextActions.insertText(value_string))
 										.onClick(TextActions.suggestCommand(
-			"/" + this.getParentName() + " removeflag -w \"" + world.getName() + "\" \"" + curParent.getIdentifier() + "\" \"" + flag.getName() + "\" \"" + association.name() + "\""))
+			"/" + this.getParentName() + " removeflag -w \"" + world.getName() + "\" \"" + curParent.getName() + "\" \"" + flag.getName() + "\" \"" + association.name() + "\""))
 										.build());
 		
 	}
 	
 	private boolean hasPermission(final CommandSource source, final ProtectedRegion region, final World world) {
-		if (source.hasPermission(EWPermissions.REGION_INFO_REGIONS.get() + "." + region.getIdentifier().toLowerCase())) {
+		if (source.hasPermission(EWPermissions.REGION_INFO_REGIONS.get() + "." + region.getName().toLowerCase())) {
 			return true;
 		}
 		
