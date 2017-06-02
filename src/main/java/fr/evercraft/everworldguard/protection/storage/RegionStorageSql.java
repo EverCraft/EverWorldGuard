@@ -61,7 +61,7 @@ public class RegionStorageSql implements RegionStorage {
 	}
 
 	@Override
-	public void setIdentifier(EProtectedRegion region, String identifier) {
+	public void setName(EProtectedRegion region, String name) {
 		// TODO Auto-generated method stub
 		
 	}

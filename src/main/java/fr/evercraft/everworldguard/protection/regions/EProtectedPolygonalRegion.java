@@ -16,7 +16,6 @@
  */
 package fr.evercraft.everworldguard.protection.regions;
 
-import fr.evercraft.everapi.services.worldguard.exception.RegionIdentifierException;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everworldguard.protection.index.EWWorld;
 
@@ -24,6 +23,7 @@ import java.awt.Polygon;
 import java.awt.geom.Area;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.base.Preconditions;
@@ -34,13 +34,12 @@ public class EProtectedPolygonalRegion extends EProtectedRegion implements Prote
 	private final List<Vector3i> positions;
 	private final int volume;
 	
-	public EProtectedPolygonalRegion(EWWorld world, String identifier, List<Vector3i> positions) throws RegionIdentifierException {
-		this(world, identifier, positions, false);
+	public EProtectedPolygonalRegion(EWWorld world, UUID identifier, String name, List<Vector3i> positions) {
+		this(world, identifier, name, positions, false);
 	}
 	
-	public EProtectedPolygonalRegion(EWWorld world, String identifier, List<Vector3i> positions, boolean transientRegion) 
-			throws RegionIdentifierException {
-		super(world, identifier, transientRegion);
+	public EProtectedPolygonalRegion(EWWorld world, UUID identifier, String name, List<Vector3i> positions, boolean transientRegion) {
+		super(world, identifier, name, transientRegion);
 		
 		Preconditions.checkNotNull(positions, "positions");
 		Preconditions.checkArgument(!positions.isEmpty(), "positions > 1");

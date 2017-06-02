@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandSource;
@@ -116,13 +117,13 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 			return false;
 		}
 		
-		Set<EUser> players = new HashSet<EUser>();
+		Set<UUID> players = new HashSet<UUID>();
 		Optional<List<String>> players_string = args.getList(MARKER_OWNER_PLAYER);
 		if (players_string.isPresent()) {
 			for (String player_string : players_string.get()) {
 				Optional<EUser> user = this.plugin.getEServer().getEUser(player_string);
 				if (user.isPresent()) {
-					players.add(user.get());
+					players.add(user.get().getUniqueId());
 				} else {
 					EAMessages.PLAYER_NOT_FOUND.sender()
 						.prefix(EWMessages.PREFIX)
@@ -133,13 +134,13 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 			}
 		}
 		
-		Set<Subject> groups = new HashSet<Subject>();
+		Set<String> groups = new HashSet<String>();
 		Optional<List<String>> groups_string = args.getList(MARKER_OWNER_GROUP);
 		if (groups_string.isPresent()) {
 			for (String group_string : groups_string.get()) {
 				Subject group = this.plugin.getEverAPI().getManagerService().getPermission().getGroupSubjects().get(group_string);
 				if (group != null) {
-					groups.add(group);
+					groups.add(group.getIdentifier());
 				} else {
 					EAMessages.GROUP_NOT_FOUND.sender()
 						.prefix(EWMessages.PREFIX)
@@ -157,7 +158,7 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 		}
 	}
 	
-	private boolean commandRegionDefine(final EPlayer player, final String region_id, final Set<EUser> players, final Set<Subject> groups) {
+	private boolean commandRegionDefine(final EPlayer player, final String region_id, final Set<UUID> players, final Set<String> groups) {
 		if (player.getSelectorType().equals(SelectionType.CUBOID)) {
 			return this.commandRegionDefineCuboid(player, region_id, players, groups);
 		} else if (player.getSelectorType().equals(SelectionType.POLYGONAL)) {
@@ -171,7 +172,7 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 		}
 	}
 	
-	private boolean commandRegionDefineCuboid(final EPlayer player, final String region_id, final Set<EUser> players, final Set<Subject> groups) {
+	private boolean commandRegionDefineCuboid(final EPlayer player, final String region_id, final Set<UUID> players, final Set<String> groups) {
 		Optional<SelectionRegion.Cuboid> selection = player.getSelectorRegion(SelectionRegion.Cuboid.class);
 		if (!selection.isPresent()) {
 			EWMessages.REGION_DEFINE_CUBOID_ERROR_POSITION.sender()
@@ -219,7 +220,7 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 		return true;
 	}
 	
-	private boolean commandRegionDefinePolygonal(final EPlayer player, final String region_id, final Set<EUser> players, final Set<Subject> groups) {
+	private boolean commandRegionDefinePolygonal(final EPlayer player, final String region_id, final Set<UUID> players, final Set<String> groups) {
 		Optional<SelectionRegion.Polygonal> selector = player.getSelectorRegion(SelectionRegion.Polygonal.class);
 		if (!selector.isPresent()) {
 			EWMessages.REGION_DEFINE_POLYGONAL_ERROR_POSITION.sender()
@@ -275,7 +276,7 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 		return true;
 	}
 	
-	private boolean commandRegionDefineTemplate(final EPlayer player, final String region_id, final Set<EUser> players, final Set<Subject> groups) {
+	private boolean commandRegionDefineTemplate(final EPlayer player, final String region_id, final Set<UUID> players, final Set<String> groups) {
 		if (player.hasPermission(EWPermissions.REGION_DEFINE_TEMPLATE.get())) {
 			EAMessages.NO_PERMISSION.sender()
 				.prefix(EWMessages.PREFIX)

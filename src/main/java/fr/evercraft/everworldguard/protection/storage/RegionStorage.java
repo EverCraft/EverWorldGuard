@@ -34,7 +34,7 @@ public interface RegionStorage {
 	void remove(EProtectedRegion region);
 	void remove(Set<EProtectedRegion> regions);
 
-	void setIdentifier(EProtectedRegion region, String identifier);
+	void setName(EProtectedRegion region, String identifier);
 	void setPriority(EProtectedRegion region, int priority);
 	void setParent(EProtectedRegion region, @Nullable ProtectedRegion parent);
 	<V> void setFlag(EProtectedRegion region, Flag<V> flag, Group group, V value);

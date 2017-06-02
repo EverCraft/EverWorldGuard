@@ -17,6 +17,7 @@
 package fr.evercraft.everworldguard.protection.index;
 
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -40,7 +41,7 @@ public class EWChunck {
 	private final Set<EProtectedRegion> regions;
 	private final LoadingCache<Vector3i, ESetProtectedRegion> cache;
 	
-	public EWChunck(EverWorldGuard plugin, Vector3i position, ConcurrentHashMap<String, EProtectedRegion> regions) {
+	public EWChunck(EverWorldGuard plugin, Vector3i position, ConcurrentHashMap<UUID, EProtectedRegion> regions) {
 		this.plugin = plugin;
 		this.position_chunck = position;
 		Builder<EProtectedRegion> builder = ImmutableSet.builder();
@@ -61,7 +62,7 @@ public class EWChunck {
 					        	
 					        	ESetProtectedRegion regions = new ESetProtectedRegion(position, EWChunck.this.regions);
 					        	
-					        	EWChunck.this.plugin.getELogger().debug("Loading bloc (x:" + position.getX() + ";y:" + position.getY() + ";z:" + position.getZ() + ") in " +  chronometer.getMilliseconds().toString() + " ms");
+					        	EWChunck.this.plugin.getELogger().debug("Loading block (x:" + position.getX() + ";y:" + position.getY() + ";z:" + position.getZ() + ") in " +  chronometer.getMilliseconds().toString() + " ms");
 					            return regions;
 					        }
 					    });

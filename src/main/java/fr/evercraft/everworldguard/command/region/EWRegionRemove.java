@@ -181,7 +181,7 @@ public class EWRegionRemove extends ESubCommand<EverWorldGuard> {
 			}
 		}
 		
-		this.plugin.getProtectionService().getOrCreateWorld(world).removeRegion(region.getName(), RemoveType.UNSET_PARENT_IN_CHILDREN);
+		this.plugin.getProtectionService().getOrCreateWorld(world).removeRegion(region.getId(), RemoveType.UNSET_PARENT_IN_CHILDREN);
 		EWMessages.REGION_REMOVE_REGION.sender()
 			.replace("<region>", region.getName())
 			.replace("<world>", world.getName())
@@ -190,7 +190,7 @@ public class EWRegionRemove extends ESubCommand<EverWorldGuard> {
 	}
 	
 	private boolean commandRegionRemoveForce(final CommandSource player, final ProtectedRegion region, final World world) {
-		this.plugin.getProtectionService().getOrCreateWorld(world).removeRegion(region.getName(), RemoveType.REMOVE_CHILDREN);
+		this.plugin.getProtectionService().getOrCreateWorld(world).removeRegion(region.getId(), RemoveType.REMOVE_CHILDREN);
 		
 		EWMessages.REGION_REMOVE_CHILDREN_REMOVE.sender()
 			.replace("<region>", region.getName())
@@ -200,7 +200,7 @@ public class EWRegionRemove extends ESubCommand<EverWorldGuard> {
 	}
 	
 	private boolean commandRegionRemoveUnset(final CommandSource player, final ProtectedRegion region, final World world) {
-		this.plugin.getProtectionService().getOrCreateWorld(world).removeRegion(region.getName(), RemoveType.UNSET_PARENT_IN_CHILDREN);
+		this.plugin.getProtectionService().getOrCreateWorld(world).removeRegion(region.getId(), RemoveType.UNSET_PARENT_IN_CHILDREN);
 		
 		EWMessages.REGION_REMOVE_CHILDREN_UNSET.sender()
 			.replace("<region>", region.getName())

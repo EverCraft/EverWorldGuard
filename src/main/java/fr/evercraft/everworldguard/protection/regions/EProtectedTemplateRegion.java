@@ -16,7 +16,6 @@
  */
 package fr.evercraft.everworldguard.protection.regions;
 
-import fr.evercraft.everapi.services.worldguard.exception.RegionIdentifierException;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everworldguard.protection.index.EWWorld;
 
@@ -25,20 +24,19 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.collect.ImmutableList;
 
 public class EProtectedTemplateRegion extends EProtectedRegion implements ProtectedRegion.Template {
 	
-	public EProtectedTemplateRegion(EWWorld world, String id) 
-			throws RegionIdentifierException {
-		this(world, id, false);
+	public EProtectedTemplateRegion(EWWorld world, UUID identifier, String name) {
+		this(world, identifier, name, false);
 	}
 	
-	public EProtectedTemplateRegion(EWWorld world, String id, boolean transientRegion) 
-			throws RegionIdentifierException {
-		super(world, id, transientRegion);
+	public EProtectedTemplateRegion(EWWorld world, UUID identifier, String name, boolean transientRegion) {
+		super(world, identifier, name, transientRegion);
 		
 		 this.min = Vector3i.ZERO;
 		 this.max = Vector3i.ZERO;

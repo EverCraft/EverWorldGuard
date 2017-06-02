@@ -23,6 +23,7 @@ import org.spongepowered.api.event.entity.ChangeEntityPotionEffectEvent;
 import org.spongepowered.api.event.entity.CollideEntityEvent;
 import org.spongepowered.api.event.entity.ConstructEntityEvent;
 import org.spongepowered.api.event.entity.DamageEntityEvent;
+import org.spongepowered.api.event.entity.DestructEntityEvent;
 import org.spongepowered.api.event.entity.HealEntityEvent;
 import org.spongepowered.api.event.entity.InteractEntityEvent;
 import org.spongepowered.api.event.entity.SpawnEntityEvent;
@@ -49,6 +50,13 @@ public class EntityListener {
 	}
 	
 	@Listener(order=Order.FIRST)
+	public void onInteractEntityPrimary(InteractEntityEvent.Primary event) {
+		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetEntity().getWorld());
+		
+		this.plugin.getManagerFlags().DAMAGE_ENTITY.onInteractEntityPrimary(world, event);
+	}
+	
+	@Listener(order=Order.FIRST)
 	public void onDamageEntity(DamageEntityEvent event) {
 		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetEntity().getWorld());
 		
@@ -59,6 +67,16 @@ public class EntityListener {
 		this.plugin.getManagerFlags().BUILD.onDamageEntity(world, event);
 		
 		//UtilsCause.debug(event.getCause(), "DamageEntityEvent");
+	}
+	
+	@Listener(order=Order.FIRST)
+	public void onDamageEntity(DestructEntityEvent event) {
+		//UtilsCause.debug(event.getCause(), "DestructEntityEvent");
+	}
+	
+	@Listener(order=Order.FIRST)
+	public void onInteractEntity(InteractEntityEvent.Primary event) {
+		//UtilsCause.debug(event.getCause(), "InteractEntityEvent.Primary ");
 	}
 	
 	@Listener(order=Order.FIRST)

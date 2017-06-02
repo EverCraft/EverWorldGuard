@@ -16,7 +16,6 @@
  */
 package fr.evercraft.everworldguard.protection.regions;
 
-import fr.evercraft.everapi.services.worldguard.exception.RegionIdentifierException;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everworldguard.protection.index.EWWorld;
 
@@ -25,6 +24,7 @@ import java.awt.geom.Area;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.base.Preconditions;
@@ -33,14 +33,12 @@ import com.google.common.math.LongMath;
 
 public class EProtectedCuboidRegion extends EProtectedRegion implements ProtectedRegion.Cuboid {
 	
-	public EProtectedCuboidRegion(EWWorld world, String id, Vector3i pos1, Vector3i pos2) 
-			throws RegionIdentifierException {
-		this(world, id, false, pos1, pos2);
+	public EProtectedCuboidRegion(EWWorld world, UUID identifier, String name, Vector3i pos1, Vector3i pos2) {
+		this(world, identifier, name, false, pos1, pos2);
 	}
 	
-	public EProtectedCuboidRegion(EWWorld world, String id, boolean transientRegion, Vector3i pos1, Vector3i pos2) 
-			throws RegionIdentifierException {
-		super(world, id, transientRegion);
+	public EProtectedCuboidRegion(EWWorld world, UUID identifier, String name, boolean transientRegion, Vector3i pos1, Vector3i pos2) {
+		super(world, identifier, name, transientRegion);
 		Preconditions.checkNotNull(pos1, "pos1");
 		Preconditions.checkNotNull(pos2, "pos2");
 		

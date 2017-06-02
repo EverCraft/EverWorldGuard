@@ -33,7 +33,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.reflect.TypeToken;
 
 import fr.evercraft.everapi.plugin.file.EConfig;
-import fr.evercraft.everapi.services.worldguard.exception.RegionIdentifierException;
 import fr.evercraft.everapi.services.worldguard.flag.Flag;
 import fr.evercraft.everapi.services.worldguard.flag.FlagValue;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
@@ -70,23 +69,24 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 	protected void loadDefault() {}
 
     protected void loadGlobal() {
-		try {
-			EProtectedRegion global = new EProtectedGlobalRegion(this.world, EProtectionService.GLOBAL_REGION);
-			if (this.getNode().getNode(global.getName()).isVirtual()) {
-				this.add(global);
+		for (Entry<Object, ? extends ConfigurationNode> config : this.getNode().getChildrenMap().entrySet()) {
+			if (config.getValue().getNode("name").getString("").equalsIgnoreCase(EProtectionService.GLOBAL_REGION)) {
+				return;
 			}
-		} catch (RegionIdentifierException e) {}
+		}
+    	
+		this.add(new EProtectedGlobalRegion(this.world, UUID.randomUUID(), EProtectionService.GLOBAL_REGION));
 	}
 
 	@Override
 	public Set<EProtectedRegion> getAll() {
 		Map<String, EProtectedRegion> regions = new HashMap<String, EProtectedRegion>();
 		for (Entry<Object, ? extends ConfigurationNode> config : this.getNode().getChildrenMap().entrySet()) {
-			if (config.getKey() instanceof String) {
-				this.get((String) config.getKey(), config.getValue())
+			try {
+				this.get(UUID.fromString(config.getKey().toString()), config.getValue())
 					.ifPresent(region -> regions.put(region.getName().toLowerCase(), region));
-			} else {
-				this.plugin.getELogger().warn("Nom de la région incorrect : " + config.getKey().toString());
+			} catch (IllegalArgumentException e) {
+				this.plugin.getELogger().warn("UUID de la région incorrect : " + config.getKey().toString());
 			}
 		}
 		
@@ -111,7 +111,10 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 	}
 	
 	@SuppressWarnings("unchecked")
-	public <T> Optional<EProtectedRegion> get(String identifier, ConfigurationNode config) {
+	public <T> Optional<EProtectedRegion> get(UUID identifier, ConfigurationNode config) {
+		// Name
+		String name = config.getNode("name").getString(identifier.toString());
+		
 		// Type
 		String type_string = config.getNode("type").getString("");
 		Optional<ProtectedRegion.Type> optType = ProtectedRegion.Type.of(type_string);
@@ -211,55 +214,49 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 		}
 		
 		EProtectedRegion region = null;
-		try {
-			if (type.equals(ProtectedRegion.Type.GLOBAL)) {
-				region = new EProtectedGlobalRegion(this.world, identifier);
-			} else if (type.equals(ProtectedRegion.Type.TEMPLATE)) {
-				region = new EProtectedTemplateRegion(this.world, identifier);
-			} else if (type.equals(ProtectedRegion.Type.CUBOID)) {
-				Vector3i min = null;
-				Vector3i max = null;
-				
-				try {
-					min = config.getNode("min").getValue(TypeToken.of(Vector3i.class));
-				} catch (ObjectMappingException e1) {}
-				if (min == null) {
-					this.plugin.getELogger().warn("Min incorrect (id:'" + identifier + "')");
-					return Optional.empty();
-				}
-				
-				
-				try {
-					max = config.getNode("max").getValue(TypeToken.of(Vector3i.class));
-				} catch (ObjectMappingException e) {}
-				if (max == null) {
-					this.plugin.getELogger().warn("Max incorrect (id:'" + identifier + "')");
-					return Optional.empty();
-				}
-
-				region = new EProtectedCuboidRegion(this.world, identifier, min, max);
-			} else if (type.equals(ProtectedRegion.Type.POLYGONAL)) {
-				List<Vector3i> vectors = null;
-				try {
-					vectors = config.getNode("positions").getList(TypeToken.of(Vector3i.class));
-				} catch (ObjectMappingException e) {}
-                if (vectors == null) {
-                    this.plugin.getELogger().warn("Positions incorrect (id:'" + identifier + "')");
-                    return Optional.empty();
-                }
-
-				region = new EProtectedPolygonalRegion(this.world, identifier, vectors);
-			} else {
+		if (type.equals(ProtectedRegion.Type.GLOBAL)) {
+			region = new EProtectedGlobalRegion(this.world, identifier, name);
+		} else if (type.equals(ProtectedRegion.Type.TEMPLATE)) {
+			region = new EProtectedTemplateRegion(this.world, identifier, name);
+		} else if (type.equals(ProtectedRegion.Type.CUBOID)) {
+			Vector3i min = null;
+			Vector3i max = null;
+			
+			try {
+				min = config.getNode("min").getValue(TypeToken.of(Vector3i.class));
+			} catch (ObjectMappingException e1) {}
+			if (min == null) {
+				this.plugin.getELogger().warn("Min incorrect (id:'" + identifier + "')");
 				return Optional.empty();
 			}
-		
-			region.init(priority, owners, group_owners, members, group_members, flags);
-			return Optional.of(region);
 			
-		} catch (RegionIdentifierException e) {
-			this.plugin.getELogger().warn("Identifier invalid (id:'" + identifier + "')");
+			
+			try {
+				max = config.getNode("max").getValue(TypeToken.of(Vector3i.class));
+			} catch (ObjectMappingException e) {}
+			if (max == null) {
+				this.plugin.getELogger().warn("Max incorrect (id:'" + identifier + "')");
+				return Optional.empty();
+			}
+
+			region = new EProtectedCuboidRegion(this.world, identifier, name, min, max);
+		} else if (type.equals(ProtectedRegion.Type.POLYGONAL)) {
+			List<Vector3i> vectors = null;
+			try {
+				vectors = config.getNode("positions").getList(TypeToken.of(Vector3i.class));
+			} catch (ObjectMappingException e) {}
+            if (vectors == null) {
+                this.plugin.getELogger().warn("Positions incorrect (id:'" + identifier + "')");
+                return Optional.empty();
+            }
+
+			region = new EProtectedPolygonalRegion(this.world, identifier, name, vectors);
+		} else {
 			return Optional.empty();
 		}
+	
+		region.init(priority, owners, group_owners, members, group_members, flags);
+		return Optional.of(region);
 	}
 	
 	public <T> EFlagValue<T> putFlags(EFlagValue<T> values, Group association, T value) {
@@ -272,24 +269,29 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 	
 	@Override
 	public void add(EProtectedRegion region) {
-		this.add(region, this.getNode().getNode(region.getName()));
+		this.add(region, this.getNode().getNode(region.getId().toString()));
 		this.save(true);
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> void add(EProtectedRegion region, ConfigurationNode config) {		
+	public <T> void add(EProtectedRegion region, ConfigurationNode config) {
 		// Type
-		config.getNode("type").setValue(region.getType().name());
+		config.getNode("name").setValue(region.getName());
+		
+		// Type
+		config.getNode("type").setValue(region.getType().getName());
 		config.getNode("priority").setValue(region.getPriority());
 		
 		// Owners
-		config.getNode("owners").setValue(region.getOwners().getPlayers());
+		config.getNode("owners").setValue(region.getOwners().getPlayers()
+				.stream().map(uuid -> uuid.toString()).collect(Collectors.toSet()));
 		if (!region.getOwners().getGroups().isEmpty()) {
 			config.getNode("group-owners").setValue(region.getOwners().getGroups());
 		}
 		
 		// Members
-		config.getNode("members").setValue(region.getMembers().getPlayers());
+		config.getNode("members").setValue(region.getMembers().getPlayers()
+				.stream().map(uuid -> uuid.toString()).collect(Collectors.toSet()));
 		if (!region.getMembers().getGroups().isEmpty()) {
 			config.getNode("group-members").setValue(region.getMembers().getGroups());
 		}
@@ -341,33 +343,33 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 
 	@Override
 	public void remove(EProtectedRegion region) {
-		this.getNode().removeChild(region.getName());
+		this.getNode().removeChild(region.getId().toString());
 		this.save(true);
 	}
 	
 	@Override
 	public void remove(Set<EProtectedRegion> regions) {
-		regions.stream().forEach(region -> this.getNode().removeChild(region.getName()));
+		regions.stream().forEach(region -> this.getNode().removeChild(region.getId().toString()));
 		this.save(true);
 	}
-
+	
 	@Override
-	public void setIdentifier(EProtectedRegion region, String identifier) {
-		this.getNode().removeChild(region.getName());
-		this.add(region, this.getNode().getNode(identifier));
+	public void setName(EProtectedRegion region, String name) {
+		ConfigurationNode config = this.getNode().getNode(region.getId().toString());
+		config.getNode("name").setValue(name);
 		this.save(true);
 	}
 
 	@Override
 	public void setPriority(EProtectedRegion region, int priority) {
-		ConfigurationNode config = this.getNode().getNode(region.getName());
+		ConfigurationNode config = this.getNode().getNode(region.getId().toString());
 		config.getNode("priority").setValue(priority);
 		this.save(true);
 	}
 
 	@Override
 	public void setParent(EProtectedRegion region, ProtectedRegion parent) {
-		ConfigurationNode config = this.getNode().getNode(region.getName());
+		ConfigurationNode config = this.getNode().getNode(region.getId().toString());
         if (parent  == null) {
             config.removeChild("parent");
         } else {
@@ -378,7 +380,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 
 	@Override
 	public <V> void setFlag(EProtectedRegion region, Flag<V> flag, Group group, V value) {
-		ConfigurationNode config = this.getNode().getNode(region.getName());
+		ConfigurationNode config = this.getNode().getNode(region.getId().toString());
 		
 		if (group.equals(Group.OWNER)) {
 			config = config.getNode("flags-owner");
@@ -398,7 +400,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 
 	@Override
 	public void addOwnerPlayer(EProtectedRegion region, Set<UUID> players) {
-		ConfigurationNode config = this.getNode().getNode(region.getName());
+		ConfigurationNode config = this.getNode().getNode(region.getId().toString());
 		
 		Set<UUID> all = new HashSet<UUID>();
 		all.addAll(region.getMembers().getPlayers());
@@ -412,7 +414,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 
 	@Override
 	public void addOwnerGroup(EProtectedRegion region, Set<String> groups) {
-		ConfigurationNode config = this.getNode().getNode(region.getName());
+		ConfigurationNode config = this.getNode().getNode(region.getId().toString());
 		
 		Set<String> all = new HashSet<String>();
 		all.addAll(region.getMembers().getGroups());
@@ -424,7 +426,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 
 	@Override
 	public void addMemberPlayer(EProtectedRegion region, Set<UUID> players) {
-		ConfigurationNode config = this.getNode().getNode(region.getName());
+		ConfigurationNode config = this.getNode().getNode(region.getId().toString());
 		
 		Set<UUID> all = new HashSet<UUID>();
 		all.addAll(region.getMembers().getPlayers());
@@ -438,7 +440,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 
 	@Override
 	public void addMemberGroup(EProtectedRegion region, Set<String> groups) {
-		ConfigurationNode config = this.getNode().getNode(region.getName());
+		ConfigurationNode config = this.getNode().getNode(region.getId().toString());
 		
 		Set<String> all = new HashSet<String>();
 		all.addAll(region.getMembers().getGroups());
@@ -450,7 +452,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 
 	@Override
 	public void removeOwnerPlayer(EProtectedRegion region, Set<UUID> players) {
-		ConfigurationNode config = this.getNode().getNode(region.getName());
+		ConfigurationNode config = this.getNode().getNode(region.getId().toString());
 		
 		Set<UUID> all = new HashSet<UUID>();
 		all.addAll(region.getMembers().getPlayers());
@@ -464,7 +466,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 
 	@Override
 	public void removeOwnerGroup(EProtectedRegion region, Set<String> groups) {
-		ConfigurationNode config = this.getNode().getNode(region.getName());
+		ConfigurationNode config = this.getNode().getNode(region.getId().toString());
 		
 		Set<String> all = new HashSet<String>();
 		all.addAll(region.getMembers().getGroups());
@@ -476,7 +478,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 
 	@Override
 	public void removeMemberPlayer(EProtectedRegion region, Set<UUID> players) {
-		ConfigurationNode config = this.getNode().getNode(region.getName());
+		ConfigurationNode config = this.getNode().getNode(region.getId().toString());
 		
 		Set<UUID> all = new HashSet<UUID>();
 		all.addAll(region.getMembers().getPlayers());
@@ -490,7 +492,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 
 	@Override
 	public void removeMemberGroup(EProtectedRegion region, Set<String> groups) {
-		ConfigurationNode config = this.getNode().getNode(region.getName());
+		ConfigurationNode config = this.getNode().getNode(region.getId().toString());
 		
 		Set<String> all = new HashSet<String>();
 		all.addAll(region.getMembers().getGroups());

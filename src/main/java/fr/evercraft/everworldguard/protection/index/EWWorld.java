@@ -19,16 +19,15 @@ package fr.evercraft.everworldguard.protection.index;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.world.World;
 
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 
-import fr.evercraft.everapi.server.user.EUser;
 import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
 import fr.evercraft.everapi.services.worldguard.exception.RegionIdentifierException;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
@@ -49,7 +48,8 @@ public class EWWorld implements WorldWorldGuard {
 	
 	private RegionStorage storage;
 	
-	private final ConcurrentHashMap<String, EProtectedRegion> regions;
+	private final ConcurrentHashMap<UUID, EProtectedRegion> regionsIdentifier;
+	private final ConcurrentHashMap<String, EProtectedRegion> regionsName;
 	private final LongHashTable<EWChunck> cache;
 	
 	private final World world;
@@ -59,7 +59,8 @@ public class EWWorld implements WorldWorldGuard {
 		
 		this.plugin = plugin;
 		this.world = world;
-		this.regions = new ConcurrentHashMap<String, EProtectedRegion>();		
+		this.regionsIdentifier = new ConcurrentHashMap<UUID, EProtectedRegion>();
+		this.regionsName = new ConcurrentHashMap<String, EProtectedRegion>();	
 		this.cache = new LongHashTable<EWChunck>();
 		
 		if (this.plugin.getDataBase().isEnable()) {
@@ -85,10 +86,15 @@ public class EWWorld implements WorldWorldGuard {
 	public void start() {
 		this.plugin.getELogger().info("Loading region for world '" + this.world.getName() + "' ...");
 		
-		this.regions.clear();
-		this.storage.getAll().forEach(region -> this.regions.put(region.getName().toLowerCase(), region));
+		this.regionsIdentifier.clear();
+		this.regionsName.clear();
 		
-		this.plugin.getELogger().info("Loading " + this.regions.size() + " region(s) for world '" + this.world.getName() + "'.");
+		this.storage.getAll().forEach(region -> {
+			this.regionsIdentifier.put(region.getId(), region);
+			this.regionsName.put(region.getName().toLowerCase(), region);
+		});
+		
+		this.plugin.getELogger().info("Loading " + this.regionsIdentifier.size() + " region(s) for world '" + this.world.getName() + "'.");
 	}
 	
 	public void stop() {
@@ -96,7 +102,7 @@ public class EWWorld implements WorldWorldGuard {
 	}
 	
 	public Set<ProtectedRegion> getAll() {
-		return ImmutableSet.copyOf(this.regions.values());
+		return ImmutableSet.copyOf(this.regionsIdentifier.values());
 	}
 	
 	public RegionStorage getStorage() {
@@ -110,7 +116,7 @@ public class EWWorld implements WorldWorldGuard {
 	public void rebuild() {
 		this.cache.values().forEach(region -> {
 			Vector3i position = region.getPosition();
-			EWChunck chunck = new EWChunck(this.plugin, position, this.regions);
+			EWChunck chunck = new EWChunck(this.plugin, position, this.regionsIdentifier);
 			this.cache.put(position.getX(), position.getZ(), chunck);
 		});
 	}
@@ -125,7 +131,7 @@ public class EWWorld implements WorldWorldGuard {
 	public EWChunck getChunk(final int x, final int z) {
 		EWChunck value = this.cache.get(x, z);
 		if (value == null) {
-			value = new EWChunck(this.plugin, Vector3i.from(x, 0, z), this.regions);
+			value = new EWChunck(this.plugin, Vector3i.from(x, 0, z), this.regionsIdentifier);
 		}
 		return value;
 	}
@@ -133,7 +139,7 @@ public class EWWorld implements WorldWorldGuard {
 	public EWChunck loadChunk(final Vector3i chunk) {
 		EWChunck value = this.cache.get(chunk.getX(), chunk.getZ());
 		if (value == null) {
-			value = new EWChunck(this.plugin, chunk, this.regions);
+			value = new EWChunck(this.plugin, chunk, this.regionsIdentifier);
 			this.cache.put(chunk.getX(), chunk.getZ(), value);
 		}
 		return value;
@@ -156,23 +162,41 @@ public class EWWorld implements WorldWorldGuard {
 	 */
 	
 	@Override
-	public Optional<ProtectedRegion> getRegion(String identifier) {
+	public Optional<ProtectedRegion> getRegion(String name) {
+		Preconditions.checkNotNull(name, "name");
+		
+		ProtectedRegion region = this.regionsName.get(name.toLowerCase());
+		if (region == null) {
+			try {
+				region = this.regionsIdentifier.get(UUID.fromString(name));
+			} catch (IllegalArgumentException e) {}
+		}
+		return Optional.ofNullable(region);
+	}
+	
+	@Override
+	public Optional<ProtectedRegion> getRegion(UUID identifier) {
 		Preconditions.checkNotNull(identifier, "identifier");
 		
-		return Optional.ofNullable(this.regions.get(identifier.toLowerCase()));
+		return Optional.ofNullable(this.regionsIdentifier.get(identifier));
 	}
 
 	@Override
-	public ProtectedRegion.Cuboid createRegionCuboid(String identifier, Vector3i pos1, Vector3i pos2, Set<EUser> owner_players, Set<Subject> owner_groups) throws RegionIdentifierException {
-		Preconditions.checkNotNull(identifier, "identifier");
+	public ProtectedRegion.Cuboid createRegionCuboid(String name, Vector3i pos1, Vector3i pos2, Set<UUID> owner_players, Set<String> owner_groups) throws RegionIdentifierException {
+		Preconditions.checkNotNull(name, "name");
 		Preconditions.checkNotNull(pos1, "pos1");
 		Preconditions.checkNotNull(pos2, "pos2");
 		Preconditions.checkNotNull(owner_players, "owner_players");
 		Preconditions.checkNotNull(owner_groups, "owner_groups");
-		if (this.regions.containsKey(identifier)) throw new RegionIdentifierException();
+		if (this.regionsName.containsKey(name)) throw new RegionIdentifierException();
 		
-		EProtectedCuboidRegion region = new EProtectedCuboidRegion(this, identifier, pos1, pos2);
-		this.regions.put(identifier.toLowerCase(), region);
+		UUID uuid = this.nextUUID();
+		EProtectedCuboidRegion region = new EProtectedCuboidRegion(this, uuid, name, pos1, pos2);
+		this.regionsIdentifier.put(uuid, region);
+		this.regionsName.put(name.toLowerCase(), region);
+		
+		region.addPlayerOwner(owner_players);
+		region.addGroupOwner(owner_groups);
 
 		this.getStorage().add(region);
 		
@@ -181,16 +205,20 @@ public class EWWorld implements WorldWorldGuard {
 	}
 
 	@Override
-	public ProtectedRegion.Polygonal createRegionPolygonal(String region_id, List<Vector3i> positions, Set<EUser> owner_players, Set<Subject> owner_groups) throws RegionIdentifierException {
-		Preconditions.checkNotNull(region_id, "region_id");
+	public ProtectedRegion.Polygonal createRegionPolygonal(String name, List<Vector3i> positions, Set<UUID> owner_players, Set<String> owner_groups) throws RegionIdentifierException {
+		Preconditions.checkNotNull(name, "name");
 		Preconditions.checkNotNull(positions, "positions");
 		Preconditions.checkNotNull(owner_players, "owner_players");
 		Preconditions.checkNotNull(owner_groups, "owner_groups");
-		if (this.regions.containsKey(region_id)) throw new RegionIdentifierException();
+		if (this.regionsName.containsKey(name)) throw new RegionIdentifierException();
 		
+		UUID uuid = this.nextUUID();
+		EProtectedPolygonalRegion region = new EProtectedPolygonalRegion(this, uuid, name, positions);
+		this.regionsIdentifier.put(uuid, region);
+		this.regionsName.put(name.toLowerCase(), region);
 		
-		EProtectedPolygonalRegion region = new EProtectedPolygonalRegion(this, region_id, positions);
-		this.regions.put(region_id.toLowerCase(), region);
+		this.regionsIdentifier.put(uuid, region);
+		this.regionsName.put(name.toLowerCase(), region);
 
 		this.getStorage().add(region);
 		
@@ -199,14 +227,19 @@ public class EWWorld implements WorldWorldGuard {
 	}
 
 	@Override
-	public ProtectedRegion.Template createRegionTemplate(String region_id, Set<EUser> owner_players, Set<Subject> owner_groups) throws RegionIdentifierException {
-		Preconditions.checkNotNull(region_id, "region_id");
+	public ProtectedRegion.Template createRegionTemplate(String name, Set<UUID> owner_players, Set<String> owner_groups) throws RegionIdentifierException {
+		Preconditions.checkNotNull(name, "name");
 		Preconditions.checkNotNull(owner_players, "owner_players");
 		Preconditions.checkNotNull(owner_groups, "owner_groups");
-		if (this.regions.containsKey(region_id)) throw new RegionIdentifierException();
+		if (this.regionsName.containsKey(name)) throw new RegionIdentifierException();
 		
-		EProtectedTemplateRegion region = new EProtectedTemplateRegion(this, region_id);
-		this.regions.put(region_id.toLowerCase(), region);
+		UUID uuid = this.nextUUID();
+		EProtectedTemplateRegion region = new EProtectedTemplateRegion(this, uuid, name);
+		this.regionsIdentifier.put(uuid, region);
+		this.regionsName.put(name.toLowerCase(), region);
+		
+		this.regionsIdentifier.put(uuid, region);
+		this.regionsName.put(name.toLowerCase(), region);
 		
 		this.getStorage().add(region);
 		
@@ -215,8 +248,8 @@ public class EWWorld implements WorldWorldGuard {
 	}
 	
 	@Override
-	public Optional<ProtectedRegion> removeRegion(String region_id, ProtectedRegion.RemoveType type) {
-		EProtectedRegion region = this.regions.get(region_id.toLowerCase());
+	public Optional<ProtectedRegion> removeRegion(UUID identifier, ProtectedRegion.RemoveType type) {
+		EProtectedRegion region = this.regionsIdentifier.get(identifier);
 		if (region == null) {
 			return Optional.empty();
 		}
@@ -224,9 +257,10 @@ public class EWWorld implements WorldWorldGuard {
 		if (type.equals(ProtectedRegion.RemoveType.REMOVE_CHILDREN)) {
 			this.removeRegionChildren(region);
 		} else if (type.equals(ProtectedRegion.RemoveType.UNSET_PARENT_IN_CHILDREN)) {
-			this.regions.remove(region_id.toLowerCase());
+			this.regionsIdentifier.remove(region.getId());
+			this.regionsName.remove(region.getName().toLowerCase());
 			
-			for (EProtectedRegion children : this.regions.values()) {
+			for (EProtectedRegion children : this.regionsIdentifier.values()) {
 				Optional<ProtectedRegion> parent = children.getParent();
 				if (parent.isPresent() && parent.get().equals(region)) {
 					children.clearParent();
@@ -242,9 +276,10 @@ public class EWWorld implements WorldWorldGuard {
 	}
 	
 	private void removeRegionChildren(EProtectedRegion region) {
-		this.regions.remove(region.getName());
+		this.regionsIdentifier.remove(region.getId());
+		this.regionsName.remove(region.getName().toLowerCase());
 		
-		for (EProtectedRegion children : this.regions.values()) {
+		for (EProtectedRegion children : this.regionsIdentifier.values()) {
 			Optional<ProtectedRegion> parent = children.getParent();
 			if (parent.isPresent() && parent.get().equals(region)) {
 				if (children.getType().equals(ProtectedRegion.Type.GLOBAL)) {
@@ -256,11 +291,19 @@ public class EWWorld implements WorldWorldGuard {
 		}
 	}
 
-	public boolean setIdentifier(EProtectedRegion region, String identifier) {
-		if (this.regions.containsKey(identifier)) return false;
+	public boolean rename(EProtectedRegion region, String name) {
+		if (this.regionsName.containsKey(name)) return false;
 		
-		this.regions.remove(region.getName().toLowerCase());
-		this.regions.put(identifier.toLowerCase(), region);
+		this.regionsName.remove(region.getName().toLowerCase());
+		this.regionsName.put(name.toLowerCase(), region);
 		return true;
+	}
+	
+	public UUID nextUUID() {
+		UUID uuid = null;
+		do {
+			uuid = UUID.randomUUID();
+		} while (this.regionsIdentifier.containsKey(uuid));
+		return uuid;
 	}
 }

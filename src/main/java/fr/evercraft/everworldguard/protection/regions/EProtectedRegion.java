@@ -23,7 +23,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 import com.google.common.collect.Sets;
 
-import fr.evercraft.everapi.java.UtilsString;
 import fr.evercraft.everapi.services.worldguard.exception.CircularInheritanceException;
 import fr.evercraft.everapi.services.worldguard.exception.RegionIdentifierException;
 import fr.evercraft.everapi.services.worldguard.flag.Flag;
@@ -56,7 +55,9 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 
 	private final EWWorld world;
 	
-	private String identifier;
+	private UUID identifier;
+	private String name;
+	
 	private final boolean transientRegion;
 	protected Vector3i min;
 	protected Vector3i max;
@@ -68,13 +69,14 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	
 	private final ConcurrentMap<Flag<?>, EFlagValue<?>> flags;
 	
-	public EProtectedRegion(EWWorld world, String identifier, boolean transientRegion) throws RegionIdentifierException {
+	public EProtectedRegion(EWWorld world, UUID identifier, String name, boolean transientRegion) {
 		Preconditions.checkNotNull(world);
 		Preconditions.checkNotNull(identifier);
-		if (!ProtectedRegion.isValidId(identifier)) throw new RegionIdentifierException();
+		Preconditions.checkNotNull(name);
 
 		this.world = world;
-		this.identifier = UtilsString.normalize(identifier);
+		this.identifier = identifier;
+		this.name = name;
 		this.owners = new EDomain();
 		this.members = new EDomain();
 		
@@ -121,13 +123,12 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	 */
 	
 	@Override
-	public void setName(String identifier) throws RegionIdentifierException {
-		if (this.identifier.equals(identifier)) return;
-		if (!ProtectedRegion.isValidId(identifier)) throw new RegionIdentifierException();
-		if (!this.world.setIdentifier(this, identifier)) throw new RegionIdentifierException();
+	public void setName(String name) throws RegionIdentifierException {
+		if (this.name.equals(name)) return;
+		if (!this.world.rename(this, name)) throw new RegionIdentifierException();
 		
-		if (!this.isTransient()) this.world.getStorage().setIdentifier(this, identifier);
-		this.identifier = identifier;
+		if (!this.isTransient()) this.world.getStorage().setName(this, name);
+		this.name = name;
 	}
 	
 	protected void setMinMaxPoints(List<Vector3i> points) {
@@ -314,8 +315,13 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	 */
 	
 	@Override
-	public String getName() {
+	public UUID getId() {
 		return this.identifier;
+	}
+	
+	@Override
+	public String getName() {
+		return this.name;
 	}
 	
 	@Override
@@ -544,12 +550,9 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 		Vector3i min = position.mul(16);
 		min = Vector3i.from(min.getX(), 0, min.getZ());
 		Vector3i max = position.add(1, 0, 1).mul(16);
-		max = Vector3i.from(max.getX(), Integer.MAX_VALUE, max.getZ());		
-		try {
-			return !this.getIntersecting(new EProtectedCuboidRegion(this.world, "_", true, min , max)).isEmpty();
-		} catch (RegionIdentifierException e) {
-			return false;
-		}
+		max = Vector3i.from(max.getX(), Integer.MAX_VALUE, max.getZ());	
+		
+		return !this.getIntersecting(new EProtectedCuboidRegion(this.world, UUID.randomUUID(), "_", true, min , max)).isEmpty();
 	}
 	
 	@Override

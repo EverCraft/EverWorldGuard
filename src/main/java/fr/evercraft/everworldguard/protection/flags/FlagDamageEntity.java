@@ -23,6 +23,7 @@ import java.util.UUID;
 
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.Entity;
+import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.projectile.Projectile;
 import org.spongepowered.api.event.cause.NamedCause;
@@ -34,6 +35,7 @@ import org.spongepowered.api.event.cause.entity.damage.source.FallingBlockDamage
 import org.spongepowered.api.event.cause.entity.damage.source.IndirectEntityDamageSource;
 import org.spongepowered.api.event.entity.CollideEntityEvent;
 import org.spongepowered.api.event.entity.DamageEntityEvent;
+import org.spongepowered.api.event.entity.InteractEntityEvent;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -210,5 +212,27 @@ public class FlagDamageEntity extends EntityTemplateFlag {
 			return true;
 		}
 		return false;
+	}
+	
+	/*
+	 * InteractEntityEvent.Primary
+	 */
+
+	// TODO Bug : ARMOR_STAND
+	public void onInteractEntityPrimary(WorldWorldGuard world, InteractEntityEvent.Primary event) {
+		if (event.isCancelled()) return;
+		
+		if (event.getTargetEntity().equals(EntityTypes.ARMOR_STAND)) return;
+		
+		Optional<Player> optPlayer = event.getCause().get(NamedCause.SOURCE, Player.class);
+		if (!optPlayer.isPresent()) return;
+		Player player = optPlayer.get();
+		
+		if (!world.getRegions(event.getTargetEntity().getLocation().getPosition()).getFlag(player, this).contains(event.getTargetEntity(), player)) {
+			event.setCancelled(true);
+			
+			// Message
+			this.sendMessage((Player) player, event.getTargetEntity());
+		}
 	}
 }
