@@ -44,21 +44,8 @@ public class EWManagerCommands extends HashSet<ECommand<EverWorldGuard>> {
 		
 		load();
 	}
-	
-	public void load() {	
-		EWSelect select = new EWSelect(this.plugin);
-		select.add(new EWSelectInfo(this.plugin, select));
-		select.add(new EWSelectExpand(this.plugin, select));
-		select.add(new EWSelectContract(this.plugin, select));
-		select.add(new EWSelectShift(this.plugin, select));
-		select.add(new EWSelectPos1(this.plugin, select));
-		select.add(new EWSelectPos2(this.plugin, select));
-		select.add(new EWSelectType(this.plugin, select));
-		select.add(new EWSelectClear(this.plugin, select));
-		select.add(new EWSelectRemove(this.plugin, select));
-		select.add(new EWSelectCui(this.plugin, select));
-		register(select);
 		
+	public void load() {
 		EWRegion region = new EWRegion(this.plugin);
 		region.add(new EWRegionDefine(this.plugin, region));
 		region.add(new EWRegionFlagAdd(this.plugin, region));
@@ -77,6 +64,21 @@ public class EWManagerCommands extends HashSet<ECommand<EverWorldGuard>> {
 		region.add(new EWRegionSelect(this.plugin, region));
 		region.add(new EWRegionTeleport(this.plugin, region));
 		register(region);
+	}
+	
+	public void loadSelect() {	
+		EWSelect select = new EWSelect(this.plugin);
+		select.add(new EWSelectInfo(this.plugin, select));
+		select.add(new EWSelectExpand(this.plugin, select));
+		select.add(new EWSelectContract(this.plugin, select));
+		select.add(new EWSelectShift(this.plugin, select));
+		select.add(new EWSelectPos1(this.plugin, select));
+		select.add(new EWSelectPos2(this.plugin, select));
+		select.add(new EWSelectType(this.plugin, select));
+		select.add(new EWSelectClear(this.plugin, select));
+		select.add(new EWSelectRemove(this.plugin, select));
+		select.add(new EWSelectCui(this.plugin, select));
+		register(select);
 	}
 	
 	public void reload(){

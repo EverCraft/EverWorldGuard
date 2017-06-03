@@ -72,6 +72,7 @@ public class ESelectionService implements SelectionService {
 					        }
 					    });
 		this.plugin.getGame().getEventManager().registerListeners(this.plugin, new ESelectionListener(this.plugin));
+		this.plugin.getManagerCommands().loadSelect();
 		this.reload();
 	}
 	

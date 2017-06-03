@@ -41,6 +41,7 @@ import fr.evercraft.everworldguard.protection.regions.EProtectedTemplateRegion;
 import fr.evercraft.everworldguard.protection.storage.RegionStorage;
 import fr.evercraft.everworldguard.protection.storage.RegionStorageConf;
 import fr.evercraft.everworldguard.protection.storage.RegionStorageSql;
+import fr.evercraft.everworldguard.protection.subject.EUserSubject;
 
 public class EWWorld implements WorldWorldGuard {
 	
@@ -119,6 +120,10 @@ public class EWWorld implements WorldWorldGuard {
 			EWChunck chunck = new EWChunck(this.plugin, position, this.regionsIdentifier);
 			this.cache.put(position.getX(), position.getZ(), chunck);
 		});
+		
+		for (EUserSubject subject : this.plugin.getProtectionService().getSubjectList().getAll()) {
+			subject.rebuild();
+		}
 	}
 	
 	/*

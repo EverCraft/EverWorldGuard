@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -151,29 +150,26 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 				.sendTo(player);
 			return false;
 		}
+		
+		Set<ProtectedRegion> regions = setregions.getAll().stream()
+			.filter(region -> this.hasPermission(player, region, world))
+			.collect(Collectors.toSet());
 				
-		if (setregions.getAll().size() == 1) {
-			ProtectedRegion region = setregions.getAll().iterator().next();
-			if (!this.hasPermission(player, region, world)) {
-				EWMessages.REGION_INFO_EMPTY.sendTo(player);
-				return false;
-			}
-			
-			return this.commandRegionInfo(player, region, world);
+		if (regions.isEmpty()) {
+			EWMessages.REGION_INFO_EMPTY.sendTo(player);
+			return false;
+		} else if (regions.size() == 1) {
+			return this.commandRegionInfo(player, regions.iterator().next(), world);
 		} else {
-			Set<ProtectedRegion> regions = new HashSet<ProtectedRegion>();
-			for (ProtectedRegion region : setregions.getAll()) {
-				if (!region.getType().equals(ProtectedRegion.Types.GLOBAL) && this.hasPermission(player, region, world)) {
-					regions.add(region);
-				}
-			}
+			regions = setregions.getAll().stream()
+				.filter(region -> !region.getType().equals(ProtectedRegion.Types.GLOBAL))
+				.collect(Collectors.toSet());
 			
 			if (regions.isEmpty()) {
 				EWMessages.REGION_INFO_EMPTY.sendTo(player);
 				return false;
 			} else if (regions.size() == 1) {
-				ProtectedRegion region = setregions.getAll().iterator().next();
-				return this.commandRegionInfo(player, region, world);
+				return this.commandRegionInfo(player, regions.iterator().next(), world);
 			} else {
 				return this.commandRegionInfo(player, regions, world);
 			}

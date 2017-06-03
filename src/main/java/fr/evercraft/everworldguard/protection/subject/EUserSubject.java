@@ -74,6 +74,12 @@ public class EUserSubject implements SubjectWorldGuard {
 			    });
 	}
 	
+	public void rebuild() {
+		if (this.lastLocation == null) return;
+		
+		this.lastRegions = this.plugin.getProtectionService().getOrCreateWorld(this.lastLocation.getExtent()).getRegions(this.lastLocation.getPosition());
+	}
+	
 	/*
 	 * Message
 	 */

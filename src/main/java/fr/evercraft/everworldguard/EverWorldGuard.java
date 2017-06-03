@@ -39,7 +39,8 @@ import fr.evercraft.everworldguard.selection.ESelectionService;
 		authors = {"rexbut"},
 		dependencies = {
 		    @Dependency(id = "everapi", version = EverAPI.VERSION),
-		    @Dependency(id = "spongeapi", version = EverAPI.SPONGEAPI_VERSION)
+		    @Dependency(id = "spongeapi", version = EverAPI.SPONGEAPI_VERSION),
+		    @Dependency(id = "worldedit")
 		})
 public class EverWorldGuard extends EPlugin<EverWorldGuard> {
 	private EWConfig configs;
@@ -58,25 +59,27 @@ public class EverWorldGuard extends EPlugin<EverWorldGuard> {
 		
 		this.database = new EWDataBases(this);
 		
+		this.commands = new EWManagerCommands(this);
+		
 		this.protection = new EProtectionService(this);
-		this.selection = new ESelectionService(this);
 		
-		this.getGame().getServiceManager().setProvider(this, WorldGuardService.class, this.protection);
-		this.getGame().getServiceManager().setProvider(this, SelectionService.class, this.selection);
-		
+		this.getGame().getServiceManager().setProvider(this, WorldGuardService.class, this.protection);		
 		this.getGame().getEventManager().registerListeners(this, new EWListener(this));
 	}
 	
 	@Override
 	protected void onEnable() {
 		this.flags = new EWManagerFlags(this);
+		
+		if (!this.getGame().getServiceManager().isRegistered(SelectionService.class)) {
+			this.selection = new ESelectionService(this);
+			this.getGame().getServiceManager().setProvider(this, SelectionService.class, this.selection);
+		}
 	}
 	
 	@Override
 	protected void onCompleteEnable() {
 		this.protection.getRegister().setInitialized(false);
-		
-		this.commands = new EWManagerCommands(this);
 	}
 
 	protected void onReload() throws PluginDisableException{
