@@ -19,8 +19,6 @@ package fr.evercraft.everworldguard.protection.flags;
 import java.util.Optional;
 import java.util.Set;
 
-import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.event.entity.RideEntityEvent.Mount;
 import org.spongepowered.api.service.context.Context;
 
 import fr.evercraft.everapi.event.MoveRegionEvent;
@@ -28,8 +26,7 @@ import fr.evercraft.everapi.message.EMessageBuilder;
 import fr.evercraft.everapi.message.EMessageFormat;
 import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everapi.services.worldguard.WorldGuardService;
-import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
-import fr.evercraft.everapi.services.worldguard.flag.type.MessageFlag;
+import fr.evercraft.everapi.services.worldguard.flag.MessageFlag;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 
@@ -71,10 +68,5 @@ public class FlagExitMessage extends MessageFlag {
 				return;
 			}
 		}
-	}
-
-	public void onRideEntityMount(Mount event, WorldWorldGuard world, Player player_sponge) {
-		// TODO Auto-generated method stub
-		
 	}
 }

@@ -34,7 +34,7 @@ import com.flowpowered.math.vector.Vector3i;
 
 import fr.evercraft.everapi.services.entity.EntityTemplate;
 import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
-import fr.evercraft.everapi.services.worldguard.flag.type.EntityTemplateFlag;
+import fr.evercraft.everapi.services.worldguard.flag.EntityTemplateFlag;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.protection.EProtectionService;

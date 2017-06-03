@@ -23,12 +23,12 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 import com.google.common.collect.Sets;
 
+import fr.evercraft.everapi.services.worldguard.Flag;
+import fr.evercraft.everapi.services.worldguard.FlagValue;
 import fr.evercraft.everapi.services.worldguard.exception.CircularInheritanceException;
 import fr.evercraft.everapi.services.worldguard.exception.RegionIdentifierException;
-import fr.evercraft.everapi.services.worldguard.flag.Flag;
-import fr.evercraft.everapi.services.worldguard.flag.FlagValue;
+import fr.evercraft.everapi.services.worldguard.region.Domain;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
-import fr.evercraft.everapi.services.worldguard.regions.Domain;
 import fr.evercraft.everworldguard.protection.domains.EDomain;
 import fr.evercraft.everworldguard.protection.flag.EFlagValue;
 import fr.evercraft.everworldguard.protection.index.EWWorld;
@@ -481,10 +481,9 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 	
 	public ProtectedRegion.Group getGroup(User subject, Set<Context> contexts) {
-		if (this.isPlayerOwner(subject, contexts)) return ProtectedRegion.Group.OWNER;
-		if (this.isPlayerMember(subject, contexts)) return ProtectedRegion.Group.MEMBER;
-		
-		return ProtectedRegion.Group.DEFAULT;
+		if (this.isPlayerOwner(subject, contexts)) return ProtectedRegion.Groups.OWNER;
+		if (this.isPlayerMember(subject, contexts)) return ProtectedRegion.Groups.MEMBER;
+		return ProtectedRegion.Groups.DEFAULT;
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -652,9 +651,9 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 			return -1;
 		} else if (this.getPriority() < other.getPriority()) {
 			return 1;
-		} else if (this.getType().equals(Type.GLOBAL)) {
+		} else if (this.getType().equals(Types.GLOBAL)) {
 			return 1;
-		} else if (this.getType().equals(Type.GLOBAL)) {
+		} else if (this.getType().equals(Types.GLOBAL)) {
 			return -1;
 		}
 		
@@ -676,7 +675,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 
 	@Override
 	public String toString() {
-		return "ProtectedRegion [id=" + this.identifier + ", type=" + this.getType().name() + ", transient=" + this.transientRegion
+		return "ProtectedRegion [id=" + this.identifier + ", type=" + this.getType().getId() + ", transient=" + this.transientRegion
 				+ ", priority=" + this.priority + ", owners=" + this.owners + ", members=" + this.members + "]";
 	}
 }

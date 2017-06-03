@@ -21,7 +21,7 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
-import fr.evercraft.everapi.services.worldguard.flag.Flag;
+import fr.evercraft.everapi.services.worldguard.Flag;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion.Group;
 import fr.evercraft.everworldguard.protection.regions.EProtectedRegion;

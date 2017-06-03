@@ -25,7 +25,7 @@ import fr.evercraft.everapi.event.MoveRegionEvent;
 import fr.evercraft.everapi.message.EMessageBuilder;
 import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everapi.services.worldguard.WorldGuardService;
-import fr.evercraft.everapi.services.worldguard.flag.type.MessageFlag;
+import fr.evercraft.everapi.services.worldguard.flag.MessageFlag;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 

@@ -35,7 +35,7 @@ import fr.evercraft.everapi.message.EMessageFormat;
 import fr.evercraft.everapi.plugin.command.Args;
 import fr.evercraft.everapi.plugin.command.ESubCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
-import fr.evercraft.everapi.services.worldguard.flag.Flag;
+import fr.evercraft.everapi.services.worldguard.Flag;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion.Group;
 import fr.evercraft.everapi.sponge.UtilsContexts;
@@ -84,7 +84,7 @@ public class EWRegionFlagAdd extends ESubCommand<EverWorldGuard> {
 				
 				List<String> suggests = new ArrayList<String>();
 				for(Group group : flag.get().getGroups()) {
-					suggests.add(group.name());
+					suggests.add(group.getName());
 				}
 				return suggests;
 			})
@@ -187,7 +187,7 @@ public class EWRegionFlagAdd extends ESubCommand<EverWorldGuard> {
 			return false;
 		}
 		
-		Optional<Group> group = Group.get(args_string.get(2));
+		Optional<Group> group = this.plugin.getGame().getRegistry().getType(Group.class, args_string.get(2));
 		if (!group.isPresent()) {
 			EWMessages.GROUP_NOT_FOUND.sender()
 				.replace("<group>", args_string.get(2))

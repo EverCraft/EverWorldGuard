@@ -19,7 +19,7 @@ package fr.evercraft.everworldguard.protection.domains;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 
-import fr.evercraft.everapi.services.worldguard.regions.Domain;
+import fr.evercraft.everapi.services.worldguard.region.Domain;
 
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.context.Context;

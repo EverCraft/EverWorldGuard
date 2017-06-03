@@ -44,7 +44,7 @@ import com.flowpowered.math.vector.Vector3i;
 
 import fr.evercraft.everapi.services.entity.EntityTemplate;
 import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
-import fr.evercraft.everapi.services.worldguard.flag.type.EntityTemplateFlag;
+import fr.evercraft.everapi.services.worldguard.flag.EntityTemplateFlag;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EverWorldGuard;
 
@@ -222,7 +222,8 @@ public class FlagDamageEntity extends EntityTemplateFlag {
 	public void onInteractEntityPrimary(WorldWorldGuard world, InteractEntityEvent.Primary event) {
 		if (event.isCancelled()) return;
 		
-		if (event.getTargetEntity().equals(EntityTypes.ARMOR_STAND)) return;
+		if (!event.getTargetEntity().equals(EntityTypes.ARMOR_STAND)) return;
+		if (!this.getDefault().contains(event.getTargetEntity())) return;
 		
 		Optional<Player> optPlayer = event.getCause().get(NamedCause.SOURCE, Player.class);
 		if (!optPlayer.isPresent()) return;

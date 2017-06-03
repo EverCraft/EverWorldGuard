@@ -30,8 +30,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
 
+import fr.evercraft.everapi.services.worldguard.Flag;
 import fr.evercraft.everapi.services.worldguard.exception.FlagRegisterException;
-import fr.evercraft.everapi.services.worldguard.flag.Flag;
 import fr.evercraft.everworldguard.EverWorldGuard;
 
 

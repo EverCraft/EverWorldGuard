@@ -32,7 +32,7 @@ import com.google.common.collect.Lists;
 import fr.evercraft.everapi.registers.ChatType;
 import fr.evercraft.everapi.registers.ChatType.ChatTypes;
 import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
-import fr.evercraft.everapi.services.worldguard.flag.type.CatalogTypeFlag;
+import fr.evercraft.everapi.services.worldguard.flag.CatalogTypeFlag;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.protection.EProtectionService;
 import fr.evercraft.everworldguard.EverWorldGuard;

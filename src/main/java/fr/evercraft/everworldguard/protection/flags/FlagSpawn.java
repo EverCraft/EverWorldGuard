@@ -17,7 +17,7 @@
 package fr.evercraft.everworldguard.protection.flags;
 
 import fr.evercraft.everapi.server.location.VirtualTransform;
-import fr.evercraft.everapi.services.worldguard.flag.type.LocationFlag;
+import fr.evercraft.everapi.services.worldguard.flag.LocationFlag;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 

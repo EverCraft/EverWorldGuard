@@ -84,6 +84,7 @@ public class EverWorldGuard extends EPlugin<EverWorldGuard> {
 		this.database.reload();
 		this.protection.reload();
 		this.selection.reload();
+		this.flags.reload();
 	}
 	
 	protected void onDisable() {

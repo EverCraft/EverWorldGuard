@@ -44,6 +44,7 @@ import fr.evercraft.everapi.services.selection.SelectionType;
 import fr.evercraft.everapi.services.selection.exception.SelectorSecondaryException;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion.Type;
+import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion.Types;
 import fr.evercraft.everapi.sponge.UtilsContexts;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EWPermissions;
@@ -160,17 +161,17 @@ public class EWRegionSelect extends ESubCommand<EverWorldGuard> {
 	
 	private boolean commandRegionSelect(final EPlayer player, final ProtectedRegion region, final World world) {
 		Type type = region.getType();
-		if (type.equals(Type.CUBOID)) {
+		if (type.equals(Types.CUBOID)) {
 			return this.commandRegionSelectCuboid(player, region, world);
-		} else if (type.equals(Type.POLYGONAL)) {
+		} else if (type.equals(Types.POLYGONAL)) {
 			return this.commandRegionSelectPolygonal(player, region, world);
-		} else if (type.equals(Type.GLOBAL)) {
+		} else if (type.equals(Types.GLOBAL)) {
 			EWMessages.REGION_SELECT_GLOBAL.sender()
 				.replace("<region>", region.getName())
 				.replace("<world>", world.getName())
 				.replace("<type>", type.getNameFormat())
 				.sendTo(player);
-		} else if (type.equals(Type.TEMPLATE)) {
+		} else if (type.equals(Types.TEMPLATE)) {
 			EWMessages.REGION_SELECT_TEMPLATE.sender()
 				.replace("<region>", region.getName())
 				.replace("<world>", world.getName())

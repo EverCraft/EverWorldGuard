@@ -27,10 +27,10 @@ import com.flowpowered.math.vector.Vector3i;
 
 import com.google.common.collect.ImmutableSet;
 
-import fr.evercraft.everapi.services.worldguard.flag.Flag;
+import fr.evercraft.everapi.services.worldguard.Flag;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everapi.services.worldguard.region.SetProtectedRegion;
-import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion.Group;
+import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion.Groups;
 import fr.evercraft.everworldguard.protection.regions.EProtectedRegion;
 
 public class ESetProtectedRegion implements SetProtectedRegion {
@@ -67,7 +67,7 @@ public class ESetProtectedRegion implements SetProtectedRegion {
 	@Override
 	public <V> V getFlagDefault(Flag<V> flag) {
 		for (ProtectedRegion region : this.regions) {
-			Optional<V> flag_value = region.getFlagInherit(flag, Group.DEFAULT);
+			Optional<V> flag_value = region.getFlagInherit(flag, Groups.DEFAULT);
 			if (flag_value.isPresent()) {
 				return flag_value.get();
 			}
@@ -89,7 +89,7 @@ public class ESetProtectedRegion implements SetProtectedRegion {
 	@Override
 	public <V> Optional<V> getFlagDefaultIfPresent(Flag<V> flag) {
 		for (ProtectedRegion region : this.regions) {
-			Optional<V> flag_value = region.getFlagInherit(flag, Group.DEFAULT);
+			Optional<V> flag_value = region.getFlagInherit(flag, Groups.DEFAULT);
 			if (flag_value.isPresent()) {
 				return Optional.ofNullable(flag_value.get());
 			}

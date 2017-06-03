@@ -62,7 +62,7 @@ import com.google.common.collect.Sets;
 
 import fr.evercraft.everapi.services.entity.EntityTemplate;
 import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
-import fr.evercraft.everapi.services.worldguard.flag.type.StateFlag;
+import fr.evercraft.everapi.services.worldguard.flag.StateFlag;
 import fr.evercraft.everapi.sponge.UtilsCause;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EverWorldGuard;

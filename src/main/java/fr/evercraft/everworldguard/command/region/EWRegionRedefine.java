@@ -133,7 +133,7 @@ public class EWRegionRedefine extends ESubCommand<EverWorldGuard> {
 			return false;
 		}
 		
-		if (region.get().getType().equals(ProtectedRegion.Type.GLOBAL)) {
+		if (region.get().getType().equals(ProtectedRegion.Types.GLOBAL)) {
 			EWMessages.REGION_REDEFINE_ERROR_GLOBAL.sender()
 				.replace("<region>", region.get().getName())
 				.replace("<type>", region.get().getType().getNameFormat())
@@ -168,7 +168,7 @@ public class EWRegionRedefine extends ESubCommand<EverWorldGuard> {
 		if (!selector.isPresent()) {
 			EWMessages.REGION_REDEFINE_CUBOID_ERROR_POSITION.sender()
 				.replace("<region>", region.getName())
-				.replace("<type>", ProtectedRegion.Type.CUBOID.getNameFormat())
+				.replace("<type>", ProtectedRegion.Types.CUBOID.getNameFormat())
 				.sendTo(player);
 			return false;
 		}
@@ -210,7 +210,7 @@ public class EWRegionRedefine extends ESubCommand<EverWorldGuard> {
 		if (!selector.isPresent()) {
 			EWMessages.REGION_REDEFINE_POLYGONAL_ERROR_POSITION.sender()
 				.replace("<region>", region.getName())
-				.replace("<type>", ProtectedRegion.Type.POLYGONAL.getNameFormat())
+				.replace("<type>", ProtectedRegion.Types.POLYGONAL.getNameFormat())
 				.sendTo(player);
 			return false;
 		}

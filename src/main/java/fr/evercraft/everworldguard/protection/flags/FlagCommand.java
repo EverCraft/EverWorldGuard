@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import org.spongepowered.api.command.CommandMapping;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.cause.NamedCause;
@@ -28,7 +29,7 @@ import com.flowpowered.math.vector.Vector3i;
 import com.google.common.collect.ImmutableSet;
 
 import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
-import fr.evercraft.everapi.services.worldguard.flag.type.MapStringFlag;
+import fr.evercraft.everapi.services.worldguard.flag.MapStringFlag;
 import fr.evercraft.everapi.services.worldguard.flag.value.EntryFlagValue;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EverWorldGuard;
@@ -80,14 +81,18 @@ public class FlagCommand extends MapStringFlag {
 		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(player.getWorld());
 		EntryFlagValue<String> flag = world.getRegions(player.getLocation().getPosition()).getFlag(player, this);
 		
-		if (flag.containsValue("*") || flag.containsValue(event.getCommand())) {
-			if (!flag.containsValue("-" + event.getCommand())) {
+		Optional<? extends CommandMapping> optCommand = this.plugin.getGame().getCommandManager().get(event.getCommand(), player);
+		if (!optCommand.isPresent()) return;
+		CommandMapping command = optCommand.get();
+		
+		if (flag.containsValue("*") || flag.containsValue(command.getPrimaryAlias())) {
+			if (!flag.containsValue("-" + command.getPrimaryAlias())) {
 				return;
 			}
 		}
 		
 		event.setCancelled(true);
 		event.setResult(CommandResult.empty());
-		this.sendMessage(player, player.getLocation().getPosition().toInt(), event.getCommand());
+		this.sendMessage(player, player.getLocation().getPosition().toInt(), command.getPrimaryAlias());
 	}
 }

@@ -33,10 +33,11 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.reflect.TypeToken;
 
 import fr.evercraft.everapi.plugin.file.EConfig;
-import fr.evercraft.everapi.services.worldguard.flag.Flag;
-import fr.evercraft.everapi.services.worldguard.flag.FlagValue;
+import fr.evercraft.everapi.services.worldguard.Flag;
+import fr.evercraft.everapi.services.worldguard.FlagValue;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion.Group;
+import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion.Groups;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.protection.EProtectionService;
 import fr.evercraft.everworldguard.protection.flag.EFlagValue;
@@ -117,7 +118,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 		
 		// Type
 		String type_string = config.getNode("type").getString("");
-		Optional<ProtectedRegion.Type> optType = ProtectedRegion.Type.of(type_string);
+		Optional<ProtectedRegion.Type> optType = this.plugin.getGame().getRegistry().getType(ProtectedRegion.Type.class, type_string);
 		if (!optType.isPresent()) {
 			this.plugin.getELogger().warn("Type incorrect : " + type_string + " (id:'" + identifier + "')");
 			return Optional.empty();
@@ -170,7 +171,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 					Flag<T> flag = (Flag<T>) optFlag.get();
 					try {
 						T value = flag.deserialize(config_flags.getValue().getString(""));
-						flags.put(flag, this.putFlags((EFlagValue<T>) flags.get(flag), Group.DEFAULT, value));
+						flags.put(flag, this.putFlags((EFlagValue<T>) flags.get(flag), Groups.DEFAULT, value));
 					} catch(Exception e) {
 						this.plugin.getELogger().warn("FlagDefault error : " + config_flags.getKey().toString() + " (id:'" + identifier + "') : ");
 						e.printStackTrace();
@@ -189,7 +190,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 				if (optFlag.isPresent()) {
 					Flag<T> flag = (Flag<T>) optFlag.get();
 					T value = flag.deserialize(config_flags.getValue().getString(""));
-					flags.put(flag, this.putFlags((EFlagValue<T>) flags.get(flag), Group.MEMBER, value));
+					flags.put(flag, this.putFlags((EFlagValue<T>) flags.get(flag), Groups.MEMBER, value));
 				} else {
 					this.plugin.getELogger().warn("FlagMember no register : " + config_flags.getKey().toString() + " (id:'" + identifier + "')");
 				}
@@ -204,7 +205,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 				if (optFlag.isPresent()) {
 					Flag<T> flag = (Flag<T>) optFlag.get();
 					T value = flag.deserialize(config_flags.getValue().getString(""));
-					flags.put(flag, this.putFlags((EFlagValue<T>) flags.get(flag), Group.OWNER, value));
+					flags.put(flag, this.putFlags((EFlagValue<T>) flags.get(flag), Groups.OWNER, value));
 				} else {
 					this.plugin.getELogger().warn("FlagOwner no register : " + config_flags.getKey().toString() + " (id:'" + identifier + "')");
 				}
@@ -214,11 +215,11 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 		}
 		
 		EProtectedRegion region = null;
-		if (type.equals(ProtectedRegion.Type.GLOBAL)) {
+		if (type.equals(ProtectedRegion.Types.GLOBAL)) {
 			region = new EProtectedGlobalRegion(this.world, identifier, name);
-		} else if (type.equals(ProtectedRegion.Type.TEMPLATE)) {
+		} else if (type.equals(ProtectedRegion.Types.TEMPLATE)) {
 			region = new EProtectedTemplateRegion(this.world, identifier, name);
-		} else if (type.equals(ProtectedRegion.Type.CUBOID)) {
+		} else if (type.equals(ProtectedRegion.Types.CUBOID)) {
 			Vector3i min = null;
 			Vector3i max = null;
 			
@@ -240,7 +241,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 			}
 
 			region = new EProtectedCuboidRegion(this.world, identifier, name, min, max);
-		} else if (type.equals(ProtectedRegion.Type.POLYGONAL)) {
+		} else if (type.equals(ProtectedRegion.Types.POLYGONAL)) {
 			List<Vector3i> vectors = null;
 			try {
 				vectors = config.getNode("positions").getList(TypeToken.of(Vector3i.class));
@@ -308,11 +309,11 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 			Flag<T> key = (Flag<T>) flag.getKey();
 			for (Entry<Group, ?> value : flag.getValue().getAll().entrySet()) {
 				T val = (T) value.getValue();
-				if (value.getKey().equals(Group.DEFAULT)) {
+				if (value.getKey().equals(Groups.DEFAULT)) {
 					flags_default.put(key.getId(), key.serialize(val));
-				} else if (value.getKey().equals(Group.MEMBER)) {
+				} else if (value.getKey().equals(Groups.MEMBER)) {
 					flags_member.put(key.getId(), key.serialize(val));
-				} else if (value.getKey().equals(Group.OWNER)) {
+				} else if (value.getKey().equals(Groups.OWNER)) {
 					flags_default.put(key.getId(), key.serialize(val));
 				}
 			}
@@ -329,12 +330,12 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 		}
 		
 		// Points
-		if (region.getType().equals(ProtectedRegion.Type.CUBOID)) {
+		if (region.getType().equals(ProtectedRegion.Types.CUBOID)) {
 			try {
 				config.getNode("min").setValue(TypeToken.of(Vector3i.class), region.getMinimumPoint());
 				config.getNode("max").setValue(TypeToken.of(Vector3i.class), region.getMaximumPoint());
 			} catch (ObjectMappingException e) {}
-		} else if (region.getType().equals(ProtectedRegion.Type.POLYGONAL)) {
+		} else if (region.getType().equals(ProtectedRegion.Types.POLYGONAL)) {
 			config.getNode("positions").setValue(region.getPoints().stream()
 					.map(vector -> Arrays.asList(vector.getX(), vector.getY(), vector.getZ()))
 					.collect(Collectors.toList()));
@@ -382,11 +383,11 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 	public <V> void setFlag(EProtectedRegion region, Flag<V> flag, Group group, V value) {
 		ConfigurationNode config = this.getNode().getNode(region.getId().toString());
 		
-		if (group.equals(Group.OWNER)) {
+		if (group.equals(Groups.OWNER)) {
 			config = config.getNode("flags-owner");
-		} else if (group.equals(Group.MEMBER)) {
+		} else if (group.equals(Groups.MEMBER)) {
 			config = config.getNode("flags-member");
-		} else if (group.equals(Group.DEFAULT)) {
+		} else if (group.equals(Groups.DEFAULT)) {
 			config = config.getNode("flags-default");
 		}
 		

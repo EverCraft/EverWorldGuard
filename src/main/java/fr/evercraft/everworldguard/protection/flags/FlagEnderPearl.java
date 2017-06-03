@@ -28,7 +28,7 @@ import org.spongepowered.api.item.ItemTypes;
 import com.flowpowered.math.vector.Vector3i;
 
 import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
-import fr.evercraft.everapi.services.worldguard.flag.type.StateFlag;
+import fr.evercraft.everapi.services.worldguard.flag.StateFlag;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 

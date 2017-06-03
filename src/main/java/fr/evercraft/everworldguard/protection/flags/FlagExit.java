@@ -17,7 +17,7 @@
 package fr.evercraft.everworldguard.protection.flags;
 
 import fr.evercraft.everapi.event.MoveRegionEvent;
-import fr.evercraft.everapi.services.worldguard.flag.type.StateFlag;
+import fr.evercraft.everapi.services.worldguard.flag.StateFlag;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 
 public class FlagExit extends StateFlag {

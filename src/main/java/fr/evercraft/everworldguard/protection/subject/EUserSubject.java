@@ -34,10 +34,11 @@ import com.google.common.collect.Sets;
 
 import fr.evercraft.everapi.event.ESpongeEventFactory;
 import fr.evercraft.everapi.message.EMessageSender;
+import fr.evercraft.everapi.registers.MoveType;
+import fr.evercraft.everapi.registers.MoveType.MoveTypes;
 import fr.evercraft.everapi.server.player.EPlayer;
-import fr.evercraft.everapi.services.worldguard.MoveType;
+import fr.evercraft.everapi.services.worldguard.Flag;
 import fr.evercraft.everapi.services.worldguard.SubjectWorldGuard;
-import fr.evercraft.everapi.services.worldguard.flag.Flag;
 import fr.evercraft.everapi.services.worldguard.region.SetProtectedRegion;
 import fr.evercraft.everapi.sponge.UtilsLocation;
 import fr.evercraft.everworldguard.EverWorldGuard;
@@ -50,6 +51,7 @@ public class EUserSubject implements SubjectWorldGuard {
 	private final UUID identifier;
 	
 	private Location<World> lastLocation;
+	private boolean lastRide;
 	private SetProtectedRegion lastRegions;
 	private final LoadingCache<Flag<?>, Long> messages;
 
@@ -93,8 +95,9 @@ public class EUserSubject implements SubjectWorldGuard {
 	public void initialize(Player player) {
 		this.lastLocation = player.getLocation();
 		this.lastLocation = this.lastLocation.setPosition(this.lastLocation.getBlockPosition().toDouble());
+		this.lastRide = player.getVehicle().isPresent();
 		
-		this.moveToPost(player, this.lastLocation, MoveType.OTHER_NON_CANCELLABLE, Cause.source(this.plugin).build(), true);
+		this.moveToPost(player, this.lastLocation, MoveTypes.UNKNOWN_NON_CANCELLABLE, Cause.source(this.plugin).build(), true);
 	}
 	
 	@Override
@@ -160,5 +163,17 @@ public class EUserSubject implements SubjectWorldGuard {
 	@SuppressWarnings("unused")
 	private Optional<EPlayer> getEPlayer() {
 		return this.plugin.getEServer().getEPlayer(this.getUniqueId());
+	}
+
+	public Location<World> getLastLocation() {
+		return this.lastLocation;
+	}
+	
+	public boolean getLastRide() {
+		return this.lastRide;
+	}
+	
+	public void setLastRide(boolean ride) {
+		this.lastRide = ride;
 	}
 }

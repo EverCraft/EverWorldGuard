@@ -25,8 +25,8 @@ import org.spongepowered.api.event.cause.entity.spawn.EntitySpawnCause;
 import org.spongepowered.api.event.cause.entity.spawn.SpawnTypes;
 import org.spongepowered.api.event.entity.SpawnEntityEvent;
 
-import fr.evercraft.everapi.services.worldguard.flag.type.StateFlag;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
+import fr.evercraft.everapi.services.worldguard.flag.StateFlag;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.protection.EProtectionService;
 

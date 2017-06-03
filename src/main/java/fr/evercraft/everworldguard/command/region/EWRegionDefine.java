@@ -177,7 +177,7 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 		if (!selection.isPresent()) {
 			EWMessages.REGION_DEFINE_CUBOID_ERROR_POSITION.sender()
 				.replace("<region>", region_id)
-				.replace("<type>", ProtectedRegion.Type.CUBOID.getNameFormat())
+				.replace("<type>", ProtectedRegion.Types.CUBOID.getNameFormat())
 				.sendTo(player);
 			return false;
 		}
@@ -192,7 +192,7 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 		} catch (RegionIdentifierException e) {
 			EWMessages.REGION_DEFINE_ERROR_IDENTIFIER_INVALID.sender()
 				.replace("<region>", region_id)
-				.replace("<type>", ProtectedRegion.Type.CUBOID.getNameFormat())
+				.replace("<type>", ProtectedRegion.Types.CUBOID.getNameFormat())
 				.sendTo(player);
 			return false;
 		}
@@ -225,7 +225,7 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 		if (!selector.isPresent()) {
 			EWMessages.REGION_DEFINE_POLYGONAL_ERROR_POSITION.sender()
 				.replace("<region>", region_id)
-				.replace("<type>", ProtectedRegion.Type.POLYGONAL.getNameFormat())
+				.replace("<type>", ProtectedRegion.Types.POLYGONAL.getNameFormat())
 				.sendTo(player);
 			return false;
 		}
@@ -236,7 +236,7 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 		} catch (RegionIdentifierException e) {
 			EWMessages.REGION_DEFINE_ERROR_IDENTIFIER_INVALID.sender()
 				.replace("<region>", region_id)
-				.replace("<type>", ProtectedRegion.Type.POLYGONAL.getNameFormat())
+				.replace("<type>", ProtectedRegion.Types.POLYGONAL.getNameFormat())
 				.sendTo(player);
 			return false;
 		}
@@ -290,7 +290,7 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 		} catch (RegionIdentifierException e) {
 			EWMessages.REGION_DEFINE_ERROR_IDENTIFIER_INVALID.sender()
 				.replace("<region>", region_id)
-				.replace("<type>", ProtectedRegion.Type.TEMPLATE.getNameFormat())
+				.replace("<type>", ProtectedRegion.Types.TEMPLATE.getNameFormat())
 				.sendTo(player);
 			return false;
 		}

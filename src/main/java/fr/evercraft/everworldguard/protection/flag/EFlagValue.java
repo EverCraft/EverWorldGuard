@@ -23,8 +23,9 @@ import java.util.concurrent.ConcurrentMap;
 
 import com.google.common.collect.ImmutableMap;
 
-import fr.evercraft.everapi.services.worldguard.flag.FlagValue;
+import fr.evercraft.everapi.services.worldguard.FlagValue;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion.Group;
+import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion.Groups;
 
 public class EFlagValue<T> implements FlagValue<T> {	
 
@@ -50,20 +51,22 @@ public class EFlagValue<T> implements FlagValue<T> {
 	@Override
 	public Optional<T> getInherit(Group group) {
 		T value = null;
-		switch (group) {
-			case OWNER :
-				value = this.values.get(Group.OWNER);
-				if (value != null) {
-					return Optional.of(value);
-				}
-			case MEMBER :
-				value = this.values.get(Group.MEMBER);
-				if (value != null) {
-					return Optional.of(value);
-				}
-			default :
-				return this.get(Group.DEFAULT);
+		
+		if (group.equals(Groups.OWNER)) {
+			value = this.values.get(Groups.OWNER);
+			if (value != null) {
+				return Optional.of(value);
+			}
 		}
+		
+		if (group.equals(Groups.MEMBER)) {
+			value = this.values.get(Groups.MEMBER);
+			if (value != null) {
+				return Optional.of(value);
+			}
+		}
+		
+		return this.get(Groups.DEFAULT);
 	}
 	
 	@Override

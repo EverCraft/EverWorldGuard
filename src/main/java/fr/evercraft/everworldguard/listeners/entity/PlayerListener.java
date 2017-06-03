@@ -21,7 +21,7 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.command.SendCommandEvent;
 import org.spongepowered.api.event.entity.DestructEntityEvent;
-import org.spongepowered.api.event.entity.IgniteEntityEvent;
+import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEvent;
 import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.filter.cause.First;
@@ -29,6 +29,7 @@ import org.spongepowered.api.event.item.inventory.ChangeInventoryEvent;
 import org.spongepowered.api.event.message.MessageChannelEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 
+import fr.evercraft.everapi.event.MoveRegionEvent;
 import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.protection.subject.EUserSubject;
@@ -85,18 +86,27 @@ public class PlayerListener {
 		this.plugin.getManagerFlags().ITEM_PICKUP.onChangeInventoryPickup(event, world, player);
 	}
 	
-	@Listener
-	public void onIgniteEntity(IgniteEntityEvent event) {		
-		/*List<Text> list = new ArrayList<Text>();
-		event.getCause().getNamedCauses().forEach((key, value) -> {
-			list.add(Text.builder(key)
-					.onHover(TextActions.showText(Text.of(EChat.fixLength(value.toString(), 254))))
-					.onClick(TextActions.suggestCommand(EChat.fixLength(value.toString(), 254)))
-					.build());
-		});
-		this.plugin.getEServer().getBroadcastChannel().send(Text.builder("IgniteEntityEvent: ")
-				.onHover(TextActions.showText(Text.of(event.getClass().getName())))
-				.onClick(TextActions.suggestCommand(event.getClass().getName()))
-				.build().concat(Text.joinWith(Text.of(", "), list)));*/
+	@Listener(order=Order.FIRST)
+	public void onMoveEntityTeleport(MoveEntityEvent.Teleport event, @Getter("getTargetEntity") Player player_sponge) {
+		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(player_sponge.getWorld());
+		
+		this.plugin.getManagerFlags().ENDERPEARL.onMoveEntityTeleport(event, world, player_sponge);
+	}
+	
+	@Listener(order=Order.FIRST)
+	public void onMoveRegionPreCancelled(MoveRegionEvent.Pre.Cancellable event) {
+		this.plugin.getManagerFlags().EXIT.onMoveRegionPreCancellable(event);
+		this.plugin.getManagerFlags().ENTRY.onMoveRegionPreCancellable(event);
+		
+		if (event.isCancelled()) {
+			this.plugin.getManagerFlags().EXIT_DENY_MESSAGE.onMoveRegionPreCancelled(event);
+			this.plugin.getManagerFlags().ENTRY_DENY_MESSAGE.onMoveRegionPreCancelled(event);
+		}
+	}
+	
+	@Listener(order=Order.FIRST)
+	public void onMoveRegionPost(MoveRegionEvent.Post event) {
+		this.plugin.getManagerFlags().EXIT_MESSAGE.onMoveRegionPost(event);
+		this.plugin.getManagerFlags().ENTRY_MESSAGE.onMoveRegionPost(event);
 	}
 }

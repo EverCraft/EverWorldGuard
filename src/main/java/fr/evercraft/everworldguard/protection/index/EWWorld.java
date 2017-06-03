@@ -254,9 +254,9 @@ public class EWWorld implements WorldWorldGuard {
 			return Optional.empty();
 		}
 		
-		if (type.equals(ProtectedRegion.RemoveType.REMOVE_CHILDREN)) {
+		if (type.equals(ProtectedRegion.RemoveTypes.REMOVE_CHILDREN)) {
 			this.removeRegionChildren(region);
-		} else if (type.equals(ProtectedRegion.RemoveType.UNSET_PARENT_IN_CHILDREN)) {
+		} else if (type.equals(ProtectedRegion.RemoveTypes.UNSET_PARENT_IN_CHILDREN)) {
 			this.regionsIdentifier.remove(region.getId());
 			this.regionsName.remove(region.getName().toLowerCase());
 			
@@ -282,7 +282,7 @@ public class EWWorld implements WorldWorldGuard {
 		for (EProtectedRegion children : this.regionsIdentifier.values()) {
 			Optional<ProtectedRegion> parent = children.getParent();
 			if (parent.isPresent() && parent.get().equals(region)) {
-				if (children.getType().equals(ProtectedRegion.Type.GLOBAL)) {
+				if (children.getType().equals(ProtectedRegion.Types.GLOBAL)) {
 					children.clearParent();
 				} else {
 					this.removeRegionChildren(children);

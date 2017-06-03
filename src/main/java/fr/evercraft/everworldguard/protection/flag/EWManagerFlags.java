@@ -20,8 +20,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
 import fr.evercraft.everapi.java.UtilsField;
-import fr.evercraft.everapi.services.worldguard.flag.Flag;
-import fr.evercraft.everapi.services.worldguard.flag.Flags;
+import fr.evercraft.everapi.services.worldguard.Flag;
+import fr.evercraft.everapi.services.worldguard.Flags;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.protection.flags.*;
 
@@ -68,8 +68,6 @@ public class EWManagerFlags {
 	
 	public EWManagerFlags(EverWorldGuard plugin) {
 		this.plugin = plugin;
-		
-		this.register();
 
 		BLOCK_BREAK = new FlagBlockBreak(this.plugin);
 		BLOCK_PLACE = new FlagBlockPlace(this.plugin);
@@ -128,6 +126,20 @@ public class EWManagerFlags {
 				} catch (Exception e) {
 					this.plugin.getELogger().warn("[Flag] Not yet implemented : " + field.getName());
 				}
+			}
+		}
+	}
+	
+	public void reload() {
+		for (Field field : Flags.class.getFields()) {
+			if (Modifier.isStatic(field.getModifiers())) {
+				try {
+					Field fieldFlag = this.getClass().getField(field.getName());
+					Object flag = fieldFlag.get(this);
+					if (flag instanceof Flag) {
+						((Flag<?>) flag).reload();
+					}
+				} catch (Exception e) {}
 			}
 		}
 	}

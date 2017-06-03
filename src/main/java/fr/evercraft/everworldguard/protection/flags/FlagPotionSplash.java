@@ -46,7 +46,7 @@ import org.spongepowered.api.world.World;
 import com.flowpowered.math.vector.Vector3i;
 
 import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
-import fr.evercraft.everapi.services.worldguard.flag.type.CatalogTypeFlag;
+import fr.evercraft.everapi.services.worldguard.flag.CatalogTypeFlag;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.protection.EProtectionService;
@@ -99,6 +99,9 @@ public class FlagPotionSplash extends CatalogTypeFlag<PotionEffectType> {
 		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(player.getWorld());
 		for (PotionEffectType potion : potions.get().stream().map(potion -> potion.getType()).collect(Collectors.toSet())) {
 			if (this.getDefault().containsValue(potion) && !world.getRegions(player.getLocation().getPosition()).getFlag(player, this).containsValue(potion)) {
+				event.setCancelled(true);
+				
+				// Message
 				this.sendMessage(player, player.getLocation().getPosition().toInt(), potion);
 				return;
 			}

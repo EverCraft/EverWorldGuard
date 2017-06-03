@@ -26,10 +26,10 @@ import org.spongepowered.api.world.World;
 
 import fr.evercraft.everapi.message.EMessageSender;
 import fr.evercraft.everapi.server.player.EPlayer;
+import fr.evercraft.everapi.services.worldguard.Flag;
 import fr.evercraft.everapi.services.worldguard.SubjectWorldGuard;
 import fr.evercraft.everapi.services.worldguard.WorldGuardService;
 import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
-import fr.evercraft.everapi.services.worldguard.flag.Flag;
 import fr.evercraft.everworldguard.EWPermissions;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.protection.flag.EWFlagConfig;
@@ -123,7 +123,6 @@ public class EProtectionService implements WorldGuardService {
 		return this.worlds.getOrCreate(world);
 	}
 	
-	@Override
 	public void unLoadWorld(World world) {
 		this.worlds.unLoad(world);
 	}
@@ -163,11 +162,6 @@ public class EProtectionService implements WorldGuardService {
 	
 	public Set<Flag<?>> getFlags() {
 		return this.flagsRegister.getAll();
-	}
-
-	@Override
-	public void clearFlags() {
-		// TODO Supprimer les flags non utilisé dans la config
 	}
 	
 	public FlagRegister getRegister() {

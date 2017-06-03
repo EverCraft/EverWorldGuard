@@ -31,8 +31,9 @@ import com.google.common.collect.ImmutableSet;
 
 import fr.evercraft.everapi.registers.IceType;
 import fr.evercraft.everapi.registers.IceType.IceTypes;
-import fr.evercraft.everapi.services.worldguard.flag.type.CatalogTypeFlag;
+import fr.evercraft.everapi.services.worldguard.flag.CatalogTypeFlag;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion.Group;
+import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion.Groups;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.protection.EProtectionService;
 import fr.evercraft.everworldguard.EverWorldGuard;
@@ -61,7 +62,7 @@ public class FlagIce extends CatalogTypeFlag<IceType> {
 	
 	@Override
 	public Set<Group> getGroups() {
-		return ImmutableSet.of(Group.DEFAULT);
+		return ImmutableSet.of(Groups.DEFAULT);
 	}
 
 	/*

@@ -26,18 +26,14 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
-import org.spongepowered.api.event.entity.RideEntityEvent;
 import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEvent;
 import org.spongepowered.api.event.filter.Getter;
-import org.spongepowered.api.event.filter.cause.First;
-import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 import com.flowpowered.math.vector.Vector3d;
 
-import fr.evercraft.everapi.event.MoveRegionEvent;
-import fr.evercraft.everapi.services.worldguard.MoveType;
-import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
+import fr.evercraft.everapi.registers.MoveType;
+import fr.evercraft.everapi.registers.MoveType.MoveTypes;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.protection.subject.EUserSubject;
 
@@ -49,23 +45,32 @@ public class PlayerMoveListener {
 		this.plugin = plugin;
 	}
 	
-	@Listener(order=Order.PRE)
-	public void onRespawnPlayerPre(RespawnPlayerEvent event) {
+	/*
+	 * RespawnPlayerEvent
+	 */
+	
+	@Listener(order=Order.FIRST)
+	public void onRespawnPlayerFirst(RespawnPlayerEvent event) {
 		Optional<EUserSubject> optSubject = this.plugin.getProtectionService().getSubject(event.getOriginalPlayer().getUniqueId());
 		if (!optSubject.isPresent()) return;
 		EUserSubject subject = optSubject.get();
 		
-		subject.moveToPre(event.getTargetEntity(), event.getToTransform().getLocation(), MoveType.RESPAWN, event.getCause());
+		// Non cancellable
+		subject.moveToPre(event.getTargetEntity(), event.getToTransform().getLocation(), MoveTypes.RESPAWN, event.getCause());
 	}
 	
-	@Listener(order=Order.BEFORE_POST, beforeModifications=true)
+	@Listener(order=Order.POST)
 	public void onRespawnPlayerPost(RespawnPlayerEvent event) {
 		Optional<EUserSubject> optSubject = this.plugin.getProtectionService().getSubject(event.getOriginalPlayer().getUniqueId());
 		if (!optSubject.isPresent()) return;
 		EUserSubject subject = optSubject.get();
 		
-		subject.moveToPost(event.getTargetEntity(), event.getToTransform().getLocation(), MoveType.RESPAWN, event.getCause());
+		subject.moveToPost(event.getTargetEntity(), event.getToTransform().getLocation(), MoveTypes.RESPAWN, event.getCause());
 	}
+	
+	/*
+	 * MoveEntityEvent
+	 */
 	
 	@Listener(order=Order.FIRST)
 	public void onMoveEntityFirst(MoveEntityEvent event, @Getter("getTargetEntity") Player player) {
@@ -73,96 +78,66 @@ public class PlayerMoveListener {
 		
 		Optional<EUserSubject> optSubject = this.plugin.getProtectionService().getSubject(player.getUniqueId());
 		if (!optSubject.isPresent()) return;
-		
-		Location<World> location = optSubject.get().moveToPre(player, event.getToTransform().getLocation(), MoveType.MOVE, event.getCause()).orElse(null);
-		if (location != null) {			
-			Transform<World> transform = event.getFromTransform()
+		EUserSubject subject = optSubject.get();
+
+		subject.moveToPre(player, event.getToTransform().getLocation(), this.getMoveType(event, player, subject), event.getCause())
+			.ifPresent(location -> {
+				Transform<World> transform = event.getFromTransform()
 					.setLocation(location.add(Vector3d.from(0.5, 0, 0.5)));
-			event.setToTransform(transform);
-			
-			Entity vehicle = player.getVehicle().orElse(null);
-			if (vehicle != null) {
-				while (vehicle != null) {
-					vehicle.clearPassengers();
-					vehicle.setVelocity(Vector3d.ZERO);
-					
-					// Permet de pas teleport les entités en dehors de la region
-					// TODO Minecart : Source == Player
-					if (event.getCause().get(NamedCause.SOURCE, vehicle.getClass()).isPresent()) {
-						if (vehicle instanceof Living) {
-							vehicle.setTransform(transform);
-						} else {
-							vehicle.setTransform(transform.addTranslation(Vector3d.from(0, 1, 0)));
+				event.setToTransform(transform);
+				
+				Entity vehicle = player.getVehicle().orElse(null);
+				if (vehicle != null) {
+					while (vehicle != null) {
+						vehicle.clearPassengers();
+						vehicle.setVelocity(Vector3d.ZERO);
+						
+						// Permet de pas teleport les entités en dehors de la region
+						// TODO Minecart : Source == Player
+						if (event.getCause().get(NamedCause.SOURCE, vehicle.getClass()).isPresent()) {
+							if (vehicle instanceof Living) {
+								vehicle.setTransform(transform);
+							} else {
+								vehicle.setTransform(transform.addTranslation(Vector3d.from(0, 1, 0)));
+							}
 						}
+						
+						vehicle = vehicle.getVehicle().orElse(null);
 					}
-					
-					vehicle = vehicle.getVehicle().orElse(null);
+					event.setCancelled(true);
+					player.setTransform(transform.addTranslation(Vector3d.from(0, 1, 0)));
 				}
-				event.setCancelled(true);
-				player.setTransform(transform.addTranslation(Vector3d.from(0, 1, 0)));
-			}
-		}
+			});
 	}
 	
 	@Listener(order=Order.POST)
-	public void onMoveEntityPost(MoveEntityEvent event, @Getter("getTargetEntity") Player player_sponge) {
+	public void onMoveEntityPost(MoveEntityEvent event, @Getter("getTargetEntity") Player player) {
 		if (event.isCancelled()) return;
 		
-		Optional<EUserSubject> optSubject = this.plugin.getProtectionService().getSubject(player_sponge.getUniqueId());
+		Optional<EUserSubject> optSubject = this.plugin.getProtectionService().getSubject(player.getUniqueId());
 		if (!optSubject.isPresent()) return;
-		
-		optSubject.get().moveToPost(player_sponge, event.getToTransform().getLocation(), MoveType.MOVE, event.getCause());
+		EUserSubject subject = optSubject.get();
+
+		subject.moveToPost(player, event.getToTransform().getLocation(), this.getMoveType(event, player, subject), event.getCause());
 	}
 	
-	@Listener(order=Order.FIRST)
-	public void onMoveRegionPreCancelled(MoveRegionEvent.Pre.Cancellable event) {
-		this.plugin.getManagerFlags().EXIT.onMoveRegionPreCancellable(event);
-		this.plugin.getManagerFlags().ENTRY.onMoveRegionPreCancellable(event);
-		
-		if (event.isCancelled()) {
-			this.plugin.getManagerFlags().EXIT_DENY_MESSAGE.onMoveRegionPreCancelled(event);
-			this.plugin.getManagerFlags().ENTRY_DENY_MESSAGE.onMoveRegionPreCancelled(event);
+	private MoveType getMoveType(MoveEntityEvent event, Player player, EUserSubject subject) {
+		// TELEPORT
+		if (event instanceof MoveEntityEvent.Teleport) {
+			return MoveTypes.TELEPORT;
 		}
-	}
-	
-	@Listener(order=Order.FIRST)
-	public void onMoveRegionPost(MoveRegionEvent.Post event) {
-		this.plugin.getManagerFlags().EXIT_MESSAGE.onMoveRegionPost(event);
-		this.plugin.getManagerFlags().ENTRY_MESSAGE.onMoveRegionPost(event);
-	}
-	
-	@Listener(order=Order.FIRST)
-	public void onMoveEntityTeleport(MoveEntityEvent.Teleport event, @Getter("getTargetEntity") Player player_sponge) {
-		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(player_sponge.getWorld());
 		
-		this.plugin.getManagerFlags().ENDERPEARL.onMoveEntityTeleport(event, world, player_sponge);
+		// RIDE
+		if (player.getVehicle().isPresent()) {
+			if (subject.getLastRide()) {
+				return MoveTypes.RIDE;
+			} else {
+				subject.setLastRide(true);
+				return MoveTypes.EMBARK;
+			}
+		}
 		
-		// Debug
-		/*List<Text> list = new ArrayList<Text>();
-		event.getCause().getNamedCauses().forEach((key, value) -> {
-			list.add(Text.builder(key)
-					.onHover(TextActions.showText(Text.of(EChat.fixLength(value.toString(), 254))))
-					.onClick(TextActions.suggestCommand(EChat.fixLength(value.toString(), 254)))
-					.build());
-		});
-		this.plugin.getEServer().getBroadcastChannel().send(Text.of("MoveEntityEvent.Teleport : ").concat(Text.joinWith(Text.of(", "), list)));*/
-	}
-	
-	@Listener(order=Order.FIRST)
-	public void onRideEntityMount(RideEntityEvent.Mount event, @First Player player_sponge) {
-		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(player_sponge.getWorld());
-		
-		this.plugin.getManagerFlags().EXIT_MESSAGE.onRideEntityMount(event, world, player_sponge);
-		//this.plugin.getManagerFlags().ENTRY_MESSAGE.onRideEntityMount(event, world, player_sponge);
-		
-		// Debug
-		/*List<Text> list = new ArrayList<Text>();
-		event.getCause().getNamedCauses().forEach((key, value) -> {
-			list.add(Text.builder(key)
-					.onHover(TextActions.showText(Text.of(EChat.fixLength(value.toString(), 254))))
-					.onClick(TextActions.suggestCommand(EChat.fixLength(value.toString(), 254)))
-					.build());
-		});
-		this.plugin.getEServer().getBroadcastChannel().send(Text.of("MoveEntityEvent.Teleport : ").concat(Text.joinWith(Text.of(", "), list)));*/
+		subject.setLastRide(false);
+		return MoveTypes.MOVE;
 	}
 }

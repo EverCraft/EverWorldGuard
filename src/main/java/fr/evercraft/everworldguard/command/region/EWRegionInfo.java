@@ -44,11 +44,12 @@ import fr.evercraft.everapi.plugin.command.Args;
 import fr.evercraft.everapi.plugin.command.ESubCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everapi.server.user.EUser;
+import fr.evercraft.everapi.services.worldguard.Flag;
+import fr.evercraft.everapi.services.worldguard.FlagValue;
 import fr.evercraft.everapi.services.worldguard.exception.CircularInheritanceException;
-import fr.evercraft.everapi.services.worldguard.flag.Flag;
-import fr.evercraft.everapi.services.worldguard.flag.FlagValue;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion.Group;
+import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion.Groups;
 import fr.evercraft.everapi.sponge.UtilsContexts;
 import fr.evercraft.everapi.services.worldguard.region.SetProtectedRegion;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
@@ -162,7 +163,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 		} else {
 			Set<ProtectedRegion> regions = new HashSet<ProtectedRegion>();
 			for (ProtectedRegion region : setregions.getAll()) {
-				if (!region.getType().equals(ProtectedRegion.Type.GLOBAL) && this.hasPermission(player, region, world)) {
+				if (!region.getType().equals(ProtectedRegion.Types.GLOBAL) && this.hasPermission(player, region, world)) {
 					regions.add(region);
 				}
 			}
@@ -261,7 +262,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 					.build()));
 		
 		// Points
-		if (region.getType().equals(ProtectedRegion.Type.CUBOID) || region.getType().equals(ProtectedRegion.Type.POLYGONAL)) {
+		if (region.getType().equals(ProtectedRegion.Types.CUBOID) || region.getType().equals(ProtectedRegion.Types.POLYGONAL)) {
 			Vector3i min = region.getMinimumPoint();
 			Vector3i max = region.getMaximumPoint();
 			Map<String, EReplace<?>> replaces = new HashMap<String, EReplace<?>>();
@@ -273,14 +274,14 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 			replaces.put("<max_z>", EReplace.of(String.valueOf(max.getZ())));
 			
 			
-			if (region.getType().equals(ProtectedRegion.Type.CUBOID)) {
+			if (region.getType().equals(ProtectedRegion.Types.CUBOID)) {
 				this.addLine(list, EWMessages.REGION_INFO_ONE_POINTS.getFormat()
 						.toText("<positions>",  EWMessages.REGION_INFO_ONE_POINTS_CUBOID.getFormat()
 								.toText2(replaces).toBuilder()
 								.onHover(TextActions.showText(EWMessages.REGION_INFO_ONE_POINTS_CUBOID_HOVER.getFormat()
 										.toText2(replaces)))
 								.build()));
-			} else if (region.getType().equals(ProtectedRegion.Type.POLYGONAL)) {
+			} else if (region.getType().equals(ProtectedRegion.Types.POLYGONAL)) {
 				List<Text> positions = new ArrayList<Text>();
 				int num = 1;
 				for(Vector3i pos : region.getPoints()) {
@@ -442,13 +443,13 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 									"<value>", key.getValueFormat((T) value).toBuilder()
 													.onShiftClick(TextActions.insertText(value_string))
 													.onClick(TextActions.suggestCommand(
-						"/" + this.getParentName() + " removeflag -w \"" + world.getName() + "\" \"" + region.getName() + "\" \"" + flag.getName() + "\" \"" + association.name() + "\""))
+						"/" + this.getParentName() + " removeflag -w \"" + world.getName() + "\" \"" + region.getName() + "\" \"" + flag.getName() + "\" \"" + association.getName() + "\""))
 													.build());
-					if (association.equals(Group.DEFAULT)) {
+					if (association.equals(Groups.DEFAULT)) {
 						flags_default.put(flag.getId(), message);
-					} else if (association.equals(Group.MEMBER)) {
+					} else if (association.equals(Groups.MEMBER)) {
 						flags_member.put(flag.getId(), message);
-					} else if (association.equals(Group.OWNER)) {
+					} else if (association.equals(Groups.OWNER)) {
 						flags_owner.put(flag.getId(), message);
 					}
 				});
@@ -483,17 +484,17 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 				curFlags.forEach((flag, values) -> {
 					Flag<T> key = (Flag<T>) flag;
 					values.getAll().forEach((association, value) ->  {
-						if (association.equals(Group.DEFAULT)) {
+						if (association.equals(Groups.DEFAULT)) {
 							if (!flags_default.containsKey(key.getId()) && 
 									!heritage_flags_default.containsKey(key.getId())) {
 								heritage_flags_default.put(key.getId(), this.getTextHeritagFlagsLine(key, (T) value, association, curParent, world));
 							}
-						} else if (association.equals(Group.MEMBER)) {
+						} else if (association.equals(Groups.MEMBER)) {
 							if (!flags_member.containsKey(key.getId()) && 
 									!heritage_flags_member.containsKey(key.getId())) {
 								heritage_flags_member.put(key.getId(), this.getTextHeritagFlagsLine(key, (T) value, association, curParent, world));
 							}
-						} else if (association.equals(Group.OWNER)) {
+						} else if (association.equals(Groups.OWNER)) {
 							if (!flags_owner.containsKey(key.getId()) && 
 									!heritage_flags_owner.containsKey(key.getId())) {
 								heritage_flags_owner.put(key.getId(), this.getTextHeritagFlagsLine(key, (T) value, association, curParent, world));
@@ -550,7 +551,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 						"<value>", flag.getValueFormat(value).toBuilder()
 										.onShiftClick(TextActions.insertText(value_string))
 										.onClick(TextActions.suggestCommand(
-			"/" + this.getParentName() + " removeflag -w \"" + world.getName() + "\" \"" + curParent.getName() + "\" \"" + flag.getName() + "\" \"" + association.name() + "\""))
+			"/" + this.getParentName() + " removeflag -w \"" + world.getName() + "\" \"" + curParent.getName() + "\" \"" + flag.getName() + "\" \"" + association.getName() + "\""))
 										.build());
 		
 	}

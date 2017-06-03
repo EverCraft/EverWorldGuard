@@ -21,7 +21,7 @@ import java.util.UUID;
 
 import com.google.common.collect.ImmutableSet;
 
-import fr.evercraft.everapi.services.worldguard.flag.Flag;
+import fr.evercraft.everapi.services.worldguard.Flag;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion.Group;
 import fr.evercraft.everworldguard.EverWorldGuard;

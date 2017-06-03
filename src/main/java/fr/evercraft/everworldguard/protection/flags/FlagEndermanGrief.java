@@ -25,8 +25,9 @@ import org.spongepowered.api.event.cause.NamedCause;
 
 import com.google.common.collect.ImmutableSet;
 
-import fr.evercraft.everapi.services.worldguard.flag.type.StateFlag;
+import fr.evercraft.everapi.services.worldguard.flag.StateFlag;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion.Group;
+import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion.Groups;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.protection.EProtectionService;
@@ -53,7 +54,7 @@ public class FlagEndermanGrief extends StateFlag {
 	
 	@Override
 	public Set<Group> getGroups() {
-		return ImmutableSet.of(Group.DEFAULT);
+		return ImmutableSet.of(Groups.DEFAULT);
 	}
 	
 	/*
