@@ -16,7 +16,6 @@
  */
 package fr.evercraft.everworldguard.protection.storage;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -336,9 +335,11 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 				config.getNode("max").setValue(TypeToken.of(Vector3i.class), region.getMaximumPoint());
 			} catch (ObjectMappingException e) {}
 		} else if (region.getType().equals(ProtectedRegion.Types.POLYGONAL)) {
-			config.getNode("positions").setValue(region.getPoints().stream()
-					.map(vector -> Arrays.asList(vector.getX(), vector.getY(), vector.getZ()))
-					.collect(Collectors.toList()));
+			region.getPoints().forEach(point -> {
+				try {
+					config.getNode("positions").getAppendedNode().setValue(TypeToken.of(Vector3i.class), point);
+				} catch (ObjectMappingException e) {}
+			});
 		}
 	}
 

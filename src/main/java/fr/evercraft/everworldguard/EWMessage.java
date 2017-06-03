@@ -329,7 +329,7 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		REGION_SELECT_POLYGONAL("region.select.polygonal",										"&7Vous venez de sélectionner la région &6<positions> &7de type &6<type>&7."),
 		REGION_SELECT_POLYGONAL_POINTS("region.select.polygonalPoints",							"&6<region>"),
 		REGION_SELECT_POLYGONAL_POINTS_HOVER("region.select.polygonalPointsHover",				"&6Les positions : [RT]<positions>"),
-		REGION_SELECT_POLYGONAL_POINTS_HOVER_LINE("region.select.polygonalPointsHoverLine",		"&6#<num> : (&c<x>&6, &c<y>&6, &c<z>&6)"),
+		REGION_SELECT_POLYGONAL_POINTS_HOVER_LINE("region.select.polygonalPointsHoverLine",		"&6\u0023<num> : (&c<x>&6, &c<y>&6, &c<z>&6)"),
 		REGION_SELECT_POLYGONAL_POINTS_HOVER_JOIN("region.select.polygonalPointsHoverJoin",		"[RT]"),
 		REGION_SELECT_GLOBAL("region.select.global",											"&cErreur : Impossible de sélectionner une région de type &6<type>&c."),
 		REGION_SELECT_TEMPLATE("region.select.template",										"&cErreur : Impossible de sélectionner une région de type &6<type>&c."),
