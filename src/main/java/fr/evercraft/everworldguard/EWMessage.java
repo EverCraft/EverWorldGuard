@@ -36,14 +36,14 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		DESCRIPTION("description",		"Plugin de protection des régions"), 
 		
 		GROUP_NOT_FOUND("groupNotFound",		"&cErreur : Le group '&6<group>&c' est introuvable."), 
-		GROUP_INCOMPATIBLE("groupImcompatible",	"&cErreur : Le group '&6<group>&c' est incompatible avec le flag <flag>."), 
+		GROUP_INCOMPATIBLE("groupIncompatible",	"&cErreur : Le group '&6<group>&c' est incompatible avec le flag <flag>."), 
 		FLAG_NOT_FOUND("flagNotFound",			"&cErreur : Le flag '&6<flag>&c' est introuvable."), 
 		
 		SELECT_DESCRIPTION("select.description",					"Permet de sélectionner une région"),
 		
 		SELECT_CUI_DESCRIPTION("select.cui.description",								"Permet de voir les régions (Require : WorldEdit CUI)"),
 		
-		SELECT_INFO_DESCRIPTION("select.info.description",								"Affiche les informations sur la région selectionnée"),
+		SELECT_INFO_DESCRIPTION("select.info.description",								"Affiche les informations sur la région sélectionnée"),
 		SELECT_INFO_POS("select.info.pos",												"&7(&6<x>&7, &6<y>&7, &6<z>&7)"),
 		SELECT_INFO_POS_HOVER("select.info.posHover",									"&7X : &6<x>[RT]&7Y : &6<y>[RT]&7Z : &6<z>"),
 		SELECT_INFO_CUBOID_TITLE("select.info.cuboidTitle",								"&7Votre sélection &6CUDOID&7"),
@@ -86,7 +86,7 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		SELECT_INFO_SPHERE_CENTER("select.info.sphereCenter",							"    &6&l➤  &6Centre : &7<center>"),
 		SELECT_INFO_SPHERE_EMPTY("select.info.sphereEmpty",								"    Aucune position sélectionnée."),
 		
-		SELECT_POS1_DESCRIPTION("select.pos1.description",			"Defini la première position"),
+		SELECT_POS1_DESCRIPTION("select.pos1.description",			"Défini  la première position"),
 		SELECT_POS1_ONE("select.pos1.one",							"&7Sélection de la position 1 : <position>."),
 		SELECT_POS1_TWO("select.pos1.two",							"&7Sélection de la position 1 : <position> &7(&6<area>&7)."),
 		SELECT_POS1_POLY("select.pos1.poly",						"&7Sélection de la position #1 : <position>."),
@@ -94,20 +94,20 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		SELECT_POS1_EQUALS("select.pos1.equals",					"&cErreur : Vous avez déjà sélectionnée une position."),
 		SELECT_POS1_CANCEL("select.pos1.cancel",					"&cErreur : Impossible de sélectionner une position pour le moment."),
 		
-		SELECT_POS2_DESCRIPTION("select.pos2.description",			"Defini la deuxième position"),
+		SELECT_POS2_DESCRIPTION("select.pos2.description",			"Défini  la deuxième position"),
 		SELECT_POS2_ONE("select.pos2.one",							"&7Sélection de la position 2 : <position>."),
 		SELECT_POS2_TWO("select.pos2.two",							"&7Sélection de la position 2 : <position> &7(&6<area>&7)."),
 		SELECT_POS2_POLY_ONE("select.pos2.polyOnde",				"&7Ajout de la position &6#<num> &7: <position>."),
 		SELECT_POS2_POLY_ALL("select.pos2.polyAll",					"&7Ajout de la position &6#<num> &7: <position> &7(&6<area>&7)."),
 		SELECT_POS2_RADIUS("select.pos2.radius",					"&7Sélection d'un rayon de <radius> &7block(s) : <position>."),
-		SELECT_POS2_NO_CENTER("select.pos2.noCenter",				"&cErreur : Aucune position centrale selectionnée."),
-		SELECT_POS2_EQUALS("select.pos2.equals",					"&cErreur : Vous avez déjà selectionnée cette position."),
+		SELECT_POS2_NO_CENTER("select.pos2.noCenter",				"&cErreur : Aucune position centrale sélectionnée."),
+		SELECT_POS2_EQUALS("select.pos2.equals",					"&cErreur : Vous avez déjà sélectionnée cette position."),
 		SELECT_POS2_CANCEL("select.pos2.cancel",					"&cErreur : Impossible de sélectionner une position pour le moment."),
 		
-		SELECT_CLEAR_DESCRIPTION("select.clear.description",		"Supprime toutes les positions selectionnées"),
+		SELECT_CLEAR_DESCRIPTION("select.clear.description",		"Supprime toutes les positions sélectionnées"),
 		SELECT_CLEAR_PLAYER("select.clear.player",					"&7Vous n'avez plus aucune position."),
 		
-		SELECT_REMOVE_DESCRIPTION("select.remove.description",		"Supprime la denière position sélectionnée d'un polygone"),
+		SELECT_REMOVE_DESCRIPTION("select.remove.description",		"Supprime la dernière  position sélectionnée d'un polygone"),
 		SELECT_REMOVE_PLAYER("select.remove.player",				"&7Vous avez supprimée la position : <pos>."),
 		SELECT_REMOVE_EMPTY("select.remove.empty",					"&4Erreur : Vous n'avez aucune position sélectionnée."),
 		SELECT_REMOVE_ERROR("select.remove.error",					"&4Erreur : Uniquement pour le type &62D Polygonal&c."),
@@ -131,7 +131,7 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		SELECT_SHIFT_ERROR_OPERATION("select.shift.errorOperation",				"&4Erreur : Vous ne pouvez pas faire cette opération sur ce type de région."),
 		SELECT_SHIFT_ERROR_NO_REGION("select.shift.errorNoRegion",				"&4Erreur : Vous devez d'abord sélectionner une région."),
 		
-		SELECT_TYPE_DESCRIPTION("select.type.description",		"&7Change le type de selection"),
+		SELECT_TYPE_DESCRIPTION("select.type.description",		"&7Change le type de sélection"),
 		
 		SELECT_TYPE_CUBOID("select.type.cuboid",				"&7Cuboid : Clic gauche pour définir le point N°1 et clic droit pour définir le point N°2.",
 																"&7Cuboid : left click for point 1, right for point 2."),
