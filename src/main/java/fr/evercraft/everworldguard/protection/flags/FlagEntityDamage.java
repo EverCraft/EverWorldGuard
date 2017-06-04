@@ -28,7 +28,7 @@ import org.spongepowered.api.event.entity.CollideEntityEvent;
 import org.spongepowered.api.event.entity.DamageEntityEvent;
 
 import fr.evercraft.everapi.services.entity.EntityTemplate;
-import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
+import fr.evercraft.everapi.services.worldguard.WorldGuardWorld;
 import fr.evercraft.everapi.services.worldguard.flag.EntityTemplateFlag;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EverWorldGuard;
@@ -58,7 +58,7 @@ public class FlagEntityDamage extends EntityTemplateFlag {
 	 * CollideEntityEvent : Pour les arcs Flame
 	 */
 	
-	public void onCollideEntity(WorldWorldGuard world, CollideEntityEvent event) {
+	public void onCollideEntity(WorldGuardWorld world, CollideEntityEvent event) {
 		if (event.isCancelled()) return;
 		
 		// TODO  Cause "ProjectileSource"
@@ -69,6 +69,7 @@ public class FlagEntityDamage extends EntityTemplateFlag {
 		
 		event.filterEntities(player -> {
 			if (!(player instanceof Player)) return true;
+			
 			if (!world.getRegions(player.getLocation().getPosition()).getFlag((Player) player, this).contains(optEntity.get(), (Player) player)) {
 				return false;
 			}
@@ -80,7 +81,7 @@ public class FlagEntityDamage extends EntityTemplateFlag {
 	 * DamageEntity
 	 */
 	
-	public void onDamageEntity(WorldWorldGuard world, DamageEntityEvent event) {
+	public void onDamageEntity(WorldGuardWorld world, DamageEntityEvent event) {
 		if (event.isCancelled()) return;
 		
 		if (!(event.getTargetEntity() instanceof Player)) return;
@@ -102,7 +103,7 @@ public class FlagEntityDamage extends EntityTemplateFlag {
 		}
 	}
 	
-	public boolean onDamageEntity(WorldWorldGuard world, DamageEntityEvent event, Entity entity, Player player) {
+	public boolean onDamageEntity(WorldGuardWorld world, DamageEntityEvent event, Entity entity, Player player) {
 		if (!this.getDefault().contains(entity)) return false;
 		
 		if (!world.getRegions(player.getLocation().getPosition()).getFlag((Player) player, this).contains(entity, player)) {

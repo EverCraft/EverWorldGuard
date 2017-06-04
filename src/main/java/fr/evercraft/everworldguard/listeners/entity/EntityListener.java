@@ -30,7 +30,7 @@ import org.spongepowered.api.event.entity.SpawnEntityEvent;
 import org.spongepowered.api.event.entity.projectile.TargetProjectileEvent;
 import org.spongepowered.api.event.item.inventory.DropItemEvent;
 
-import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
+import fr.evercraft.everapi.services.worldguard.WorldGuardWorld;
 import fr.evercraft.everworldguard.EverWorldGuard;
 
 public class EntityListener {
@@ -43,7 +43,7 @@ public class EntityListener {
 	
 	@Listener(order=Order.FIRST)
 	public void onInteractEntity(InteractEntityEvent.Secondary event) {
-		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetEntity().getWorld());
+		WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetEntity().getWorld());
 		
 		this.plugin.getManagerFlags().INTERACT_ENTITY.onInteractEntity(world, event);
 		this.plugin.getManagerFlags().BUILD.onInteractEntity(world, event);
@@ -51,14 +51,14 @@ public class EntityListener {
 	
 	@Listener(order=Order.FIRST)
 	public void onInteractEntityPrimary(InteractEntityEvent.Primary event) {
-		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetEntity().getWorld());
+		WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetEntity().getWorld());
 		
 		this.plugin.getManagerFlags().DAMAGE_ENTITY.onInteractEntityPrimary(world, event);
 	}
 	
 	@Listener(order=Order.FIRST)
 	public void onDamageEntity(DamageEntityEvent event) {
-		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetEntity().getWorld());
+		WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetEntity().getWorld());
 		
 		this.plugin.getManagerFlags().PVP.onDamageEntity(world, event);
 		this.plugin.getManagerFlags().INVINCIBILITY.onDamageEntity(world, event);
@@ -101,7 +101,7 @@ public class EntityListener {
 	
 	@Listener(order=Order.FIRST)
 	public void onConstructEntityPre(ConstructEntityEvent.Pre event) {
-		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTransform().getExtent());
+		WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateWorld(event.getTransform().getExtent());
 		
 		this.plugin.getManagerFlags().LIGHTNING.onConstructEntityPre(world, event);
 		
@@ -111,7 +111,7 @@ public class EntityListener {
 	
 	@Listener(order=Order.FIRST)
 	public void onPlayerHeal(HealEntityEvent event) {
-		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetEntity().getWorld());
+		WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetEntity().getWorld());
 		
 		this.plugin.getManagerFlags().INVINCIBILITY.onHealEntity(world, event);
 	}
@@ -119,7 +119,7 @@ public class EntityListener {
 	@Listener(order=Order.FIRST)
 	public void onCollideEntityImpact(CollideEntityEvent.Impact event) {
 		if (event.getEntities().isEmpty()) return;
-		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getEntities().get(0).getWorld());
+		WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateWorld(event.getEntities().get(0).getWorld());
 
 		this.plugin.getManagerFlags().PVP.onCollideEntityImpact(world, event);
 		this.plugin.getManagerFlags().DAMAGE_ENTITY.onCollideEntityImpact(world, event);
@@ -130,7 +130,7 @@ public class EntityListener {
 	
 	@Listener(order=Order.FIRST)
 	public void onCollideEntityImpact(CollideEvent.Impact event) {
-		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getImpactPoint().getExtent());
+		WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateWorld(event.getImpactPoint().getExtent());
 
 		this.plugin.getManagerFlags().POTION_SPLASH.onCollideImpact(world, event);
 		

@@ -36,7 +36,7 @@ import org.spongepowered.api.world.World;
 import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
 
-import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
+import fr.evercraft.everapi.services.worldguard.WorldGuardWorld;
 import fr.evercraft.everapi.services.worldguard.flag.StateFlag;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
@@ -72,7 +72,7 @@ public class FlagPvp extends StateFlag {
 	 * CollideEntityEvent : Pour les arcs Flame
 	 */
 	
-	public void onCollideEntityImpact(WorldWorldGuard world, CollideEntityEvent event) {
+	public void onCollideEntityImpact(WorldGuardWorld world, CollideEntityEvent event) {
 		if (event.isCancelled()) return;
 		
 		if (!event.getCause().get(NamedCause.SOURCE, Projectile.class).isPresent()) return;
@@ -80,6 +80,9 @@ public class FlagPvp extends StateFlag {
 		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
 		if (!optPlayer.isPresent()) return;
 		Player player = optPlayer.get();
+		
+		// Bypass
+		if (this.plugin.getProtectionService().hasBypass(player)) return;
 		
 		// Le joueur n'est pas dans une region où il a le droit de PVP
 		if (world.getRegions(player.getLocation().getPosition()).getFlag(player, this).equals(State.DENY)) {
@@ -98,7 +101,7 @@ public class FlagPvp extends StateFlag {
 		}
 	}
 	
-	public void onDamageEntity(WorldWorldGuard world, DamageEntityEvent event) {
+	public void onDamageEntity(WorldGuardWorld world, DamageEntityEvent event) {
 		if (event.isCancelled()) return;
 		if (!(event.getTargetEntity() instanceof Player)) return;
 		
@@ -142,7 +145,10 @@ public class FlagPvp extends StateFlag {
 		}
 	}
 	
-	public boolean onDamageEntity(WorldWorldGuard world, DamageEntityEvent event, Player player, Player target, boolean message) {
+	public boolean onDamageEntity(WorldGuardWorld world, DamageEntityEvent event, Player player, Player target, boolean message) {
+		// Bypass
+		if (this.plugin.getProtectionService().hasBypass(player)) return false;
+		
 		if (world.getRegions(player.getLocation().getPosition()).getFlag(player, this).equals(State.DENY)) {
 			event.setCancelled(true);
 			if (message) {

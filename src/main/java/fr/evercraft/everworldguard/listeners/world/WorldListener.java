@@ -22,7 +22,7 @@ import org.spongepowered.api.event.entity.explosive.DetonateExplosiveEvent;
 import org.spongepowered.api.event.world.LoadWorldEvent;
 import org.spongepowered.api.event.world.UnloadWorldEvent;
 
-import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
+import fr.evercraft.everapi.services.worldguard.WorldGuardWorld;
 import fr.evercraft.everworldguard.EverWorldGuard;
 
 public class WorldListener {
@@ -45,7 +45,7 @@ public class WorldListener {
 	
 	@Listener(order=Order.FIRST)
 	public void onDetonateExplosive(DetonateExplosiveEvent event) {
-		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetEntity().getLocation().getExtent());
+		WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetEntity().getLocation().getExtent());
 		
 		this.plugin.getManagerFlags().EXPLOSION.onDetonateExplosive(event, world);
 		this.plugin.getManagerFlags().EXPLOSION_BLOCK.onDetonateExplosive(event, world);

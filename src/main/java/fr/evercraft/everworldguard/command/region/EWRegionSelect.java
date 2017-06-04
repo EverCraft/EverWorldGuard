@@ -40,7 +40,7 @@ import fr.evercraft.everapi.message.replace.EReplace;
 import fr.evercraft.everapi.plugin.command.Args;
 import fr.evercraft.everapi.plugin.command.ESubCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
-import fr.evercraft.everapi.services.selection.SelectionType;
+import fr.evercraft.everapi.services.selection.SelectionRegion;
 import fr.evercraft.everapi.services.selection.exception.SelectorSecondaryException;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion.Type;
@@ -185,7 +185,7 @@ public class EWRegionSelect extends ESubCommand<EverWorldGuard> {
 		Vector3i min = region.getMinimumPoint();
 		Vector3i max = region.getMaximumPoint();
 		
-		player.setSelectorType(SelectionType.CUBOID);
+		player.setSelectorType(SelectionRegion.Types.CUBOID);
 		player.setSelectorPrimary(min);
 		try {
 			player.setSelectorSecondary(max);
@@ -213,7 +213,7 @@ public class EWRegionSelect extends ESubCommand<EverWorldGuard> {
 	}
 	
 	private boolean commandRegionSelectPolygonal(final EPlayer player, final ProtectedRegion region, final World world) {
-		player.setSelectorType(SelectionType.POLYGONAL);
+		player.setSelectorType(SelectionRegion.Types.POLYGONAL);
 		Iterator<Vector3i> iterator = region.getPoints().iterator();
 		if (iterator.hasNext()) {
 			player.setSelectorPrimary(iterator.next());

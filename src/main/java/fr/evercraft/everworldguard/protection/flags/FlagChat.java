@@ -31,7 +31,7 @@ import com.google.common.collect.Lists;
 
 import fr.evercraft.everapi.registers.ChatType;
 import fr.evercraft.everapi.registers.ChatType.ChatTypes;
-import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
+import fr.evercraft.everapi.services.worldguard.WorldGuardWorld;
 import fr.evercraft.everapi.services.worldguard.flag.CatalogTypeFlag;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.protection.EProtectionService;
@@ -66,13 +66,16 @@ public class FlagChat extends CatalogTypeFlag<ChatType> {
 					.replace("<z>", position.getZ()));
 	}
 	
-    public void onMessageChannelChat(MessageChannelEvent.Chat event, WorldWorldGuard worldSender, Player playerSender) {
+    public void onMessageChannelChat(MessageChannelEvent.Chat event, WorldGuardWorld worldSender, Player playerSender) {
 		this.onMessageChannelChatSend(event, worldSender, playerSender);
 		this.onMessageChannelChatReceive(event, worldSender, playerSender);
 	}
 		
-	public void onMessageChannelChatSend(MessageChannelEvent.Chat event, WorldWorldGuard worldSender, Player playerSender) {
+	public void onMessageChannelChatSend(MessageChannelEvent.Chat event, WorldGuardWorld worldSender, Player playerSender) {
 		if (event.isCancelled()) return;
+		
+		// Bypass
+		if (this.plugin.getProtectionService().hasBypass(playerSender)) return;
 		
 		if (!this.getDefault().containsValue(ChatTypes.SEND)) return;
 		
@@ -83,7 +86,7 @@ public class FlagChat extends CatalogTypeFlag<ChatType> {
 		}
 	}
 		
-	public void onMessageChannelChatReceive(MessageChannelEvent.Chat event, WorldWorldGuard worldSender, Player playerSender) {
+	public void onMessageChannelChatReceive(MessageChannelEvent.Chat event, WorldGuardWorld worldSender, Player playerSender) {
 		if (event.isCancelled()) return;
 		
 		if (!this.getDefault().containsValue(ChatTypes.RECEIVE)) return;
@@ -95,7 +98,11 @@ public class FlagChat extends CatalogTypeFlag<ChatType> {
         list.removeIf(messageReceiver -> {
         	if(messageReceiver instanceof Player && !playerSender.equals(messageReceiver)) {
         		Player playerReceiver = (Player) messageReceiver;
-        		WorldWorldGuard worldReceiver = service.getOrCreateWorld(playerReceiver.getWorld());
+        		
+        		// Bypass
+        		if (this.plugin.getProtectionService().hasBypass(playerReceiver)) return false;
+        		
+        		WorldGuardWorld worldReceiver = service.getOrCreateWorld(playerReceiver.getWorld());
         		return !worldReceiver.getRegions(playerReceiver.getLocation().getPosition()).getFlag(playerReceiver, this).containsValue(ChatTypes.RECEIVE);
         	}
         	return false;

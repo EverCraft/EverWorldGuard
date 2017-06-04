@@ -84,7 +84,7 @@ public class EWRegionTeleport extends ESubCommand<EverWorldGuard> {
 	@Override
 	public Text help(final CommandSource source) {
 		return Text.builder("/" + this.getName() + " [" + MARKER_SPAWN + "]"
-												 + " [" + MARKER_WORLD + " " + EAMessages.ARGS_WORLD.getString() + "] "
+												 + " [" + MARKER_WORLD + " " + EAMessages.ARGS_WORLD.getString() + "]"
 												 + " <" + EAMessages.ARGS_REGION.getString() + ">")
 				.onClick(TextActions.suggestCommand("/" + this.getName() + " "))
 				.color(TextColors.RED)

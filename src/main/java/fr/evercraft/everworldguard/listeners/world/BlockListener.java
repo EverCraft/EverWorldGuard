@@ -22,7 +22,7 @@ import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.block.CollideBlockEvent;
 import org.spongepowered.api.event.block.InteractBlockEvent;
 
-import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
+import fr.evercraft.everapi.services.worldguard.WorldGuardWorld;
 import fr.evercraft.everworldguard.EverWorldGuard;
 
 public class BlockListener {
@@ -109,7 +109,7 @@ public class BlockListener {
 	@Listener(order=Order.FIRST)
 	public void onInteractBlock(InteractBlockEvent.Secondary event) {
 		event.getTargetBlock().getLocation().ifPresent(location -> {
-			WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(location.getExtent());
+			WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateWorld(location.getExtent());
 		
 			this.plugin.getManagerFlags().BUILD.onInteractBlockSecondary(world, event, location);
 			this.plugin.getManagerFlags().BLOCK_BREAK.onInteractBlockSecondary(world, event, location);
@@ -123,7 +123,7 @@ public class BlockListener {
 	
 	@Listener(order=Order.FIRST)
 	public void onCollideBlock(CollideBlockEvent event) {
-		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetLocation().getExtent());
+		WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetLocation().getExtent());
 		
 		this.plugin.getManagerFlags().INTERACT_BLOCK.onCollideBlock(world, event);
 		

@@ -31,7 +31,7 @@ import com.flowpowered.math.vector.Vector3i;
 import fr.evercraft.everapi.EAMessage.EAMessages;
 import fr.evercraft.everapi.plugin.command.ESubCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
-import fr.evercraft.everapi.services.selection.SelectionType;
+import fr.evercraft.everapi.services.selection.SelectionRegion;
 import fr.evercraft.everapi.services.selection.exception.SelectorSecondaryException;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EverWorldGuard;
@@ -86,7 +86,7 @@ public class EWSelectRemove extends ESubCommand<EverWorldGuard> {
 	}
 
 	private boolean commandSelectRemove(final EPlayer player) {		
-		if (!player.getSelectorType().equals(SelectionType.POLYGONAL)) {
+		if (!player.getSelectorType().equals(SelectionRegion.Types.POLYGONAL)) {
 			EWMessages.SELECT_REMOVE_ERROR.sendTo(player);
 			return false;
 		}

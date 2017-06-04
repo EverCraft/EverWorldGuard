@@ -27,7 +27,7 @@ import org.spongepowered.api.world.World;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 
-import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
+import fr.evercraft.everapi.services.worldguard.WorldGuardWorld;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.protection.index.EWWorld;
 
@@ -72,7 +72,7 @@ public class EWorldList {
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public Set<WorldWorldGuard> getAll() {
+	public Set<WorldGuardWorld> getAll() {
 		return (Set) ImmutableSet.copyOf(this.worlds.values());
 	}
 

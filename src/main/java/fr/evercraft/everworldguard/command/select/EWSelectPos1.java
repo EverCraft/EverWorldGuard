@@ -32,7 +32,7 @@ import com.flowpowered.math.vector.Vector3i;
 import fr.evercraft.everapi.EAMessage.EAMessages;
 import fr.evercraft.everapi.plugin.command.ESubCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
-import fr.evercraft.everapi.services.selection.SelectionType;
+import fr.evercraft.everapi.services.selection.SelectionRegion;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EverWorldGuard;
 
@@ -88,14 +88,14 @@ public class EWSelectPos1 extends ESubCommand<EverWorldGuard> {
 	private boolean commandSelectPos1(final EPlayer player) {
 		Vector3i position = player.getLocation().getPosition().toInt();
 		
-		if (player.getSelectorType().equals(SelectionType.CUBOID) ||
-				player.getSelectorType().equals(SelectionType.EXTEND)) {
+		if (player.getSelectorType().equals(SelectionRegion.Types.CUBOID) ||
+				player.getSelectorType().equals(SelectionRegion.Types.EXTEND)) {
 			return this.commandSelectPos1Cuboid(player, position);
-		} else if (player.getSelectorType().equals(SelectionType.POLYGONAL)) {
+		} else if (player.getSelectorType().equals(SelectionRegion.Types.POLYGONAL)) {
 			return this.commandSelectPos1Polygonal(player, position);
-		} else if (player.getSelectorType().equals(SelectionType.CYLINDER) || 
-					player.getSelectorType().equals(SelectionType.ELLIPSOID) || 
-					player.getSelectorType().equals(SelectionType.SPHERE)) {
+		} else if (player.getSelectorType().equals(SelectionRegion.Types.CYLINDER) || 
+					player.getSelectorType().equals(SelectionRegion.Types.ELLIPSOID) || 
+					player.getSelectorType().equals(SelectionRegion.Types.SPHERE)) {
 			return this.commandSelectPos1Cylinder(player, position);
 		} else {
 			EAMessages.COMMAND_ERROR.sender()

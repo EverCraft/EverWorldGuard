@@ -46,7 +46,7 @@ import org.spongepowered.api.world.World;
 
 import com.flowpowered.math.vector.Vector3i;
 
-import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
+import fr.evercraft.everapi.services.worldguard.WorldGuardWorld;
 import fr.evercraft.everapi.services.worldguard.flag.CatalogTypeFlag;
 import fr.evercraft.everapi.sponge.UtilsCause;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
@@ -87,12 +87,15 @@ public class FlagBlockBreak extends CatalogTypeFlag<BlockType> {
 	/*
 	 * InteractBlockEvent.Secondary : TODO : Fix le bug de la TNT
 	 */
-	public void onInteractBlockSecondary(WorldWorldGuard world, InteractBlockEvent.Secondary event, Location<World> location) {
+	public void onInteractBlockSecondary(WorldGuardWorld world, InteractBlockEvent.Secondary event, Location<World> location) {
 		if (event.isCancelled()) return;
 		
 		Optional<Player> optPlayer = event.getCause().get(NamedCause.SOURCE, Player.class);
 		if (!optPlayer.isPresent()) return;
 		Player player = optPlayer.get();
+		
+		// Bypass
+		if (this.plugin.getProtectionService().hasBypass(player)) return;
 		
 		BlockType type = event.getTargetBlock().getState().getType();
 		if (!type.equals(BlockTypes.TNT)) return;
@@ -122,7 +125,7 @@ public class FlagBlockBreak extends CatalogTypeFlag<BlockType> {
 		
 		Optional<LocatableBlock> piston = event.getCause().get(NamedCause.SOURCE, LocatableBlock.class);
 		if (piston.isPresent()) {
-			WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(piston.get().getWorld());
+			WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateWorld(piston.get().getWorld());
 			
 			// Extend
 			if (event.getCause().containsNamed(NamedCause.PISTON_EXTEND) || event.getCause().containsNamed(NamedCause.PISTON_RETRACT)) {				
@@ -131,10 +134,13 @@ public class FlagBlockBreak extends CatalogTypeFlag<BlockType> {
 		}
 	}
 	
-	private void onChangeBlockPrePiston(WorldWorldGuard world, ChangeBlockEvent.Pre event, LocatableBlock block) {
+	private void onChangeBlockPrePiston(WorldGuardWorld world, ChangeBlockEvent.Pre event, LocatableBlock block) {
 		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
 		if (optPlayer.isPresent()) {
 			Player player = optPlayer.get();
+			
+			// Bypass
+			if (this.plugin.getProtectionService().hasBypass(player)) return;
 			
 			if (event.getLocations().stream().anyMatch(location -> 
 					this.getDefault().containsValue(location.getBlockType()) && 
@@ -166,6 +172,9 @@ public class FlagBlockBreak extends CatalogTypeFlag<BlockType> {
 	}
 
 	private void onChangeBlockBreakPlayer(EProtectionService service, ChangeBlockEvent.Break event, Player player) {
+		// Bypass
+		if (this.plugin.getProtectionService().hasBypass(player)) return;		
+		
 		List<Transaction<BlockSnapshot>> transactions = event.getTransactions().stream()
 			.filter(transaction -> this.onChangeBlockBreak(service, transaction, player))
 			.collect(Collectors.toList());
@@ -254,6 +263,10 @@ public class FlagBlockBreak extends CatalogTypeFlag<BlockType> {
 		// Player
 		if (optPlayer.isPresent()) {
 			Player player = optPlayer.get();
+			
+			// Bypass
+			if (this.plugin.getProtectionService().hasBypass(player)) return;
+			
 			event.getTransactions().stream().filter(transaction -> this.onChangeBlockPlace(service, transaction, player))
 				.forEach(transaction -> {
 					BlockSnapshot block = transaction.getOriginal();
@@ -291,6 +304,9 @@ public class FlagBlockBreak extends CatalogTypeFlag<BlockType> {
 		// Player
 		if (optPlayer.isPresent()) {
 			Player player = optPlayer.get();
+			
+			// Bypass
+			if (this.plugin.getProtectionService().hasBypass(player)) return;
 			
 			List<Transaction<BlockSnapshot>> transactions = event.getTransactions().stream()
 				.filter(transaction -> this.onChangeBlockPlace(service, transaction, player))

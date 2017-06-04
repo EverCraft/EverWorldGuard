@@ -43,7 +43,7 @@ import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
 
 import fr.evercraft.everapi.services.entity.EntityTemplate;
-import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
+import fr.evercraft.everapi.services.worldguard.WorldGuardWorld;
 import fr.evercraft.everapi.services.worldguard.flag.EntityTemplateFlag;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EverWorldGuard;
@@ -82,13 +82,16 @@ public class FlagDamageEntity extends EntityTemplateFlag {
 	/*
 	 * CollideEntityEvent : Pour les arcs Flame
 	 */
-	public void onCollideEntityImpact(WorldWorldGuard world, CollideEntityEvent event) {
+	public void onCollideEntityImpact(WorldGuardWorld world, CollideEntityEvent event) {
 		if (event.isCancelled()) return;
 		
 		// TODO Owner == Cible ?
 		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
 		if (!optPlayer.isPresent()) return;
 		Player player = optPlayer.get();
+		
+		// Bypass
+		if (this.plugin.getProtectionService().hasBypass(player)) return;
 		
 		if (!event.getCause().get(NamedCause.SOURCE, Projectile.class).isPresent()) return;
 		
@@ -104,7 +107,7 @@ public class FlagDamageEntity extends EntityTemplateFlag {
 	 * DamageEntity
 	 */
 	
-	public void onDamageEntity(WorldWorldGuard world, DamageEntityEvent event) {
+	public void onDamageEntity(WorldGuardWorld world, DamageEntityEvent event) {
 		if (event.isCancelled()) return;
 		if (!this.getDefault().contains(event.getTargetEntity())) return;
 		
@@ -198,7 +201,10 @@ public class FlagDamageEntity extends EntityTemplateFlag {
 		}
 	}
 	
-	public boolean onDamageEntity(WorldWorldGuard world, DamageEntityEvent event, Entity entity, Player player) {
+	public boolean onDamageEntity(WorldGuardWorld world, DamageEntityEvent event, Entity entity, Player player) {
+		// Bypass
+		if (this.plugin.getProtectionService().hasBypass(player)) return false;
+		
 		if (!world.getRegions(entity.getLocation().getPosition()).getFlag(player, this).contains(event.getTargetEntity(), player)) {
 			event.setCancelled(true);
 			return true;
@@ -206,7 +212,7 @@ public class FlagDamageEntity extends EntityTemplateFlag {
 		return false;
 	}
 	
-	public boolean onDamageEntity(WorldWorldGuard world, DamageEntityEvent event, Entity entity) {
+	public boolean onDamageEntity(WorldGuardWorld world, DamageEntityEvent event, Entity entity) {
 		if (!world.getRegions(entity.getLocation().getPosition()).getFlagDefault(this).contains(event.getTargetEntity())) {
 			event.setCancelled(true);
 			return true;
@@ -219,7 +225,7 @@ public class FlagDamageEntity extends EntityTemplateFlag {
 	 */
 
 	// TODO Bug : ARMOR_STAND
-	public void onInteractEntityPrimary(WorldWorldGuard world, InteractEntityEvent.Primary event) {
+	public void onInteractEntityPrimary(WorldGuardWorld world, InteractEntityEvent.Primary event) {
 		if (event.isCancelled()) return;
 		
 		if (!event.getTargetEntity().equals(EntityTypes.ARMOR_STAND)) return;
@@ -228,6 +234,9 @@ public class FlagDamageEntity extends EntityTemplateFlag {
 		Optional<Player> optPlayer = event.getCause().get(NamedCause.SOURCE, Player.class);
 		if (!optPlayer.isPresent()) return;
 		Player player = optPlayer.get();
+		
+		// Bypass
+		if (this.plugin.getProtectionService().hasBypass(player)) return;
 		
 		if (!world.getRegions(event.getTargetEntity().getLocation().getPosition()).getFlag(player, this).contains(event.getTargetEntity(), player)) {
 			event.setCancelled(true);

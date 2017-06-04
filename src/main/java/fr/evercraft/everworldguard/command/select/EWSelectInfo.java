@@ -34,7 +34,6 @@ import fr.evercraft.everapi.EAMessage.EAMessages;
 import fr.evercraft.everapi.plugin.command.ESubCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everapi.services.selection.SelectionRegion;
-import fr.evercraft.everapi.services.selection.SelectionType;
 import fr.evercraft.everapi.services.selection.SelectionRegion.Cylinder;
 import fr.evercraft.everapi.services.selection.SelectionRegion.Ellipsoid;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
@@ -90,17 +89,17 @@ public class EWSelectInfo extends ESubCommand<EverWorldGuard> {
 	}
 
 	private boolean commandSelect(final EPlayer player) {
-		if (player.getSelectorType().equals(SelectionType.CUBOID)) {
+		if (player.getSelectorType().equals(SelectionRegion.Types.CUBOID)) {
 			return this.commandSelectCuboid(player);
-		} else if (player.getSelectorType().equals(SelectionType.EXTEND)) {
+		} else if (player.getSelectorType().equals(SelectionRegion.Types.EXTEND)) {
 			return this.commandSelectExtend(player);
-		} else if (player.getSelectorType().equals(SelectionType.POLYGONAL)) {
+		} else if (player.getSelectorType().equals(SelectionRegion.Types.POLYGONAL)) {
 			return this.commandSelectPoly(player);
-		} else if (player.getSelectorType().equals(SelectionType.CYLINDER)) {
+		} else if (player.getSelectorType().equals(SelectionRegion.Types.CYLINDER)) {
 			return this.commandSelectCylinder(player);
-		} else if (player.getSelectorType().equals(SelectionType.ELLIPSOID)) {
+		} else if (player.getSelectorType().equals(SelectionRegion.Types.ELLIPSOID)) {
 			return this.commandSelectEllipsoid(player);
-		} else if (player.getSelectorType().equals(SelectionType.SPHERE)) {
+		} else if (player.getSelectorType().equals(SelectionRegion.Types.SPHERE)) {
 			return this.commandSelectSphere(player);
 		} else {
 			EAMessages.COMMAND_ERROR.sender()

@@ -131,4 +131,10 @@ public class RegionStorageSql implements RegionStorage {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public void reload() {
+		// TODO Auto-generated method stub
+		
+	}
 }

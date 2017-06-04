@@ -29,7 +29,7 @@ import com.flowpowered.math.vector.Vector3i;
 import fr.evercraft.everapi.message.replace.EReplace;
 import fr.evercraft.everapi.plugin.command.EParentCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
-import fr.evercraft.everapi.services.selection.SelectionType;
+import fr.evercraft.everapi.services.selection.SelectionRegion;
 import fr.evercraft.everapi.services.selection.exception.SelectorSecondaryException;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EWPermissions;
@@ -76,8 +76,8 @@ public class EWSelect extends EParentCommand<EverWorldGuard> {
 			return true;
 		}
 		
-		if (player.getSelectorType().equals(SelectionType.CUBOID) || 
-				player.getSelectorType().equals(SelectionType.EXTEND)) {
+		if (player.getSelectorType().equals(SelectionRegion.Types.CUBOID) || 
+				player.getSelectorType().equals(SelectionRegion.Types.EXTEND)) {
 			Optional<Vector3i> pos2 = player.getSelectorSecondary();
 			if (!pos2.isPresent()) {
 				EWMessages.SELECT_POS1_ONE.sender()
@@ -89,13 +89,13 @@ public class EWSelect extends EParentCommand<EverWorldGuard> {
 					.replace("<area>", String.valueOf(player.getSelectorVolume()))
 					.sendTo(player);
 			}
-		} else if (player.getSelectorType().equals(SelectionType.POLYGONAL)) {
+		} else if (player.getSelectorType().equals(SelectionRegion.Types.POLYGONAL)) {
 			EWMessages.SELECT_POS1_POLY.sender()
 				.replace("<position>", EWSelect.getPositionHover(position))
 				.sendTo(player);
-		} else if (player.getSelectorType().equals(SelectionType.CYLINDER) || 
-					player.getSelectorType().equals(SelectionType.ELLIPSOID) || 
-					player.getSelectorType().equals(SelectionType.SPHERE)) {
+		} else if (player.getSelectorType().equals(SelectionRegion.Types.CYLINDER) || 
+					player.getSelectorType().equals(SelectionRegion.Types.ELLIPSOID) || 
+					player.getSelectorType().equals(SelectionRegion.Types.SPHERE)) {
 			EWMessages.SELECT_POS1_CENTER.sender()
 				.replace("<position>", EWSelect.getPositionHover(position))
 				.sendTo(player);
@@ -119,8 +119,8 @@ public class EWSelect extends EParentCommand<EverWorldGuard> {
 			return false;
 		}
 		
-		if (player.getSelectorType().equals(SelectionType.CUBOID) || 
-				player.getSelectorType().equals(SelectionType.EXTEND)) {
+		if (player.getSelectorType().equals(SelectionRegion.Types.CUBOID) || 
+				player.getSelectorType().equals(SelectionRegion.Types.EXTEND)) {
 			Optional<Vector3i> pos1 = player.getSelectorPrimary();
 			if (!pos1.isPresent()) {
 				EWMessages.SELECT_POS2_ONE.sender()
@@ -132,7 +132,7 @@ public class EWSelect extends EParentCommand<EverWorldGuard> {
 					.replace("<area>", String.valueOf(player.getSelectorVolume()))
 					.sendTo(player);
 			}
-		} else if (player.getSelectorType().equals(SelectionType.POLYGONAL)) {
+		} else if (player.getSelectorType().equals(SelectionRegion.Types.POLYGONAL)) {
 			if (player.getSelectorPositions().size() == 1) {
 				EWMessages.SELECT_POS2_POLY_ONE.sender()
 					.replace("<position>", EWSelect.getPositionHover(position))
@@ -145,9 +145,9 @@ public class EWSelect extends EParentCommand<EverWorldGuard> {
 					.replace("<area>", String.valueOf(player.getSelectorVolume()))
 					.sendTo(player);
 			}
-		} else if (player.getSelectorType().equals(SelectionType.CYLINDER) || 
-					player.getSelectorType().equals(SelectionType.ELLIPSOID) || 
-					player.getSelectorType().equals(SelectionType.SPHERE)) {
+		} else if (player.getSelectorType().equals(SelectionRegion.Types.CYLINDER) || 
+					player.getSelectorType().equals(SelectionRegion.Types.ELLIPSOID) || 
+					player.getSelectorType().equals(SelectionRegion.Types.SPHERE)) {
 			Vector3i pos1 = player.getSelectorPrimary().orElse(Vector3i.ZERO);
 			
 			EWMessages.SELECT_POS2_RADIUS.sender()

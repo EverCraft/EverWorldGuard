@@ -40,9 +40,10 @@ import fr.evercraft.everworldguard.selection.ESelectionService;
 		dependencies = {
 		    @Dependency(id = "everapi", version = EverAPI.VERSION),
 		    @Dependency(id = "spongeapi", version = EverAPI.SPONGEAPI_VERSION),
-		    @Dependency(id = "worldedit")
+		    @Dependency(id = "worldedit", optional = true)
 		})
 public class EverWorldGuard extends EPlugin<EverWorldGuard> {
+	
 	private EWConfig configs;
 	private EWMessage messages;
 	
@@ -56,14 +57,12 @@ public class EverWorldGuard extends EPlugin<EverWorldGuard> {
 	protected void onPreEnable() throws PluginDisableException {		
 		this.configs = new EWConfig(this);
 		this.messages = new EWMessage(this);
-		
 		this.database = new EWDataBases(this);
-		
 		this.commands = new EWManagerCommands(this);
 		
 		this.protection = new EProtectionService(this);
+		this.getGame().getServiceManager().setProvider(this, WorldGuardService.class, this.protection);	
 		
-		this.getGame().getServiceManager().setProvider(this, WorldGuardService.class, this.protection);		
 		this.getGame().getEventManager().registerListeners(this, new EWListener(this));
 	}
 	
@@ -86,8 +85,11 @@ public class EverWorldGuard extends EPlugin<EverWorldGuard> {
 		this.reloadConfigurations();
 		this.database.reload();
 		this.protection.reload();
-		this.selection.reload();
 		this.flags.reload();
+		
+		if (this.selection != null) {
+			this.selection.reload();
+		}
 	}
 	
 	protected void onDisable() {
@@ -97,20 +99,12 @@ public class EverWorldGuard extends EPlugin<EverWorldGuard> {
 	 * Accesseurs
 	 */
 	
-	public EWMessage getMessages(){
+	public EWMessage getMessages() {
 		return this.messages;
 	}
 	
 	public EWConfig getConfigs() {
 		return this.configs;
-	}
-	
-	public EProtectionService getProtectionService() {
-		return this.protection;
-	}
-	
-	public ESelectionService getSelectionService() {
-		return this.selection;
 	}
 	
 	public EWDataBases getDataBase() {
@@ -123,5 +117,13 @@ public class EverWorldGuard extends EPlugin<EverWorldGuard> {
 	
 	public EWManagerFlags getManagerFlags() {
 		return this.flags;
+	}
+	
+	public EProtectionService getProtectionService() {
+		return this.protection;
+	}
+	
+	public ESelectionService getSelectionService() {
+		return this.selection;
 	}
 }

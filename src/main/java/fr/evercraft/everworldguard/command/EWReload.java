@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with EverWorldGuard.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.evercraft.everworldguard.command.sub;
+package fr.evercraft.everworldguard.command;
 
 import java.util.Arrays;
 import java.util.Collection;

@@ -30,7 +30,7 @@ import org.spongepowered.api.event.message.MessageChannelEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 
 import fr.evercraft.everapi.event.MoveRegionEvent;
-import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
+import fr.evercraft.everapi.services.worldguard.WorldGuardWorld;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.protection.subject.EUserSubject;
 
@@ -69,7 +69,7 @@ public class PlayerListener {
 	
 	@Listener(order=Order.FIRST)
 	public void onMessageChannelChat(MessageChannelEvent.Chat event, @First Player player) {
-		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(player.getWorld());
+		WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateWorld(player.getWorld());
 		
 		this.plugin.getManagerFlags().CHAT.onMessageChannelChat(event, world, player);
 	}
@@ -81,14 +81,14 @@ public class PlayerListener {
 	
 	@Listener
 	public void onChangeInventoryPickup(ChangeInventoryEvent.Pickup event, @First Player player) {
-		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(player.getWorld());
+		WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateWorld(player.getWorld());
 		
 		this.plugin.getManagerFlags().ITEM_PICKUP.onChangeInventoryPickup(event, world, player);
 	}
 	
 	@Listener(order=Order.FIRST)
 	public void onMoveEntityTeleport(MoveEntityEvent.Teleport event, @Getter("getTargetEntity") Player player_sponge) {
-		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(player_sponge.getWorld());
+		WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateWorld(player_sponge.getWorld());
 		
 		this.plugin.getManagerFlags().ENDERPEARL.onMoveEntityTeleport(event, world, player_sponge);
 	}

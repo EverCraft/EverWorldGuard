@@ -49,8 +49,12 @@ public class EWConfig extends EConfig<EverWorldGuard> {
 		addDefault("SQL.url", "jdbc:mysql://root:password@localhost:3306/minecraft");
 		addDefault("SQL.prefix", "everworldguard_");
 		
+		addDefault("message.interval", 1, "Second");
+		
 		addDefault("select.item", ItemTypes.WOODEN_AXE.getId());
-		addDefault("intervalMessage", 1);
+		addDefault("select.maxPolygonalPoints", 20);
+		
+		addDefault("region.maxRegionCountPerPlayer", 10, "");
 	}
 
 	public ItemType getSelectItem() {
@@ -62,11 +66,19 @@ public class EWConfig extends EConfig<EverWorldGuard> {
 		}
 		return item.get();
 	}
+	
+	public int getSelectMaxPolygonalPoints() {
+		return this.get("select.maxPolygonalPoints").getInt(20);
+	}
 
 	/*
 	 * Millisecond
 	 */
-	public int getIntervalMessage() {
-		return this.get("intervalMessage").getInt(1) * 1000;
+	public int getMessageInterval() {
+		return this.get("message.interval").getInt(1) * 1000;
+	}
+	
+	public int getRegionMaxRegionCountPerPlayer() {
+		return this.get("region.maxRegionCountPerPlayer").getInt(10);
 	}
 }

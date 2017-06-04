@@ -35,6 +35,10 @@ public enum EWPermissions implements EnumPermission {
 	SELECT_CUI("select.cui"),
 	
 	REGION("region.command"),
+	REGION_LOAD("region.load"),
+	REGION_FLAGS("region.flags"),
+	REGION_BYPASS("region.bypass"),
+	REGION_CHECK("region.check"),
 	
 	REGION_INFO("region.info.command"),
 	REGION_INFO_OWNER("region.info.owner"),

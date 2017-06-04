@@ -27,7 +27,7 @@ import org.spongepowered.api.event.item.inventory.InteractItemEvent;
 import org.spongepowered.api.item.ItemTypes;
 import com.flowpowered.math.vector.Vector3i;
 
-import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
+import fr.evercraft.everapi.services.worldguard.WorldGuardWorld;
 import fr.evercraft.everapi.services.worldguard.flag.StateFlag;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
@@ -67,17 +67,23 @@ public class FlagEnderPearl extends StateFlag {
 		
 		Optional<Player> optPlayer = event.getCause().get(NamedCause.SOURCE, Player.class);
 		if (!optPlayer.isPresent()) return;
-		
 		Player player = optPlayer.get();
-		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(player.getWorld());
+		
+		// Bypass
+		if (this.plugin.getProtectionService().hasBypass(player)) return;
+		
+		WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateWorld(player.getWorld());
 		if (world.getRegions(player.getLocation().getPosition()).getFlag(player, this).equals(State.DENY)) {
 			event.setCancelled(true);
 			this.sendMessage(player, player.getLocation().getPosition().toInt());
 		}
 	}
 
-	public void onMoveEntityTeleport(MoveEntityEvent.Teleport event, WorldWorldGuard world, Player player) {
+	public void onMoveEntityTeleport(MoveEntityEvent.Teleport event, WorldGuardWorld world, Player player) {
 		if (event.isCancelled()) return;
+		
+		// Bypass
+		if (this.plugin.getProtectionService().hasBypass(player)) return;
 		
 		Optional<EntityTeleportCause> optCause = event.getCause().get(NamedCause.SOURCE, EntityTeleportCause.class);
 		if (!optCause.isPresent()) return;

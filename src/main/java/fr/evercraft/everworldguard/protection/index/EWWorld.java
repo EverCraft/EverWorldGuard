@@ -22,13 +22,14 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 
-import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
+import fr.evercraft.everapi.services.worldguard.WorldGuardWorld;
 import fr.evercraft.everapi.services.worldguard.exception.RegionIdentifierException;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everapi.sponge.UtilsChunk;
@@ -41,9 +42,8 @@ import fr.evercraft.everworldguard.protection.regions.EProtectedTemplateRegion;
 import fr.evercraft.everworldguard.protection.storage.RegionStorage;
 import fr.evercraft.everworldguard.protection.storage.RegionStorageConf;
 import fr.evercraft.everworldguard.protection.storage.RegionStorageSql;
-import fr.evercraft.everworldguard.protection.subject.EUserSubject;
 
-public class EWWorld implements WorldWorldGuard {
+public class EWWorld implements WorldGuardWorld {
 	
 	private final EverWorldGuard plugin;
 	
@@ -55,9 +55,7 @@ public class EWWorld implements WorldWorldGuard {
 	
 	private final World world;
 	
-	public EWWorld(EverWorldGuard plugin, World world) {
-		Preconditions.checkNotNull(plugin, "plugin");
-		
+	public EWWorld(EverWorldGuard plugin, World world) {		
 		this.plugin = plugin;
 		this.world = world;
 		this.regionsIdentifier = new ConcurrentHashMap<UUID, EProtectedRegion>();
@@ -78,6 +76,8 @@ public class EWWorld implements WorldWorldGuard {
 			this.storage = new RegionStorageSql(this.plugin, this);
 		} else if (!this.plugin.getDataBase().isEnable() && !(this.storage instanceof RegionStorageConf)) {
 			this.storage = new RegionStorageConf(this.plugin, this);
+		} else {
+			this.storage.reload();
 		}
 		
 		this.start();
@@ -121,9 +121,14 @@ public class EWWorld implements WorldWorldGuard {
 			this.cache.put(position.getX(), position.getZ(), chunck);
 		});
 		
-		for (EUserSubject subject : this.plugin.getProtectionService().getSubjectList().getAll()) {
-			subject.rebuild();
-		}
+		this.plugin.getProtectionService().getSubjectList().getAll().stream()
+			.filter(subject -> {
+				Optional<Location<World>> lastLocation = subject.getLastLocation();
+				if (lastLocation.isPresent()) {
+					return lastLocation.get().getExtent().equals(this.world);
+				}
+				return false;
+			}).forEach(subject -> subject.rebuild());
 	}
 	
 	/*

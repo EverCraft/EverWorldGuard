@@ -151,6 +151,28 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		REGION_DESCRIPTION("region.description",				"Gère les régions protégée"),
 		REGION_NO_PERMISSION("region.noPermission",				"&cErreur : Vous n'avez pas la permission pour cette région &6<region>&c."),
 		
+		REGION_LOAD_DESCRIPTION("region.load.description",		"Rechargement des régions d'un monde"), 
+		REGION_LOAD_MESSAGE("region.load.message",				"&7Rechargement du monde &6<world>&7."), 
+		
+		REGION_BYPASS_DESCRIPTION("region.bypass.description", 						"Permet d'activer ou désactiver le bypass"),
+		
+		REGION_BYPASS_ON_PLAYER("region.bypass.onPlayer", 							"&7Vous avez activé votre bypass."),
+		REGION_BYPASS_ON_PLAYER_ERROR("region.bypass.onPlayerError", 				"&cVous avez déjà votre bypass d'activé."),
+		REGION_BYPASS_ON_OTHERS_PLAYER("region.bypass.onOthersPlayer", 				"&7Votre bypass est désormais activé grâce à &6<staff>&7."),
+		REGION_BYPASS_ON_OTHERS_STAFF("region.bypass.onOthersStaff", 				"&7Vous venez d'activé le bypass à &6<player>&7."),
+		REGION_BYPASS_ON_OTHERS_ERROR("region.bypass.onOthersError", 				"&7Le bypass de &6<player> &7est déjà activé."),
+		
+		REGION_BYPASS_OFF_PLAYER("region.bypass.offPlayer", 						"&7Vous avez désactivé votre bypass."),
+		REGION_BYPASS_OFF_PLAYER_ERROR("region.bypass.offPlayerError", 				"&7Vous avez déjà votre bypass désactivé."),
+		REGION_BYPASS_OFF_OTHERS_PLAYER("region.bypass.offOthersPlayer", 			"&7Votre bypass est désormais désactivé à cause de &6<staff>&7."),
+		REGION_BYPASS_OFF_OTHERS_STAFF("region.bypass.offOthersStaff", 				"&7Vous venez de désactivé le bypass à &6<player>&7."),
+		REGION_BYPASS_OFF_OTHERS_ERROR("region.bypass.offOthersError", 				"&7Le bypass de &6<player> &7est déjà désactivé."),
+		
+		REGION_BYPASS_STATUS_PLAYER_ON("region.bypass.statusPlayerOn", 				"&7Votre bypass est activé."),
+		REGION_BYPASS_STATUS_PLAYER_OFF("region.bypass.statusPlayerOff", 			"&7Votre bypass est désactivé."),
+		REGION_BYPASS_STATUS_OTHERS_ON("region.bypass.statusOthersOn", 				"&7Le bypass de &6<player> &7est activé."),
+		REGION_BYPASS_STATUS_OTHERS_OFF("region.bypass.statusOthersOff", 			"&7Le bypass de &6<player> &7est désactivé."),
+		
 		REGION_INFO_DESCRIPTION("region.info.description",													"Permet de voir la liste des régions sur votre position"),
 		REGION_INFO_ONE_TITLE("region.info.one.title",														"&aRégion Info : &6<region>"),
 		REGION_INFO_ONE_WORLD("region.info.one.world",														"    &6&l➤  &6World : &c<world>"),
@@ -202,11 +224,11 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		REGION_LIST_GROUP_EMPTY("region.list.groupLine",										"    &7Aucune région"),
 		
 		REGION_DEFINE_DESCRIPTION("region.define.description",									"Permet de définir une nouvelle région"),
-		REGION_DEFINE_CUBOID_CREATE("region.define.cuboid.create",								"&7Vous venez de créer la région &6<positions> &7de type &6<type>&7."),
+		REGION_DEFINE_CUBOID_CREATE("region.define.cuboid.create",								"&7Vous venez de créer la région &6<points> &7de type &6<type>&7."),
 		REGION_DEFINE_CUBOID_POINTS("region.define.cuboid.points",								"&6<region>"),
 		REGION_DEFINE_CUBOID_POINTS_HOVER("region.define.cuboid.pointsHover",					"&6Min : (&c<min_x>&6, &c<min_y>&6, &c<min_z>&6)[RT]&6Max : (&c<max_x>&6, &c<max_y>&6, &c<max_z>&6)"),
 		REGION_DEFINE_CUBOID_ERROR_POSITION("region.define.cuboid.errorPosition",				"&cErreur : Vous devez sélectionner 2 positions pour définir une région &6<type>&c."),
-		REGION_DEFINE_POLYGONAL_CREATE("region.define.polygonal.create",						"&7Vous venez de créer la région &6<positions> &7de type &6<type>&7."),
+		REGION_DEFINE_POLYGONAL_CREATE("region.define.polygonal.create",						"&7Vous venez de créer la région &6<points> &7de type &6<type>&7."),
 		REGION_DEFINE_POLYGONAL_POINTS("region.define.polygonal.points",						"&6<region>"),
 		REGION_DEFINE_POLYGONAL_POINTS_HOVER("region.define.polygonal.pointsHover",				"&6Les positions : [RT]<positions>"),
 		REGION_DEFINE_POLYGONAL_POINTS_HOVER_LINE("region.define.polygonal.pointsHoverLine",	"&6#<num> : (&c<x>&6, &c<y>&6, &c<z>&6)"),
@@ -238,6 +260,11 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		REGION_RENAME_ERROR_IDENTIFIER_EQUALS("region.rename.errorIdentifierEquals",			"&cErreur : Impossible de renommer la région &6<region> &cen &6<identifier> &ccar une autre région porte déjà ce nom."),
 		REGION_RENAME_ERROR_IDENTIFIER_INVALID("region.rename.errorIdentifierInvalid",			"&cErreur : Impossible de renommer la région &6<region> &cen &6<identifier> &ccar le nom est invalide."),
 		REGION_RENAME_ERROR_GLOBAL("region.rename.errorGlobal",									"&cErreur : Impossible de renommer la région &6<region> &cde type &6<type>&c."),
+		
+		REGION_FLAGS_DESCRIPTION("region.flags.description",									"Affiche la liste des flags"),
+		REGION_FLAGS_LIST_TITLE("region.flags.listTitle",										"&aListe des flags"),
+		REGION_FLAGS_LIST_LINE("region.flags.listLine",											"    &6&l➤  &6<flag> : &7<description>"),
+		REGION_FLAGS_MESSAGE("region.flags.message",											"&6<flag> : &7<description>"),
 		
 		REGION_FLAG_ADD_DESCRIPTION("region.addflag.description",								"Défini un flag d'une région"),
 		REGION_FLAG_ADD_PLAYER("region.addflag.player",											"&7Vous avez défini le flag &6<flag> &7sur la région &6<region> &7dans le monde &6<world> &7pour le groupe &6<group> &7avec la valeur &6<value>&7."),
@@ -329,7 +356,7 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		REGION_SELECT_POLYGONAL("region.select.polygonal",										"&7Vous venez de sélectionner la région &6<positions> &7de type &6<type>&7."),
 		REGION_SELECT_POLYGONAL_POINTS("region.select.polygonalPoints",							"&6<region>"),
 		REGION_SELECT_POLYGONAL_POINTS_HOVER("region.select.polygonalPointsHover",				"&6Les positions : [RT]<positions>"),
-		REGION_SELECT_POLYGONAL_POINTS_HOVER_LINE("region.select.polygonalPointsHoverLine",		"&6\u0023<num> : (&c<x>&6, &c<y>&6, &c<z>&6)"),
+		REGION_SELECT_POLYGONAL_POINTS_HOVER_LINE("region.select.polygonalPointsHoverLine",		"&6#<num> : (&c<x>&6, &c<y>&6, &c<z>&6)"),
 		REGION_SELECT_POLYGONAL_POINTS_HOVER_JOIN("region.select.polygonalPointsHoverJoin",		"[RT]"),
 		REGION_SELECT_GLOBAL("region.select.global",											"&cErreur : Impossible de sélectionner une région de type &6<type>&c."),
 		REGION_SELECT_TEMPLATE("region.select.template",										"&cErreur : Impossible de sélectionner une région de type &6<type>&c."),

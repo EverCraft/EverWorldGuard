@@ -28,7 +28,7 @@ import org.spongepowered.api.event.entity.InteractEntityEvent;
 import com.flowpowered.math.vector.Vector3i;
 
 import fr.evercraft.everapi.services.entity.EntityTemplate;
-import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
+import fr.evercraft.everapi.services.worldguard.WorldGuardWorld;
 import fr.evercraft.everapi.services.worldguard.flag.EntityTemplateFlag;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EverWorldGuard;
@@ -68,7 +68,7 @@ public class FlagInteractEntity extends EntityTemplateFlag {
 	 * InteractEntity
 	 */
 
-	public void onInteractEntity(WorldWorldGuard world, InteractEntityEvent event) {
+	public void onInteractEntity(WorldGuardWorld world, InteractEntityEvent event) {
 		if (event.isCancelled()) return;
 		if (!this.getDefault().contains(event.getTargetEntity())) return;
 		
@@ -80,14 +80,17 @@ public class FlagInteractEntity extends EntityTemplateFlag {
 		}
 	}
 	
-	public void onInteractEntityPlayer(WorldWorldGuard world, InteractEntityEvent event, Player player) {
+	public void onInteractEntityPlayer(WorldGuardWorld world, InteractEntityEvent event, Player player) {
+		// Bypass
+		if (this.plugin.getProtectionService().hasBypass(player)) return;
+		
 		if (!world.getRegions(event.getTargetEntity().getLocation().getPosition()).getFlag(player, this).contains(event.getTargetEntity(), player)) {
 			event.setCancelled(true);
 			this.sendMessage(player, event.getTargetEntity());
 		}
 	}
 	
-	public void onInteractEntityNatural(WorldWorldGuard world, InteractEntityEvent event) {
+	public void onInteractEntityNatural(WorldGuardWorld world, InteractEntityEvent event) {
 		if (!world.getRegions(event.getTargetEntity().getLocation().getPosition()).getFlagDefault(this).contains(event.getTargetEntity())) {
 			event.setCancelled(true);
 		}

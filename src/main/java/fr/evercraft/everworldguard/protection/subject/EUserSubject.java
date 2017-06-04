@@ -38,18 +38,19 @@ import fr.evercraft.everapi.registers.MoveType;
 import fr.evercraft.everapi.registers.MoveType.MoveTypes;
 import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everapi.services.worldguard.Flag;
-import fr.evercraft.everapi.services.worldguard.SubjectWorldGuard;
+import fr.evercraft.everapi.services.worldguard.WorldGuardSubject;
 import fr.evercraft.everapi.services.worldguard.region.SetProtectedRegion;
 import fr.evercraft.everapi.sponge.UtilsLocation;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.protection.index.ESetProtectedRegion;
 
-public class EUserSubject implements SubjectWorldGuard {
+public class EUserSubject implements WorldGuardSubject {
 	
 	private final EverWorldGuard plugin;
 	
 	private final UUID identifier;
 	
+	private boolean bypass;
 	private Location<World> lastLocation;
 	private boolean lastRide;
 	private SetProtectedRegion lastRegions;
@@ -171,8 +172,8 @@ public class EUserSubject implements SubjectWorldGuard {
 		return this.plugin.getEServer().getEPlayer(this.getUniqueId());
 	}
 
-	public Location<World> getLastLocation() {
-		return this.lastLocation;
+	public Optional<Location<World>> getLastLocation() {
+		return Optional.ofNullable(this.lastLocation);
 	}
 	
 	public boolean getLastRide() {
@@ -181,5 +182,15 @@ public class EUserSubject implements SubjectWorldGuard {
 	
 	public void setLastRide(boolean ride) {
 		this.lastRide = ride;
+	}
+
+	@Override
+	public boolean hasBypass() {
+		return this.bypass;
+	}
+
+	@Override
+	public void setBypass(boolean bypass) {
+		this.bypass = bypass;
 	}
 }

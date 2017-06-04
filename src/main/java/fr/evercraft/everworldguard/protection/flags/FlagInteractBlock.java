@@ -40,7 +40,7 @@ import org.spongepowered.api.world.World;
 import com.flowpowered.math.vector.Vector3i;
 
 import fr.evercraft.everapi.services.worldguard.Flags;
-import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
+import fr.evercraft.everapi.services.worldguard.WorldGuardWorld;
 import fr.evercraft.everapi.services.worldguard.flag.CatalogTypeFlag;
 import fr.evercraft.everapi.sponge.UtilsBlockType;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
@@ -82,7 +82,7 @@ public class FlagInteractBlock extends CatalogTypeFlag<BlockType> {
 	 * InteractBlockEvent.Secondary
 	 */
 
-	public void onInteractBlockSecondary(WorldWorldGuard world, InteractBlockEvent.Secondary event, Location<World> location) {
+	public void onInteractBlockSecondary(WorldGuardWorld world, InteractBlockEvent.Secondary event, Location<World> location) {
 		if (event.isCancelled()) return;
 		
 		BlockType type = event.getTargetBlock().getState().getType();
@@ -96,7 +96,10 @@ public class FlagInteractBlock extends CatalogTypeFlag<BlockType> {
 		}
 	}
 	
-	private void onChangeBlockPlayer(WorldWorldGuard world, InteractBlockEvent.Secondary event, Location<World> location, BlockType type, Player player) {		
+	private void onChangeBlockPlayer(WorldGuardWorld world, InteractBlockEvent.Secondary event, Location<World> location, BlockType type, Player player) {
+		// Bypass
+		if (this.plugin.getProtectionService().hasBypass(player)) return;
+		
 		if (!world.getRegions(location.getPosition()).getFlag(player, this).containsValue(type)) {
 			event.setUseBlockResult(Tristate.FALSE);
 			
@@ -105,7 +108,7 @@ public class FlagInteractBlock extends CatalogTypeFlag<BlockType> {
 		}
 	}
 	
-	private void onChangeBlockNatural(WorldWorldGuard world, InteractBlockEvent.Secondary event, Location<World> location, BlockType type) {
+	private void onChangeBlockNatural(WorldGuardWorld world, InteractBlockEvent.Secondary event, Location<World> location, BlockType type) {
 		if (!world.getRegions(location.getPosition()).getFlagDefault(this).containsValue(type)) {
 			event.setUseBlockResult(Tristate.FALSE);
 		}
@@ -115,7 +118,7 @@ public class FlagInteractBlock extends CatalogTypeFlag<BlockType> {
 	 * CollideBlockEvent
 	 */
 
-	public void onCollideBlock(WorldWorldGuard world, CollideBlockEvent event) {
+	public void onCollideBlock(WorldGuardWorld world, CollideBlockEvent event) {
 		if (event.isCancelled()) return;
 		
 		BlockType type = event.getTargetBlock().getType();
@@ -129,7 +132,10 @@ public class FlagInteractBlock extends CatalogTypeFlag<BlockType> {
 		}
 	}
 	
-	private void onCollideBlockPlayer(WorldWorldGuard world, CollideBlockEvent event, BlockType type, Player player) {		
+	private void onCollideBlockPlayer(WorldGuardWorld world, CollideBlockEvent event, BlockType type, Player player) {
+		// Bypass
+		if (this.plugin.getProtectionService().hasBypass(player)) return;
+		
 		if (!world.getRegions(event.getTargetLocation().getPosition()).getFlag(player, this).containsValue(type)) {
 			event.setCancelled(true);
 			
@@ -140,7 +146,7 @@ public class FlagInteractBlock extends CatalogTypeFlag<BlockType> {
 		}
 	}
 	
-	private void onCollideBlockNatural(WorldWorldGuard world, CollideBlockEvent event, BlockType type) {
+	private void onCollideBlockNatural(WorldGuardWorld world, CollideBlockEvent event, BlockType type) {
 		if (!world.getRegions(event.getTargetLocation().getPosition()).getFlagDefault(this).containsValue(type)) {
 			event.setCancelled(true);
 		}
@@ -162,6 +168,9 @@ public class FlagInteractBlock extends CatalogTypeFlag<BlockType> {
 	}
 	
 	private void onChangeBlockModifyPlayer(EProtectionService service, ChangeBlockEvent.Modify event, Player player) {
+		// Bypass
+		if (this.plugin.getProtectionService().hasBypass(player)) return;
+		
 		Optional<Transaction<BlockSnapshot>> filter = event.getTransactions().stream().filter(transaction -> {
 			BlockType type = transaction.getOriginal().getState().getType();
 			
@@ -217,6 +226,9 @@ public class FlagInteractBlock extends CatalogTypeFlag<BlockType> {
 		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
 		Location<World> location = block.get().getLocation();
 		if (optPlayer.isPresent()) {
+			// Bypass
+			if (this.plugin.getProtectionService().hasBypass(optPlayer.get())) return;
+			
 			if (!this.plugin.getProtectionService().getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(optPlayer.get(), this).containsValue(type)) {
 				event.setCancelled(true);
 			}
@@ -243,7 +255,10 @@ public class FlagInteractBlock extends CatalogTypeFlag<BlockType> {
 		}
 	}
 	
-	private void onChangeBlockBreakPlayer(EProtectionService service, ChangeBlockEvent.Break event, Player player) {	
+	private void onChangeBlockBreakPlayer(EProtectionService service, ChangeBlockEvent.Break event, Player player) {
+		// Bypass
+		if (this.plugin.getProtectionService().hasBypass(player)) return;
+		
 		List<Transaction<BlockSnapshot>> filter = event.getTransactions().stream().filter(transaction -> {
 			Location<World> location = transaction.getOriginal().getLocation().get();
 			BlockType type = transaction.getOriginal().getState().getType();

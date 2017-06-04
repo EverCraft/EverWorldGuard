@@ -24,7 +24,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.entity.explosive.DetonateExplosiveEvent;
 
 import fr.evercraft.everapi.services.entity.EntityTemplate;
-import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
+import fr.evercraft.everapi.services.worldguard.WorldGuardWorld;
 import fr.evercraft.everapi.services.worldguard.flag.EntityTemplateFlag;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
@@ -50,7 +50,7 @@ public class FlagExplosion extends EntityTemplateFlag {
 		return EWMessages.FLAG_EXPLOSION_DESCRIPTION.getString();
 	}
 	
-	public void onDetonateExplosive(DetonateExplosiveEvent event, WorldWorldGuard world) {
+	public void onDetonateExplosive(DetonateExplosiveEvent event, WorldGuardWorld world) {
 		if (event.isCancelled()) return;
 		
 		// TODO Bug : OWNER
@@ -62,7 +62,7 @@ public class FlagExplosion extends EntityTemplateFlag {
 		}
 	}
 	
-	public void onDetonateExplosivePlayer(DetonateExplosiveEvent event, WorldWorldGuard world, Player player) {
+	public void onDetonateExplosivePlayer(DetonateExplosiveEvent event, WorldGuardWorld world, Player player) {
 		if (this.getDefault().contains(event.getTargetEntity()) && 
 				!world.getRegions(event.getTargetEntity().getLocation().getPosition()).getFlag(player, this).contains(event.getTargetEntity(), player)) {
 			
@@ -76,7 +76,7 @@ public class FlagExplosion extends EntityTemplateFlag {
 		}
 	}
 	
-	public void onDetonateExplosiveNatural(DetonateExplosiveEvent event, WorldWorldGuard world) {
+	public void onDetonateExplosiveNatural(DetonateExplosiveEvent event, WorldGuardWorld world) {
 		if (this.getDefault().contains(event.getTargetEntity()) && 
 				!world.getRegions(event.getTargetEntity().getLocation().getPosition()).getFlagDefault(this).contains(event.getTargetEntity())) {
 			

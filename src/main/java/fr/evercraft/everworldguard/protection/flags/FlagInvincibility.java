@@ -21,7 +21,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.entity.DamageEntityEvent;
 import org.spongepowered.api.event.entity.HealEntityEvent;
 
-import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
+import fr.evercraft.everapi.services.worldguard.WorldGuardWorld;
 import fr.evercraft.everapi.services.worldguard.flag.StateFlag;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 
@@ -41,7 +41,7 @@ public class FlagInvincibility extends StateFlag {
 		return State.DENY;
 	}
 	
-	public void onHealEntity(WorldWorldGuard world, HealEntityEvent event) {
+	public void onHealEntity(WorldGuardWorld world, HealEntityEvent event) {
 		if (event.isCancelled()) return;
 		
 		if(event.getBaseHealAmount() > event.getFinalHealAmount()) return;
@@ -53,7 +53,7 @@ public class FlagInvincibility extends StateFlag {
 		}
 	}
 	
-	public void onDamageEntity(WorldWorldGuard world, DamageEntityEvent event) {
+	public void onDamageEntity(WorldGuardWorld world, DamageEntityEvent event) {
 		if (event.isCancelled()) return;
 		
 		if (!(event.getTargetEntity() instanceof Player)) return;

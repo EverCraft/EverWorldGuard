@@ -99,7 +99,10 @@ public class FlagItemDrop extends CatalogTypeFlag<ItemType> {
 		}
 	}
 	
-	private void onSpawnEntityPlayer(EProtectionService service, SpawnEntityEvent event, SpawnCause spawn, Player player) {		
+	private void onSpawnEntityPlayer(EProtectionService service, SpawnEntityEvent event, SpawnCause spawn, Player player) {
+		// Bypass
+		if (this.plugin.getProtectionService().hasBypass(player)) return;
+		
 		List<? extends Entity> filter = event.filterEntities(entity -> {
 			if (!(entity instanceof Item)) return true;
 			ItemType type = ((Item) entity).getItemType();
@@ -162,8 +165,11 @@ public class FlagItemDrop extends CatalogTypeFlag<ItemType> {
 		
 		Optional<Player> optPlayer = event.getCause().get(NamedCause.SOURCE, Player.class);
 		if (!optPlayer.isPresent()) return;
-		
 		Player player = optPlayer.get();
+		
+		// Bypass
+		if (this.plugin.getProtectionService().hasBypass(player)) return;
+		
 		EntryFlagValue<ItemType> flag = this.plugin.getProtectionService().getOrCreateWorld(player.getWorld()).getRegions(player.getLocation().getPosition()).getFlag(player, this);
 		
 		List<ItemStackSnapshot> items = new ArrayList<ItemStackSnapshot>();

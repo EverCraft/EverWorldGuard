@@ -37,6 +37,9 @@ public class FlagEntry extends StateFlag {
 	}
 
 	public void onMoveRegionPreCancellable(MoveRegionEvent.Pre.Cancellable event) {
+		// Bypass
+		if (event.getPlayer().hasProtectionBypass()) return;
+		
 		if(event.getEnterRegions().getFlag(event.getPlayer(), this).equals(State.DENY)) {
 			event.setCancelled(true);
 		}

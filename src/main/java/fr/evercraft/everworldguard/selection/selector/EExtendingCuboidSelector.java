@@ -24,7 +24,7 @@ import org.spongepowered.api.world.World;
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.collect.ImmutableList;
 
-import fr.evercraft.everapi.services.selection.SelectionType;
+import fr.evercraft.everapi.services.selection.SelectionRegion;
 import fr.evercraft.everworldguard.selection.ESelectionSubject;
 import fr.evercraft.everworldguard.selection.cui.PointCuiMessage;
 
@@ -167,7 +167,7 @@ public class EExtendingCuboidSelector extends ECuboidSelector {
 	}
 	
 	@Override
-	public SelectionType getType() {
-		return SelectionType.EXTEND;
+	public SelectionRegion.Type getType() {
+		return SelectionRegion.Types.EXTEND;
 	}
 }

@@ -61,7 +61,7 @@ import com.flowpowered.math.vector.Vector3i;
 import com.google.common.collect.Sets;
 
 import fr.evercraft.everapi.services.entity.EntityTemplate;
-import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
+import fr.evercraft.everapi.services.worldguard.WorldGuardWorld;
 import fr.evercraft.everapi.services.worldguard.flag.StateFlag;
 import fr.evercraft.everapi.sponge.UtilsCause;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
@@ -125,12 +125,15 @@ public class FlagBuild extends StateFlag {
 	/*
 	 * InteractBlockEvent.Secondary : TODO : Fix le bug de la TNT
 	 */
-	public void onInteractBlockSecondary(WorldWorldGuard world, InteractBlockEvent.Secondary event, Location<World> location) {
+	public void onInteractBlockSecondary(WorldGuardWorld world, InteractBlockEvent.Secondary event, Location<World> location) {
 		if (event.isCancelled()) return;
 		
 		Optional<Player> optPlayer = event.getCause().get(NamedCause.SOURCE, Player.class);
 		if (!optPlayer.isPresent()) return;
 		Player player = optPlayer.get();
+		
+		// Bypass
+		if (this.plugin.getProtectionService().hasBypass(player)) return;
 		
 		BlockType type = event.getTargetBlock().getState().getType();
 		if (!type.equals(BlockTypes.TNT)) return;
@@ -175,6 +178,9 @@ public class FlagBuild extends StateFlag {
 		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
 		if (!optPlayer.isPresent()) return;
 		Player player = optPlayer.get();
+		
+		// Bypass
+		if (this.plugin.getProtectionService().hasBypass(player)) return;
 			
 		if (locations.anyMatch(location -> service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, this).equals(State.DENY))) {
 			event.setCancelled(true);
@@ -214,6 +220,9 @@ public class FlagBuild extends StateFlag {
 		if (!optPlayer.isPresent()) return;
 		Player player = optPlayer.get();
 		
+		// Bypass
+		if (this.plugin.getProtectionService().hasBypass(player)) return;
+		
 		event.filter(location -> service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, this).equals(State.ALLOW))
 			.forEach(transaction -> transaction.getFinal().getLocation().ifPresent(location -> {
 				Entity entity = location.getExtent().createEntity(EntityTypes.ITEM, location.getPosition());
@@ -232,6 +241,9 @@ public class FlagBuild extends StateFlag {
 		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
 		if (!optPlayer.isPresent()) return;
 		Player player = optPlayer.get();
+		
+		// Bypass
+		if (this.plugin.getProtectionService().hasBypass(player)) return;
 		
 		List<Transaction<BlockSnapshot>> filter = event.filter(location -> 
 			service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, this).equals(State.ALLOW));
@@ -257,6 +269,9 @@ public class FlagBuild extends StateFlag {
 		if (!optPlayer.isPresent()) return;
 		Player player = optPlayer.get();
 		
+		// Bypass
+		if (this.plugin.getProtectionService().hasBypass(player)) return;
+		
 		EProtectionService service = this.plugin.getProtectionService();
 		List<Transaction<BlockSnapshot>> filter = event.filter(location -> 
 			service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, this).equals(State.ALLOW));
@@ -281,12 +296,15 @@ public class FlagBuild extends StateFlag {
 	 * InteractEntity
 	 */
 
-	public void onInteractEntity(WorldWorldGuard world, InteractEntityEvent event) {
+	public void onInteractEntity(WorldGuardWorld world, InteractEntityEvent event) {
 		if (event.isCancelled()) return;
 		
 		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
 		if (!optPlayer.isPresent()) return;
 		Player player = optPlayer.get();
+		
+		// Bypass
+		if (this.plugin.getProtectionService().hasBypass(player)) return;
 		
 		if (!this.containsEntity(event.getTargetEntity(), player)) return;
 		
@@ -306,12 +324,15 @@ public class FlagBuild extends StateFlag {
 	 * CollideEntity
 	 */
 	
-	public void onCollideEntityImpact(WorldWorldGuard world, CollideEntityEvent event) {
+	public void onCollideEntityImpact(WorldGuardWorld world, CollideEntityEvent event) {
 		if (event.isCancelled()) return;
 		
 		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
 		if (!optPlayer.isPresent()) return;
 		Player player = optPlayer.get();
+		
+		// Bypass
+		if (this.plugin.getProtectionService().hasBypass(player)) return;
 		
 		if (event.getCause().get(NamedCause.SOURCE, Projectile.class).isPresent()) {
 			List<? extends Entity> filter = event.filterEntities(entity -> {
@@ -333,7 +354,7 @@ public class FlagBuild extends StateFlag {
 	 */
 	
 	// TODO Bug : Painting, ItemFrame ...
-	public void onDamageEntity(WorldWorldGuard world, DamageEntityEvent event) {
+	public void onDamageEntity(WorldGuardWorld world, DamageEntityEvent event) {
 		if (event.isCancelled()) return;
 		
 		Entity entity = event.getTargetEntity();
@@ -397,7 +418,10 @@ public class FlagBuild extends StateFlag {
 		}
 	}
 	
-	public boolean onDamageEntity(WorldWorldGuard world, DamageEntityEvent event, Entity entity, Player player) {
+	public boolean onDamageEntity(WorldGuardWorld world, DamageEntityEvent event, Entity entity, Player player) {
+		// Bypass
+		if (this.plugin.getProtectionService().hasBypass(player)) return false;
+		
 		if (!this.containsEntity(event.getTargetEntity(), player)) return false;
 		
 		if (world.getRegions(entity.getLocation().getPosition()).getFlag(player, this).equals(State.DENY)) {

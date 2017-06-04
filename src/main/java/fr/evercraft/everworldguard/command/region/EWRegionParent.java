@@ -35,7 +35,7 @@ import fr.evercraft.everapi.EAMessage.EAMessages;
 import fr.evercraft.everapi.plugin.command.Args;
 import fr.evercraft.everapi.plugin.command.ESubCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
-import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
+import fr.evercraft.everapi.services.worldguard.WorldGuardWorld;
 import fr.evercraft.everapi.services.worldguard.exception.CircularInheritanceException;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everapi.sponge.UtilsContexts;
@@ -139,7 +139,7 @@ public class EWRegionParent extends ESubCommand<EverWorldGuard> {
 			return false;
 		}
 		
-		WorldWorldGuard manager = this.plugin.getProtectionService().getOrCreateWorld(world);
+		WorldGuardWorld manager = this.plugin.getProtectionService().getOrCreateWorld(world);
 		
 		Optional<ProtectedRegion> region = manager.getRegion(args_string.get(0));
 		// Region introuvable
@@ -166,7 +166,7 @@ public class EWRegionParent extends ESubCommand<EverWorldGuard> {
 		}
 	}
 
-	private boolean commandRegionSetParent(final CommandSource source, ProtectedRegion region, WorldWorldGuard manager, String parent_string, World world) {
+	private boolean commandRegionSetParent(final CommandSource source, ProtectedRegion region, WorldGuardWorld manager, String parent_string, World world) {
 		Optional<ProtectedRegion> optParent = manager.getRegion(parent_string);
 		// Region introuvable
 		if (!optParent.isPresent()) {

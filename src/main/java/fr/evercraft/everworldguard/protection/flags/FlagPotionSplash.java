@@ -45,7 +45,7 @@ import org.spongepowered.api.world.World;
 
 import com.flowpowered.math.vector.Vector3i;
 
-import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
+import fr.evercraft.everapi.services.worldguard.WorldGuardWorld;
 import fr.evercraft.everapi.services.worldguard.flag.CatalogTypeFlag;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
@@ -94,9 +94,12 @@ public class FlagPotionSplash extends CatalogTypeFlag<PotionEffectType> {
 		
 		Optional<Player> optPlayer = event.getCause().get(NamedCause.SOURCE, Player.class);
 		if (!optPlayer.isPresent()) return;
-		
 		Player player = optPlayer.get();
-		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(player.getWorld());
+		
+		// Bypass
+		if (this.plugin.getProtectionService().hasBypass(player)) return;
+		
+		WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateWorld(player.getWorld());
 		for (PotionEffectType potion : potions.get().stream().map(potion -> potion.getType()).collect(Collectors.toSet())) {
 			if (this.getDefault().containsValue(potion) && !world.getRegions(player.getLocation().getPosition()).getFlag(player, this).containsValue(potion)) {
 				event.setCancelled(true);
@@ -127,12 +130,15 @@ public class FlagPotionSplash extends CatalogTypeFlag<PotionEffectType> {
 		}
 	}
 	
-	private void onSpawnEntityPlayer(EProtectionService service, SpawnEntityEvent event, SpawnCause spawn, Player player) {		
+	private void onSpawnEntityPlayer(EProtectionService service, SpawnEntityEvent event, SpawnCause spawn, Player player) {
+		// Bypass
+		if (this.plugin.getProtectionService().hasBypass(player)) return;
+		
 		List<? extends Entity> filter = event.filterEntities(entity -> {
 			Optional<List<PotionEffect>> potions = entity.get(Keys.POTION_EFFECTS);
 			if (!potions.isPresent() || potions.get().isEmpty()) return true;
 			
-			WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(entity.getWorld());
+			WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateWorld(entity.getWorld());
 			for (PotionEffectType potion : potions.get().stream().map(potion -> potion.getType()).collect(Collectors.toSet())) {
 				if (this.getDefault().containsValue(potion) && !world.getRegions(entity.getLocation().getPosition()).getFlag(player, this).containsValue(potion)) {
 					
@@ -156,7 +162,7 @@ public class FlagPotionSplash extends CatalogTypeFlag<PotionEffectType> {
 			Optional<List<PotionEffect>> potions = entity.get(Keys.POTION_EFFECTS);
 			if (!potions.isPresent() || potions.get().isEmpty()) return true;
 			
-			WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(entity.getWorld());
+			WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateWorld(entity.getWorld());
 			for (PotionEffectType potion : potions.get().stream().map(potion -> potion.getType()).collect(Collectors.toSet())) {
 				if (this.getDefault().containsValue(potion) && !world.getRegions(entity.getLocation().getPosition()).getFlagDefault(this).containsValue(potion)) {
 					return false;
@@ -194,7 +200,7 @@ public class FlagPotionSplash extends CatalogTypeFlag<PotionEffectType> {
 	 * CollideEvent.Impact
 	 */
 
-	public void onCollideImpact(WorldWorldGuard world, CollideEvent.Impact event) {
+	public void onCollideImpact(WorldGuardWorld world, CollideEvent.Impact event) {
 		if (event.isCancelled()) return;
 				
 		Optional<ThrownPotion> optPotion = event.getCause().get(NamedCause.SOURCE, ThrownPotion.class);
@@ -213,7 +219,10 @@ public class FlagPotionSplash extends CatalogTypeFlag<PotionEffectType> {
 		
 	}
 		
-	public void onCollideImpactPlayer(WorldWorldGuard world, CollideEvent.Impact event, ThrownPotion entity, List<PotionEffect> potions, Player player) {
+	public void onCollideImpactPlayer(WorldGuardWorld world, CollideEvent.Impact event, ThrownPotion entity, List<PotionEffect> potions, Player player) {
+		// Bypass
+		if (this.plugin.getProtectionService().hasBypass(player)) return;
+		
 		for (PotionEffectType potion : potions.stream().map(potion -> potion.getType()).collect(Collectors.toSet())) {
 			if (this.getDefault().containsValue(potion) && !world.getRegions(event.getImpactPoint().getPosition()).getFlag(player, this).containsValue(potion)) {
 				event.setCancelled(true);
@@ -224,7 +233,7 @@ public class FlagPotionSplash extends CatalogTypeFlag<PotionEffectType> {
 	}
 	
 	
-	public void onCollideImpactNatural(WorldWorldGuard world, CollideEvent.Impact event, ThrownPotion entity, List<PotionEffect> potions) {
+	public void onCollideImpactNatural(WorldGuardWorld world, CollideEvent.Impact event, ThrownPotion entity, List<PotionEffect> potions) {
 		for (PotionEffectType potion : potions.stream().map(potion -> potion.getType()).collect(Collectors.toSet())) {
 			if (this.getDefault().containsValue(potion) && !world.getRegions(event.getImpactPoint().getPosition()).getFlagDefault(this).containsValue(potion)) {
 				event.setCancelled(true);

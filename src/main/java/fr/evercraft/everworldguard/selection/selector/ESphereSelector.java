@@ -25,7 +25,7 @@ import org.spongepowered.api.world.World;
 import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
 
-import fr.evercraft.everapi.services.selection.SelectionType;
+import fr.evercraft.everapi.services.selection.SelectionRegion;
 import fr.evercraft.everapi.services.selection.exception.SelectorSecondaryException;
 import fr.evercraft.everworldguard.selection.ESelectionSubject;
 
@@ -74,8 +74,8 @@ public class ESphereSelector extends EEllipsoidSelector {
 	}
 	
 	@Override
-	public SelectionType getType() {
-		return SelectionType.SPHERE;
+	public SelectionRegion.Type getType() {
+		return SelectionRegion.Types.SPHERE;
 	}
 	
 	@Override

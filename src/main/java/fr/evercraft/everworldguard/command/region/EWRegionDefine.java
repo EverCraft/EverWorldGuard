@@ -43,7 +43,6 @@ import fr.evercraft.everapi.plugin.command.ESubCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everapi.server.user.EUser;
 import fr.evercraft.everapi.services.selection.SelectionRegion;
-import fr.evercraft.everapi.services.selection.SelectionType;
 import fr.evercraft.everapi.services.worldguard.exception.RegionIdentifierException;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
@@ -159,9 +158,9 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 	}
 	
 	private boolean commandRegionDefine(final EPlayer player, final String region_id, final Set<UUID> players, final Set<String> groups) {
-		if (player.getSelectorType().equals(SelectionType.CUBOID)) {
+		if (player.getSelectorType().equals(SelectionRegion.Types.CUBOID)) {
 			return this.commandRegionDefineCuboid(player, region_id, players, groups);
-		} else if (player.getSelectorType().equals(SelectionType.POLYGONAL)) {
+		} else if (player.getSelectorType().equals(SelectionRegion.Types.POLYGONAL)) {
 			return this.commandRegionDefinePolygonal(player, region_id, players, groups);
 		} else {
 			EWMessages.REGION_DEFINE_ERROR_SELECT_TYPE.sender()
@@ -211,7 +210,7 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 		
 		EWMessages.REGION_DEFINE_CUBOID_CREATE.sender()
 			.replaceString(replaces)
-			.replace("<positions>", EWMessages.REGION_DEFINE_CUBOID_POINTS.getFormat()
+			.replace("<points>", EWMessages.REGION_DEFINE_CUBOID_POINTS.getFormat()
 					.toText2(replaces).toBuilder()
 					.onHover(TextActions.showText(EWMessages.REGION_DEFINE_CUBOID_POINTS_HOVER.getFormat()
 							.toText2(replaces)))
@@ -267,7 +266,7 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 		
 		EWMessages.REGION_DEFINE_POLYGONAL_CREATE.sender()
 			.replaceString(replaces)
-			.replace("<positions>", EWMessages.REGION_DEFINE_POLYGONAL_POINTS.getFormat()
+			.replace("<points>", EWMessages.REGION_DEFINE_POLYGONAL_POINTS.getFormat()
 					.toText2(replaces).toBuilder()
 					.onHover(TextActions.showText(EWMessages.REGION_DEFINE_POLYGONAL_POINTS_HOVER.getFormat()
 							.toText2(replaces)))

@@ -27,7 +27,6 @@ import com.flowpowered.math.vector.Vector3i;
 import com.google.common.base.Preconditions;
 
 import fr.evercraft.everapi.services.selection.SelectionRegion;
-import fr.evercraft.everapi.services.selection.SelectionType;
 import fr.evercraft.everapi.services.selection.SubjectSelection;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.selection.cui.CUIMessage;
@@ -74,7 +73,7 @@ public class ESelectionSubject implements SubjectSelection {
 	}
 	
 	@Override
-	public void setType(SelectionType type) {
+	public void setType(SelectionRegion.Type type) {
 		Preconditions.checkNotNull(type, "type");
 				
 		if (this.selector.getType().equals(type)) return;
@@ -85,31 +84,31 @@ public class ESelectionSubject implements SubjectSelection {
 			Vector3i min = region.get().getMinimumPoint();
 			Vector3i max = region.get().getMaximumPoint();
 			
-			if (type.equals(SelectionType.CUBOID)) {
+			if (type.equals(SelectionRegion.Types.CUBOID)) {
 				this.selector = new ECuboidSelector(this, world, min, max);
-			} else if (type.equals(SelectionType.EXTEND)) {
+			} else if (type.equals(SelectionRegion.Types.EXTEND)) {
 				this.selector = new EExtendingCuboidSelector(this, world, min, max);
-			} else if (type.equals(SelectionType.POLYGONAL)) {
+			} else if (type.equals(SelectionRegion.Types.POLYGONAL)) {
 				this.selector = new EPolygonalSelector(this, world, min, max);
-			} else if (type.equals(SelectionType.CYLINDER)) {
+			} else if (type.equals(SelectionRegion.Types.CYLINDER)) {
 				this.selector = new ECylinderSelector(this, world, min, max);
-			} else if (type.equals(SelectionType.ELLIPSOID)) {
+			} else if (type.equals(SelectionRegion.Types.ELLIPSOID)) {
 				this.selector = new EEllipsoidSelector(this, world, min, max);
-			} else if (type.equals(SelectionType.SPHERE)) {
+			} else if (type.equals(SelectionRegion.Types.SPHERE)) {
 				this.selector = new ESphereSelector(this, world, min, max);
 			}
 		} else {
-			if (type.equals(SelectionType.CUBOID)) {
+			if (type.equals(SelectionRegion.Types.CUBOID)) {
 				this.selector = new ECuboidSelector(this);
-			} else if (type.equals(SelectionType.EXTEND)) {
+			} else if (type.equals(SelectionRegion.Types.EXTEND)) {
 				this.selector = new EExtendingCuboidSelector(this);
-			} else if (type.equals(SelectionType.POLYGONAL)) {
+			} else if (type.equals(SelectionRegion.Types.POLYGONAL)) {
 				this.selector = new EPolygonalSelector(this);
-			} else if (type.equals(SelectionType.CYLINDER)) {
+			} else if (type.equals(SelectionRegion.Types.CYLINDER)) {
 				this.selector = new ECylinderSelector(this);
-			} else if (type.equals(SelectionType.ELLIPSOID)) {
+			} else if (type.equals(SelectionRegion.Types.ELLIPSOID)) {
 				this.selector = new EEllipsoidSelector(this);
-			} else if (type.equals(SelectionType.SPHERE)) {
+			} else if (type.equals(SelectionRegion.Types.SPHERE)) {
 				this.selector = new ESphereSelector(this);
 			}
 		}
@@ -118,7 +117,7 @@ public class ESelectionSubject implements SubjectSelection {
 	}
 
 	@Override
-	public SelectionType getType() {
+	public SelectionRegion.Type getType() {
 		return this.selector.getType();
 	}
 	

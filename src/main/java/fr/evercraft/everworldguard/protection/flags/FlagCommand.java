@@ -28,13 +28,13 @@ import org.spongepowered.api.event.command.SendCommandEvent;
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.collect.ImmutableSet;
 
-import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
-import fr.evercraft.everapi.services.worldguard.flag.MapStringFlag;
+import fr.evercraft.everapi.services.worldguard.WorldGuardWorld;
+import fr.evercraft.everapi.services.worldguard.flag.StringsFlag;
 import fr.evercraft.everapi.services.worldguard.flag.value.EntryFlagValue;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EverWorldGuard;
 
-public class FlagCommand extends MapStringFlag {
+public class FlagCommand extends StringsFlag {
 	
 	private final EntryFlagValue<String> ALL = new EntryFlagValue<String>(ImmutableSet.of("ALL"), ImmutableSet.of("*"));
 	
@@ -78,7 +78,10 @@ public class FlagCommand extends MapStringFlag {
 		if (!optPlayer.isPresent()) return;
 		Player player = optPlayer.get();
 		
-		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(player.getWorld());
+		// Bypass
+		if (this.plugin.getProtectionService().hasBypass(player)) return;
+		
+		WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateWorld(player.getWorld());
 		EntryFlagValue<String> flag = world.getRegions(player.getLocation().getPosition()).getFlag(player, this);
 		
 		Optional<? extends CommandMapping> optCommand = this.plugin.getGame().getCommandManager().get(event.getCommand(), player);

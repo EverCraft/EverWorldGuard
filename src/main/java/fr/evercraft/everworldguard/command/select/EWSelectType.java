@@ -32,7 +32,7 @@ import org.spongepowered.api.text.format.TextColors;
 import fr.evercraft.everapi.EAMessage.EAMessages;
 import fr.evercraft.everapi.plugin.command.ESubCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
-import fr.evercraft.everapi.services.selection.SelectionType;
+import fr.evercraft.everapi.services.selection.SelectionRegion;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EverWorldGuard;
 
@@ -57,7 +57,7 @@ public class EWSelectType extends ESubCommand<EverWorldGuard> {
 		Builder build = Text.builder("/" + this.getName() + " <");
 		
 		List<Text> populator = new ArrayList<Text>();
-		for (SelectionType type : SelectionType.values()){
+		for (SelectionRegion.Type type : this.plugin.getGame().getRegistry().getAllOf(SelectionRegion.Type.class)){
 			populator.add(Text.builder(type.getName())
 								.onClick(TextActions.suggestCommand("/" + this.getName() + " " + type.getName().toUpperCase()))
 								.build());
@@ -73,7 +73,7 @@ public class EWSelectType extends ESubCommand<EverWorldGuard> {
 	public Collection<String> subTabCompleter(final CommandSource source, final List<String> args) throws CommandException {
 		if (args.size() == 1) {
 			List<String> suggests = new ArrayList<String>();
-			for (SelectionType type : SelectionType.values()){
+			for (SelectionRegion.Type type : this.plugin.getGame().getRegistry().getAllOf(SelectionRegion.Type.class)){
 				suggests.add(type.getName());
 			}
 			return suggests;
@@ -102,7 +102,7 @@ public class EWSelectType extends ESubCommand<EverWorldGuard> {
 	}
 
 	private boolean commandSelectType(final EPlayer player, final String type_string) {
-		Optional<SelectionType> type = SelectionType.getSelectType(type_string);
+		Optional<SelectionRegion.Type> type = this.plugin.getGame().getRegistry().getType(SelectionRegion.Type.class, type_string);
 		if (!type.isPresent()) {
 			player.sendMessage(this.help(player));
 			return false;
@@ -122,17 +122,17 @@ public class EWSelectType extends ESubCommand<EverWorldGuard> {
 			return false;
 		}
 		
-		if (player.getSelectorType().equals(SelectionType.CUBOID)) {
+		if (player.getSelectorType().equals(SelectionRegion.Types.CUBOID)) {
 			EWMessages.SELECT_TYPE_CUBOID.sendTo(player);
-		} else if (player.getSelectorType().equals(SelectionType.EXTEND)) {
+		} else if (player.getSelectorType().equals(SelectionRegion.Types.EXTEND)) {
 			EWMessages.SELECT_TYPE_EXTEND.sendTo(player);
-		} else if (player.getSelectorType().equals(SelectionType.POLYGONAL)) {
+		} else if (player.getSelectorType().equals(SelectionRegion.Types.POLYGONAL)) {
 			EWMessages.SELECT_TYPE_POLYGONAL.sendTo(player);
-		} else if (player.getSelectorType().equals(SelectionType.CYLINDER)) {
+		} else if (player.getSelectorType().equals(SelectionRegion.Types.CYLINDER)) {
 			EWMessages.SELECT_TYPE_CYLINDER.sendTo(player);
-		} else if (player.getSelectorType().equals(SelectionType.ELLIPSOID)) {
+		} else if (player.getSelectorType().equals(SelectionRegion.Types.ELLIPSOID)) {
 			EWMessages.SELECT_TYPE_ELLIPSOID.sendTo(player);
-		} else if (player.getSelectorType().equals(SelectionType.SPHERE)) {
+		} else if (player.getSelectorType().equals(SelectionRegion.Types.SPHERE)) {
 			EWMessages.SELECT_TYPE_SPHERE.sendTo(player);
 		} else {
 			player.sendMessage(this.help(player));

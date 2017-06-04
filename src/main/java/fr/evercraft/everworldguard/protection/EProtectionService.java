@@ -27,9 +27,9 @@ import org.spongepowered.api.world.World;
 import fr.evercraft.everapi.message.EMessageSender;
 import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everapi.services.worldguard.Flag;
-import fr.evercraft.everapi.services.worldguard.SubjectWorldGuard;
+import fr.evercraft.everapi.services.worldguard.WorldGuardSubject;
 import fr.evercraft.everapi.services.worldguard.WorldGuardService;
-import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
+import fr.evercraft.everapi.services.worldguard.WorldGuardWorld;
 import fr.evercraft.everworldguard.EWPermissions;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.protection.flag.EWFlagConfig;
@@ -65,7 +65,7 @@ public class EProtectionService implements WorldGuardService {
 		this.subjects.reload();
 		this.worlds.reload();
 		
-		this.intervalMessage = this.plugin.getConfigs().getIntervalMessage();
+		this.intervalMessage = this.plugin.getConfigs().getMessageInterval();
 	}
 	
 	/*
@@ -89,6 +89,18 @@ public class EProtectionService implements WorldGuardService {
 		return false;
 	}
 	
+	public boolean hasBypass(Player player) {
+		return this.hasBypass(player.getUniqueId());
+	}
+	
+	public boolean hasBypass(UUID uuid) {
+		Optional<WorldGuardSubject> subject = this.get(uuid);
+		if (subject.isPresent()) {
+			return subject.get().hasBypass();
+		}
+		return false;
+	}
+	
 	/*
 	 * Subjects
 	 */
@@ -98,7 +110,7 @@ public class EProtectionService implements WorldGuardService {
 	}
 
 	@Override
-	public Optional<SubjectWorldGuard> get(UUID uuid) {
+	public Optional<WorldGuardSubject> get(UUID uuid) {
 		return this.subjects.get(uuid);
 	}
 	
@@ -115,7 +127,7 @@ public class EProtectionService implements WorldGuardService {
 	 * World
 	 */
 	@Override
-	public WorldWorldGuard getOrCreateWorld(World world) {
+	public WorldGuardWorld getOrCreateWorld(World world) {
 		return this.worlds.getOrCreate(world);
 	}
 	
@@ -128,7 +140,7 @@ public class EProtectionService implements WorldGuardService {
 	}
 	
 	@Override
-	public Set<WorldWorldGuard> getAll() {
+	public Set<WorldGuardWorld> getAll() {
 		return this.worlds.getAll();
 	}
 	

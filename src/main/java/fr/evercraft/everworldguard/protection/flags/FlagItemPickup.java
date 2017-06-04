@@ -27,7 +27,7 @@ import org.spongepowered.api.world.World;
 
 import com.flowpowered.math.vector.Vector3i;
 
-import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
+import fr.evercraft.everapi.services.worldguard.WorldGuardWorld;
 import fr.evercraft.everapi.services.worldguard.flag.CatalogTypeFlag;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EverWorldGuard;
@@ -67,8 +67,11 @@ public class FlagItemPickup extends CatalogTypeFlag<ItemType> {
 	 * ChangeInventoryEvent.Pickup
 	 */
 	
-	public void onChangeInventoryPickup(ChangeInventoryEvent.Pickup event, WorldWorldGuard world, Player player) {
+	public void onChangeInventoryPickup(ChangeInventoryEvent.Pickup event, WorldGuardWorld world, Player player) {
 		if (event.isCancelled()) return;
+		
+		// Bypass
+		if (this.plugin.getProtectionService().hasBypass(player)) return;
 		
 		ItemType type = event.getTargetEntity().getItemType();
 		if (!this.getDefault().containsValue(type)) return;

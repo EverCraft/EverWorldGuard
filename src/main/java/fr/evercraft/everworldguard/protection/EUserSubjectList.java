@@ -31,7 +31,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
-import fr.evercraft.everapi.services.worldguard.SubjectWorldGuard;
+import fr.evercraft.everapi.services.worldguard.WorldGuardSubject;
 import fr.evercraft.everapi.util.Chronometer;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.protection.subject.EUserSubject;
@@ -67,7 +67,7 @@ public class EUserSubjectList {
 					    });
 	}
 	
-	public Optional<SubjectWorldGuard> get(UUID uuid) {
+	public Optional<WorldGuardSubject> get(UUID uuid) {
 		return Optional.ofNullable(this.getSubject(uuid).orElse(null));
 	}
 	

@@ -33,7 +33,7 @@ import org.spongepowered.api.item.ItemTypes;
 import com.flowpowered.math.vector.Vector3i;
 
 import fr.evercraft.everapi.services.entity.EntityTemplate;
-import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
+import fr.evercraft.everapi.services.worldguard.WorldGuardWorld;
 import fr.evercraft.everapi.services.worldguard.flag.EntityTemplateFlag;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EverWorldGuard;
@@ -86,6 +86,9 @@ public class FlagEntitySpawning extends EntityTemplateFlag {
 	}
 	
 	public void onSpawnEntityPlayer(EProtectionService service, SpawnEntityEvent event, Player player) {
+		// Bypass
+		if (this.plugin.getProtectionService().hasBypass(player)) return;
+		
 		List<? extends Entity> filter = event.filterEntities(entity -> {
 			if (this.getDefault().contains(entity) && 
 					!service.getOrCreateEWorld(entity.getWorld()).getRegions(entity.getLocation().getPosition()).getFlag(player, this).contains(entity, player)) {
@@ -120,9 +123,12 @@ public class FlagEntitySpawning extends EntityTemplateFlag {
 		
 		Optional<EntityType> type = event.getItemStack().get(Keys.SPAWNABLE_ENTITY_TYPE);
 		if (!type.isPresent()) return;
-		
 		Player player = optPlayer.get();
-		WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(player.getWorld());
+		
+		// Bypass
+		if (this.plugin.getProtectionService().hasBypass(player)) return;
+		
+		WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateWorld(player.getWorld());
 		Entity entity = player.getWorld().createEntity(type.get(), event.getInteractionPoint().get());
 		
 		if (this.getDefault().contains(entity) && 

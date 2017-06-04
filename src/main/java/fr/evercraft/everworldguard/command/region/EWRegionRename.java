@@ -33,7 +33,7 @@ import fr.evercraft.everapi.EAMessage.EAMessages;
 import fr.evercraft.everapi.plugin.command.Args;
 import fr.evercraft.everapi.plugin.command.ESubCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
-import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
+import fr.evercraft.everapi.services.worldguard.WorldGuardWorld;
 import fr.evercraft.everapi.services.worldguard.exception.RegionIdentifierException;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everapi.sponge.UtilsContexts;
@@ -124,7 +124,7 @@ public class EWRegionRename extends ESubCommand<EverWorldGuard> {
 			return false;
 		}
 		
-		WorldWorldGuard manager = this.plugin.getProtectionService().getOrCreateWorld(world);
+		WorldGuardWorld manager = this.plugin.getProtectionService().getOrCreateWorld(world);
 		Optional<ProtectedRegion> region = manager.getRegion(args_string.get(0));
 		// Region introuvable
 		if (!region.isPresent()) {
@@ -145,7 +145,7 @@ public class EWRegionRename extends ESubCommand<EverWorldGuard> {
 		return this.commandRegionRename(source, manager, region.get(), args.getArg(1).get(), world);
 	}
 
-	private boolean commandRegionRename(final CommandSource player, WorldWorldGuard manager, ProtectedRegion region, String region_string, World world) {
+	private boolean commandRegionRename(final CommandSource player, WorldGuardWorld manager, ProtectedRegion region, String region_string, World world) {
 		String before_identifier = region.getName();
 		if (region.getType().equals(ProtectedRegion.Types.GLOBAL)) {
 			EWMessages.REGION_RENAME_ERROR_GLOBAL.sender()

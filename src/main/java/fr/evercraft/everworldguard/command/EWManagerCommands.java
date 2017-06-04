@@ -24,7 +24,6 @@ import fr.evercraft.everworldguard.EWCommand;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.command.region.*;
 import fr.evercraft.everworldguard.command.select.*;
-import fr.evercraft.everworldguard.command.sub.*;
 
 public class EWManagerCommands extends HashSet<ECommand<EverWorldGuard>> {
 	
@@ -47,11 +46,15 @@ public class EWManagerCommands extends HashSet<ECommand<EverWorldGuard>> {
 		
 	public void load() {
 		EWRegion region = new EWRegion(this.plugin);
+		region.add(new EWRegionBypass(this.plugin, region));
+		region.add(new EWRegionCheck(this.plugin, region));
 		region.add(new EWRegionDefine(this.plugin, region));
 		region.add(new EWRegionFlagAdd(this.plugin, region));
 		region.add(new EWRegionFlagRemove(this.plugin, region));
+		region.add(new EWRegionFlags(this.plugin, region));
 		region.add(new EWRegionInfo(this.plugin, region));
 		region.add(new EWRegionList(this.plugin, region));
+		region.add(new EWRegionLoad(this.plugin, region));
 		region.add(new EWRegionMemberAdd(this.plugin, region));
 		region.add(new EWRegionMemberRemove(this.plugin, region));
 		region.add(new EWRegionOwnerAdd(this.plugin, region));

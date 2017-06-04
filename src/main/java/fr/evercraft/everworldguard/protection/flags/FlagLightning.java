@@ -22,7 +22,7 @@ import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.event.entity.ConstructEntityEvent;
 import com.google.common.collect.ImmutableSet;
 
-import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
+import fr.evercraft.everapi.services.worldguard.WorldGuardWorld;
 import fr.evercraft.everapi.services.worldguard.flag.StateFlag;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion.Group;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion.Groups;
@@ -54,7 +54,7 @@ public class FlagLightning extends StateFlag {
 		return ImmutableSet.of(Groups.DEFAULT);
 	}
 	
-	public void onConstructEntityPre(WorldWorldGuard world, ConstructEntityEvent.Pre event) {
+	public void onConstructEntityPre(WorldGuardWorld world, ConstructEntityEvent.Pre event) {
 		if (event.isCancelled()) return;
 		if (!event.getTargetType().equals(EntityTypes.LIGHTNING)) return;
 		

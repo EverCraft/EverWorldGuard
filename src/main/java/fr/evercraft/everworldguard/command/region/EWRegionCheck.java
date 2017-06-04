@@ -16,6 +16,7 @@
  */
 package fr.evercraft.everworldguard.command.region;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -30,26 +31,27 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.World;
 
 import fr.evercraft.everapi.EAMessage.EAMessages;
-import fr.evercraft.everapi.java.UtilsInteger;
+import fr.evercraft.everapi.message.EMessageFormat;
 import fr.evercraft.everapi.plugin.command.Args;
 import fr.evercraft.everapi.plugin.command.ESubCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
-import fr.evercraft.everapi.services.worldguard.WorldGuardWorld;
+import fr.evercraft.everapi.services.worldguard.Flag;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
+import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion.Group;
 import fr.evercraft.everapi.sponge.UtilsContexts;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EWPermissions;
 import fr.evercraft.everworldguard.EverWorldGuard;
 
-public class EWRegionPriority extends ESubCommand<EverWorldGuard> {
+public class EWRegionCheck extends ESubCommand<EverWorldGuard> {
 	
 	public static final String MARKER_WORLD = "-w";
 	
 	private final Args.Builder pattern;
 	
-	public EWRegionPriority(final EverWorldGuard plugin, final EWRegion command) {
-		super(plugin, command, "setpriority");
-		
+	public EWRegionCheck(final EverWorldGuard plugin, final EWRegion command) {
+		super(plugin, command, "check");
+
 		this.pattern = Args.builder()
 			.value(MARKER_WORLD, 
 					(source, args) -> this.getAllWorlds(),
@@ -64,24 +66,60 @@ public class EWRegionPriority extends ESubCommand<EverWorldGuard> {
 							.map(region -> region.getName())
 							.collect(Collectors.toSet());
 			})
-			.args((source, args) -> Arrays.asList("0", "1", "2", "3"));
+			.arg((source, args) -> {
+				return this.plugin.getProtectionService().getFlags().stream()
+						.map(flag -> flag.getName())
+						.collect(Collectors.toSet());
+			})
+			.arg((source, args) -> {
+				Optional<String> flag_string = args.getArg(1);
+				if (!flag_string.isPresent()) {
+					return Arrays.asList();
+				}
+				
+				Optional<Flag<?>> flag = this.plugin.getProtectionService().getFlag(flag_string.get());
+				if (!flag_string.isPresent()) {
+					return Arrays.asList();
+				}
+				
+				List<String> suggests = new ArrayList<String>();
+				for(Group group : flag.get().getGroups()) {
+					suggests.add(group.getName());
+				}
+				return suggests;
+			})
+			.args((source, args) -> {
+				Optional<String> flag_string = args.getArg(1);
+				if (!flag_string.isPresent()) {
+					return Arrays.asList();
+				}
+				
+				Optional<Flag<?>> flag = this.plugin.getProtectionService().getFlag(flag_string.get());
+				if (!flag_string.isPresent()) {
+					return Arrays.asList();
+				}
+				
+				return flag.get().getSuggestAdd(source, args.getArgs(3));
+			});
 	}
 	
 	@Override
 	public boolean testPermission(final CommandSource source) {
-		return source.hasPermission(EWPermissions.REGION_PRIORITY.get());
+		return source.hasPermission(EWPermissions.REGION_CHECK.get());
 	}
 
 	@Override
 	public Text description(final CommandSource source) {
-		return EWMessages.REGION_PRIORITY_DESCRIPTION.getText();
+		return EWMessages.REGION_FLAG_ADD_DESCRIPTION.getText();
 	}
 
 	@Override
 	public Text help(final CommandSource source) {
 		return Text.builder("/" + this.getName() + " [" + MARKER_WORLD + " " + EAMessages.ARGS_WORLD.getString() + "]"
 												 + " <" + EAMessages.ARGS_REGION.getString() + ">"
-												 + " <" + EAMessages.ARGS_PRIORITY.getString() + ">")
+												 + " <" + EAMessages.ARGS_FLAG.getString() + ">"
+												 + " <" + EAMessages.ARGS_REGION_GROUP.getString() + ">"
+												 + " <" + EAMessages.ARGS_FLAG_VALUE.getString() + "...>")
 				.onClick(TextActions.suggestCommand("/" + this.getName() + " "))
 				.color(TextColors.RED)
 				.build();
@@ -96,7 +134,7 @@ public class EWRegionPriority extends ESubCommand<EverWorldGuard> {
 	public boolean subExecute(final CommandSource source, final List<String> args_list) throws CommandException {
 		Args args = this.pattern.build(args_list);
 		
-		if (args.getArgs().size() != 2) {
+		if (args.getArgs().size() < 4) {
 			source.sendMessage(this.help(source));
 			return false;
 		}
@@ -105,7 +143,7 @@ public class EWRegionPriority extends ESubCommand<EverWorldGuard> {
 		World world = null;
 		Optional<String> world_arg = args.getValue(MARKER_WORLD);
 		if (world_arg.isPresent()) {
-			Optional<World> optWorld = this.plugin.getEServer().getWorld(world_arg.get());
+			Optional<World> optWorld = EWRegion.getWorld(this.plugin, source, args, MARKER_WORLD);
 			if (optWorld.isPresent()) {
 				world = optWorld.get();
 			} else {
@@ -124,9 +162,7 @@ public class EWRegionPriority extends ESubCommand<EverWorldGuard> {
 			return false;
 		}
 		
-		WorldGuardWorld manager = this.plugin.getProtectionService().getOrCreateWorld(world);
-		
-		Optional<ProtectedRegion> region = manager.getRegion(args_string.get(0));
+		Optional<ProtectedRegion> region = this.plugin.getProtectionService().getOrCreateWorld(world).getRegion(args_string.get(0));
 		// Region introuvable
 		if (!region.isPresent()) {
 			EAMessages.REGION_NOT_FOUND.sender()
@@ -141,44 +177,83 @@ public class EWRegionPriority extends ESubCommand<EverWorldGuard> {
 				.replace("<region>", region.get().getName())
 				.sendTo(source);
 			return false;
-		}
+		}	
 		
-		Optional<Integer> priority = UtilsInteger.parseInt(args_string.get(1));
-		if (!priority.isPresent()) {
-			EAMessages.IS_NOT_NUMBER.sender()
-				.prefix(EWMessages.PREFIX)
-				.replace("<number>", args_string.get(1))
+		Optional<Flag<?>> flag = this.plugin.getProtectionService().getFlag(args_string.get(1));
+		if (!flag.isPresent()) {
+			EWMessages.FLAG_NOT_FOUND.sender()
+				.replace("<flag>", args_string.get(1))
 				.sendTo(source);
 			return false;
 		}
 		
-		return this.commandRegionSetPriority(source, region.get(), priority.get(), world);
+		Optional<Group> group = this.plugin.getGame().getRegistry().getType(Group.class, args_string.get(2));
+		if (!group.isPresent()) {
+			EWMessages.GROUP_NOT_FOUND.sender()
+				.replace("<group>", args_string.get(2))
+				.sendTo(source);
+			return false;
+		}
+		
+		if (!flag.get().getGroups().contains(group.get())) {
+			EWMessages.GROUP_INCOMPATIBLE.sender()
+				.replace("<flag>", flag.get().getName())
+				.replace("<group>", group.get().getName())
+				.sendTo(source);
+			return false;
+		}
+		
+		return this.commandRegionFlagAdd(source, region.get(), group.get(), flag.get(), args.getArgs(3), world);
 	}
 
-	private boolean commandRegionSetPriority(final CommandSource source, ProtectedRegion region, Integer priority, World world) {
-		region.setPriority(priority);
+	private <T> boolean commandRegionFlagAdd(final CommandSource source, ProtectedRegion region, Group group, Flag<T> flag, List<String> values, World world) {
+		T value = null;
+		try {
+			value = flag.parseAdd(source, region, group, values);
+		} catch (IllegalArgumentException e) {
+			if (e.getMessage() == null || e.getMessage().isEmpty()) {
+				EWMessages.REGION_FLAG_ADD_ERROR.sender()
+					.replace("<region>", region.getName())
+					.replace("<group>", group.getNameFormat())
+					.replace("<flag>", flag.getNameFormat())
+					.replace("<world>", world.getName())
+					.replace("<value>", String.join(" ", values))
+					.sendTo(source);
+			} else {
+				EMessageFormat.builder()
+					.prefix(EWMessages.PREFIX)
+					.chatMessageString(e.getMessage())
+					.build().sender()
+					.sendTo(source);
+			}
+			return false;
+		}
 		
-		EWMessages.REGION_PRIORITY_SET.sender()
+		region.setFlag(flag, group, value);
+		EWMessages.REGION_FLAG_ADD_PLAYER.sender()
 			.replace("<region>", region.getName())
-			.replace("<priority>", priority.toString())
+			.replace("<group>", group.getNameFormat())
+			.replace("<flag>", flag.getNameFormat())
 			.replace("<world>", world.getName())
-			.sendTo(source);		
+			.replace("<value>", flag.getValueFormat(value))
+			.sendTo(source);
+		
 		return true;
 	}
 	
 	private boolean hasPermission(final CommandSource source, final ProtectedRegion region, final World world) {
-		if (source.hasPermission(EWPermissions.REGION_PRIORITY_REGIONS.get() + "." + region.getName().toLowerCase())) {
+		if (source.hasPermission(EWPermissions.REGION_FLAG_ADD_REGIONS.get() + "." + region.getName().toLowerCase())) {
 			return true;
 		}
 		
 		if (!(source instanceof EPlayer)) {
 			EPlayer player = (EPlayer) source;
 			
-			if (region.isPlayerOwner(player, UtilsContexts.get(world.getName())) && source.hasPermission(EWPermissions.REGION_PRIORITY_OWNER.get())) {
+			if (region.isPlayerOwner(player, UtilsContexts.get(world.getName())) && source.hasPermission(EWPermissions.REGION_FLAG_ADD_OWNER.get())) {
 				return true;
 			}
 			
-			if (region.isPlayerMember(player, UtilsContexts.get(world.getName())) && source.hasPermission(EWPermissions.REGION_PRIORITY_MEMBER.get())) {
+			if (region.isPlayerMember(player, UtilsContexts.get(world.getName())) && source.hasPermission(EWPermissions.REGION_FLAG_ADD_MEMBER.get())) {
 				return true;
 			}
 		}

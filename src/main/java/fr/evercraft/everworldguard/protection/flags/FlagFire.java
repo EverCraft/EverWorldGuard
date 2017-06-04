@@ -45,7 +45,7 @@ import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
 
 import fr.evercraft.everapi.services.fire.FireType;
-import fr.evercraft.everapi.services.worldguard.WorldWorldGuard;
+import fr.evercraft.everapi.services.worldguard.WorldGuardWorld;
 import fr.evercraft.everapi.services.worldguard.flag.CatalogTypeFlag;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.protection.EProtectionService;
@@ -193,6 +193,9 @@ public class FlagFire extends CatalogTypeFlag<FireType> {
 	}
 
 	private void onChangeBlockPlacePlayer(EProtectionService service, Optional<Entity> entity, List<Transaction<BlockSnapshot>> transactions, Set<FireType> fires, Player player) {
+		// Bypass
+		if (this.plugin.getProtectionService().hasBypass(player)) return;
+		
 		List<Transaction<BlockSnapshot>> result = transactions.stream()
 			.filter(transaction -> {
 				BlockSnapshot block = transaction.getFinal();
@@ -241,12 +244,15 @@ public class FlagFire extends CatalogTypeFlag<FireType> {
 	 * InteractItemEvent
 	 */
 	
-	public void onInteractBlockSecondary(WorldWorldGuard world, InteractBlockEvent.Secondary event, Location<World> location) {
+	public void onInteractBlockSecondary(WorldGuardWorld world, InteractBlockEvent.Secondary event, Location<World> location) {
 		if (event.isCancelled()) return;
 				
 		Optional<Player> optPlayer = event.getCause().get(NamedCause.SOURCE, Player.class);
 		if (!optPlayer.isPresent()) return;
 		Player player = optPlayer.get();
+		
+		// Bypass
+		if (this.plugin.getProtectionService().hasBypass(player)) return;
 				
 		Optional<ItemStack> itemstack = player.getItemInHand(event.getHandType());
 		if (!itemstack.isPresent()) return;
