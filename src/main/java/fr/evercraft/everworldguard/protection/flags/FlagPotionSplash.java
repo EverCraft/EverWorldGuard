@@ -22,26 +22,15 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.spongepowered.api.block.tileentity.TileEntity;
-import org.spongepowered.api.block.tileentity.carrier.TileEntityCarrier;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.effect.potion.PotionEffect;
 import org.spongepowered.api.effect.potion.PotionEffectType;
-import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.projectile.ThrownPotion;
 import org.spongepowered.api.event.action.CollideEvent;
 import org.spongepowered.api.event.cause.NamedCause;
-import org.spongepowered.api.event.cause.entity.spawn.BlockSpawnCause;
-import org.spongepowered.api.event.cause.entity.spawn.EntitySpawnCause;
-import org.spongepowered.api.event.cause.entity.spawn.SpawnCause;
 import org.spongepowered.api.event.entity.SpawnEntityEvent;
 import org.spongepowered.api.event.item.inventory.InteractItemEvent;
-import org.spongepowered.api.item.inventory.Inventory;
-import org.spongepowered.api.item.inventory.ItemStack;
-import org.spongepowered.api.item.inventory.ItemStackSnapshot;
-import org.spongepowered.api.world.Location;
-import org.spongepowered.api.world.World;
 
 import com.flowpowered.math.vector.Vector3i;
 
@@ -49,7 +38,6 @@ import fr.evercraft.everapi.services.worldguard.WorldGuardWorld;
 import fr.evercraft.everapi.services.worldguard.flag.CatalogTypeFlag;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
-import fr.evercraft.everworldguard.protection.EProtectionService;
 
 public class FlagPotionSplash extends CatalogTypeFlag<PotionEffectType> {
 
@@ -118,6 +106,9 @@ public class FlagPotionSplash extends CatalogTypeFlag<PotionEffectType> {
 	public void onSpawnEntity(SpawnEntityEvent event) {
 		if (event.isCancelled()) return;
 		
+		// TODO Bug : Le owner de la potion est le owner du dispenser
+		
+		/*
 		Optional<SpawnCause> optSpawn = event.getCause().get(NamedCause.SOURCE, SpawnCause.class);
 		if (!optSpawn.isPresent()) return;
 		SpawnCause spawn = optSpawn.get();
@@ -127,9 +118,10 @@ public class FlagPotionSplash extends CatalogTypeFlag<PotionEffectType> {
 			this.onSpawnEntityPlayer(this.plugin.getProtectionService(), event, spawn, optPlayer.get());
 		} else {
 			this.onSpawnEntityNatural(this.plugin.getProtectionService(), event, spawn);
-		}
+		}*/
 	}
 	
+	/*
 	private void onSpawnEntityPlayer(EProtectionService service, SpawnEntityEvent event, SpawnCause spawn, Player player) {
 		// Bypass
 		if (this.plugin.getProtectionService().hasBypass(player)) return;
@@ -141,7 +133,6 @@ public class FlagPotionSplash extends CatalogTypeFlag<PotionEffectType> {
 			WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateWorld(entity.getWorld());
 			for (PotionEffectType potion : potions.get().stream().map(potion -> potion.getType()).collect(Collectors.toSet())) {
 				if (this.getDefault().containsValue(potion) && !world.getRegions(entity.getLocation().getPosition()).getFlag(player, this).containsValue(potion)) {
-					
 					if (spawn instanceof EntitySpawnCause && ((EntitySpawnCause) spawn).getEntity().equals(player)) {			
 						this.sendMessage(player, entity.getLocation().getPosition().toInt(), potion);
 					}
@@ -194,7 +185,7 @@ public class FlagPotionSplash extends CatalogTypeFlag<PotionEffectType> {
 				.fromSnapshot(item.get())
 				.build());
 		});
-	}
+	}*/
 	
 	/*
 	 * CollideEvent.Impact

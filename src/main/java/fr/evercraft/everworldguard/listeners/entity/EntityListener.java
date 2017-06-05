@@ -27,6 +27,7 @@ import org.spongepowered.api.event.entity.DestructEntityEvent;
 import org.spongepowered.api.event.entity.HealEntityEvent;
 import org.spongepowered.api.event.entity.InteractEntityEvent;
 import org.spongepowered.api.event.entity.SpawnEntityEvent;
+import org.spongepowered.api.event.entity.projectile.LaunchProjectileEvent;
 import org.spongepowered.api.event.entity.projectile.TargetProjectileEvent;
 import org.spongepowered.api.event.item.inventory.DropItemEvent;
 
@@ -97,6 +98,12 @@ public class EntityListener {
 		
 		// Debug 
 		//UtilsCause.debug(event.getCause(), "DropItemEvent : " + String.join(", ", event.getDroppedItems().stream().map(entity -> entity.getType().getName()).collect(Collectors.toList())));
+	}
+	
+	@Listener(order=Order.FIRST)
+	public void onDropItemPree(LaunchProjectileEvent event) {
+		// Debug 
+		//UtilsCause.debug(event.getCause(), event.getClass().getSimpleName());
 	}
 	
 	@Listener(order=Order.FIRST)

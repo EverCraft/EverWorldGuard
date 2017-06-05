@@ -206,7 +206,6 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 				EntityTypes.TNT_MINECART.getId(),
 				EntityTypes.ENDER_CRYSTAL.getId(),
 				EntityTypes.BOAT.getId(),
-				EntityTypes.HOPPER_MINECART.getId(),
 				EntityTypes.ITEM_FRAME.getId(),
 				EntityTypes.VILLAGER.getId()));
 		addDefault("INTERACT_ENTITY, DAMAGE_ENTITY, ENTITY_DAMAGE, ENTITY_SPAWNING", interact_entity);

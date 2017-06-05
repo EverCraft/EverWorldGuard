@@ -32,6 +32,7 @@ import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.cause.entity.spawn.BlockSpawnCause;
 import org.spongepowered.api.event.cause.entity.spawn.EntitySpawnCause;
 import org.spongepowered.api.event.cause.entity.spawn.SpawnCause;
+import org.spongepowered.api.event.cause.entity.spawn.SpawnTypes;
 import org.spongepowered.api.event.entity.SpawnEntityEvent;
 import org.spongepowered.api.event.item.inventory.DropItemEvent;
 import org.spongepowered.api.item.ItemType;
@@ -90,6 +91,13 @@ public class FlagItemDrop extends CatalogTypeFlag<ItemType> {
 		Optional<SpawnCause> optSpawn = event.getCause().get(NamedCause.SOURCE, SpawnCause.class);
 		if (!optSpawn.isPresent()) return;
 		SpawnCause spawn = optSpawn.get();
+		
+		if (!(spawn.getType().equals(SpawnTypes.DROPPED_ITEM) || spawn.getType().equals(SpawnTypes.DISPENSE))) return;
+		
+		if (spawn instanceof EntitySpawnCause && ((EntitySpawnCause) spawn).getEntity() instanceof Player) {
+			this.onSpawnEntityPlayer(this.plugin.getProtectionService(), event, spawn, (Player) ((EntitySpawnCause) spawn).getEntity());
+			return;
+		} 
 		
 		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
 		if (optPlayer.isPresent()) {

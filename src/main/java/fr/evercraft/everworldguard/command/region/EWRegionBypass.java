@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandSource;
@@ -46,11 +45,7 @@ public class EWRegionBypass extends ESubCommand<EverWorldGuard> {
         super(plugin, command, "bypass");
         
         this.pattern = Args.builder()
-        	.value(MARKER_PLAYER, (source, args) -> {
-        		List<String> list = args.getArgs();
-				Set<String> suggests = this.getAllUsers(list.get(list.size()-1), source);
-				return suggests;
-			})
+        	.value(MARKER_PLAYER, (source, args) -> this.getAllPlayers(source, false))
     		.arg((source, args) -> Arrays.asList("on", "off", "status"));
     }
 	
@@ -140,7 +135,7 @@ public class EWRegionBypass extends ESubCommand<EverWorldGuard> {
 			return false;
 		}
 		
-		player.setProtectionBypass(true);
+		player.setProtectionBypass(false);
 		EWMessages.REGION_BYPASS_OFF_PLAYER.sendTo(player);
 		return true;
 	}
@@ -186,7 +181,7 @@ public class EWRegionBypass extends ESubCommand<EverWorldGuard> {
 			return false;
 		}
 		
-		player.setProtectionBypass(true);
+		player.setProtectionBypass(false);
 		EWMessages.REGION_BYPASS_ON_OTHERS_PLAYER.sender()
 			.replace("<staff>", staff.getName())
 			.sendTo(player);

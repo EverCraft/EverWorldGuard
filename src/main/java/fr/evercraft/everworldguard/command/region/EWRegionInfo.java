@@ -212,10 +212,10 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 	}
 	
 	private boolean commandRegionInfo(final CommandSource player, final Set<ProtectedRegion> regions, final World world) {
-		List<Text> list = new ArrayList<Text>();
+		TreeMap<ProtectedRegion, Text> map = new TreeMap<ProtectedRegion, Text>();
 		
 		for (ProtectedRegion region : regions) {
-			this.addLine(list, EWMessages.REGION_INFO_LIST_LINE.getFormat()
+			this.addLine(map, region, EWMessages.REGION_INFO_LIST_LINE.getFormat()
 					.toText("<region>", Text.builder(region.getName())
 								.onShiftClick(TextActions.insertText(region.getName()))
 								.onClick(TextActions.suggestCommand(
@@ -234,7 +234,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 					.toBuilder()
 					.onClick(TextActions.runCommand("/" + this.getName() + " -w \"" + world.getName() + "\""))
 					.build(), 
-				list, player);		
+				new ArrayList<Text>(map.values()), player);		
 		return true;
 	}
 
@@ -530,6 +530,12 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 				list, player);
 		
 		return true;
+	}
+	
+	private void addLine(TreeMap<ProtectedRegion, Text> map, ProtectedRegion region, Text line) {
+		if (!line.isEmpty()) {
+			map.put(region, line);
+		}
 	}
 	
 	private void addLine(List<Text> list, Text line) {

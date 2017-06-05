@@ -26,6 +26,7 @@ import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.data.Transaction;
+import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.projectile.Projectile;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
@@ -177,10 +178,15 @@ public class FlagInteractBlock extends CatalogTypeFlag<BlockType> {
 			// Fix : Bug d'affichage des coffres
 			if (type.equals(BlockTypes.CHEST) || type.equals(BlockTypes.TRAPPED_CHEST)) return false;
 			
+			// Fix : Bypass
+			if (transaction.getOriginal().get(Keys.POWERED).orElse(false) && !transaction.getDefault().get(Keys.POWERED).orElse(true)) {
+				return false;
+			}
+			
 			Location<World> location = transaction.getOriginal().getLocation().get();
 			
 			if (this.getDefault().containsValue(type) && !service.getOrCreateWorld(location.getExtent()).getRegions(transaction.getOriginal().getPosition()).getFlag(player, this).containsValue(type)) {
-				event.setCancelled(true);
+				transaction.setValid(false);				
 				return true;
 			}
 			return false;

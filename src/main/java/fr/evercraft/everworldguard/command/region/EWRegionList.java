@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.TreeMap;
 
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandSource;
@@ -173,9 +174,9 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 	}
 
 	private boolean commandRegionList(CommandSource player, World world) {
-		List<Text> list = new ArrayList<Text>();
+		TreeMap<String, Text> list = new TreeMap<String, Text>();
 		for (ProtectedRegion region : this.plugin.getProtectionService().getOrCreateWorld(world).getAll()) {
-			list.add(EWMessages.REGION_LIST_ALL_LINE.getFormat()
+			list.put(region.getName(), EWMessages.REGION_LIST_ALL_LINE.getFormat()
 					.toText("<region>", Text.builder(region.getName())
 								.onShiftClick(TextActions.insertText(region.getName()))
 								.build(),
@@ -188,7 +189,7 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 		}
 		
 		if (list.isEmpty()) {
-			list.add(EWMessages.REGION_LIST_ALL_EMPTY.getText());
+			list.put("", EWMessages.REGION_LIST_ALL_EMPTY.getText());
 		}
 		
 		this.plugin.getEverAPI().getManagerService().getEPagination().sendTo(
@@ -197,7 +198,7 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 					.toBuilder()
 					.onClick(TextActions.runCommand("/" + this.getName() + " -w \"" + world.getName() + "\""))
 					.build(), 
-				list, player);
+				new ArrayList<Text>(list.values()), player);
 		
 		return true;
 	}
@@ -216,10 +217,10 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 	}
 	
 	private boolean commandRegionListPlayer(CommandSource staff, World world, EUser user) {
-		List<Text> list = new ArrayList<Text>();
+		TreeMap<String, Text> list = new TreeMap<String, Text>();
 		for (ProtectedRegion region : this.plugin.getProtectionService().getOrCreateWorld(world).getAll()) {
 			if (region.isOwnerOrMember(user, UtilsContexts.get(world.getName()))) {
-				list.add(EWMessages.REGION_LIST_PLAYER_LINE.getFormat()
+				list.put(region.getName(), EWMessages.REGION_LIST_PLAYER_LINE.getFormat()
 						.toText("<region>", Text.builder(region.getName())
 									.onShiftClick(TextActions.insertText(region.getName()))
 									.build(),
@@ -233,7 +234,7 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 		}
 		
 		if (list.isEmpty()) {
-			list.add(EWMessages.REGION_LIST_PLAYER_EMPTY.getText());
+			list.put("", EWMessages.REGION_LIST_PLAYER_EMPTY.getText());
 		}
 		
 		EFormat title = null;
@@ -250,7 +251,7 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 					.toBuilder()
 					.onClick(TextActions.runCommand("/" + this.getName() + " -w \"" + world.getName() + "\" -p \"" + user.getIdentifier() + "\""))
 					.build(), 
-				list, staff);
+				new ArrayList<Text>(list.values()), staff);
 		
 		return true;
 	}
@@ -265,10 +266,10 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 			return false;
 		}
 		
-		List<Text> list = new ArrayList<Text>();
+		TreeMap<String, Text> list = new TreeMap<String, Text>();
 		for (ProtectedRegion region : this.plugin.getProtectionService().getOrCreateWorld(world).getAll()) {
 			if (region.isOwnerOrMember(group)) {
-				list.add(EWMessages.REGION_LIST_GROUP_LINE.getFormat()
+				list.put(region.getName(), EWMessages.REGION_LIST_GROUP_LINE.getFormat()
 						.toText("<region>", Text.builder(region.getName())
 									.onShiftClick(TextActions.insertText(region.getName()))
 									.build(),
@@ -282,7 +283,7 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 		}
 		
 		if (list.isEmpty()) {
-			list.add(EWMessages.REGION_LIST_GROUP_EMPTY.getText());
+			list.put("", EWMessages.REGION_LIST_GROUP_EMPTY.getText());
 		}
 		
 		this.plugin.getEverAPI().getManagerService().getEPagination().sendTo(
@@ -292,7 +293,7 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 					.toBuilder()
 					.onClick(TextActions.runCommand("/" + this.getName() + " -w \"" + world.getName() + "\" -g \"" + group.getIdentifier() + "\""))
 					.build(), 
-				list, player);
+				new ArrayList<Text>(list.values()), player);
 		
 		return true;
 	}
