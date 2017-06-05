@@ -33,17 +33,17 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 	
 	public enum EWMessages implements EnumMessage {
 		PREFIX("prefix", 				"[&4Ever&6&lWG&f] "),
-		DESCRIPTION("description",		"Gestionnaire des régions"), 
+		DESCRIPTION("description",		"Plugin de protection des régions"), 
 		
 		GROUP_NOT_FOUND("groupNotFound",		"&cErreur : Le group '&6<group>&c' est introuvable."), 
-		GROUP_INCOMPATIBLE("groupImcompatible",	"&cErreur : Le group '&6<group>&c' est incompatible avec le flag <flag>."), 
+		GROUP_INCOMPATIBLE("groupIncompatible",	"&cErreur : Le group '&6<group>&c' est incompatible avec le flag <flag>."), 
 		FLAG_NOT_FOUND("flagNotFound",			"&cErreur : Le flag '&6<flag>&c' est introuvable."), 
 		
 		SELECT_DESCRIPTION("select.description",					"Permet de sélectionner une région"),
 		
 		SELECT_CUI_DESCRIPTION("select.cui.description",								"Permet de voir les régions (Require : WorldEdit CUI)"),
 		
-		SELECT_INFO_DESCRIPTION("select.info.description",								"Informe sur la région selectionné"),
+		SELECT_INFO_DESCRIPTION("select.info.description",								"Affiche les informations sur la région sélectionnée"),
 		SELECT_INFO_POS("select.info.pos",												"&7(&6<x>&7, &6<y>&7, &6<z>&7)"),
 		SELECT_INFO_POS_HOVER("select.info.posHover",									"&7X : &6<x>[RT]&7Y : &6<y>[RT]&7Z : &6<z>"),
 		SELECT_INFO_CUBOID_TITLE("select.info.cuboidTitle",								"&7Votre sélection &6CUDOID&7"),
@@ -86,7 +86,7 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		SELECT_INFO_SPHERE_CENTER("select.info.sphereCenter",							"    &6&l➤  &6Centre : &7<center>"),
 		SELECT_INFO_SPHERE_EMPTY("select.info.sphereEmpty",								"    Aucune position sélectionnée."),
 		
-		SELECT_POS1_DESCRIPTION("select.pos1.description",			"Defini la première position"),
+		SELECT_POS1_DESCRIPTION("select.pos1.description",			"Défini  la première position"),
 		SELECT_POS1_ONE("select.pos1.one",							"&7Sélection de la position 1 : <position>."),
 		SELECT_POS1_TWO("select.pos1.two",							"&7Sélection de la position 1 : <position> &7(&6<area>&7)."),
 		SELECT_POS1_POLY("select.pos1.poly",						"&7Sélection de la position #1 : <position>."),
@@ -94,20 +94,20 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		SELECT_POS1_EQUALS("select.pos1.equals",					"&cErreur : Vous avez déjà sélectionnée une position."),
 		SELECT_POS1_CANCEL("select.pos1.cancel",					"&cErreur : Impossible de sélectionner une position pour le moment."),
 		
-		SELECT_POS2_DESCRIPTION("select.pos2.description",			"Defini la deuxième position"),
+		SELECT_POS2_DESCRIPTION("select.pos2.description",			"Défini  la deuxième position"),
 		SELECT_POS2_ONE("select.pos2.one",							"&7Sélection de la position 2 : <position>."),
 		SELECT_POS2_TWO("select.pos2.two",							"&7Sélection de la position 2 : <position> &7(&6<area>&7)."),
 		SELECT_POS2_POLY_ONE("select.pos2.polyOnde",				"&7Ajout de la position &6#<num> &7: <position>."),
 		SELECT_POS2_POLY_ALL("select.pos2.polyAll",					"&7Ajout de la position &6#<num> &7: <position> &7(&6<area>&7)."),
 		SELECT_POS2_RADIUS("select.pos2.radius",					"&7Sélection d'un rayon de <radius> &7block(s) : <position>."),
-		SELECT_POS2_NO_CENTER("select.pos2.noCenter",				"&cErreur : Aucune position centrale selectionnée."),
-		SELECT_POS2_EQUALS("select.pos2.equals",					"&cErreur : Vous avez déjà selectionnée cette position."),
+		SELECT_POS2_NO_CENTER("select.pos2.noCenter",				"&cErreur : Aucune position centrale sélectionnée."),
+		SELECT_POS2_EQUALS("select.pos2.equals",					"&cErreur : Vous avez déjà sélectionnée cette position."),
 		SELECT_POS2_CANCEL("select.pos2.cancel",					"&cErreur : Impossible de sélectionner une position pour le moment."),
 		
-		SELECT_CLEAR_DESCRIPTION("select.clear.description",		"Supprime toutes les positions selectionnées"),
+		SELECT_CLEAR_DESCRIPTION("select.clear.description",		"Supprime toutes les positions sélectionnées"),
 		SELECT_CLEAR_PLAYER("select.clear.player",					"&7Vous n'avez plus aucune position."),
 		
-		SELECT_REMOVE_DESCRIPTION("select.remove.description",		"Supprime la denière position sélectionnée d'un polygone"),
+		SELECT_REMOVE_DESCRIPTION("select.remove.description",		"Supprime la dernière  position sélectionnée d'un polygone"),
 		SELECT_REMOVE_PLAYER("select.remove.player",				"&7Vous avez supprimée la position : <pos>."),
 		SELECT_REMOVE_EMPTY("select.remove.empty",					"&4Erreur : Vous n'avez aucune position sélectionnée."),
 		SELECT_REMOVE_ERROR("select.remove.error",					"&4Erreur : Uniquement pour le type &62D Polygonal&c."),
@@ -131,47 +131,47 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		SELECT_SHIFT_ERROR_OPERATION("select.shift.errorOperation",				"&4Erreur : Vous ne pouvez pas faire cette opération sur ce type de région."),
 		SELECT_SHIFT_ERROR_NO_REGION("select.shift.errorNoRegion",				"&4Erreur : Vous devez d'abord sélectionner une région."),
 		
-		SELECT_TYPE_DESCRIPTION("select.type.description",		"&7Change le type de selection"),
+		SELECT_TYPE_DESCRIPTION("select.type.description",		"&7Change le type de sélection"),
 		
-		SELECT_TYPE_CUBOID("select.type.cuboid",				"&7Cuboid : clique gauche pour définir le point N°1 et clique droit pour définir le point N°2.",
+		SELECT_TYPE_CUBOID("select.type.cuboid",				"&7Cuboid : Clic gauche pour définir le point N°1 et clic droit pour définir le point N°2.",
 																"&7Cuboid : left click for point 1, right for point 2."),
-		SELECT_TYPE_EXTEND("select.type.extend",				"&7Extend : clique gauche pour définir le point N°1 et clique droit pour définir le point N°2.",
+		SELECT_TYPE_EXTEND("select.type.extend",				"&7Extend : Clic gauche pour définir le point N°1 et clic droit pour définir le point N°2.",
 																"&7Extend : left click for point 1, right for point 2."),
-		SELECT_TYPE_POLYGONAL("select.type.poly",				"&72D Polygonal : clique gauche pour définir le premier point et clique droit pour définir les points suivants.",
+		SELECT_TYPE_POLYGONAL("select.type.poly",				"&72D Polygonal : Clic gauche pour définir le premier point et clic droit pour définir les points suivants.",
 																"&72D polygon selector: Left/right click to add a point."),
-		SELECT_TYPE_CYLINDER("select.type.cylinder",			"&7Cylindrique : clique gauche pour définir le centre, clique droit pour définir le rayon.",
+		SELECT_TYPE_CYLINDER("select.type.cylinder",			"&7Cylindrique : Clic gauche pour définir le centre, clic droit pour définir le rayon.",
 																"&7Cylindrical select: Left click=center, right click to extend."),
-		SELECT_TYPE_ELLIPSOID("select.type.ellipsoid",			"&7Ellipsoid : clique gauche pour définir le centre, clique droit pour définir les formes.",
+		SELECT_TYPE_ELLIPSOID("select.type.ellipsoid",			"&7Ellipsoid : Clic gauche pour définir le centre, clic droit pour définir les formes.",
 																"&7Ellipsoid select: Left click=center, right click to extend."),
-		SELECT_TYPE_SPHERE("select.type.sphere",				"&7Sphere : clique gauche pour définir le centre, clique droit pour définir les formes.",
+		SELECT_TYPE_SPHERE("select.type.sphere",				"&7Sphere : Clic gauche pour définir le centre, clic droit pour définir les formes.",
 																"&7Sphere select: Left click=center, right click to extend."),
 		SELECT_TYPE_EQUALS("select.type.equals",				"&cErreur : Sélection &6<type> &cdéjà activée"),
 		SELECT_TYPE_CANCEL("select.type.cancel",				"&cErreur : Impossible de changer de type de sélection pour le moment."),
 		
-		REGION_DESCRIPTION("region.description",				"Gère les régions protégée"),
+		REGION_DESCRIPTION("region.description",				"Gère les régions protégées"),
 		REGION_NO_PERMISSION("region.noPermission",				"&cErreur : Vous n'avez pas la permission pour cette région &6<region>&c."),
 		
 		REGION_LOAD_DESCRIPTION("region.load.description",		"Rechargement des régions d'un monde"), 
 		REGION_LOAD_MESSAGE("region.load.message",				"&7Rechargement du monde &6<world>&7."), 
 		
-		REGION_BYPASS_DESCRIPTION("region.bypass.description", 						"Permet d'activer ou désactiver le bypass"),
+		REGION_BYPASS_DESCRIPTION("region.bypass.description", 						"Active/Désactive le mode admin"),
 		
-		REGION_BYPASS_ON_PLAYER("region.bypass.onPlayer", 							"&7Vous avez activé votre bypass."),
-		REGION_BYPASS_ON_PLAYER_ERROR("region.bypass.onPlayerError", 				"&cVous avez déjà votre bypass d'activé."),
-		REGION_BYPASS_ON_OTHERS_PLAYER("region.bypass.onOthersPlayer", 				"&7Votre bypass est désormais activé grâce à &6<staff>&7."),
-		REGION_BYPASS_ON_OTHERS_STAFF("region.bypass.onOthersStaff", 				"&7Vous venez d'activé le bypass à &6<player>&7."),
-		REGION_BYPASS_ON_OTHERS_ERROR("region.bypass.onOthersError", 				"&7Le bypass de &6<player> &7est déjà activé."),
+		REGION_BYPASS_ON_PLAYER("region.bypass.onPlayer", 							"&7Vous avez activé le mode admin."),
+		REGION_BYPASS_ON_PLAYER_ERROR("region.bypass.onPlayerError", 				"&cErreur : Le mode admin est déjà activé."),
+		REGION_BYPASS_ON_OTHERS_PLAYER("region.bypass.onOthersPlayer", 				"&7Le mode admin est désormais activé grâce à &6<staff>&7."),
+		REGION_BYPASS_ON_OTHERS_STAFF("region.bypass.onOthersStaff", 				"&7Vous avez activé le mode admin pour &6<player>&7."),
+		REGION_BYPASS_ON_OTHERS_ERROR("region.bypass.onOthersError", 				"&cErreur : Le mode admin de &6<player> &7est déjà activé."),
 		
-		REGION_BYPASS_OFF_PLAYER("region.bypass.offPlayer", 						"&7Vous avez désactivé votre bypass."),
-		REGION_BYPASS_OFF_PLAYER_ERROR("region.bypass.offPlayerError", 				"&7Vous avez déjà votre bypass désactivé."),
-		REGION_BYPASS_OFF_OTHERS_PLAYER("region.bypass.offOthersPlayer", 			"&7Votre bypass est désormais désactivé à cause de &6<staff>&7."),
-		REGION_BYPASS_OFF_OTHERS_STAFF("region.bypass.offOthersStaff", 				"&7Vous venez de désactivé le bypass à &6<player>&7."),
-		REGION_BYPASS_OFF_OTHERS_ERROR("region.bypass.offOthersError", 				"&7Le bypass de &6<player> &7est déjà désactivé."),
+		REGION_BYPASS_OFF_PLAYER("region.bypass.offPlayer", 						"&7Vous avez désactivé le mode admin."),
+		REGION_BYPASS_OFF_PLAYER_ERROR("region.bypass.offPlayerError", 				"&cErreur : Le mode admin est déjà désactivé."),
+		REGION_BYPASS_OFF_OTHERS_PLAYER("region.bypass.offOthersPlayer", 			"&7Le mode admin est désormais désactivé à cause de &6<staff>&7."),
+		REGION_BYPASS_OFF_OTHERS_STAFF("region.bypass.offOthersStaff", 				"&7Vous avez désactivé le mode admin pour &6<player>&7."),
+		REGION_BYPASS_OFF_OTHERS_ERROR("region.bypass.offOthersError", 				"&7Erreur : Le mode admin de &6<player> &7est déjà désactivé."),
 		
-		REGION_BYPASS_STATUS_PLAYER_ON("region.bypass.statusPlayerOn", 				"&7Votre bypass est activé."),
-		REGION_BYPASS_STATUS_PLAYER_OFF("region.bypass.statusPlayerOff", 			"&7Votre bypass est désactivé."),
-		REGION_BYPASS_STATUS_OTHERS_ON("region.bypass.statusOthersOn", 				"&7Le bypass de &6<player> &7est activé."),
-		REGION_BYPASS_STATUS_OTHERS_OFF("region.bypass.statusOthersOff", 			"&7Le bypass de &6<player> &7est désactivé."),
+		REGION_BYPASS_STATUS_PLAYER_ON("region.bypass.statusPlayerOn", 				"&7Le mode admin est activé."),
+		REGION_BYPASS_STATUS_PLAYER_OFF("region.bypass.statusPlayerOff", 			"&7Le mode admin est désactivé.."),
+		REGION_BYPASS_STATUS_OTHERS_ON("region.bypass.statusOthersOn", 				"&7Le mode admin de &6<player> &7est activé."),
+		REGION_BYPASS_STATUS_OTHERS_OFF("region.bypass.statusOthersOff", 			"&7Le mode admin de &6<player> &7est désactivé."),
 		
 		REGION_INFO_DESCRIPTION("region.info.description",													"Permet de voir la liste des régions sur votre position"),
 		REGION_INFO_ONE_TITLE("region.info.one.title",														"&aRégion Info : &6<region>"),
@@ -208,7 +208,7 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		REGION_INFO_ONE_HERITAGE_FLAGS_MEMBER("region.info.one.heritageFlagsMember",						"        &6&l●   &6Member:"),
 		REGION_INFO_ONE_HERITAGE_FLAGS_OWNER("region.info.one.heritageFlagsOwner",							"        &6&l●   &6Owner:"),
 		REGION_INFO_LIST_TITLE("region.info.list.title",													"&aListe des régions"),
-		REGION_INFO_LIST_LINE("region.info.list.line",														"    &6&l➤  &6<region> : (Type : &7<type>&6, Priorité : &7<priority>&6)"),
+		REGION_INFO_LIST_LINE("region.info.list.line",														"    &6&l➤  &6<region> : [RT]            &7(Type : &a<type>&7, Priorité : &a<priority>&7)"),
 		REGION_INFO_EMPTY("region.info.empty",																"&cErreur : Vous n'avez accès aux informations sur ces régions."),
 		
 		REGION_LIST_DESCRIPTION("region.list.description",										"Permet de voir la liste des régions dans le monde"),
@@ -338,7 +338,7 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 																							  + "    -f : Permet de supprimer aussi les régions enfants[RT]"
 																							  + "    -u : Permet de supprimer uniquement la région parent"),
 		
-		REGION_TELEPORT_DESCRIPTION("region.teleport.description",								"Téléporte à une région"),
+		REGION_TELEPORT_DESCRIPTION("region.teleport.description",								"Téléporte le joueur à la région séléctionnée"),
 		REGION_TELEPORT_TELEPORT("region.teleport.teleport",									"&7Vous avez été <position> &7à la région &6<region>&7."),
 		REGION_TELEPORT_TELEPORT_POSITION("region.teleport.teleportPosition",					"&6téléporté"),
 		REGION_TELEPORT_TELEPORT_POSITION_HOVER("region.teleport.teleportPositionHover",		"&7World : &6<world>[RT]&7X : &6<x>[RT]&7Y : &6<y>[RT]&7Z : &6<z>"),
@@ -362,57 +362,57 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		REGION_SELECT_TEMPLATE("region.select.template",										"&cErreur : Impossible de sélectionner une région de type &6<type>&c."),
 		
 		
-		FLAG_BLOCK_PLACE_DESCRIPTION("flag.blockPlace.description",				"Active/Désactive l'action de placer des blocs"),
+		FLAG_BLOCK_PLACE_DESCRIPTION("flag.blockPlace.description",				"Autorise/Interdit de placer des blocs"),
 		FLAG_BLOCK_PLACE_MESSAGE("flag.blockPlace.message",						EMessageFormat.builder()
 																					.actionbarMessageString("&cPlacer des blocs de <block> est interdit (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
 																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		
-		FLAG_BLOCK_BREAK_DESCRIPTION("flag.blockBreak.description",				"Active/Désactive l'action de détruire des blocs"),
+		FLAG_BLOCK_BREAK_DESCRIPTION("flag.blockBreak.description",				"Autorise/Interdit de détruire des blocs"),
 		FLAG_BLOCK_BREAK_MESSAGE("flag.blockBreak.message",						EMessageFormat.builder()
 																					.actionbarMessageString("&cCasser des blocs de <block> est interdit (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
 																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		
-		FLAG_BUILD_DESCRIPTION("flag.build.description",						"Désactive/Active les constructions"),
+		FLAG_BUILD_DESCRIPTION("flag.build.description",						"Autorise/Interdit les constructions"),
 		FLAG_BUILD_MESSAGE("flag.build.message",								EMessageFormat.builder()
 																					.actionbarMessageString("&cConstruction désactivé (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
 																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 				
-		FLAG_CHAT_DESCRIPTION("flag.chatSend.description",						"Désactive/Active l'envoi et la réception de message"),
+		FLAG_CHAT_DESCRIPTION("flag.chatSend.description",						"Désactive/Active le chat"),
 		FLAG_CHAT_SEND_MESSAGE("flag.chatSend.sendMessage",						"&cL'envoi de message est désactivé dans cette région (<x>, <y>, <z>)"),
 		
-		FLAG_COMMAND_DESCRIPTION("flag.commands.description",					"Désactive/Active des commandes"),
+		FLAG_COMMAND_DESCRIPTION("flag.commands.description",					"Désactive/Active l'execution des commandes"),
 		FLAG_COMMAND_MESSAGE("flag.commands.message",							"&cLa commande <command> est désactivé dans cette région (<x>, <y>, <z>)"),
 		
-		FLAG_DAMAGE_ENTITY_DESCRIPTION("flag.damageEntity.description",			"Désactive/Active les damages infligés aux entités"),
+		FLAG_DAMAGE_ENTITY_DESCRIPTION("flag.damageEntity.description",			"Désactive/Active les dégats infligés aux entités"),
 		FLAG_DAMAGE_ENTITY_MESSAGE("flag.damageEntity.message",					EMessageFormat.builder()
 																					.actionbarMessageString("&cLes dégats infligés aux entités sont désactivé (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
 																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		
-		FLAG_ENDERDRAGON_GRIEF_DESCRIPTION("flag.enderDragonGrief.description",	"Désactive/Active le grief de l'EnderDragon"),
+		FLAG_ENDERDRAGON_GRIEF_DESCRIPTION("flag.enderDragonGrief.description",	"Désactive/Active la destruction des blocs par l'EnderDragon"),
 		
-		FLAG_ENDERPEARL_DESCRIPTION("flag.enderpearl.description",				"Désactive/Active la téléportation avec une enderpearl"),
+		FLAG_ENDERPEARL_DESCRIPTION("flag.enderpearl.description",				"Désactive/Active la téléportation avec une enderperle"),
 		FLAG_ENDERPEARL_MESSAGE("flag.enderpearl.message",						EMessageFormat.builder()
-																					.actionbarMessageString("&cL'utilisation des enderpearls est désactivé (<x>, <y>, <z>)")
+																					.actionbarMessageString("&cL'utilisation des enderperles est désactivé (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
 																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		
-		FLAG_ENTITY_DAMAGE_DESCRIPTION("flag.entityDamage.description",			"Désactive/Active les dégats infligés par entités"),
+		FLAG_ENTITY_DAMAGE_DESCRIPTION("flag.entityDamage.description",			"Désactive/Active les dégats infligés par une entité"),
 		
-		FLAG_ENDERMAN_GRIEF_DESCRIPTION("flag.endermanGrief.description",		"Désactive/Active le grief de l'Enderman"),
+		FLAG_ENDERMAN_GRIEF_DESCRIPTION("flag.endermanGrief.description",		"Désactive/Active la destruction des blocs de l'Enderman"),
 			
-		FLAG_INTERACT_BLOCK_DESCRIPTION("flag.interactBlock.description",		"Désactive/Active les interactions avec les blocs"),
+		FLAG_INTERACT_BLOCK_DESCRIPTION("flag.interactBlock.description",		"Désactive/Active l'interaction avec les blocs"),
 		FLAG_INTERACT_BLOCK_MESSAGE("flag.interactBlock.message",				EMessageFormat.builder()
-																					.actionbarMessageString("&cInteractions avec les blocs désactivé (<x>, <y>, <z>)")
+																					.actionbarMessageString("&cL'Interaction avec les blocs est désactivé (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
 																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		
 		FLAG_INTERACT_ENTITY_DESCRIPTION("flag.interactEntity.description",		"Désactive/Active les interactions avec les entités"),
 		FLAG_INTERACT_ENTITY_MESSAGE("flag.interactEntity.message",				EMessageFormat.builder()
-																					.actionbarMessageString("&cInteractions avec les entités désactivé (<x>, <y>, <z>)")
+																					.actionbarMessageString("&cL'Interactions avec les entités est désactivé (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
 																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		
@@ -436,7 +436,7 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 																					.actionbarStay(3 * 1000)
 																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		
-		FLAG_EXP_DROP_DESCRIPTION("flag.expDrop.description",					"Active/Désactive "),
+		FLAG_EXP_DROP_DESCRIPTION("flag.expDrop.description",					"Active/Désactive la perte d'expérience au sol"),
 		
 		FLAG_EXPLOSION_DESCRIPTION("flag.explosion.description",				"Désactive/Active les explosions dans la région"),
 		
@@ -451,9 +451,9 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 																					.actionbarStay(3 * 1000)
 																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		
-		FLAG_ICE_DESCRIPTION("flag.ice.description",							"Désactive/Active la glace"),
+		FLAG_ICE_DESCRIPTION("flag.ice.description",							"Désactive/Active la formation de glace"),
 		
-		FLAG_INVENTORY_DROP_DESCRIPTION("flag.inventoryDrop.description",		"Désactive/Active la perte d'inventaire"),
+		FLAG_INVENTORY_DROP_DESCRIPTION("flag.inventoryDrop.description",		"Désactive/Active la perte de l'inventaire"),
 		
 		FLAG_INVINCIBILITY_DESCRIPTION("flag.invincibity.description",			"Désactive/Active l'invincibilité"),
 		
@@ -480,7 +480,7 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		
 		FLAG_PROPAGATION_DESCRIPTION("flag.propagation.description",			"Désactive/Active la propagation"),
 		FLAG_PROPAGATION_MESSAGE("flag.propagation.message",					EMessageFormat.builder()
-																					.actionbarMessageString("&cPVP désactivé (<x>, <y>, <z>)")
+																					.actionbarMessageString("&cPropagation désactivé (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
 																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		
@@ -496,9 +496,9 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		
 		FLAG_SPAWN_DESCRIPTION("flag.spawn.description",						"Défini un spawn pour la région"),
 		
-		FLAG_SPAWN_ENTITY_DESCRIPTION("flag.spawnEntity.description",			""),
+		FLAG_SPAWN_ENTITY_DESCRIPTION("flag.spawnEntity.description",			"Désactive/Active l'apparition des entités"),
 		FLAG_SPAWN_ENTITY_MESSAGE("flag.spawnEntity.message",					EMessageFormat.builder()
-																					.actionbarMessageString("&cLe spawn des <entity> est désactivé (<x>, <y>, <z>)")
+																					.actionbarMessageString("&cL'apparition de l'entité <entity> est désactivé (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
 																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG));
 		
@@ -523,7 +523,7 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 	    }
 	    
 	    private EWMessages(final String path, final EMessageBuilder french, final EMessageBuilder english) {
-	    	Preconditions.checkNotNull(french, "Le message '" + this.name() + "' n'est pas définit");
+	    	Preconditions.checkNotNull(french, "Le message '" + this.name() + "' n'est pas défini");
 	    	
 	    	this.path = path;	    	
 	    	this.french = french;
