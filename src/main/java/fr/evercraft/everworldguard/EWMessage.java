@@ -173,6 +173,20 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		REGION_BYPASS_STATUS_OTHERS_ON("region.bypass.statusOthersOn", 				"&7Le mode admin de &6<player> &7est activé."),
 		REGION_BYPASS_STATUS_OTHERS_OFF("region.bypass.statusOthersOff", 			"&7Le mode admin de &6<player> &7est désactivé."),
 		
+		REGION_CHECK_DESCRIPTION("region.check.description", 						"Permet savoir la valeur de chaque flag"),
+		
+		REGION_CHECK_GROUP_TITLE("region.check.groupTitle", 						"&aListe des flags : &6<group>"),
+		REGION_CHECK_GROUP_LINE("region.check.groupLine", 							"        &a&l- <flag> : &c<value> &7(Région : &a<region>&7)"),
+		REGION_CHECK_GROUP_LINE_DEFAULT("region.check.groupLineDefault", 			"        &a&l- <flag> : &c<value>"),
+		
+		REGION_CHECK_FLAG_TITLE("region.check.flagTitle", 							"&aListe des valeurs : &6<flag>"),
+		REGION_CHECK_FLAG_DEFAULT("region.check.flagDefault", 						"    &6&l➤   &6Default : &c<value> &7(Région : &a<region>&7)"),
+		REGION_CHECK_FLAG_DEFAULT_DEFAULT("region.check.flagDefaultDefault", 		"    &6&l➤   &6Default : &c<value>"),
+		REGION_CHECK_FLAG_MEMBER("region.check.flagMember", 						"    &6&l➤   &6Member : &c<value> &7(Région : &a<region>&7)"),
+		REGION_CHECK_FLAG_MEMBER_DEFAULT("region.check.flagMemberDefault", 			"    &6&l➤   &6Member : &c<value>"),
+		REGION_CHECK_FLAG_OWNER("region.check.flagOwner", 							"    &6&l➤   &6Owner : &c<value> &7(Région : &a<region>&7)"),
+		REGION_CHECK_FLAG_OWNER_DEFAULT("region.check.flagOwneDefault", 			"    &6&l➤   &6Owner : &c<value>"),
+		
 		REGION_INFO_DESCRIPTION("region.info.description",													"Permet de voir la liste des régions sur votre position"),
 		REGION_INFO_ONE_TITLE("region.info.one.title",														"&aRégion Info : &6<region>"),
 		REGION_INFO_ONE_WORLD("region.info.one.world",														"    &6&l➤  &6World : &c<world>"),

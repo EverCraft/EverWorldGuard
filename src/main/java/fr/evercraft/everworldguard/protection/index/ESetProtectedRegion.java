@@ -29,8 +29,8 @@ import com.google.common.collect.ImmutableSet;
 
 import fr.evercraft.everapi.services.worldguard.Flag;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
+import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion.Group;
 import fr.evercraft.everapi.services.worldguard.region.SetProtectedRegion;
-import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion.Groups;
 import fr.evercraft.everworldguard.protection.regions.EProtectedRegion;
 
 public class ESetProtectedRegion implements SetProtectedRegion {
@@ -65,9 +65,9 @@ public class ESetProtectedRegion implements SetProtectedRegion {
 	}
 
 	@Override
-	public <V> V getFlagDefault(Flag<V> flag) {
+	public <V> V getFlag(ProtectedRegion.Group group, Flag<V> flag) {
 		for (ProtectedRegion region : this.regions) {
-			Optional<V> flag_value = region.getFlagInherit(flag, Groups.DEFAULT);
+			Optional<V> flag_value = region.getFlagInherit(flag, group);
 			if (flag_value.isPresent()) {
 				return flag_value.get();
 			}
@@ -87,11 +87,22 @@ public class ESetProtectedRegion implements SetProtectedRegion {
 	}
 
 	@Override
-	public <V> Optional<V> getFlagDefaultIfPresent(Flag<V> flag) {
+	public <V> Optional<V> getFlagIfPresent(ProtectedRegion.Group group, Flag<V> flag) {
 		for (ProtectedRegion region : this.regions) {
-			Optional<V> flag_value = region.getFlagInherit(flag, Groups.DEFAULT);
+			Optional<V> flag_value = region.getFlagInherit(flag, group);
 			if (flag_value.isPresent()) {
 				return Optional.ofNullable(flag_value.get());
+			}
+		}
+		return Optional.empty();
+	}
+
+	@Override
+	public <V> Optional<ProtectedRegion> getRegion(Group group, Flag<V> flag) {
+		for (ProtectedRegion region : this.regions) {
+			Optional<V> flag_value = region.getFlagInherit(flag, group);
+			if (flag_value.isPresent()) {
+				return Optional.of(region);
 			}
 		}
 		return Optional.empty();
