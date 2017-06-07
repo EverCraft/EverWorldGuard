@@ -53,19 +53,19 @@ public class EWChunck {
 		this.regions = builder.build();
 		
 		this.cache = CacheBuilder.newBuilder()
-					    .maximumSize(32)
-					    .expireAfterAccess(2, TimeUnit.MINUTES)
-					    .build(new CacheLoader<Vector3i, ESetProtectedRegion>() {
-					        @Override
-					        public ESetProtectedRegion load(Vector3i position){
-					        	Chronometer chronometer = new Chronometer();
-					        	
-					        	ESetProtectedRegion regions = new ESetProtectedRegion(position, EWChunck.this.regions);
-					        	
-					        	EWChunck.this.plugin.getELogger().debug("Loading block (x:" + position.getX() + ";y:" + position.getY() + ";z:" + position.getZ() + ") in " +  chronometer.getMilliseconds().toString() + " ms");
-					            return regions;
-					        }
-					    });
+		    .maximumSize(32)
+		    .expireAfterAccess(2, TimeUnit.MINUTES)
+		    .build(new CacheLoader<Vector3i, ESetProtectedRegion>() {
+		        @Override
+		        public ESetProtectedRegion load(Vector3i position){
+		        	Chronometer chronometer = new Chronometer();
+		        	
+		        	ESetProtectedRegion regions = new ESetProtectedRegion(position, EWChunck.this.regions);
+		        	
+		        	EWChunck.this.plugin.getELogger().debug("Loading block (x:" + position.getX() + ";y:" + position.getY() + ";z:" + position.getZ() + ") in " +  chronometer.getMilliseconds().toString() + " ms");
+		            return regions;
+		        }
+		    });
 	}
 	
 	public Vector3i getPosition() {

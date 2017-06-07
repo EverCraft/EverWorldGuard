@@ -25,6 +25,8 @@ import org.spongepowered.api.network.PlayerConnection;
 import org.spongepowered.api.network.RawDataListener;
 import org.spongepowered.api.network.RemoteConnection;
 
+import com.google.common.base.Preconditions;
+
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.selection.ESelectionSubject;
 
@@ -50,6 +52,10 @@ public class CUIChannel implements RawDataListener {
 
     @Override
     public void handlePayload(ChannelBuf data, RemoteConnection connection, Platform.Type side) {
+    	Preconditions.checkNotNull(data, "data");
+    	Preconditions.checkNotNull(connection, "connection");
+    	Preconditions.checkNotNull(side, "side");
+    	
         if (connection instanceof PlayerConnection) {
             Player player = ((PlayerConnection) connection).getPlayer();
 

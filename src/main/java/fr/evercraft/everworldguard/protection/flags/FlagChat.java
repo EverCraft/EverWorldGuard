@@ -79,7 +79,7 @@ public class FlagChat extends CatalogTypeFlag<ChatType> {
 		
 		if (!this.getDefault().containsValue(ChatTypes.SEND)) return;
 		
-		if (!worldSender.getRegions(playerSender.getLocation().getPosition()).getFlag(playerSender, this).containsValue(ChatTypes.SEND)) {
+		if (!worldSender.getRegions(playerSender.getLocation().getPosition()).getFlag(playerSender, playerSender.getLocation(), this).containsValue(ChatTypes.SEND)) {
 			event.setCancelled(true);
 			this.sendMessage(playerSender, playerSender.getLocation().getPosition().toInt());
 			return;
@@ -103,7 +103,7 @@ public class FlagChat extends CatalogTypeFlag<ChatType> {
         		if (this.plugin.getProtectionService().hasBypass(playerReceiver)) return false;
         		
         		WorldGuardWorld worldReceiver = service.getOrCreateWorld(playerReceiver.getWorld());
-        		return !worldReceiver.getRegions(playerReceiver.getLocation().getPosition()).getFlag(playerReceiver, this).containsValue(ChatTypes.RECEIVE);
+        		return !worldReceiver.getRegions(playerReceiver.getLocation().getPosition()).getFlag(playerReceiver, playerReceiver.getLocation(), this).containsValue(ChatTypes.RECEIVE);
         	}
         	return false;
         });

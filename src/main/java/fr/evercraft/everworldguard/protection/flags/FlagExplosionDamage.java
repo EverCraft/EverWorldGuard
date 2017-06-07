@@ -22,6 +22,8 @@ import java.util.Set;
 
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.entity.explosive.DetonateExplosiveEvent;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
 
 import fr.evercraft.everapi.services.entity.EntityTemplate;
 import fr.evercraft.everapi.services.worldguard.WorldGuardWorld;
@@ -63,8 +65,9 @@ public class FlagExplosionDamage extends EntityTemplateFlag {
 	}
 	
 	public void onDetonateExplosivePlayer(DetonateExplosiveEvent event, WorldGuardWorld world, Player player) {
+		Location<World> location = event.getTargetEntity().getLocation();
 		if (this.getDefault().contains(event.getTargetEntity()) && 
-				!world.getRegions(event.getTargetEntity().getLocation().getPosition()).getFlag(player, this).contains(event.getTargetEntity(), player)) {
+				!world.getRegions(location.getPosition()).getFlag(player, location, this).contains(event.getTargetEntity(), player)) {
 			
 			// TODO shouldDamageEntities : https://github.com/SpongePowered/SpongeCommon/issues/1367
 			event.getExplosionBuilder().shouldDamageEntities(false);

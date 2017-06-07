@@ -55,22 +55,22 @@ public class ESelectionService implements SelectionService {
 		this.cuiChannel = new CUIChannel(this.plugin);
 		this.subjects = new ConcurrentHashMap<UUID, ESelectionSubject>();
 		this.cache = CacheBuilder.newBuilder()
-					    .maximumSize(100)
-					    .expireAfterAccess(1, TimeUnit.HOURS)
-					    .build(new CacheLoader<UUID, ESelectionSubject>() {
-					    	/**
-					    	 * Ajoute un joueur au cache
-					    	 */
-					        @Override
-					        public ESelectionSubject load(UUID uuid){
-					        	Chronometer chronometer = new Chronometer();
-					        	
-					        	ESelectionSubject subject = new ESelectionSubject(ESelectionService.this.plugin, uuid);
-					        	ESelectionService.this.plugin.getELogger().debug("Loading SelectionSubject '" + uuid.toString() + "' in " +  chronometer.getMilliseconds().toString() + " ms");
-					        	
-					            return subject;
-					        }
-					    });
+		    .maximumSize(100)
+		    .expireAfterAccess(1, TimeUnit.HOURS)
+		    .build(new CacheLoader<UUID, ESelectionSubject>() {
+		    	/**
+		    	 * Ajoute un joueur au cache
+		    	 */
+		        @Override
+		        public ESelectionSubject load(UUID uuid){
+		        	Chronometer chronometer = new Chronometer();
+		        	
+		        	ESelectionSubject subject = new ESelectionSubject(ESelectionService.this.plugin, uuid);
+		        	ESelectionService.this.plugin.getELogger().debug("Loading SelectionSubject '" + uuid.toString() + "' in " +  chronometer.getMilliseconds().toString() + " ms");
+		        	
+		            return subject;
+		        }
+		    });
 		this.plugin.getGame().getEventManager().registerListeners(this.plugin, new ESelectionListener(this.plugin));
 		this.plugin.getManagerCommands().loadSelect();
 		this.reload();

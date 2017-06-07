@@ -27,6 +27,7 @@ import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everapi.services.worldguard.WorldGuardService;
 import fr.evercraft.everapi.services.worldguard.flag.MessageFlag;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
+import fr.evercraft.everapi.sponge.UtilsContexts;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 
 public class FlagEntryDenyMessage extends MessageFlag {
@@ -54,11 +55,13 @@ public class FlagEntryDenyMessage extends MessageFlag {
 	}
 	
 	public void onMoveRegionPreCancelled(MoveRegionEvent.Pre.Cancellable event) {
+		if (!event.isCancelled()) return;
+		
 		Set<ProtectedRegion> regions = event.getEnterRegions().getAll();
 		if (regions.isEmpty()) return;
 		
 		EPlayer player = event.getPlayer();
-		Set<Context> context = player.getActiveContexts();
+		Set<Context> context = UtilsContexts.get(player.getWorld().getName());
 		
 		for (ProtectedRegion region : regions) {
 			Optional<EMessageBuilder> flag_value = region.getFlagInherit(this, region.getGroup(player, context));

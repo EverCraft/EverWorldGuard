@@ -14,22 +14,34 @@
  * You should have received a copy of the GNU General Public License
  * along with EverWorldGuard.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.evercraft.everworldguard.listeners.world;
+package fr.evercraft.everworldguard.listeners;
 
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
+import org.spongepowered.api.event.world.LoadWorldEvent;
+import org.spongepowered.api.event.world.UnloadWorldEvent;
 import org.spongepowered.api.event.world.chunk.LoadChunkEvent;
 import org.spongepowered.api.event.world.chunk.UnloadChunkEvent;
 import org.spongepowered.api.world.Chunk;
 
 import fr.evercraft.everworldguard.EverWorldGuard;
 
-public class ChunkListener {
+public class WorldListener {
 	
 	private EverWorldGuard plugin;
 
-	public ChunkListener(EverWorldGuard plugin) {
+	public WorldListener(EverWorldGuard plugin) {
 		this.plugin = plugin;
+	}
+	
+	@Listener(order=Order.PRE)
+	public void onLoadWorld(LoadWorldEvent event) {
+		this.plugin.getProtectionService().getOrCreateWorld(event.getTargetWorld());
+	}
+	
+	@Listener(order=Order.PRE)
+	public void onUnloadWorld(UnloadWorldEvent event) {
+		this.plugin.getProtectionService().unLoadWorld(event.getTargetWorld());
 	}
 	
 	@Listener(order=Order.PRE)
@@ -43,5 +55,4 @@ public class ChunkListener {
 		Chunk chunk = event.getTargetChunk();
 		this.plugin.getProtectionService().getOrCreateEWorld(chunk.getWorld()).loadChunk(chunk.getPosition());
 	}
-
 }

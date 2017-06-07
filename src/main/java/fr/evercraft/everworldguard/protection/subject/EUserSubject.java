@@ -167,11 +167,6 @@ public class EUserSubject implements WorldGuardSubject {
 		return this.identifier;
 	}
 	
-	@SuppressWarnings("unused")
-	private Optional<EPlayer> getEPlayer() {
-		return this.plugin.getEServer().getEPlayer(this.getUniqueId());
-	}
-
 	public Optional<Location<World>> getLastLocation() {
 		return Optional.ofNullable(this.lastLocation);
 	}

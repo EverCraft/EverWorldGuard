@@ -118,7 +118,7 @@ public class FlagBlockPlace extends CatalogTypeFlag<BlockType> {
 			
 			if (event.getLocations().stream().anyMatch(location -> 
 					this.getDefault().containsValue(location.getBlockType()) && 
-					!world.getRegions(location.getPosition().add(direction)).getFlag(player, this).containsValue(location.getBlockType()))) {
+					!world.getRegions(location.getPosition().add(direction)).getFlag(player, location, this).containsValue(location.getBlockType()))) {
 				event.setCancelled(true);
 			}
 		} else {
@@ -223,7 +223,7 @@ public class FlagBlockPlace extends CatalogTypeFlag<BlockType> {
 		if (!this.getDefault().containsValue(type)) return false;
 		
 		Location<World> location = block.getLocation().get();
-		if (!service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, this).containsValue(type)) {
+		if (!service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, location, this).containsValue(type)) {
 			transaction.setValid(false);
 			return true;
 		}

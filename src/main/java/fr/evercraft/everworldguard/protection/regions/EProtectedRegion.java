@@ -29,7 +29,6 @@ import fr.evercraft.everapi.services.worldguard.exception.CircularInheritanceExc
 import fr.evercraft.everapi.services.worldguard.exception.RegionIdentifierException;
 import fr.evercraft.everapi.services.worldguard.region.Domain;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
-import fr.evercraft.everworldguard.protection.domains.EDomain;
 import fr.evercraft.everworldguard.protection.flag.EFlagValue;
 import fr.evercraft.everworldguard.protection.index.EWWorld;
 
@@ -100,36 +99,8 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 	
 	/*
-	 * Abstract
-	 */
-	
-	@Override
-	public abstract int getVolume();
-	
-	@Override
-	public abstract List<Vector3i> getPoints();
-	
-	@Override
-	public abstract boolean containsPosition(Vector3i pos);
-	
-	@Override
-	public abstract Optional<Area> toArea();
-	
-	@Override
-	public abstract boolean isPhysicalArea();
-	
-	/*
 	 * Setters
 	 */
-	
-	@Override
-	public void setName(String name) throws RegionIdentifierException {
-		if (this.name.equals(name)) return;
-		if (!this.world.rename(this, name)) throw new RegionIdentifierException();
-		
-		if (!this.isTransient()) this.world.getStorage().setName(this, name);
-		this.name = name;
-	}
 	
 	protected void setMinMaxPoints(List<Vector3i> points) {
 		int minX = points.get(0).getX();
@@ -155,6 +126,17 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 		
 		this.min = new Vector3i(minX, minY, minZ);
 		this.max = new Vector3i(maxX, maxY, maxZ);
+	}
+	
+	@Override
+	public void setName(String name) throws RegionIdentifierException {
+		Preconditions.checkNotNull(name, "name");
+		
+		if (this.name.equals(name)) return;
+		if (!this.world.rename(this, name)) throw new RegionIdentifierException();
+		
+		if (!this.isTransient()) this.world.getStorage().setName(this, name);
+		this.name = name;
 	}
 	
 	@Override
@@ -192,6 +174,8 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	
 	@Override
 	public Set<UUID> addPlayerOwner(Set<UUID> players) {
+		Preconditions.checkNotNull(players, "players");
+		
 		Set<UUID> difference = Sets.difference(players, this.getOwners().getPlayers());
 		if (difference.isEmpty()) return difference;
 		
@@ -202,6 +186,8 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 
 	@Override
 	public Set<UUID> removePlayerOwner(Set<UUID> players) {
+		Preconditions.checkNotNull(players, "players");
+		
 		Set<UUID> intersection = Sets.intersection(players, this.getOwners().getPlayers());
 		if (intersection.isEmpty()) return intersection;
 		
@@ -212,6 +198,8 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	
 	@Override
 	public Set<String> addGroupOwner(Set<String> groups) {
+		Preconditions.checkNotNull(groups, "groups");
+		
 		Set<String> difference = Sets.difference(groups, this.getOwners().getGroups());
 		if (difference.isEmpty()) return difference;
 		
@@ -222,6 +210,8 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 
 	@Override
 	public Set<String> removeGroupOwner(Set<String> groups) {
+		Preconditions.checkNotNull(groups, "groups");
+		
 		Set<String> intersection = Sets.intersection(groups, this.getOwners().getGroups());
 		if (intersection.isEmpty()) return intersection;
 		
@@ -232,6 +222,8 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	
 	@Override
 	public Set<UUID> addPlayerMember(Set<UUID> players) {
+		Preconditions.checkNotNull(players, "players");
+		
 		Set<UUID> difference = Sets.difference(players, this.getMembers().getPlayers());
 		if (difference.isEmpty()) return difference;
 		
@@ -242,6 +234,8 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 
 	@Override
 	public Set<UUID> removePlayerMember(Set<UUID> players) {
+		Preconditions.checkNotNull(players, "players");
+		
 		Set<UUID> intersection = Sets.intersection(players, this.getMembers().getPlayers());
 		if (intersection.isEmpty()) return intersection;
 		
@@ -252,6 +246,8 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	
 	@Override
 	public Set<String> addGroupMember(Set<String> groups) {
+		Preconditions.checkNotNull(groups, "groups");
+		
 		Set<String> difference = Sets.difference(groups, this.getMembers().getGroups());
 		if (difference.isEmpty()) return difference;
 		
@@ -262,6 +258,8 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 
 	@Override
 	public Set<String> removeGroupMember(Set<String> groups) {
+		Preconditions.checkNotNull(groups, "groups");
+		
 		Set<String> intersection = Sets.intersection(groups, this.getMembers().getGroups());
 		if (intersection.isEmpty()) return intersection;
 		
@@ -274,6 +272,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	@Override
 	public <V> void setFlag(Flag<V> flag, Group group, @Nullable V value) {
 		Preconditions.checkNotNull(flag);
+		Preconditions.checkNotNull(group);
 		
 		EFlagValue<V> flag_value = (EFlagValue) this.flags.get(flag);
 		if (flag_value == null && value == null) return;
@@ -373,7 +372,8 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	
 	@Override
 	public boolean isPlayerOwner(User player, Set<Context> contexts) {
-		Preconditions.checkNotNull(player);
+		Preconditions.checkNotNull(player, "player");
+		Preconditions.checkNotNull(contexts, "contexts");
 
 		if (this.owners.contains(player, contexts)) return true;
 
@@ -389,7 +389,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	
 	@Override
 	public boolean isGroupOwner(Subject group) {
-		Preconditions.checkNotNull(group);
+		Preconditions.checkNotNull(group, "group");
 
 		if (this.owners.containsGroup(group.getIdentifier())) return true;
 
@@ -410,8 +410,8 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	
 	@Override
 	public boolean isPlayerMember(User player, Set<Context> contexts) {
-		Preconditions.checkNotNull(player);
-		Preconditions.checkNotNull(contexts);
+		Preconditions.checkNotNull(player, "player");
+		Preconditions.checkNotNull(contexts, "contexts");
 
 		if (this.members.contains(player, contexts)) return true;
 
@@ -448,7 +448,8 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	
 	@Override
 	public boolean isOwnerOrMember(User player, Set<Context> contexts) {
-		Preconditions.checkNotNull(player);
+		Preconditions.checkNotNull(player, "player");
+		Preconditions.checkNotNull(contexts, "contexts");
 
 		if (this.owners.contains(player)) return true;
 		if (this.members.contains(player)) return true;
@@ -465,7 +466,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	
 	@Override
 	public boolean isOwnerOrMember(Subject group) {
-		Preconditions.checkNotNull(group);
+		Preconditions.checkNotNull(group, "group");
 
 		if (this.owners.containsGroup(group.getIdentifier())) return true;
 		if (this.members.containsGroup(group.getIdentifier())) return true;
@@ -532,7 +533,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	
 	@Override
 	public boolean containsAnyPosition(List<Vector3i> positions) {
-		Preconditions.checkNotNull(positions);
+		Preconditions.checkNotNull(positions, "positions");
 
 		for (Vector3i position : positions) {
 			if (this.containsPosition(position)) {
@@ -544,7 +545,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	
 	@Override
 	public boolean containsChunck(Vector3i position) {
-		Preconditions.checkNotNull(position);
+		Preconditions.checkNotNull(position, "position");
 		
 		Vector3i min = position.mul(16);
 		min = Vector3i.from(min.getX(), 0, min.getZ());
@@ -647,6 +648,8 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	
 	@Override
 	public int compareTo(ProtectedRegion other) {
+		Preconditions.checkNotNull(other, "other");
+		
 		if (this.getPriority() > other.getPriority()) {
 			return -1;
 		} else if (this.getPriority() < other.getPriority()) {

@@ -27,6 +27,8 @@ import org.spongepowered.api.event.item.inventory.DropItemEvent;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.entity.PlayerInventory;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
 
 import fr.evercraft.everapi.services.worldguard.flag.StateFlag;
 import fr.evercraft.everworldguard.EverWorldGuard;
@@ -66,7 +68,8 @@ public class FlagInventoryDrop extends StateFlag {
 		Player player = optPlayer.get();
 		if (player.get(Keys.HEALTH).orElse(0.0) > 0.0) return;
 		
-		if (this.plugin.getProtectionService().getOrCreateWorld(player.getWorld()).getRegions(player.getLocation().getPosition()).getFlag(player, this).equals(State.DENY)) {
+		Location<World> location = player.getLocation();
+		if (this.plugin.getProtectionService().getOrCreateWorld(player.getWorld()).getRegions(location.getPosition()).getFlag(player, location, this).equals(State.DENY)) {
 			event.setCancelled(true);
 		}
 	}
@@ -77,8 +80,9 @@ public class FlagInventoryDrop extends StateFlag {
 
 	// Permet de redonner l'inventaire
 	public void onRespawnPlayer(RespawnPlayerEvent event) {
+		Location<World> location = event.getOriginalPlayer().getLocation();
 		if (this.plugin.getProtectionService().getOrCreateWorld(event.getOriginalPlayer().getWorld())
-				.getRegions(event.getOriginalPlayer().getLocation().getPosition()).getFlag(event.getOriginalPlayer(), this).equals(State.ALLOW)) return;
+				.getRegions(location.getPosition()).getFlag(event.getOriginalPlayer(), location, this).equals(State.ALLOW)) return;
 		
 		Iterator<Inventory> originalInventory = event.getOriginalPlayer().getInventory().query(PlayerInventory.class).slots().iterator();
 		Iterator<Inventory> targetInventory = event.getTargetEntity().getInventory().query(PlayerInventory.class).slots().iterator();

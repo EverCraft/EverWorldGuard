@@ -85,14 +85,14 @@ public class FlagPvp extends StateFlag {
 		if (this.plugin.getProtectionService().hasBypass(player)) return;
 		
 		// Le joueur n'est pas dans une region où il a le droit de PVP
-		if (world.getRegions(player.getLocation().getPosition()).getFlag(player, this).equals(State.DENY)) {
+		if (world.getRegions(player.getLocation().getPosition()).getFlag(player, player.getLocation(), this).equals(State.DENY)) {
 			event.filterEntities(entity -> !(entity instanceof Player) || entity.equals(player));
 		
 		// Le joueur est dans une region où il a le droit de PVP donc on vérifie la position de la cible
 		} else {
 			event.filterEntities(entity -> {
 				if (entity instanceof Player && !entity.equals(player)) {
-					if (world.getRegions(entity.getLocation().getPosition()).getFlag(player, this).equals(State.DENY)) {
+					if (world.getRegions(entity.getLocation().getPosition()).getFlag(player, entity.getLocation(), this).equals(State.DENY)) {
 						return false;
 					}
 				}
@@ -149,13 +149,13 @@ public class FlagPvp extends StateFlag {
 		// Bypass
 		if (this.plugin.getProtectionService().hasBypass(player)) return false;
 		
-		if (world.getRegions(player.getLocation().getPosition()).getFlag(player, this).equals(State.DENY)) {
+		if (world.getRegions(player.getLocation().getPosition()).getFlag(player, player.getLocation(), this).equals(State.DENY)) {
 			event.setCancelled(true);
 			if (message) {
 				this.sendMessage(player, player.getLocation().getPosition().toInt());
 			}
 			return true;
-		} else if (world.getRegions(target.getLocation().getPosition()).getFlag(player, this).equals(State.DENY)) {
+		} else if (world.getRegions(target.getLocation().getPosition()).getFlag(player, target.getLocation(), this).equals(State.DENY)) {
 			event.setCancelled(true);
 			if (message) {
 				this.sendMessage(player, target.getLocation().getPosition().toInt());

@@ -28,6 +28,7 @@ import fr.evercraft.everworldguard.protection.regions.EProtectedRegion;
 
 public interface RegionStorage {
 
+	void reload();
 	Set<EProtectedRegion> getAll();
 	
 	<T> void add(EProtectedRegion region);
@@ -48,6 +49,4 @@ public interface RegionStorage {
 	void removeOwnerGroup(EProtectedRegion region, Set<String> groups);
 	void removeMemberPlayer(EProtectedRegion region, Set<UUID> players);
 	void removeMemberGroup(EProtectedRegion region, Set<String> groups);
-
-	void reload();
 }

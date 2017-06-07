@@ -28,6 +28,7 @@ import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everapi.services.worldguard.WorldGuardService;
 import fr.evercraft.everapi.services.worldguard.flag.MessageFlag;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
+import fr.evercraft.everapi.sponge.UtilsContexts;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 
 public class FlagEntryMessage extends MessageFlag {
@@ -59,7 +60,7 @@ public class FlagEntryMessage extends MessageFlag {
 		if (regions.isEmpty()) return;
 		
 		EPlayer player = event.getPlayer();
-		Set<Context> context = player.getActiveContexts();
+		Set<Context> context = UtilsContexts.get(player.getWorld().getName());
 		
 		for (ProtectedRegion region : regions) {
 			Optional<EMessageBuilder> flag_value = region.getFlagInherit(this, region.getGroup(player, context));

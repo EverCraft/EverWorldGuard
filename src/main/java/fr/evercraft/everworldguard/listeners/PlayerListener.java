@@ -14,13 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with EverWorldGuard.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.evercraft.everworldguard.listeners.entity;
+package fr.evercraft.everworldguard.listeners;
 
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.command.SendCommandEvent;
-import org.spongepowered.api.event.entity.DestructEntityEvent;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEvent;
 import org.spongepowered.api.event.filter.Getter;
@@ -42,18 +41,18 @@ public class PlayerListener {
 		this.plugin = plugin;
 	}
 	
-	@Listener
+	@Listener(order=Order.FIRST)
 	public void onClientConnectionEvent(final ClientConnectionEvent.Auth event) {
 		this.plugin.getProtectionService().getSubjectList().get(event.getProfile().getUniqueId());
 	}
 	
-	@Listener
+	@Listener(order=Order.FIRST)
 	public void onClientConnectionEvent(final ClientConnectionEvent.Join event) {
 		EUserSubject player = this.plugin.getProtectionService().getSubjectList().registerPlayer(event.getTargetEntity().getUniqueId());
 		player.initialize(event.getTargetEntity());
 	}
 
-	@Listener
+	@Listener(order=Order.FIRST)
 	public void onClientConnectionEvent(final ClientConnectionEvent.Disconnect event) {
 		this.plugin.getProtectionService().getSubjectList().removePlayer(event.getTargetEntity().getUniqueId());
 	}
@@ -61,10 +60,9 @@ public class PlayerListener {
 	@Listener(order=Order.FIRST)
 	public void onRespawnPlayer(RespawnPlayerEvent event) {
 		this.plugin.getManagerFlags().INVENTORY_DROP.onRespawnPlayer(event);
-	}
-	
-	@Listener(order=Order.FIRST)
-	public void onDestructEntityDeath(DestructEntityEvent.Death event, @Getter("getTargetEntity") Player player) {
+		
+		// Debug
+		//UtilsCause.debug(event.getCause(), "RespawnPlayerEvent");
 	}
 	
 	@Listener(order=Order.FIRST)
@@ -72,11 +70,17 @@ public class PlayerListener {
 		WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateWorld(player.getWorld());
 		
 		this.plugin.getManagerFlags().CHAT.onMessageChannelChat(event, world, player);
+		
+		// Debug
+		//UtilsCause.debug(event.getCause(), "MessageChannelEvent.Chat");
 	}
 	
 	@Listener(order=Order.FIRST)
 	public void onSendCommand(SendCommandEvent event) {		
 		this.plugin.getManagerFlags().COMMAND.onSendCommand(event);
+		
+		// Debug
+		//UtilsCause.debug(event.getCause(), "SendCommandEvent");
 	}
 	
 	@Listener
@@ -84,6 +88,9 @@ public class PlayerListener {
 		WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateWorld(player.getWorld());
 		
 		this.plugin.getManagerFlags().ITEM_PICKUP.onChangeInventoryPickup(event, world, player);
+		
+		// Debug
+		//UtilsCause.debug(event.getCause(), "ChangeInventoryEvent.Pickup");
 	}
 	
 	@Listener(order=Order.FIRST)
@@ -91,6 +98,9 @@ public class PlayerListener {
 		WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateWorld(player_sponge.getWorld());
 		
 		this.plugin.getManagerFlags().ENDERPEARL.onMoveEntityTeleport(event, world, player_sponge);
+		
+		// Debug
+		//UtilsCause.debug(event.getCause(), "MoveEntityEvent.Teleport");
 	}
 	
 	@Listener(order=Order.FIRST)

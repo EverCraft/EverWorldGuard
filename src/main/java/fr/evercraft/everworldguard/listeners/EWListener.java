@@ -17,12 +17,6 @@
 package fr.evercraft.everworldguard.listeners;
 
 import fr.evercraft.everworldguard.EverWorldGuard;
-import fr.evercraft.everworldguard.listeners.world.ChunkListener;
-import fr.evercraft.everworldguard.listeners.entity.EntityListener;
-import fr.evercraft.everworldguard.listeners.entity.PlayerListener;
-import fr.evercraft.everworldguard.listeners.entity.PlayerMoveListener;
-import fr.evercraft.everworldguard.listeners.world.BlockListener;
-import fr.evercraft.everworldguard.listeners.world.WorldListener;
 
 public class EWListener {
 	private EverWorldGuard plugin;
@@ -36,11 +30,9 @@ public class EWListener {
 	public void load() {
 		this.register(new WorldListener(this.plugin));
 		this.register(new BlockListener(this.plugin));
-		this.register(new ChunkListener(this.plugin));
 		this.register(new EntityListener(this.plugin));
 		this.register(new PlayerListener(this.plugin));
 		this.register(new PlayerMoveListener(this.plugin));
-		this.register(new ItemStackListener(this.plugin));
 	}
 	
 	public void register(Object listener) {

@@ -24,6 +24,8 @@ import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.entity.InteractEntityEvent;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
 
 import com.flowpowered.math.vector.Vector3i;
 
@@ -84,7 +86,8 @@ public class FlagInteractEntity extends EntityTemplateFlag {
 		// Bypass
 		if (this.plugin.getProtectionService().hasBypass(player)) return;
 		
-		if (!world.getRegions(event.getTargetEntity().getLocation().getPosition()).getFlag(player, this).contains(event.getTargetEntity(), player)) {
+		Location<World> location = event.getTargetEntity().getLocation();
+		if (!world.getRegions(location.getPosition()).getFlag(player, location, this).contains(event.getTargetEntity(), player)) {
 			event.setCancelled(true);
 			this.sendMessage(player, event.getTargetEntity());
 		}

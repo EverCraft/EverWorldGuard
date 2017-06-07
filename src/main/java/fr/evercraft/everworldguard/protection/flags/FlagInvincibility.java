@@ -48,7 +48,7 @@ public class FlagInvincibility extends StateFlag {
 		if (!(event.getTargetEntity() instanceof Player)) return;
 		Player player = (Player) event.getTargetEntity();
 		
-		if (world.getRegions(player.getLocation().getPosition()).getFlag(player, this).equals(State.ALLOW)) {
+		if (world.getRegions(player.getLocation().getPosition()).getFlag(player, player.getLocation(), this).equals(State.ALLOW)) {
 			event.setCancelled(true);
 		}
 	}
@@ -59,7 +59,7 @@ public class FlagInvincibility extends StateFlag {
 		if (!(event.getTargetEntity() instanceof Player)) return;
 		Player player = (Player) event.getTargetEntity();
 		
-		if (world.getRegions(player.getLocation().getPosition()).getFlag(player, this).equals(State.ALLOW)) {
+		if (world.getRegions(player.getLocation().getPosition()).getFlag(player, player.getLocation(), this).equals(State.ALLOW)) {
 			event.setCancelled(true);
 			player.offer(Keys.FIRE_TICKS, 0);
 		}

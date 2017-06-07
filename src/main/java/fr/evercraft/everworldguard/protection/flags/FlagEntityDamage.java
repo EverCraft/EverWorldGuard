@@ -70,7 +70,7 @@ public class FlagEntityDamage extends EntityTemplateFlag {
 		event.filterEntities(player -> {
 			if (!(player instanceof Player)) return true;
 			
-			if (!world.getRegions(player.getLocation().getPosition()).getFlag((Player) player, this).contains(optEntity.get(), (Player) player)) {
+			if (!world.getRegions(player.getLocation().getPosition()).getFlag((Player) player, player.getLocation(), this).contains(optEntity.get(), (Player) player)) {
 				return false;
 			}
 			return true;
@@ -106,7 +106,7 @@ public class FlagEntityDamage extends EntityTemplateFlag {
 	public boolean onDamageEntity(WorldGuardWorld world, DamageEntityEvent event, Entity entity, Player player) {
 		if (!this.getDefault().contains(entity)) return false;
 		
-		if (!world.getRegions(player.getLocation().getPosition()).getFlag((Player) player, this).contains(entity, player)) {
+		if (!world.getRegions(player.getLocation().getPosition()).getFlag((Player) player, player.getLocation(), this).contains(entity, player)) {
 			event.setCancelled(true);
 			return true;
 		}

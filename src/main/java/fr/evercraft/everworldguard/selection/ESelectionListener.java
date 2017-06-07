@@ -23,6 +23,7 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.item.inventory.InteractItemEvent;
+import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.item.inventory.ItemStack;
 
 import com.flowpowered.math.vector.Vector3d;
@@ -37,6 +38,21 @@ public class ESelectionListener {
 
 	public ESelectionListener(EverWorldGuard plugin) {
 		this.plugin = plugin;
+	}
+	
+	@Listener(order=Order.FIRST)
+	public void onClientConnectionEvent(final ClientConnectionEvent.Auth event) {
+		this.plugin.getSelectionService().get(event.getProfile().getUniqueId());
+	}
+	
+	@Listener(order=Order.FIRST)
+	public void onClientConnectionEvent(final ClientConnectionEvent.Join event) {
+		this.plugin.getSelectionService().registerPlayer(event.getTargetEntity().getUniqueId());
+	}
+	
+	@Listener(order=Order.FIRST)
+	public void onClientConnectionEvent(final ClientConnectionEvent.Disconnect event) {
+		this.plugin.getSelectionService().removePlayer(event.getTargetEntity().getUniqueId());
 	}
 	
 	@Listener(order=Order.FIRST)

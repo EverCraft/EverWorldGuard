@@ -29,6 +29,8 @@ import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.entity.SpawnEntityEvent;
 import org.spongepowered.api.event.item.inventory.InteractItemEvent;
 import org.spongepowered.api.item.ItemTypes;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
 
 import com.flowpowered.math.vector.Vector3i;
 
@@ -91,7 +93,7 @@ public class FlagEntitySpawning extends EntityTemplateFlag {
 		
 		List<? extends Entity> filter = event.filterEntities(entity -> {
 			if (this.getDefault().contains(entity) && 
-					!service.getOrCreateEWorld(entity.getWorld()).getRegions(entity.getLocation().getPosition()).getFlag(player, this).contains(entity, player)) {
+					!service.getOrCreateEWorld(entity.getWorld()).getRegions(entity.getLocation().getPosition()).getFlag(player, entity.getLocation(), this).contains(entity, player)) {
 				return false;
 			}
 			return true;
@@ -130,9 +132,10 @@ public class FlagEntitySpawning extends EntityTemplateFlag {
 		
 		WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateWorld(player.getWorld());
 		Entity entity = player.getWorld().createEntity(type.get(), event.getInteractionPoint().get());
+		Location<World> location = new Location<World>(player.getWorld(), event.getInteractionPoint().get());
 		
 		if (this.getDefault().contains(entity) && 
-				!world.getRegions(event.getInteractionPoint().get()).getFlag(player, this).contains(entity, player)) {
+				!world.getRegions(location.getPosition()).getFlag(player, location, this).contains(entity, player)) {
 			event.setCancelled(true);
 			this.sendMessage(player, entity);
 		}

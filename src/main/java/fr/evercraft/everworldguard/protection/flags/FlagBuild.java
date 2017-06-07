@@ -32,6 +32,7 @@ import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.FallingBlock;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.entity.projectile.Projectile;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.block.InteractBlockEvent;
@@ -116,7 +117,7 @@ public class FlagBuild extends StateFlag {
 			.findAny().isPresent();
 	}
 	
-	public boolean containsEntity(Entity value, Player player) {
+	public boolean containsEntity(Entity value, User player) {
 		return this.entities.stream()
 			.filter(element -> element.contains(value, player))
 			.findAny().isPresent();
@@ -144,7 +145,7 @@ public class FlagBuild extends StateFlag {
 		ItemType itemtype = itemstack.get().getItem();
 		if (!itemtype.equals(ItemTypes.FLINT_AND_STEEL) && !itemtype.equals(ItemTypes.FIRE_CHARGE)) return;
 		
-		if (world.getRegions(location.getPosition()).getFlag(player, this).equals(State.DENY)) {
+		if (world.getRegions(location.getPosition()).getFlag(player, location, this).equals(State.DENY)) {
 			event.setCancelled(true);
 			
 			// Message
@@ -182,7 +183,7 @@ public class FlagBuild extends StateFlag {
 		// Bypass
 		if (this.plugin.getProtectionService().hasBypass(player)) return;
 			
-		if (locations.anyMatch(location -> service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, this).equals(State.DENY))) {
+		if (locations.anyMatch(location -> service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, location, this).equals(State.DENY))) {
 			event.setCancelled(true);
 		}
 	}
@@ -194,7 +195,7 @@ public class FlagBuild extends StateFlag {
 		Player player = optPlayer.get();
 		
 		if (event.getLocations().stream().anyMatch(location -> 
-				service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, this).equals(State.DENY))) {
+				service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, location, this).equals(State.DENY))) {
 			event.setCancelled(true);
 		}
 	}
@@ -223,7 +224,7 @@ public class FlagBuild extends StateFlag {
 		// Bypass
 		if (this.plugin.getProtectionService().hasBypass(player)) return;
 		
-		event.filter(location -> service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, this).equals(State.ALLOW))
+		event.filter(location -> service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, location, this).equals(State.ALLOW))
 			.forEach(transaction -> transaction.getFinal().getLocation().ifPresent(location -> {
 				Entity entity = location.getExtent().createEntity(EntityTypes.ITEM, location.getPosition());
 				entity.offer(Keys.REPRESENTED_ITEM, ItemStack.builder().fromBlockSnapshot(transaction.getFinal()).build().createSnapshot());
@@ -246,7 +247,7 @@ public class FlagBuild extends StateFlag {
 		if (this.plugin.getProtectionService().hasBypass(player)) return;
 		
 		List<Transaction<BlockSnapshot>> filter = event.filter(location -> 
-			service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, this).equals(State.ALLOW));
+			service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, location, this).equals(State.ALLOW));
 		
 		if (!filter.isEmpty()) {
 			// Vérifie que c'est une action directe
@@ -274,7 +275,7 @@ public class FlagBuild extends StateFlag {
 		
 		EProtectionService service = this.plugin.getProtectionService();
 		List<Transaction<BlockSnapshot>> filter = event.filter(location -> 
-			service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, this).equals(State.ALLOW));
+			service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, location, this).equals(State.ALLOW));
 	
 		if (!filter.isEmpty()) {
 			Optional<FallingBlock> falling = event.getCause().get(NamedCause.SOURCE, FallingBlock.class);
@@ -308,7 +309,7 @@ public class FlagBuild extends StateFlag {
 		
 		if (!this.containsEntity(event.getTargetEntity(), player)) return;
 		
-		if (world.getRegions(event.getTargetEntity().getLocation().getPosition()).getFlag(player, this).equals(State.DENY)) {
+		if (world.getRegions(event.getTargetEntity().getLocation().getPosition()).getFlag(player, event.getTargetEntity().getLocation(), this).equals(State.DENY)) {
 			event.setCancelled(true);
 			
 			// Vérifie que c'est une action directe
@@ -336,7 +337,7 @@ public class FlagBuild extends StateFlag {
 		
 		if (event.getCause().get(NamedCause.SOURCE, Projectile.class).isPresent()) {
 			List<? extends Entity> filter = event.filterEntities(entity -> {
-				if (this.containsEntity(entity, player) && world.getRegions(entity.getLocation().getPosition()).getFlag(player, this).equals(State.DENY)) {
+				if (this.containsEntity(entity, player) && world.getRegions(entity.getLocation().getPosition()).getFlag(player, entity.getLocation(), this).equals(State.DENY)) {
 					return false;
 				}
 				return true;
@@ -365,7 +366,7 @@ public class FlagBuild extends StateFlag {
 			
 			Optional<UUID> creator = damageSource.getSource().getCreator();
 			if (creator.isPresent()) {
-				Optional<Player> player = this.plugin.getEServer().getPlayer(creator.get());
+				Optional<User> player = this.plugin.getEServer().getUser(creator.get());
 				if (player.isPresent()) {
 					this.onDamageEntity(world, event, entity, player.get());
 				}
@@ -391,7 +392,7 @@ public class FlagBuild extends StateFlag {
 			// TODO Bug BUCKET : no creator
 			Optional<UUID> creator = damageSource.getBlockSnapshot().getCreator();
 			if (creator.isPresent()) {
-				Optional<Player> player = this.plugin.getEServer().getPlayer(creator.get());
+				Optional<User> player = this.plugin.getEServer().getUser(creator.get());
 				
 				if (player.isPresent()) {
 					if (this.onDamageEntity(world, event, entity, player.get())) {
@@ -409,7 +410,7 @@ public class FlagBuild extends StateFlag {
 				Location<World> location = entity.getLocation().add(Vector3d.from(0, 2, 0));
 				Optional<UUID> creator = location.getExtent().getCreator(location.getBlockPosition());
 				if (creator.isPresent()) {
-					Optional<Player> player = this.plugin.getEServer().getPlayer(creator.get());
+					Optional<User> player = this.plugin.getEServer().getUser(creator.get());
 					if (player.isPresent()) {
 						this.onDamageEntity(world, event, entity, player.get());
 					}
@@ -418,13 +419,13 @@ public class FlagBuild extends StateFlag {
 		}
 	}
 	
-	public boolean onDamageEntity(WorldGuardWorld world, DamageEntityEvent event, Entity entity, Player player) {
+	public boolean onDamageEntity(WorldGuardWorld world, DamageEntityEvent event, Entity entity, User player) {
 		// Bypass
 		if (this.plugin.getProtectionService().hasBypass(player)) return false;
 		
 		if (!this.containsEntity(event.getTargetEntity(), player)) return false;
 		
-		if (world.getRegions(entity.getLocation().getPosition()).getFlag(player, this).equals(State.DENY)) {
+		if (world.getRegions(entity.getLocation().getPosition()).getFlag(player, entity.getLocation(), this).equals(State.DENY)) {
 			event.setCancelled(true);
 			return true;
 		}

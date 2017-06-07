@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.world.World;
 
@@ -89,7 +90,11 @@ public class EProtectionService implements WorldGuardService {
 		return false;
 	}
 	
-	public boolean hasBypass(Player player) {
+	/*
+	 * Bypass
+	 */
+	
+	public boolean hasBypass(User player) {
 		return this.hasBypass(player.getUniqueId());
 	}
 	

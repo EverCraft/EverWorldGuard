@@ -77,12 +77,15 @@ public class FlagItemPickup extends CatalogTypeFlag<ItemType> {
 		if (!this.getDefault().containsValue(type)) return;
 		
 		// Position du joueur
-		if (!world.getRegions(player.getLocation().getPosition()).getFlag(player, this).containsValue(type)) {
+		if (!world.getRegions(player.getLocation().getPosition()).getFlag(player, player.getLocation(), this).containsValue(type)) {
 			event.setCancelled(true);
 			this.sendMessage(player, player.getLocation(), type);
-			
+			return;
+		} 
+		
+		Location<World> location = event.getTargetEntity().getLocation();
 		// Position de l'item
-		} else if (!world.getRegions(event.getTargetEntity().getLocation().getPosition()).getFlag(player, this).containsValue(type)) {
+		if (!world.getRegions(location.getPosition()).getFlag(player, location, this).containsValue(type)) {
 			event.setCancelled(true);
 			this.sendMessage(player, player.getLocation(), type);
 		}

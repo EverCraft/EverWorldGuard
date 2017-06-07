@@ -58,6 +58,7 @@ public class EWWorld implements WorldGuardWorld {
 	public EWWorld(EverWorldGuard plugin, World world) {		
 		this.plugin = plugin;
 		this.world = world;
+		
 		this.regionsIdentifier = new ConcurrentHashMap<UUID, EProtectedRegion>();
 		this.regionsName = new ConcurrentHashMap<String, EProtectedRegion>();	
 		this.cache = new LongHashTable<EWChunck>();
@@ -279,7 +280,6 @@ public class EWWorld implements WorldGuardWorld {
 		}
 
 		this.getStorage().remove(region);
-		// TODO save
 		
 		this.rebuild();
 		return Optional.of(region);

@@ -73,7 +73,7 @@ public class FlagEnderPearl extends StateFlag {
 		if (this.plugin.getProtectionService().hasBypass(player)) return;
 		
 		WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateWorld(player.getWorld());
-		if (world.getRegions(player.getLocation().getPosition()).getFlag(player, this).equals(State.DENY)) {
+		if (world.getRegions(player.getLocation().getPosition()).getFlag(player, player.getLocation(), this).equals(State.DENY)) {
 			event.setCancelled(true);
 			this.sendMessage(player, player.getLocation().getPosition().toInt());
 		}
@@ -91,7 +91,7 @@ public class FlagEnderPearl extends StateFlag {
 		
 		if (!cause.getTeleporter().getType().equals(EntityTypes.ENDER_PEARL)) return;
 		
-		if (world.getRegions(event.getToTransform().getPosition()).getFlag(player, this).equals(State.DENY)) {
+		if (world.getRegions(event.getToTransform().getPosition()).getFlag(player, event.getToTransform().getLocation(), this).equals(State.DENY)) {
 			event.setCancelled(true);
 			this.sendMessage(player, player.getLocation().getPosition().toInt());
 			

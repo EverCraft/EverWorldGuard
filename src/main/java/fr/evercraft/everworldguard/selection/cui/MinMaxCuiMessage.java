@@ -34,9 +34,9 @@ public class MinMaxCuiMessage implements CUIMessage {
     @Override
     public String[] getParameters() {
         return new String[] {
-                    String.valueOf(this.min),
-                    String.valueOf(this.max),
-                };
+            String.valueOf(this.min),
+            String.valueOf(this.max),
+        };
     }
 
 }

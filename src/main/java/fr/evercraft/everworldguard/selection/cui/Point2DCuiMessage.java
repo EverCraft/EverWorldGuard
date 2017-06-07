@@ -38,11 +38,11 @@ public class Point2DCuiMessage implements CUIMessage {
     @Override
     public String[] getParameters() {
         return new String[] {
-                    String.valueOf(this.identifier),
-                    String.valueOf(this.position.getX()),
-                    String.valueOf(this.position.getZ()),
-                    String.valueOf(this.area)
-                };
+            String.valueOf(this.identifier),
+            String.valueOf(this.position.getX()),
+            String.valueOf(this.position.getZ()),
+            String.valueOf(this.area)
+        };
     }
 
 }

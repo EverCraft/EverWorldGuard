@@ -37,11 +37,11 @@ public class CylinderCuiMessage implements CUIMessage {
     @Override
     public String[] getParameters() {
         return new String[] {
-                    String.valueOf(this.positions.getX()),
-                    String.valueOf(this.positions.getY()),
-                    String.valueOf(this.positions.getZ()),
-                    String.valueOf(this.radius.getX()),
-                    String.valueOf(this.radius.getZ())
-                };
+            String.valueOf(this.positions.getX()),
+            String.valueOf(this.positions.getY()),
+            String.valueOf(this.positions.getZ()),
+            String.valueOf(this.radius.getX()),
+            String.valueOf(this.radius.getZ())
+        };
     }
 }

@@ -49,22 +49,22 @@ public class EUserSubjectList {
 		
 		this.subjects = new ConcurrentHashMap<UUID, EUserSubject>();
 		this.cache = CacheBuilder.newBuilder()
-					    .maximumSize(100)
-					    .expireAfterAccess(5, TimeUnit.MINUTES)
-					    .build(new CacheLoader<UUID, EUserSubject>() {
-					    	/**
-					    	 * Ajoute un joueur au cache
-					    	 */
-					        @Override
-					        public EUserSubject load(UUID uuid){
-					        	Chronometer chronometer = new Chronometer();
-					        	
-					        	EUserSubject subject = new EUserSubject(EUserSubjectList.this.plugin, uuid);
-					        	EUserSubjectList.this.plugin.getELogger().debug("Loading user '" + uuid.toString() + "' in " +  chronometer.getMilliseconds().toString() + " ms");
-					        	
-					            return subject;
-					        }
-					    });
+		    .maximumSize(100)
+		    .expireAfterAccess(5, TimeUnit.MINUTES)
+		    .build(new CacheLoader<UUID, EUserSubject>() {
+		    	/**
+		    	 * Ajoute un joueur au cache
+		    	 */
+		        @Override
+		        public EUserSubject load(UUID uuid){
+		        	Chronometer chronometer = new Chronometer();
+		        	
+		        	EUserSubject subject = new EUserSubject(EUserSubjectList.this.plugin, uuid);
+		        	EUserSubjectList.this.plugin.getELogger().debug("Loading user '" + uuid.toString() + "' in " +  chronometer.getMilliseconds().toString() + " ms");
+		        	
+		            return subject;
+		        }
+		    });
 	}
 	
 	public Optional<WorldGuardSubject> get(UUID uuid) {
@@ -77,7 +77,7 @@ public class EUserSubjectList {
 			if (!this.subjects.containsKey(uuid)) {
 				return Optional.of(this.cache.get(uuid));
 	    	}
-	    	return Optional.ofNullable(this.subjects.get(uuid));
+	    	return Optional.of(this.subjects.get(uuid));
 		} catch (ExecutionException e) {
 			this.plugin.getELogger().warn("Error : Loading user (identifier='" + uuid + "';message='" + e.getMessage() + "')");
 			return Optional.empty();

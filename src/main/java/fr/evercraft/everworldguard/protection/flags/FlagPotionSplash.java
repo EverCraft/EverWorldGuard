@@ -89,7 +89,7 @@ public class FlagPotionSplash extends CatalogTypeFlag<PotionEffectType> {
 		
 		WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateWorld(player.getWorld());
 		for (PotionEffectType potion : potions.get().stream().map(potion -> potion.getType()).collect(Collectors.toSet())) {
-			if (this.getDefault().containsValue(potion) && !world.getRegions(player.getLocation().getPosition()).getFlag(player, this).containsValue(potion)) {
+			if (this.getDefault().containsValue(potion) && !world.getRegions(player.getLocation().getPosition()).getFlag(player, player.getLocation(), this).containsValue(potion)) {
 				event.setCancelled(true);
 				
 				// Message
@@ -215,7 +215,7 @@ public class FlagPotionSplash extends CatalogTypeFlag<PotionEffectType> {
 		if (this.plugin.getProtectionService().hasBypass(player)) return;
 		
 		for (PotionEffectType potion : potions.stream().map(potion -> potion.getType()).collect(Collectors.toSet())) {
-			if (this.getDefault().containsValue(potion) && !world.getRegions(event.getImpactPoint().getPosition()).getFlag(player, this).containsValue(potion)) {
+			if (this.getDefault().containsValue(potion) && !world.getRegions(event.getImpactPoint().getPosition()).getFlag(player, event.getImpactPoint(), this).containsValue(potion)) {
 				event.setCancelled(true);
 				entity.remove();
 				return;

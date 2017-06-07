@@ -96,7 +96,7 @@ public class FlagDamageEntity extends EntityTemplateFlag {
 		if (!event.getCause().get(NamedCause.SOURCE, Projectile.class).isPresent()) return;
 		
 		event.filterEntities(entity -> {
-			if (this.getDefault().contains(entity) && !world.getRegions(entity.getLocation().getPosition()).getFlag(player, this).contains(entity, player)) {
+			if (this.getDefault().contains(entity) && !world.getRegions(entity.getLocation().getPosition()).getFlag(player, entity.getLocation(), this).contains(entity, player)) {
 				return false;
 			}
 			return true;
@@ -205,7 +205,7 @@ public class FlagDamageEntity extends EntityTemplateFlag {
 		// Bypass
 		if (this.plugin.getProtectionService().hasBypass(player)) return false;
 		
-		if (!world.getRegions(entity.getLocation().getPosition()).getFlag(player, this).contains(event.getTargetEntity(), player)) {
+		if (!world.getRegions(entity.getLocation().getPosition()).getFlag(player, entity.getLocation(), this).contains(event.getTargetEntity(), player)) {
 			event.setCancelled(true);
 			return true;
 		}
@@ -238,7 +238,7 @@ public class FlagDamageEntity extends EntityTemplateFlag {
 		// Bypass
 		if (this.plugin.getProtectionService().hasBypass(player)) return;
 		
-		if (!world.getRegions(event.getTargetEntity().getLocation().getPosition()).getFlag(player, this).contains(event.getTargetEntity(), player)) {
+		if (!world.getRegions(event.getTargetEntity().getLocation().getPosition()).getFlag(player, event.getTargetEntity().getLocation(), this).contains(event.getTargetEntity(), player)) {
 			event.setCancelled(true);
 			
 			// Message

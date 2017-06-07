@@ -62,8 +62,6 @@ public class EverWorldGuard extends EPlugin<EverWorldGuard> {
 		
 		this.protection = new EProtectionService(this);
 		this.getGame().getServiceManager().setProvider(this, WorldGuardService.class, this.protection);	
-		
-		this.getGame().getEventManager().registerListeners(this, new EWListener(this));
 	}
 	
 	@Override
@@ -74,6 +72,8 @@ public class EverWorldGuard extends EPlugin<EverWorldGuard> {
 			this.selection = new ESelectionService(this);
 			this.getGame().getServiceManager().setProvider(this, SelectionService.class, this.selection);
 		}
+		
+		this.getGame().getEventManager().registerListeners(this, new EWListener(this));
 	}
 	
 	@Override

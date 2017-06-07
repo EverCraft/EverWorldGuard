@@ -40,7 +40,7 @@ public class FlagEntry extends StateFlag {
 		// Bypass
 		if (event.getPlayer().hasProtectionBypass()) return;
 		
-		if(event.getEnterRegions().getFlag(event.getPlayer(), this).equals(State.DENY)) {
+		if(event.getEnterRegions().getFlag(event.getPlayer(), event.getToLocation(), this).equals(State.DENY)) {
 			event.setCancelled(true);
 		}
 	}

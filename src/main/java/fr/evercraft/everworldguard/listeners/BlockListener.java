@@ -14,13 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with EverWorldGuard.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.evercraft.everworldguard.listeners.world;
+package fr.evercraft.everworldguard.listeners;
 
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.block.CollideBlockEvent;
 import org.spongepowered.api.event.block.InteractBlockEvent;
+import org.spongepowered.api.event.entity.explosive.DetonateExplosiveEvent;
 
 import fr.evercraft.everapi.services.worldguard.WorldGuardWorld;
 import fr.evercraft.everworldguard.EverWorldGuard;
@@ -82,31 +83,6 @@ public class BlockListener {
 	}
 	
 	@Listener(order=Order.FIRST)
-	public void onChangeBlock(ChangeBlockEvent.Decay event) {
-		//WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetWorld());
-		
-		// Debug
-		//UtilsCause.debug(event.getCause(), "ChangeBlockEvent.Decay");	
-	}
-	
-	@Listener(order=Order.FIRST)
-	public void onChangeBlock(ChangeBlockEvent.Post event) {
-		//WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetWorld());
-		
-		// Debug
-		//UtilsCause.debug(event.getCause(), "ChangeBlockEvent.Post");
-				
-	}
-	
-	@Listener(order=Order.FIRST)
-	public void onChangeBlock(ChangeBlockEvent.Grow event) {
-		//WorldWorldGuard world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetWorld());
-		
-		// Debug
-		//UtilsCause.debug(event.getCause(), "ChangeBlockEvent.Grow");
-	}
-	
-	@Listener(order=Order.FIRST)
 	public void onInteractBlock(InteractBlockEvent.Secondary event) {
 		event.getTargetBlock().getLocation().ifPresent(location -> {
 			WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateWorld(location.getExtent());
@@ -129,5 +105,18 @@ public class BlockListener {
 		
 		// Debug
 		//UtilsCause.debug(event.getCause(), "CollideBlockEvent");
+	}
+	
+	@Listener(order=Order.FIRST)
+	public void onDetonateExplosive(DetonateExplosiveEvent event) {
+		WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetEntity().getLocation().getExtent());
+		
+		this.plugin.getManagerFlags().EXPLOSION.onDetonateExplosive(event, world);
+		this.plugin.getManagerFlags().EXPLOSION_BLOCK.onDetonateExplosive(event, world);
+		this.plugin.getManagerFlags().EXPLOSION_DAMAGE.onDetonateExplosive(event, world);
+		
+		
+		// Debug
+		//UtilsCause.debug(event.getCause(), "DetonateExplosiveEvent : " + event.getTargetEntity().getClass().getSimpleName() + " : shouldDamageEntities " + event.getExplosionBuilder().build().shouldDamageEntities());
 	}
 }

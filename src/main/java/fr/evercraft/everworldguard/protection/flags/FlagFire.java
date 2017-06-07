@@ -202,7 +202,7 @@ public class FlagFire extends CatalogTypeFlag<FireType> {
 				if (!block.getLocation().isPresent()) return false;
 				
 				Location<World> location = block.getLocation().get();
-				for (FireType fire : service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, this).getValues()) {
+				for (FireType fire : service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, location, this).getValues()) {
 					if (fires.contains(fire)) {
 						return false;
 					}
@@ -266,14 +266,14 @@ public class FlagFire extends CatalogTypeFlag<FireType> {
 		boolean access = false;
 		boolean access2 = false;
 		
-		for (FireType fire : world.getRegions(position).getFlag(player, this).getValues()) {
+		for (FireType fire : world.getRegions(position).getFlag(player, location, this).getValues()) {
 			if (fires.contains(fire)) {
 				access = true;
 				break;
 			}
 		}
 		
-		for (FireType fire : world.getRegions(position2).getFlag(player, this).getValues()) {
+		for (FireType fire : world.getRegions(position2).getFlag(player, new Location<World>(location.getExtent(), position2), this).getValues()) {
 			if (fires.contains(fire)) {
 				access2 = true;
 				break;

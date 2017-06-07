@@ -52,6 +52,10 @@ public class ESetProtectedRegion implements SetProtectedRegion {
 	public Set<ProtectedRegion> getAll() {
 		return ImmutableSet.copyOf(this.regions);
 	}
+	
+	/*
+	 * Flag
+	 */
 
 	@Override
 	public <V> V getFlag(User user, Set<Context> context, Flag<V> flag) {
@@ -75,6 +79,10 @@ public class ESetProtectedRegion implements SetProtectedRegion {
 		return flag.getDefault();
 	}
 	
+	/*
+	 * FlagIfPresent
+	 */
+	
 	@Override
 	public <V> Optional<V> getFlagIfPresent(User user, Set<Context> context, Flag<V> flag) {
 		for (ProtectedRegion region : this.regions) {
@@ -96,6 +104,10 @@ public class ESetProtectedRegion implements SetProtectedRegion {
 		}
 		return Optional.empty();
 	}
+	
+	/*
+	 * Region
+	 */
 
 	@Override
 	public <V> Optional<ProtectedRegion> getRegion(Group group, Flag<V> flag) {
