@@ -69,7 +69,7 @@ public class FlagEndermanGrief extends StateFlag {
 		
 		EProtectionService service = this.plugin.getProtectionService();
 		if (!event.filter(location -> 
-			service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlagDefault(this).equals(State.ALLOW)).isEmpty()) {
+			service.getOrCreateEWorld(location.getExtent()).getRegions(location.getPosition()).getFlagDefault(this).equals(State.ALLOW)).isEmpty()) {
 			event.setCancelled(true);
 			// TODO L'enderman garde l'item dans la main mais l'inventaire n'est pas encore implémenté
 			//enderman.get().getInventory().clear();
@@ -88,7 +88,7 @@ public class FlagEndermanGrief extends StateFlag {
 		
 		EProtectionService service = this.plugin.getProtectionService();
 		if (!event.filter(location -> 
-			service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlagDefault(this).equals(State.ALLOW)).isEmpty()) {
+			service.getOrCreateEWorld(location.getExtent()).getRegions(location.getPosition()).getFlagDefault(this).equals(State.ALLOW)).isEmpty()) {
 			// TODO 
 		}
 	}

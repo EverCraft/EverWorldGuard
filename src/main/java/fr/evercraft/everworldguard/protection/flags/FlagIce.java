@@ -97,7 +97,7 @@ public class FlagIce extends CatalogTypeFlag<IceType> {
 				Optional<Location<World>> location = transaction.getFinal().getLocation();
 				if (!location.isPresent()) return;
 
-				if(!service.getOrCreateWorld(location.get().getExtent()).getRegions(location.get().getPosition()).getFlagDefault(this).containsValue(IceTypes.FORM)) {
+				if(!service.getOrCreateEWorld(location.get().getExtent()).getRegions(location.get().getPosition()).getFlagDefault(this).containsValue(IceTypes.FORM)) {
 					transaction.setValid(false);
 				}
 			});
@@ -125,7 +125,7 @@ public class FlagIce extends CatalogTypeFlag<IceType> {
 				Optional<Location<World>> location = transaction.getFinal().getLocation();
 				if (!location.isPresent()) return;
 
-				if(!service.getOrCreateWorld(location.get().getExtent()).getRegions(location.get().getPosition()).getFlagDefault(this).containsValue(IceTypes.MELT)) {
+				if(!service.getOrCreateEWorld(location.get().getExtent()).getRegions(location.get().getPosition()).getFlagDefault(this).containsValue(IceTypes.MELT)) {
 					transaction.setValid(false);
 				}
 			});

@@ -66,7 +66,7 @@ public class FlagExpDrop extends StateFlag {
 		
 		event.filterEntities(entity -> {
 			if (entity instanceof ExperienceOrb) {
-				return service.getOrCreateWorld(entity.getWorld()).getRegions(entity.getLocation().getPosition()).getFlag(player, entity.getLocation(), this).equals(State.ALLOW);
+				return service.getOrCreateEWorld(entity.getWorld()).getRegions(entity.getLocation().getPosition()).getFlag(player, entity.getLocation(), this).equals(State.ALLOW);
 			}
 			return true;
 		});

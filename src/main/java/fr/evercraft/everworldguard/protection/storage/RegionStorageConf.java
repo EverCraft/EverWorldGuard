@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.base.Preconditions;
@@ -79,7 +80,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 	}
 
 	@Override
-	public Set<EProtectedRegion> getAll() {
+	public CompletableFuture<Set<EProtectedRegion>> getAll() {
 		Map<String, EProtectedRegion> regions = new HashMap<String, EProtectedRegion>();
 		for (Entry<Object, ? extends ConfigurationNode> config : this.getNode().getChildrenMap().entrySet()) {
 			try {
@@ -107,7 +108,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 			}
 		}
 		
-		return ImmutableSet.copyOf(regions.values());
+		return CompletableFuture.completedFuture(ImmutableSet.copyOf(regions.values()));
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -268,9 +269,9 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 	}
 	
 	@Override
-	public void add(EProtectedRegion region) {
+	public CompletableFuture<Boolean> add(EProtectedRegion region) {
 		this.add(region, this.getNode().getNode(region.getId().toString()));
-		this.save(true);
+		return CompletableFuture.supplyAsync(() -> this.save(true));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -342,46 +343,34 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 			});
 		}
 	}
-
-	@Override
-	public void remove(EProtectedRegion region) {
-		this.getNode().removeChild(region.getId().toString());
-		this.save(true);
-	}
 	
 	@Override
-	public void remove(Set<EProtectedRegion> regions) {
-		regions.stream().forEach(region -> this.getNode().removeChild(region.getId().toString()));
-		this.save(true);
-	}
-	
-	@Override
-	public void setName(EProtectedRegion region, String name) {
+	public CompletableFuture<Boolean> setName(EProtectedRegion region, String name) {
 		ConfigurationNode config = this.getNode().getNode(region.getId().toString());
 		config.getNode("name").setValue(name);
-		this.save(true);
+		return CompletableFuture.supplyAsync(() -> this.save(true));
 	}
 
 	@Override
-	public void setPriority(EProtectedRegion region, int priority) {
+	public CompletableFuture<Boolean> setPriority(EProtectedRegion region, int priority) {
 		ConfigurationNode config = this.getNode().getNode(region.getId().toString());
 		config.getNode("priority").setValue(priority);
-		this.save(true);
+		return CompletableFuture.supplyAsync(() -> this.save(true));
 	}
 
 	@Override
-	public void setParent(EProtectedRegion region, ProtectedRegion parent) {
+	public CompletableFuture<Boolean> setParent(EProtectedRegion region, ProtectedRegion parent) {
 		ConfigurationNode config = this.getNode().getNode(region.getId().toString());
         if (parent  == null) {
             config.removeChild("parent");
         } else {
             config.getNode("parent").setValue(parent.getName());
         }
-		this.save(true);
+        return CompletableFuture.supplyAsync(() -> this.save(true));
 	}
 
 	@Override
-	public <V> void setFlag(EProtectedRegion region, Flag<V> flag, Group group, V value) {
+	public <V> CompletableFuture<Boolean> setFlag(EProtectedRegion region, Flag<V> flag, Group group, V value) {
 		ConfigurationNode config = this.getNode().getNode(region.getId().toString());
 		
 		if (group.equals(Groups.OWNER)) {
@@ -397,11 +386,11 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 		} else {
 			config.getNode(flag.getId()).setValue(flag.serialize(value));
 		}
-		this.save(true);
+		return CompletableFuture.supplyAsync(() -> this.save(true));
 	}
 
 	@Override
-	public void addOwnerPlayer(EProtectedRegion region, Set<UUID> players) {
+	public CompletableFuture<Boolean> addOwnerPlayer(EProtectedRegion region, Set<UUID> players) {
 		ConfigurationNode config = this.getNode().getNode(region.getId().toString());
 		
 		Set<UUID> all = new HashSet<UUID>();
@@ -411,11 +400,11 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 		config.getNode("owners").setValue(all.stream()
 				.map(uuid -> uuid.toString())
 				.collect(Collectors.toSet()));
-		this.save(true);
+		return CompletableFuture.supplyAsync(() -> this.save(true));
 	}
 
 	@Override
-	public void addOwnerGroup(EProtectedRegion region, Set<String> groups) {
+	public CompletableFuture<Boolean> addOwnerGroup(EProtectedRegion region, Set<String> groups) {
 		ConfigurationNode config = this.getNode().getNode(region.getId().toString());
 		
 		Set<String> all = new HashSet<String>();
@@ -423,11 +412,11 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 		all.addAll(groups);
 		
 		config.getNode("group-owners").setValue(all);
-		this.save(true);
+		return CompletableFuture.supplyAsync(() -> this.save(true));
 	}
 
 	@Override
-	public void addMemberPlayer(EProtectedRegion region, Set<UUID> players) {
+	public CompletableFuture<Boolean> addMemberPlayer(EProtectedRegion region, Set<UUID> players) {
 		ConfigurationNode config = this.getNode().getNode(region.getId().toString());
 		
 		Set<UUID> all = new HashSet<UUID>();
@@ -437,11 +426,11 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 		config.getNode("members").setValue(all.stream()
 				.map(uuid -> uuid.toString())
 				.collect(Collectors.toSet()));
-		this.save(true);
+		return CompletableFuture.supplyAsync(() -> this.save(true));
 	}
 
 	@Override
-	public void addMemberGroup(EProtectedRegion region, Set<String> groups) {
+	public CompletableFuture<Boolean> addMemberGroup(EProtectedRegion region, Set<String> groups) {
 		ConfigurationNode config = this.getNode().getNode(region.getId().toString());
 		
 		Set<String> all = new HashSet<String>();
@@ -449,11 +438,11 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 		all.addAll(groups);
 		
 		config.getNode("group-members").setValue(all);
-		this.save(true);
+		return CompletableFuture.supplyAsync(() -> this.save(true));
 	}
 
 	@Override
-	public void removeOwnerPlayer(EProtectedRegion region, Set<UUID> players) {
+	public CompletableFuture<Boolean> removeOwnerPlayer(EProtectedRegion region, Set<UUID> players) {
 		ConfigurationNode config = this.getNode().getNode(region.getId().toString());
 		
 		Set<UUID> all = new HashSet<UUID>();
@@ -463,11 +452,11 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 		config.getNode("owners").setValue(all.stream()
 				.map(uuid -> uuid.toString())
 				.collect(Collectors.toSet()));
-		this.save(true);
+		return CompletableFuture.supplyAsync(() -> this.save(true));
 	}
 
 	@Override
-	public void removeOwnerGroup(EProtectedRegion region, Set<String> groups) {
+	public CompletableFuture<Boolean> removeOwnerGroup(EProtectedRegion region, Set<String> groups) {
 		ConfigurationNode config = this.getNode().getNode(region.getId().toString());
 		
 		Set<String> all = new HashSet<String>();
@@ -475,11 +464,11 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 		all.removeAll(groups);
 		
 		config.getNode("group-owners").setValue(all);
-		this.save(true);
+		return CompletableFuture.supplyAsync(() -> this.save(true));
 	}
 
 	@Override
-	public void removeMemberPlayer(EProtectedRegion region, Set<UUID> players) {
+	public CompletableFuture<Boolean> removeMemberPlayer(EProtectedRegion region, Set<UUID> players) {
 		ConfigurationNode config = this.getNode().getNode(region.getId().toString());
 		
 		Set<UUID> all = new HashSet<UUID>();
@@ -489,11 +478,11 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 		config.getNode("members").setValue(all.stream()
 				.map(uuid -> uuid.toString())
 				.collect(Collectors.toSet()));
-		this.save(true);
+		return CompletableFuture.supplyAsync(() -> this.save(true));
 	}
 
 	@Override
-	public void removeMemberGroup(EProtectedRegion region, Set<String> groups) {
+	public CompletableFuture<Boolean> removeMemberGroup(EProtectedRegion region, Set<String> groups) {
 		ConfigurationNode config = this.getNode().getNode(region.getId().toString());
 		
 		Set<String> all = new HashSet<String>();
@@ -501,6 +490,30 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 		all.removeAll(groups);
 		
 		config.getNode("group-members").setValue(all);
-		this.save(true);
+		return CompletableFuture.supplyAsync(() -> this.save(true));
+	}
+	
+	@Override
+	public CompletableFuture<Boolean> removeRemoveChildren(Set<ProtectedRegion> regions) {
+		regions.forEach(children -> {
+			if (children.getType().equals(ProtectedRegion.Types.GLOBAL)) {
+				this.getNode().getNode(children.getId().toString()).removeChild("parent");
+			} else {
+				this.getNode().removeChild(children.getId().toString());
+			}
+		});
+		
+		return CompletableFuture.supplyAsync(() -> this.save(true));
+	}
+
+	@Override
+	public CompletableFuture<Boolean> removeClearParent(EProtectedRegion region, Set<EProtectedRegion> regions) {
+		this.getNode().removeChild(region.getId().toString());
+		
+		regions.forEach(children -> {
+			this.getNode().getNode(children.getId().toString()).removeChild("parent");
+		});
+		
+		return CompletableFuture.supplyAsync(() -> this.save(true));
 	}
 }

@@ -175,7 +175,7 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 
 	private boolean commandRegionList(CommandSource player, World world) {
 		TreeMap<String, Text> list = new TreeMap<String, Text>();
-		for (ProtectedRegion region : this.plugin.getProtectionService().getOrCreateWorld(world).getAll()) {
+		for (ProtectedRegion region : this.plugin.getProtectionService().getOrCreateEWorld(world).getAll()) {
 			list.put(region.getName(), EWMessages.REGION_LIST_ALL_LINE.getFormat()
 					.toText("<region>", Text.builder(region.getName())
 								.onShiftClick(TextActions.insertText(region.getName()))
@@ -218,7 +218,7 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 	
 	private boolean commandRegionListPlayer(CommandSource staff, World world, EUser user) {
 		TreeMap<String, Text> list = new TreeMap<String, Text>();
-		for (ProtectedRegion region : this.plugin.getProtectionService().getOrCreateWorld(world).getAll()) {
+		for (ProtectedRegion region : this.plugin.getProtectionService().getOrCreateEWorld(world).getAll()) {
 			if (region.isOwnerOrMember(user, UtilsContexts.get(world.getName()))) {
 				list.put(region.getName(), EWMessages.REGION_LIST_PLAYER_LINE.getFormat()
 						.toText("<region>", Text.builder(region.getName())
@@ -267,7 +267,7 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 		}
 		
 		TreeMap<String, Text> list = new TreeMap<String, Text>();
-		for (ProtectedRegion region : this.plugin.getProtectionService().getOrCreateWorld(world).getAll()) {
+		for (ProtectedRegion region : this.plugin.getProtectionService().getOrCreateEWorld(world).getAll()) {
 			if (region.isOwnerOrMember(group)) {
 				list.put(region.getName(), EWMessages.REGION_LIST_GROUP_LINE.getFormat()
 						.toText("<region>", Text.builder(region.getName())

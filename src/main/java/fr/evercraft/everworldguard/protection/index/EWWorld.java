@@ -16,17 +16,25 @@
  */
 package fr.evercraft.everworldguard.protection.index;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Collectors;
 
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
 import fr.evercraft.everapi.services.worldguard.WorldGuardWorld;
@@ -39,72 +47,81 @@ import fr.evercraft.everworldguard.protection.regions.EProtectedCuboidRegion;
 import fr.evercraft.everworldguard.protection.regions.EProtectedPolygonalRegion;
 import fr.evercraft.everworldguard.protection.regions.EProtectedRegion;
 import fr.evercraft.everworldguard.protection.regions.EProtectedTemplateRegion;
+import fr.evercraft.everworldguard.protection.storage.ManagerRegionStorage;
 import fr.evercraft.everworldguard.protection.storage.RegionStorage;
-import fr.evercraft.everworldguard.protection.storage.RegionStorageConf;
-import fr.evercraft.everworldguard.protection.storage.RegionStorageSql;
 
 public class EWWorld implements WorldGuardWorld {
 	
-	private final EverWorldGuard plugin;
+	// MultiThreading
+	private final ReadWriteLock lock;
+	private final Lock write_lock;
+	private final Lock read_lock;
 	
-	private RegionStorage storage;
+	private final EverWorldGuard plugin;
 	
 	private final ConcurrentHashMap<UUID, EProtectedRegion> regionsIdentifier;
 	private final ConcurrentHashMap<String, EProtectedRegion> regionsName;
 	private final LongHashTable<EWChunck> cache;
 	
 	private final World world;
+	private final ManagerRegionStorage storage;
 	
 	public EWWorld(EverWorldGuard plugin, World world) {		
 		this.plugin = plugin;
 		this.world = world;
 		
+		// MultiThreading
+		this.lock = new ReentrantReadWriteLock();
+		this.write_lock = this.lock.writeLock();
+		this.read_lock = this.lock.readLock();
+		
 		this.regionsIdentifier = new ConcurrentHashMap<UUID, EProtectedRegion>();
 		this.regionsName = new ConcurrentHashMap<String, EProtectedRegion>();	
 		this.cache = new LongHashTable<EWChunck>();
 		
-		if (this.plugin.getDataBase().isEnable()) {
-			this.storage = new RegionStorageSql(this.plugin, this);
-		} else {
-			this.storage = new RegionStorageConf(this.plugin, this);
-		}
-		
+		this.storage = new ManagerRegionStorage(this.plugin, this);
 		this.start();
 	}
 
 	public void reload() {
-		if (this.plugin.getDataBase().isEnable() && !(this.storage instanceof RegionStorageSql)) {
-			this.storage = new RegionStorageSql(this.plugin, this);
-		} else if (!this.plugin.getDataBase().isEnable() && !(this.storage instanceof RegionStorageConf)) {
-			this.storage = new RegionStorageConf(this.plugin, this);
-		} else {
+		this.write_lock.lock();
+		try {
 			this.storage.reload();
+			
+			this.start();
+			this.rebuild();
+		} finally {
+			this.write_lock.unlock();
 		}
-		
-		this.start();
-		this.rebuild();
 	}
 	
 	public void start() {
 		this.plugin.getELogger().info("Loading region for world '" + this.world.getName() + "' ...");
 		
-		this.regionsIdentifier.clear();
-		this.regionsName.clear();
-		
-		this.storage.getAll().forEach(region -> {
-			this.regionsIdentifier.put(region.getId(), region);
-			this.regionsName.put(region.getName().toLowerCase(), region);
-		});
+		this.write_lock.lock();
+		try {
+			this.regionsIdentifier.clear();
+			this.regionsName.clear();
+			
+			this.storage.getAll().get().forEach(region -> {
+				this.regionsIdentifier.put(region.getId(), region);
+				this.regionsName.put(region.getName().toLowerCase(), region);
+			});
+		} catch (InterruptedException | ExecutionException e) {
+		} finally {
+			this.write_lock.unlock();
+		}
 		
 		this.plugin.getELogger().info("Loading " + this.regionsIdentifier.size() + " region(s) for world '" + this.world.getName() + "'.");
 	}
 	
-	public void stop() {
-		this.plugin.getELogger().info("Region data changes made in '" + this.world.getName() + "' have been background saved.");
-	}
-	
 	public Set<ProtectedRegion> getAll() {
-		return ImmutableSet.copyOf(this.regionsIdentifier.values());
+		this.read_lock.lock();
+		try {
+			return ImmutableSet.copyOf(this.regionsIdentifier.values());
+		} finally {
+			this.read_lock.unlock();
+		}
 	}
 	
 	public RegionStorage getStorage() {
@@ -116,20 +133,25 @@ public class EWWorld implements WorldGuardWorld {
 	}
 	
 	public void rebuild() {
-		this.cache.values().forEach(region -> {
-			Vector3i position = region.getPosition();
-			EWChunck chunck = new EWChunck(this.plugin, position, this.regionsIdentifier);
-			this.cache.put(position.getX(), position.getZ(), chunck);
-		});
-		
-		this.plugin.getProtectionService().getSubjectList().getAll().stream()
-			.filter(subject -> {
-				Optional<Location<World>> lastLocation = subject.getLastLocation();
-				if (lastLocation.isPresent()) {
-					return lastLocation.get().getExtent().equals(this.world);
-				}
-				return false;
-			}).forEach(subject -> subject.rebuild());
+		this.write_lock.lock();
+		try {
+			this.cache.values().forEach(region -> {
+				Vector3i position = region.getPosition();
+				EWChunck chunck = new EWChunck(this.plugin, position, this.regionsIdentifier);
+				this.cache.put(position.getX(), position.getZ(), chunck);
+			});
+			
+			this.plugin.getProtectionService().getSubjectList().getAll().stream()
+				.filter(subject -> {
+					Optional<Location<World>> lastLocation = subject.getLastLocation();
+					if (lastLocation.isPresent()) {
+						return lastLocation.get().getExtent().equals(this.world);
+					}
+					return false;
+				}).forEach(subject -> subject.rebuild());
+		} finally {
+			this.write_lock.unlock();
+		}
 	}
 	
 	/*
@@ -140,24 +162,39 @@ public class EWWorld implements WorldGuardWorld {
 	}
 	
 	public EWChunck getChunk(final int x, final int z) {
-		EWChunck value = this.cache.get(x, z);
-		if (value == null) {
-			value = new EWChunck(this.plugin, Vector3i.from(x, 0, z), this.regionsIdentifier);
+		this.read_lock.lock();
+		try {
+			EWChunck value = this.cache.get(x, z);
+			if (value == null) {
+				value = new EWChunck(this.plugin, Vector3i.from(x, 0, z), this.regionsIdentifier);
+			}
+			return value;
+		} finally {
+			this.read_lock.unlock();
 		}
-		return value;
 	}
 	
 	public EWChunck loadChunk(final Vector3i chunk) {
-		EWChunck value = this.cache.get(chunk.getX(), chunk.getZ());
-		if (value == null) {
-			value = new EWChunck(this.plugin, chunk, this.regionsIdentifier);
-			this.cache.put(chunk.getX(), chunk.getZ(), value);
+		this.write_lock.lock();
+		try {
+			EWChunck value = this.cache.get(chunk.getX(), chunk.getZ());
+			if (value == null) {
+				value = new EWChunck(this.plugin, chunk, this.regionsIdentifier);
+				this.cache.put(chunk.getX(), chunk.getZ(), value);
+			}
+			return value;
+		} finally {
+			this.write_lock.unlock();
 		}
-		return value;
 	}
 	
 	public boolean unLoadChunk(final int x, final int z) {
-		return this.cache.remove(x, z) != null;
+		this.write_lock.lock();
+		try {
+			return this.cache.remove(x, z) != null;
+		} finally {
+			this.write_lock.unlock();
+		}
 	}
 	
 	/*
@@ -176,24 +213,34 @@ public class EWWorld implements WorldGuardWorld {
 	public Optional<ProtectedRegion> getRegion(String name) {
 		Preconditions.checkNotNull(name, "name");
 		
-		ProtectedRegion region = this.regionsName.get(name.toLowerCase());
-		if (region == null) {
-			try {
-				region = this.regionsIdentifier.get(UUID.fromString(name));
-			} catch (IllegalArgumentException e) {}
+		this.read_lock.lock();
+		try {
+			ProtectedRegion region = this.regionsName.get(name.toLowerCase());
+			if (region == null) {
+				try {
+					region = this.regionsIdentifier.get(UUID.fromString(name));
+				} catch (IllegalArgumentException e) {}
+			}
+			return Optional.ofNullable(region);
+		} finally {
+			this.read_lock.unlock();
 		}
-		return Optional.ofNullable(region);
 	}
 	
 	@Override
 	public Optional<ProtectedRegion> getRegion(UUID identifier) {
 		Preconditions.checkNotNull(identifier, "identifier");
 		
-		return Optional.ofNullable(this.regionsIdentifier.get(identifier));
+		this.read_lock.lock();
+		try {
+			return Optional.ofNullable(this.regionsIdentifier.get(identifier));
+		} finally {
+			this.read_lock.unlock();
+		}
 	}
 
 	@Override
-	public ProtectedRegion.Cuboid createRegionCuboid(String name, Vector3i pos1, Vector3i pos2, Set<UUID> owner_players, Set<String> owner_groups) throws RegionIdentifierException {
+	public CompletableFuture<ProtectedRegion.Cuboid> createRegionCuboid(String name, Vector3i pos1, Vector3i pos2, Set<UUID> owner_players, Set<String> owner_groups) throws RegionIdentifierException {
 		Preconditions.checkNotNull(name, "name");
 		Preconditions.checkNotNull(pos1, "pos1");
 		Preconditions.checkNotNull(pos2, "pos2");
@@ -203,20 +250,25 @@ public class EWWorld implements WorldGuardWorld {
 		
 		UUID uuid = this.nextUUID();
 		EProtectedCuboidRegion region = new EProtectedCuboidRegion(this, uuid, name, pos1, pos2);
-		this.regionsIdentifier.put(uuid, region);
-		this.regionsName.put(name.toLowerCase(), region);
-		
-		region.addPlayerOwner(owner_players);
-		region.addGroupOwner(owner_groups);
+		region.init(0, owner_players, owner_groups, ImmutableSet.of(), ImmutableSet.of(), ImmutableMap.of());
 
-		this.getStorage().add(region);
-		
-		this.rebuild();
-		return region;
+		return this.getStorage().add(region)
+			.thenApply(value -> {
+				this.write_lock.lock();
+				try {
+					this.regionsIdentifier.put(uuid, region);
+					this.regionsName.put(name.toLowerCase(), region);
+					
+					this.rebuild();
+					return region;
+				} finally {
+					this.write_lock.unlock();
+				}
+			});
 	}
 
 	@Override
-	public ProtectedRegion.Polygonal createRegionPolygonal(String name, List<Vector3i> positions, Set<UUID> owner_players, Set<String> owner_groups) throws RegionIdentifierException {
+	public CompletableFuture<ProtectedRegion.Polygonal> createRegionPolygonal(String name, List<Vector3i> positions, Set<UUID> owner_players, Set<String> owner_groups) throws RegionIdentifierException {
 		Preconditions.checkNotNull(name, "name");
 		Preconditions.checkNotNull(positions, "positions");
 		Preconditions.checkNotNull(owner_players, "owner_players");
@@ -225,20 +277,25 @@ public class EWWorld implements WorldGuardWorld {
 		
 		UUID uuid = this.nextUUID();
 		EProtectedPolygonalRegion region = new EProtectedPolygonalRegion(this, uuid, name, positions);
-		this.regionsIdentifier.put(uuid, region);
-		this.regionsName.put(name.toLowerCase(), region);
+		region.init(0, owner_players, owner_groups, ImmutableSet.of(), ImmutableSet.of(), ImmutableMap.of());
 		
-		this.regionsIdentifier.put(uuid, region);
-		this.regionsName.put(name.toLowerCase(), region);
-
-		this.getStorage().add(region);
-		
-		this.rebuild();
-		return region;
+		return this.getStorage().add(region)
+			.thenApply(value -> {
+				this.write_lock.lock();
+				try {
+					this.regionsIdentifier.put(uuid, region);
+					this.regionsName.put(name.toLowerCase(), region);
+					
+					this.rebuild();
+					return region;
+				} finally {
+					this.write_lock.unlock();
+				}
+			});
 	}
 
 	@Override
-	public ProtectedRegion.Template createRegionTemplate(String name, Set<UUID> owner_players, Set<String> owner_groups) throws RegionIdentifierException {
+	public CompletableFuture<ProtectedRegion.Template> createRegionTemplate(String name, Set<UUID> owner_players, Set<String> owner_groups) throws RegionIdentifierException {
 		Preconditions.checkNotNull(name, "name");
 		Preconditions.checkNotNull(owner_players, "owner_players");
 		Preconditions.checkNotNull(owner_groups, "owner_groups");
@@ -246,74 +303,150 @@ public class EWWorld implements WorldGuardWorld {
 		
 		UUID uuid = this.nextUUID();
 		EProtectedTemplateRegion region = new EProtectedTemplateRegion(this, uuid, name);
-		this.regionsIdentifier.put(uuid, region);
-		this.regionsName.put(name.toLowerCase(), region);
+		region.init(0, owner_players, owner_groups, ImmutableSet.of(), ImmutableSet.of(), ImmutableMap.of());
 		
-		this.regionsIdentifier.put(uuid, region);
-		this.regionsName.put(name.toLowerCase(), region);
-		
-		this.getStorage().add(region);
-		
-		this.rebuild();
-		return region;
+		return this.getStorage().add(region)
+			.thenApply(value -> {
+				this.write_lock.lock();
+				try {
+					this.regionsIdentifier.put(uuid, region);
+					this.regionsName.put(name.toLowerCase(), region);
+					
+					this.rebuild();
+					return region;
+				} finally {
+					this.write_lock.unlock();
+				}
+			});
 	}
 	
 	@Override
-	public Optional<ProtectedRegion> removeRegion(UUID identifier, ProtectedRegion.RemoveType type) {
-		EProtectedRegion region = this.regionsIdentifier.get(identifier);
-		if (region == null) {
-			return Optional.empty();
+	public CompletableFuture<Set<ProtectedRegion>> removeRegion(UUID identifier, ProtectedRegion.RemoveType type) {
+		EProtectedRegion region = null;
+		
+		this.read_lock.lock();
+		try {
+			region = this.regionsIdentifier.get(identifier);			
+		} finally {
+			this.read_lock.unlock();
 		}
 		
-		if (type.equals(ProtectedRegion.RemoveTypes.REMOVE_CHILDREN)) {
-			this.removeRegionChildren(region);
-		} else if (type.equals(ProtectedRegion.RemoveTypes.UNSET_PARENT_IN_CHILDREN)) {
-			this.regionsIdentifier.remove(region.getId());
-			this.regionsName.remove(region.getName().toLowerCase());
+		if (region == null || region.getType().equals(ProtectedRegion.Types.GLOBAL)) {
+			return CompletableFuture.completedFuture(ImmutableSet.of());
+		}
 			
-			for (EProtectedRegion children : this.regionsIdentifier.values()) {
-				Optional<ProtectedRegion> parent = children.getParent();
-				if (parent.isPresent() && parent.get().equals(region)) {
-					children.clearParent();
-				}
-			}
+		if (type.equals(ProtectedRegion.RemoveTypes.REMOVE_CHILDREN)) {
+			return this.removeRemoveChildren(region)
+				.thenApply(regions -> {
+					this.write_lock.lock();
+					try {
+						for (ProtectedRegion children : regions) {
+							if (children.getType().equals(ProtectedRegion.Types.GLOBAL)) {
+								if (children instanceof EProtectedRegion) {
+									((EProtectedRegion) children).clearParent(false);
+								} else {
+									children.clearParent();
+								}
+							} else {
+								this.regionsIdentifier.remove(children.getId());
+								this.regionsName.remove(children.getName().toLowerCase());
+							}
+						}
+					} finally {
+						this.write_lock.unlock();
+					}
+					return regions;
+				});
+		} else if (type.equals(ProtectedRegion.RemoveTypes.UNSET_PARENT_IN_CHILDREN)) {
+			final EProtectedRegion regionRemove = region;
+			return this.removeUnsetParentInChildren(regionRemove)
+				.thenApply(regions -> {
+					this.write_lock.lock();
+					try {						
+						for (ProtectedRegion children : regions) {
+							if (children instanceof EProtectedRegion) {
+								((EProtectedRegion) children).clearParent(false);
+							} else {
+								children.clearParent();
+							}
+						}
+						this.regionsIdentifier.remove(regionRemove.getId());
+						this.regionsName.remove(regionRemove.getName().toLowerCase());
+					} finally {
+						this.write_lock.unlock();
+					}
+					return regions;
+				});
 		}
-
-		this.getStorage().remove(region);
 		
-		this.rebuild();
-		return Optional.of(region);
+		return CompletableFuture.completedFuture(ImmutableSet.of());		
 	}
 	
-	private void removeRegionChildren(EProtectedRegion region) {
-		this.regionsIdentifier.remove(region.getId());
-		this.regionsName.remove(region.getName().toLowerCase());
+	private CompletableFuture<Set<ProtectedRegion>> removeUnsetParentInChildren(EProtectedRegion region) {
+		Set<EProtectedRegion> regions = this.regionsIdentifier.values().stream().filter(children -> {
+			Optional<ProtectedRegion> parent = children.getParent();
+			return parent.isPresent() && parent.get().equals(region);
+		}).collect(Collectors.toSet());
+		
+		return this.storage.removeClearParent(region, regions)
+			.thenApply(value -> {
+				if (!value) return ImmutableSet.of();
+				return ImmutableSet.of(region);
+			});
+	}
+	
+	private CompletableFuture<Set<ProtectedRegion>> removeRemoveChildren(EProtectedRegion region) {
+		Set<ProtectedRegion> regions = new HashSet<ProtectedRegion>();
+		this.removeRemoveChildren(region, regions);
+		
+		return this.storage.removeRemoveChildren(regions)
+			.thenApply(value -> {
+				if (!value) return ImmutableSet.of();
+				return ImmutableSet.copyOf(regions);
+			});
+	}
+	
+	private void removeRemoveChildren(EProtectedRegion region, Set<ProtectedRegion> regions) {
+		regions.add(region);
 		
 		for (EProtectedRegion children : this.regionsIdentifier.values()) {
-			Optional<ProtectedRegion> parent = children.getParent();
-			if (parent.isPresent() && parent.get().equals(region)) {
-				if (children.getType().equals(ProtectedRegion.Types.GLOBAL)) {
-					children.clearParent();
-				} else {
-					this.removeRegionChildren(children);
-				}
+			if (!regions.contains(children)) {
+				children.getParent().ifPresent(parent -> {
+					if (parent.equals(region)) {
+						if (region.getType().equals(ProtectedRegion.Types.GLOBAL)) {
+							regions.add(parent);
+						} else {
+							this.removeRemoveChildren(children, regions);
+						}
+					}
+				});
 			}
 		}
 	}
 
 	public boolean rename(EProtectedRegion region, String name) {
-		if (this.regionsName.containsKey(name)) return false;
-		
-		this.regionsName.remove(region.getName().toLowerCase());
-		this.regionsName.put(name.toLowerCase(), region);
-		return true;
+		this.write_lock.lock();
+		try {
+			if (this.regionsName.containsKey(name)) return false;
+			
+			this.regionsName.remove(region.getName().toLowerCase());
+			this.regionsName.put(name.toLowerCase(), region);
+			return true;
+		} finally {
+			this.write_lock.unlock();
+		}
 	}
 	
 	public UUID nextUUID() {
-		UUID uuid = null;
-		do {
-			uuid = UUID.randomUUID();
-		} while (this.regionsIdentifier.containsKey(uuid));
-		return uuid;
+		this.write_lock.lock();
+		try {
+			UUID uuid = null;
+			do {
+				uuid = UUID.randomUUID();
+			} while (this.regionsIdentifier.containsKey(uuid));
+			return uuid;
+		} finally {
+			this.write_lock.unlock();
+		}
 	}
 }

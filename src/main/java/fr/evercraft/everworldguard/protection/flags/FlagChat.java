@@ -102,7 +102,7 @@ public class FlagChat extends CatalogTypeFlag<ChatType> {
         		// Bypass
         		if (this.plugin.getProtectionService().hasBypass(playerReceiver)) return false;
         		
-        		WorldGuardWorld worldReceiver = service.getOrCreateWorld(playerReceiver.getWorld());
+        		WorldGuardWorld worldReceiver = service.getOrCreateEWorld(playerReceiver.getWorld());
         		return !worldReceiver.getRegions(playerReceiver.getLocation().getPosition()).getFlag(playerReceiver, playerReceiver.getLocation(), this).containsValue(ChatTypes.RECEIVE);
         	}
         	return false;

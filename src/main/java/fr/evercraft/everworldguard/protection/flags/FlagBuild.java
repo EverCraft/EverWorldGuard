@@ -183,7 +183,7 @@ public class FlagBuild extends StateFlag {
 		// Bypass
 		if (this.plugin.getProtectionService().hasBypass(player)) return;
 			
-		if (locations.anyMatch(location -> service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, location, this).equals(State.DENY))) {
+		if (locations.anyMatch(location -> service.getOrCreateEWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, location, this).equals(State.DENY))) {
 			event.setCancelled(true);
 		}
 	}
@@ -195,7 +195,7 @@ public class FlagBuild extends StateFlag {
 		Player player = optPlayer.get();
 		
 		if (event.getLocations().stream().anyMatch(location -> 
-				service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, location, this).equals(State.DENY))) {
+				service.getOrCreateEWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, location, this).equals(State.DENY))) {
 			event.setCancelled(true);
 		}
 	}
@@ -224,7 +224,7 @@ public class FlagBuild extends StateFlag {
 		// Bypass
 		if (this.plugin.getProtectionService().hasBypass(player)) return;
 		
-		event.filter(location -> service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, location, this).equals(State.ALLOW))
+		event.filter(location -> service.getOrCreateEWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, location, this).equals(State.ALLOW))
 			.forEach(transaction -> transaction.getFinal().getLocation().ifPresent(location -> {
 				Entity entity = location.getExtent().createEntity(EntityTypes.ITEM, location.getPosition());
 				entity.offer(Keys.REPRESENTED_ITEM, ItemStack.builder().fromBlockSnapshot(transaction.getFinal()).build().createSnapshot());
@@ -247,7 +247,7 @@ public class FlagBuild extends StateFlag {
 		if (this.plugin.getProtectionService().hasBypass(player)) return;
 		
 		List<Transaction<BlockSnapshot>> filter = event.filter(location -> 
-			service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, location, this).equals(State.ALLOW));
+			service.getOrCreateEWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, location, this).equals(State.ALLOW));
 		
 		if (!filter.isEmpty()) {
 			// Vérifie que c'est une action directe
@@ -275,7 +275,7 @@ public class FlagBuild extends StateFlag {
 		
 		EProtectionService service = this.plugin.getProtectionService();
 		List<Transaction<BlockSnapshot>> filter = event.filter(location -> 
-			service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, location, this).equals(State.ALLOW));
+			service.getOrCreateEWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, location, this).equals(State.ALLOW));
 	
 		if (!filter.isEmpty()) {
 			Optional<FallingBlock> falling = event.getCause().get(NamedCause.SOURCE, FallingBlock.class);

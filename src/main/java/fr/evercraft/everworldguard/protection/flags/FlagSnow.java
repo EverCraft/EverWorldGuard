@@ -102,7 +102,7 @@ public class FlagSnow extends CatalogTypeFlag<SnowType> {
 				Optional<Location<World>> location = transaction.getFinal().getLocation();
 				if (!location.isPresent()) return;
 
-				if(!service.getOrCreateWorld(location.get().getExtent()).getRegions(location.get().getPosition()).getFlagDefault(this).containsValue(SnowTypes.FALL)) {
+				if(!service.getOrCreateEWorld(location.get().getExtent()).getRegions(location.get().getPosition()).getFlagDefault(this).containsValue(SnowTypes.FALL)) {
 					transaction.setValid(false);
 				}
 			});
@@ -133,7 +133,7 @@ public class FlagSnow extends CatalogTypeFlag<SnowType> {
 				Optional<Location<World>> location = transaction.getOriginal().getLocation();
 				if (!location.isPresent()) return;
 
-				if(!service.getOrCreateWorld(location.get().getExtent()).getRegions(location.get().getPosition()).getFlagDefault(this).containsValue(SnowTypes.MELT)) {
+				if(!service.getOrCreateEWorld(location.get().getExtent()).getRegions(location.get().getPosition()).getFlagDefault(this).containsValue(SnowTypes.MELT)) {
 					transaction.setValid(false);
 				}
 			});

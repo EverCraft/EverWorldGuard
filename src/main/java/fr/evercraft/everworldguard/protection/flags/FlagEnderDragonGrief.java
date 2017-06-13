@@ -67,6 +67,6 @@ public class FlagEnderDragonGrief extends StateFlag {
 		if (!enderman.isPresent()) return;
 		
 		EProtectionService service = this.plugin.getProtectionService();
-		event.filter(location -> service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlagDefault(this).equals(State.ALLOW));
+		event.filter(location -> service.getOrCreateEWorld(location.getExtent()).getRegions(location.getPosition()).getFlagDefault(this).equals(State.ALLOW));
 	}
 }

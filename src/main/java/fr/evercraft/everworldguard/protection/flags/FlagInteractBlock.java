@@ -187,7 +187,7 @@ public class FlagInteractBlock extends CatalogTypeFlag<BlockType> {
 			Location<World> location = transaction.getOriginal().getLocation().get();
 			
 			if (this.getDefault().containsValue(type) && 
-					!service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, location, this).containsValue(type)) {
+					!service.getOrCreateEWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, location, this).containsValue(type)) {
 				transaction.setValid(false);				
 				return true;
 			}
@@ -211,7 +211,7 @@ public class FlagInteractBlock extends CatalogTypeFlag<BlockType> {
 			Location<World> location = transaction.getOriginal().getLocation().get();
 			
 			if (this.getDefault().containsValue(type) && 
-					!service.getOrCreateWorld(location.getExtent()).getRegions(transaction.getOriginal().getPosition()).getFlagDefault(this).containsValue(type)) {
+					!service.getOrCreateEWorld(location.getExtent()).getRegions(transaction.getOriginal().getPosition()).getFlagDefault(this).containsValue(type)) {
 				event.setCancelled(true);
 			}
 		});
@@ -237,11 +237,11 @@ public class FlagInteractBlock extends CatalogTypeFlag<BlockType> {
 			// Bypass
 			if (this.plugin.getProtectionService().hasBypass(optPlayer.get())) return;
 			
-			if (!this.plugin.getProtectionService().getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(optPlayer.get(), location, this).containsValue(type)) {
+			if (!this.plugin.getProtectionService().getOrCreateEWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(optPlayer.get(), location, this).containsValue(type)) {
 				event.setCancelled(true);
 			}
 		} else {
-			if (!this.plugin.getProtectionService().getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlagDefault(this).containsValue(type)) {
+			if (!this.plugin.getProtectionService().getOrCreateEWorld(location.getExtent()).getRegions(location.getPosition()).getFlagDefault(this).containsValue(type)) {
 				event.setCancelled(true);
 			}
 		}
@@ -272,7 +272,7 @@ public class FlagInteractBlock extends CatalogTypeFlag<BlockType> {
 			BlockType type = transaction.getOriginal().getState().getType();
 			
 			if (this.getDefault().containsValue(type) && 
-					!service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, location, Flags.INTERACT_BLOCK).containsValue(type)) {
+					!service.getOrCreateEWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, location, Flags.INTERACT_BLOCK).containsValue(type)) {
 				transaction.setValid(false);
 				
 				return true;
@@ -293,7 +293,7 @@ public class FlagInteractBlock extends CatalogTypeFlag<BlockType> {
 			BlockType type = transaction.getOriginal().getState().getType();
 			
 			if (this.getDefault().containsValue(type) && 
-					!service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlagDefault(Flags.INTERACT_BLOCK).containsValue(type)) {
+					!service.getOrCreateEWorld(location.getExtent()).getRegions(location.getPosition()).getFlagDefault(Flags.INTERACT_BLOCK).containsValue(type)) {
 				transaction.setValid(false);
 			}
 		});

@@ -19,6 +19,7 @@ package fr.evercraft.everworldguard.protection;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
@@ -131,13 +132,14 @@ public class EProtectionService implements WorldGuardService {
 	/*
 	 * World
 	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public WorldGuardWorld getOrCreateWorld(World world) {
-		return this.worlds.getOrCreate(world);
+	public CompletableFuture<WorldGuardWorld> getOrCreateWorld(World world) {
+		return (CompletableFuture) this.worlds.getOrCreate(world);
 	}
 	
 	public EWWorld getOrCreateEWorld(World world) {
-		return this.worlds.getOrCreate(world);
+		return this.worlds.get(world);
 	}
 	
 	public void unLoadWorld(World world) {

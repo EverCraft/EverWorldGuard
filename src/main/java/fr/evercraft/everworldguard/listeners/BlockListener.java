@@ -85,7 +85,7 @@ public class BlockListener {
 	@Listener(order=Order.FIRST)
 	public void onInteractBlock(InteractBlockEvent.Secondary event) {
 		event.getTargetBlock().getLocation().ifPresent(location -> {
-			WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateWorld(location.getExtent());
+			WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateEWorld(location.getExtent());
 		
 			this.plugin.getManagerFlags().BUILD.onInteractBlockSecondary(world, event, location);
 			this.plugin.getManagerFlags().BLOCK_BREAK.onInteractBlockSecondary(world, event, location);
@@ -99,7 +99,7 @@ public class BlockListener {
 	
 	@Listener(order=Order.FIRST)
 	public void onCollideBlock(CollideBlockEvent event) {
-		WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetLocation().getExtent());
+		WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateEWorld(event.getTargetLocation().getExtent());
 		
 		this.plugin.getManagerFlags().INTERACT_BLOCK.onCollideBlock(world, event);
 		
@@ -109,7 +109,7 @@ public class BlockListener {
 	
 	@Listener(order=Order.FIRST)
 	public void onDetonateExplosive(DetonateExplosiveEvent event) {
-		WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateWorld(event.getTargetEntity().getLocation().getExtent());
+		WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateEWorld(event.getTargetEntity().getLocation().getExtent());
 		
 		this.plugin.getManagerFlags().EXPLOSION.onDetonateExplosive(event, world);
 		this.plugin.getManagerFlags().EXPLOSION_BLOCK.onDetonateExplosive(event, world);

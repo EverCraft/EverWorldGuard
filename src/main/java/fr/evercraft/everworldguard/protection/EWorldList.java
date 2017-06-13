@@ -19,6 +19,7 @@ package fr.evercraft.everworldguard.protection;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -44,21 +45,23 @@ public class EWorldList {
 		this.worlds = new ConcurrentHashMap<UUID, EWWorld>();
 	}
 	
-	public Optional<EWWorld> get(World world) {
+	public EWWorld get(World world) {
 		Preconditions.checkNotNull(world, "world");
 		
-		return Optional.ofNullable(this.worlds.get(world.getUniqueId()));
+		return Optional.ofNullable(this.worlds.get(world.getUniqueId())).orElseGet(() -> new EWWorld(this.plugin, world));
 	}
 	
-	public EWWorld getOrCreate(World world) {
+	public CompletableFuture<WorldGuardWorld> getOrCreate(World world) {
 		Preconditions.checkNotNull(world, "world");
 		
-		EWWorld value = this.worlds.get(world.getUniqueId());
-		if (value == null) {
-			value = new EWWorld(this.plugin, world);
-			this.worlds.put(world.getUniqueId(), value);
-		}
-		return value;
+		return CompletableFuture.supplyAsync(() -> {
+			EWWorld value = this.worlds.get(world.getUniqueId());
+			if (value == null) {
+				value = new EWWorld(this.plugin, world);
+				this.worlds.put(world.getUniqueId(), value);
+			}
+			return value;
+		}, this.plugin.getThreadAsync());
 	}
 
 	public boolean hasRegistered(World world) {
@@ -79,6 +82,6 @@ public class EWorldList {
 	public void unLoad(World world) {
 		Preconditions.checkNotNull(world, "world");
 		
-		this.worlds.remove(world.getUniqueId()).stop();
+		this.worlds.remove(world.getUniqueId());
 	}
 }

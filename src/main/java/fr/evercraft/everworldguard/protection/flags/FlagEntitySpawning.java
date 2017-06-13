@@ -130,7 +130,7 @@ public class FlagEntitySpawning extends EntityTemplateFlag {
 		// Bypass
 		if (this.plugin.getProtectionService().hasBypass(player)) return;
 		
-		WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateWorld(player.getWorld());
+		WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateEWorld(player.getWorld());
 		Entity entity = player.getWorld().createEntity(type.get(), event.getInteractionPoint().get());
 		Location<World> location = new Location<World>(player.getWorld(), event.getInteractionPoint().get());
 		

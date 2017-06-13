@@ -20,6 +20,8 @@ import com.flowpowered.math.vector.Vector3i;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableList.Builder;
 import com.google.common.collect.Sets;
 
@@ -47,10 +49,19 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public abstract class EProtectedRegion implements ProtectedRegion {
+	
+	// MultiThreading
+	private final ReadWriteLock lock;
+	private final Lock write_lock;
+	private final Lock read_lock;
 
 	private final EWWorld world;
 	
@@ -72,6 +83,11 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 		Preconditions.checkNotNull(world);
 		Preconditions.checkNotNull(identifier);
 		Preconditions.checkNotNull(name);
+		
+		// MultiThreading
+		this.lock = new ReentrantReadWriteLock();
+		this.write_lock = this.lock.writeLock();
+		this.read_lock = this.lock.readLock();
 
 		this.world = world;
 		this.identifier = identifier;
@@ -129,37 +145,77 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 	
 	@Override
-	public void setName(String name) throws RegionIdentifierException {
+	public CompletableFuture<Boolean> setName(final String name) throws RegionIdentifierException {
 		Preconditions.checkNotNull(name, "name");
 		
-		if (this.name.equals(name)) return;
+		if (this.name.equals(name)) return CompletableFuture.completedFuture(false);
 		if (!this.world.rename(this, name)) throw new RegionIdentifierException();
-		
-		if (!this.isTransient()) this.world.getStorage().setName(this, name);
-		this.name = name;
+
+		return this.world.getStorage().setName(this, name)
+			.thenApply(value -> {
+				if (value) return false;
+				
+				this.write_lock.lock();
+				try {
+					this.name = name;
+				} finally {
+					this.write_lock.unlock();
+				}
+				return true;
+			});
 	}
 	
 	@Override
-	public void setPriority(int priority) {
-		if (this.priority == priority) return;
+	public CompletableFuture<Boolean> setPriority(int priority) {
+		if (this.priority == priority) CompletableFuture.completedFuture(false);
 		
-		if (!this.isTransient()) this.world.getStorage().setPriority(this, priority);
-		this.priority = priority;
+		return this.world.getStorage().setPriority(this, priority)
+			.thenApply(value -> {
+				if (value) return false;
+				
+				this.write_lock.lock();
+				try {
+					this.priority = priority;
+				} finally {
+					this.write_lock.unlock();
+				}
+				return true;
+			});
 
 	}
 	
-	@Override
-	public void clearParent() {
-		if (this.parent == null) return;
+	public void clearParent(boolean value) {
+		if (value) {
+			this.clearParent();
+			return;
+		}
 		
-		if (!this.isTransient()) this.world.getStorage().setParent(this, null);
 		this.parent = null;
 	}
 	
 	@Override
-	public void setParent(@Nullable ProtectedRegion parent) throws CircularInheritanceException {
-		if (parent == null) this.clearParent();
-		if (parent.equals(this.parent)) return;
+	public CompletableFuture<Boolean> clearParent() {
+		if (this.parent == null) CompletableFuture.completedFuture(false);
+		
+		return this.world.getStorage().setParent(this, null)
+			.thenApply(value -> {
+				if (value) return false;
+				
+				this.write_lock.lock();
+				try {
+					this.parent = null;
+				} finally {
+					this.write_lock.unlock();
+				}
+				return true;
+			});
+	}
+	
+	@Override
+	public CompletableFuture<Boolean> setParent(ProtectedRegion parent) throws CircularInheritanceException {
+		Preconditions.checkNotNull(parent, "parent");
+		
+		if (parent.equals(this.parent)) CompletableFuture.completedFuture(false);
 		if (parent == this) throw new CircularInheritanceException();
 
 		ProtectedRegion curParent = this.parent;
@@ -168,127 +224,218 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 			curParent = curParent.getParent().orElse(null);
 		}
 
-		if (!this.isTransient()) this.world.getStorage().setParent(this, parent);
-		this.parent = parent;
+		return this.world.getStorage().setParent(this, parent)
+			.thenApply(value -> {
+				if (value) return false;
+				
+				this.write_lock.lock();
+				try {
+					this.parent = parent;
+				} finally {
+					this.write_lock.unlock();
+				}
+				return true;
+			});
 	}
 	
 	@Override
-	public Set<UUID> addPlayerOwner(Set<UUID> players) {
+	public CompletableFuture<Set<UUID>> addPlayerOwner(Set<UUID> players) {
 		Preconditions.checkNotNull(players, "players");
 		
 		Set<UUID> difference = Sets.difference(players, this.getOwners().getPlayers());
-		if (difference.isEmpty()) return difference;
+		if (difference.isEmpty()) return CompletableFuture.completedFuture(ImmutableSet.of());
 		
-		if (!this.isTransient()) this.world.getStorage().addOwnerPlayer(this, difference);
-		difference.forEach(player -> this.owners.addPlayer(player));
-		return difference;
+		return this.world.getStorage().addOwnerPlayer(this, difference)
+			.thenApply(value -> {
+				if (value) return difference;
+				
+				this.write_lock.lock();
+				try {
+					difference.forEach(player -> this.owners.addPlayer(player));
+				} finally {
+					this.write_lock.unlock();
+				}
+				return difference;
+			});
 	}
 
 	@Override
-	public Set<UUID> removePlayerOwner(Set<UUID> players) {
+	public CompletableFuture<Set<UUID>> removePlayerOwner(Set<UUID> players) {
 		Preconditions.checkNotNull(players, "players");
 		
 		Set<UUID> intersection = Sets.intersection(players, this.getOwners().getPlayers());
-		if (intersection.isEmpty()) return intersection;
+		if (intersection.isEmpty()) return CompletableFuture.completedFuture(ImmutableSet.of());
 		
-		if (!this.isTransient()) this.world.getStorage().removeOwnerPlayer(this, intersection);
-		intersection.forEach(player -> this.owners.removePlayer(player));
-		return intersection;
+		return this.world.getStorage().removeOwnerPlayer(this, intersection)
+			.thenApply(value -> {
+				if (value) return intersection;
+				
+				this.write_lock.lock();
+				try {
+					intersection.forEach(player -> this.owners.removePlayer(player));
+				} finally {
+					this.write_lock.unlock();
+				}
+				return intersection;
+			});
 	}
 	
 	@Override
-	public Set<String> addGroupOwner(Set<String> groups) {
+	public CompletableFuture<Set<String>> addGroupOwner(Set<String> groups) {
 		Preconditions.checkNotNull(groups, "groups");
 		
 		Set<String> difference = Sets.difference(groups, this.getOwners().getGroups());
-		if (difference.isEmpty()) return difference;
+		if (difference.isEmpty()) return CompletableFuture.completedFuture(ImmutableSet.of());
 		
-		if (!this.isTransient()) this.world.getStorage().addOwnerGroup(this, difference);
-		difference.forEach(subject -> this.owners.addGroup(subject));
-		return difference;
+		return this.world.getStorage().addOwnerGroup(this, difference)
+			.thenApply(value -> {
+				if (value) return difference;
+				
+				this.write_lock.lock();
+				try {
+					difference.forEach(subject -> this.owners.addGroup(subject));
+				} finally {
+					this.write_lock.unlock();
+				}
+				return difference;
+			});
 	}
 
 	@Override
-	public Set<String> removeGroupOwner(Set<String> groups) {
+	public CompletableFuture<Set<String>> removeGroupOwner(Set<String> groups) {
 		Preconditions.checkNotNull(groups, "groups");
 		
 		Set<String> intersection = Sets.intersection(groups, this.getOwners().getGroups());
-		if (intersection.isEmpty()) return intersection;
+		if (intersection.isEmpty()) return CompletableFuture.completedFuture(ImmutableSet.of());
 		
-		if (!this.isTransient()) this.world.getStorage().removeOwnerGroup(this, intersection);
-		intersection.forEach(subject -> this.owners.removeGroup(subject));
-		return intersection;
+		return this.world.getStorage().removeOwnerGroup(this, intersection)
+			.thenApply(value -> {
+				if (value) return intersection;
+				
+				this.write_lock.lock();
+				try {
+					intersection.forEach(subject -> this.owners.removeGroup(subject));
+				} finally {
+					this.write_lock.unlock();
+				}
+				return intersection;
+			});
 	}
 	
 	@Override
-	public Set<UUID> addPlayerMember(Set<UUID> players) {
+	public CompletableFuture<Set<UUID>> addPlayerMember(Set<UUID> players) {
 		Preconditions.checkNotNull(players, "players");
 		
 		Set<UUID> difference = Sets.difference(players, this.getMembers().getPlayers());
-		if (difference.isEmpty()) return difference;
+		if (difference.isEmpty()) return CompletableFuture.completedFuture(ImmutableSet.of());
 		
-		if (!this.isTransient()) this.world.getStorage().addMemberPlayer(this, difference);
-		difference.forEach(player -> this.members.addPlayer(player));
-		return difference;
+		return this.world.getStorage().addMemberPlayer(this, difference)
+			.thenApply(value -> {
+				if (value) return difference;
+				
+				this.write_lock.lock();
+				try {
+					difference.forEach(player -> this.members.addPlayer(player));
+				} finally {
+					this.write_lock.unlock();
+				}
+				return difference;
+			});
 	}
 
 	@Override
-	public Set<UUID> removePlayerMember(Set<UUID> players) {
+	public CompletableFuture<Set<UUID>> removePlayerMember(Set<UUID> players) {
 		Preconditions.checkNotNull(players, "players");
 		
 		Set<UUID> intersection = Sets.intersection(players, this.getMembers().getPlayers());
-		if (intersection.isEmpty()) return intersection;
+		if (intersection.isEmpty()) return CompletableFuture.completedFuture(ImmutableSet.of());
 		
-		if (!this.isTransient()) this.world.getStorage().removeMemberPlayer(this, intersection);
-		intersection.forEach(player -> this.members.removePlayer(player));
-		return intersection;
+		return this.world.getStorage().removeMemberPlayer(this, intersection)
+			.thenApply(value -> {
+				if (value) return intersection;
+				
+				this.write_lock.lock();
+				try {
+					intersection.forEach(player -> this.members.removePlayer(player));
+				} finally {
+					this.write_lock.unlock();
+				}
+				return intersection;
+			});
 	}
 	
 	@Override
-	public Set<String> addGroupMember(Set<String> groups) {
+	public CompletableFuture<Set<String>> addGroupMember(Set<String> groups) {
 		Preconditions.checkNotNull(groups, "groups");
 		
 		Set<String> difference = Sets.difference(groups, this.getMembers().getGroups());
-		if (difference.isEmpty()) return difference;
+		if (difference.isEmpty()) return CompletableFuture.completedFuture(ImmutableSet.of());
 		
-		if (!this.isTransient()) this.world.getStorage().addMemberGroup(this, difference);
-		difference.forEach(subject -> this.members.addGroup(subject));
-		return difference;
+		return this.world.getStorage().addMemberGroup(this, difference)
+			.thenApply(value -> {
+				if (value) return difference;
+				
+				this.write_lock.lock();
+				try {
+					difference.forEach(subject -> this.members.addGroup(subject));
+				} finally {
+					this.write_lock.unlock();
+				}
+				return difference;
+			});
 	}
 
 	@Override
-	public Set<String> removeGroupMember(Set<String> groups) {
+	public CompletableFuture<Set<String>> removeGroupMember(Set<String> groups) {
 		Preconditions.checkNotNull(groups, "groups");
 		
 		Set<String> intersection = Sets.intersection(groups, this.getMembers().getGroups());
-		if (intersection.isEmpty()) return intersection;
+		if (intersection.isEmpty()) return CompletableFuture.completedFuture(ImmutableSet.of());
 		
-		if (!this.isTransient()) this.world.getStorage().removeMemberGroup(this, intersection);
-		intersection.forEach(subject -> this.members.removeGroup(subject));
-		return intersection;
+		return this.world.getStorage().removeMemberGroup(this, intersection)
+			.thenApply(value -> {
+				if (value) return intersection;
+				
+				this.write_lock.lock();
+				try {
+					intersection.forEach(subject -> this.members.removeGroup(subject));
+				} finally {
+					this.write_lock.unlock();
+				}
+				return intersection;
+			});
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public <V> void setFlag(Flag<V> flag, Group group, @Nullable V value) {
+	public <V> CompletableFuture<Boolean> setFlag(Flag<V> flag, Group group, @Nullable V value) {
 		Preconditions.checkNotNull(flag);
 		Preconditions.checkNotNull(group);
 		
-		EFlagValue<V> flag_value = (EFlagValue) this.flags.get(flag);
-		if (flag_value == null && value == null) return;
+		if (this.flags.get(flag) == null && value == null) return CompletableFuture.completedFuture(false);
 		
-		if (!this.isTransient()) this.world.getStorage().setFlag(this, flag, group, value);
-		
-		if (flag_value == null) {	
-			flag_value = new EFlagValue<V>();
-			flag_value.set(group, value);
-			this.flags.put(flag, flag_value);
-		} else {
-			flag_value.set(group, value);
-			if (flag_value.isEmpty()) {
-				this.flags.remove(flag);
-			}
-		}
+		return this.world.getStorage().setFlag(this, flag, group, value)
+			.thenApply(result -> {
+				if (!result) return false;
+				
+				this.write_lock.lock();
+				try {
+					EFlagValue<V> flag_value = (EFlagValue) this.flags.get(flag);
+					if (flag_value == null) {	
+						flag_value = new EFlagValue<V>();
+						flag_value.set(group, value);
+						this.flags.put(flag, flag_value);
+					} else {
+						flag_value.set(group, value);
+						if (flag_value.isEmpty()) {
+							this.flags.remove(flag);
+						}
+					}
+				} finally {
+					this.write_lock.unlock();
+				}
+				return true;
+			});
 	}
 	
 	
@@ -320,7 +467,12 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	
 	@Override
 	public String getName() {
-		return this.name;
+		this.read_lock.lock();
+		try {
+			return this.name;
+		} finally {
+			this.read_lock.unlock();
+		}
 	}
 	
 	@Override
@@ -340,29 +492,45 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	
 	@Override
 	public int getPriority() {
-		return this.priority;
+		this.read_lock.lock();
+		try {
+			return this.priority;
+		} finally {
+			this.read_lock.unlock();
+		}
 	}
 
 	@Override
 	public Optional<ProtectedRegion> getParent() {
-		return Optional.ofNullable(this.parent);
+		this.read_lock.lock();
+		try {
+			return Optional.ofNullable(this.parent);
+		} finally {
+			this.read_lock.unlock();
+		}
 	}
 	
 	@Override
 	public List<ProtectedRegion> getHeritage() throws CircularInheritanceException {
 		if (this.parent == null) return ImmutableList.of();
 		
-		Builder<ProtectedRegion> parents = ImmutableList.builder();
-		
-		ProtectedRegion curParent = this.parent;
-		while (curParent != null) {
-			if (curParent == this) throw new CircularInheritanceException();
+		this.read_lock.lock();
+		try {
+			Builder<ProtectedRegion> parents = ImmutableList.builder();
 			
-			parents.add(curParent);
-			curParent = curParent.getParent().orElse(null);
+			ProtectedRegion curParent = this.parent;
+			while (curParent != null) {
+				if (curParent == this) throw new CircularInheritanceException();
+				
+				parents.add(curParent);
+				curParent = curParent.getParent().orElse(null);
+			}
+			
+			this.read_lock.lock();
+			return parents.build();
+		} finally {
+			this.read_lock.unlock();
 		}
-		
-		return parents.build();
 	}
 	
 	@Override
@@ -375,32 +543,40 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 		Preconditions.checkNotNull(player, "player");
 		Preconditions.checkNotNull(contexts, "contexts");
 
-		if (this.owners.contains(player, contexts)) return true;
-
-		ProtectedRegion curParent = this.parent;
-		while (curParent != null) {
-			if (curParent.getOwners().contains(player)) return true;
-
-			curParent = curParent.getParent().orElse(null);
+		this.read_lock.lock();
+		try {
+			if (this.owners.contains(player, contexts)) return true;
+	
+			ProtectedRegion curParent = this.parent;
+			while (curParent != null) {
+				if (curParent.getOwners().contains(player)) return true;
+	
+				curParent = curParent.getParent().orElse(null);
+			}
+			return false;
+		} finally {
+			this.read_lock.unlock();
 		}
-
-		return false;
 	}
 	
 	@Override
 	public boolean isGroupOwner(Subject group) {
 		Preconditions.checkNotNull(group, "group");
 
-		if (this.owners.containsGroup(group.getIdentifier())) return true;
-
-		ProtectedRegion curParent = this.parent;
-		while (curParent != null) {
-			if (curParent.getOwners().containsGroup(group.getIdentifier())) return true;
-
-			curParent = curParent.getParent().orElse(null);
+		this.read_lock.lock();
+		try {
+			if (this.owners.containsGroup(group.getIdentifier())) return true;
+	
+			ProtectedRegion curParent = this.parent;
+			while (curParent != null) {
+				if (curParent.getOwners().containsGroup(group.getIdentifier())) return true;
+	
+				curParent = curParent.getParent().orElse(null);
+			}
+			return false;
+		} finally {
+			this.read_lock.unlock();
 		}
-
-		return false;
 	}
 	
 	@Override
@@ -412,38 +588,51 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	public boolean isPlayerMember(User player, Set<Context> contexts) {
 		Preconditions.checkNotNull(player, "player");
 		Preconditions.checkNotNull(contexts, "contexts");
-
-		if (this.members.contains(player, contexts)) return true;
-
-		ProtectedRegion curParent = this.parent;
-		while (curParent != null) {
-			if (curParent.getMembers().contains(player, contexts)) return true;
-
-			curParent = curParent.getParent().orElse(null);
+		
+		this.read_lock.lock();
+		try {
+			if (this.members.contains(player, contexts)) return true;
+	
+			ProtectedRegion curParent = this.parent;
+			while (curParent != null) {
+				if (curParent.getMembers().contains(player, contexts)) return true;
+	
+				curParent = curParent.getParent().orElse(null);
+			}
+			return false;
+		} finally {
+			this.read_lock.unlock();
 		}
-
-		return false;
 	}
 
 	@Override
 	public boolean isGroupMember(Subject group) {
 		Preconditions.checkNotNull(group);
 
-		if (this.members.containsGroup(group.getIdentifier())) return true;
-		
-		ProtectedRegion curParent = this.parent;
-		while (curParent != null) {
-			if (curParent.getMembers().containsGroup(group.getIdentifier())) return true;
-
-			curParent = curParent.getParent().orElse(null);
+		this.read_lock.lock();
+		try {
+			if (this.members.containsGroup(group.getIdentifier())) return true;
+			
+			ProtectedRegion curParent = this.parent;
+			while (curParent != null) {
+				if (curParent.getMembers().containsGroup(group.getIdentifier())) return true;
+	
+				curParent = curParent.getParent().orElse(null);
+			}
+			return false;
+		} finally {
+			this.read_lock.unlock();
 		}
-
-		return false;
 	}
 	
 	@Override
 	public boolean hasMembersOrOwners() {
-		return this.owners.size() > 0 || this.members.size() > 0;
+		this.read_lock.lock();
+		try {
+			return this.owners.size() > 0 || this.members.size() > 0;
+		} finally {
+			this.read_lock.unlock();
+		}
 	}
 	
 	@Override
@@ -451,40 +640,55 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 		Preconditions.checkNotNull(player, "player");
 		Preconditions.checkNotNull(contexts, "contexts");
 
-		if (this.owners.contains(player)) return true;
-		if (this.members.contains(player)) return true;
-
-		ProtectedRegion curParent = this.parent;
-		while (curParent != null) {
-			if (curParent.getOwners().contains(player)) return true;
-			if (curParent.getMembers().contains(player)) return true;
-
-			curParent = curParent.getParent().orElse(null);
+		this.read_lock.lock();
+		try {
+			if (this.owners.contains(player)) return true;
+			if (this.members.contains(player)) return true;
+	
+			ProtectedRegion curParent = this.parent;
+			while (curParent != null) {
+				if (curParent.getOwners().contains(player)) return true;
+				if (curParent.getMembers().contains(player)) return true;
+	
+				curParent = curParent.getParent().orElse(null);
+			}
+			return false;
+		} finally {
+			this.read_lock.unlock();
 		}
-		return false;
 	}
 	
 	@Override
 	public boolean isOwnerOrMember(Subject group) {
 		Preconditions.checkNotNull(group, "group");
 
-		if (this.owners.containsGroup(group.getIdentifier())) return true;
-		if (this.members.containsGroup(group.getIdentifier())) return true;
-
-		ProtectedRegion curParent = this.parent;
-		while (curParent != null) {
-			if (curParent.getOwners().containsGroup(group.getIdentifier())) return true;
-			if (curParent.getMembers().containsGroup(group.getIdentifier())) return true;
-
-			curParent = curParent.getParent().orElse(null);
+		this.read_lock.lock();
+		try {
+			if (this.owners.containsGroup(group.getIdentifier())) return true;
+			if (this.members.containsGroup(group.getIdentifier())) return true;
+	
+			ProtectedRegion curParent = this.parent;
+			while (curParent != null) {
+				if (curParent.getOwners().containsGroup(group.getIdentifier())) return true;
+				if (curParent.getMembers().containsGroup(group.getIdentifier())) return true;
+	
+				curParent = curParent.getParent().orElse(null);
+			}
+			return false;
+		} finally {
+			this.read_lock.unlock();
 		}
-		return false;
 	}
 	
 	public ProtectedRegion.Group getGroup(User subject, Set<Context> contexts) {
-		if (this.isPlayerOwner(subject, contexts)) return ProtectedRegion.Groups.OWNER;
-		if (this.isPlayerMember(subject, contexts)) return ProtectedRegion.Groups.MEMBER;
-		return ProtectedRegion.Groups.DEFAULT;
+		this.read_lock.lock();
+		try {
+			if (this.isPlayerOwner(subject, contexts)) return ProtectedRegion.Groups.OWNER;
+			if (this.isPlayerMember(subject, contexts)) return ProtectedRegion.Groups.MEMBER;
+			return ProtectedRegion.Groups.DEFAULT;
+		} finally {
+			this.read_lock.unlock();
+		}
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -492,34 +696,47 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	public <V> FlagValue<V> getFlag(Flag<V> flag) {
 		Preconditions.checkNotNull(flag);
 
-		FlagValue<?> value = this.flags.get(flag);
-		
-		if (value == null) return FlagValue.empty();
-		return (FlagValue) value;
+		this.read_lock.lock();
+		try {
+			FlagValue<?> value = this.flags.get(flag);
+			
+			if (value == null) return FlagValue.empty();
+			return (FlagValue) value;
+		} finally {
+			this.read_lock.unlock();
+		}
 	}
 	
 	@Override
 	public <V> Optional<V> getFlagInherit(Flag<V> flag, Group group) {
 		Preconditions.checkNotNull(flag);
 
-		Optional<V> value = this.getFlag(flag).getInherit(group);
-		if (value.isPresent()) return value;
-
-		ProtectedRegion curParent = this.parent;
-		while (curParent != null) {
-			value = curParent.getFlag(flag).getInherit(group);
+		this.read_lock.lock();
+		try {
+			Optional<V> value = this.getFlag(flag).getInherit(group);
 			if (value.isPresent()) return value;
-			
-			curParent = curParent.getParent().orElse(null);
+	
+			ProtectedRegion curParent = this.parent;
+			while (curParent != null) {
+				value = curParent.getFlag(flag).getInherit(group);
+				if (value.isPresent()) return value;
+				
+				curParent = curParent.getParent().orElse(null);
+			}
+			return Optional.empty();
+		} finally {
+			this.read_lock.unlock();
 		}
-		
-		return Optional.empty();
 	}
 	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public Map<Flag<?>, FlagValue<?>> getFlags() {
-		return (Map) this.flags;
+		this.read_lock.lock();
+		try {
+			return ImmutableMap.copyOf(this.flags);
+		} finally {
+			this.read_lock.unlock();
+		}
 	}
 	
 	/*

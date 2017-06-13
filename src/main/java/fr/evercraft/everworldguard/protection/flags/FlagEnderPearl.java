@@ -72,7 +72,7 @@ public class FlagEnderPearl extends StateFlag {
 		// Bypass
 		if (this.plugin.getProtectionService().hasBypass(player)) return;
 		
-		WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateWorld(player.getWorld());
+		WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateEWorld(player.getWorld());
 		if (world.getRegions(player.getLocation().getPosition()).getFlag(player, player.getLocation(), this).equals(State.DENY)) {
 			event.setCancelled(true);
 			this.sendMessage(player, player.getLocation().getPosition().toInt());

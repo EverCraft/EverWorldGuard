@@ -109,7 +109,7 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 			return false;
 		}
 		
-		if (this.plugin.getProtectionService().getOrCreateWorld(player.getWorld()).getRegion(region_id.get()).isPresent()) {
+		if (this.plugin.getProtectionService().getOrCreateEWorld(player.getWorld()).getRegion(region_id.get()).isPresent()) {
 			EWMessages.REGION_DEFINE_ERROR_IDENTIFIER_EQUALS.sender()
 				.replace("<region>", region_id.get())
 				.sendTo(player);
@@ -180,14 +180,32 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 				.sendTo(player);
 			return false;
 		}
-		ProtectedRegion.Cuboid region = null;
 		try {
-			region = this.plugin.getProtectionService().getOrCreateWorld(player.getWorld()).createRegionCuboid(
-					region_id, 
-					selection.get().getPrimaryPosition(), 
-					selection.get().getSecondaryPosition(), 
-					players, 
-					groups);
+			this.plugin.getProtectionService().getOrCreateEWorld(player.getWorld()).createRegionCuboid(region_id, 
+					selection.get().getPrimaryPosition(), selection.get().getSecondaryPosition(), players, groups)
+				.thenApply(region -> {
+					Vector3i min = region.getMinimumPoint();
+					Vector3i max = region.getMaximumPoint();
+					Map<String, EReplace<?>> replaces = new HashMap<String, EReplace<?>>();
+					replaces.put("<min_x>", EReplace.of(String.valueOf(min.getX())));
+					replaces.put("<min_y>", EReplace.of(String.valueOf(min.getY())));
+					replaces.put("<min_z>", EReplace.of(String.valueOf(min.getZ())));
+					replaces.put("<max_x>", EReplace.of(String.valueOf(max.getX())));
+					replaces.put("<max_y>", EReplace.of(String.valueOf(max.getY())));
+					replaces.put("<max_z>", EReplace.of(String.valueOf(max.getZ())));
+					replaces.put("<region>", EReplace.of(region.getName()));
+					replaces.put("<type>", EReplace.of(region.getType().getNameFormat()));
+					
+					EWMessages.REGION_DEFINE_CUBOID_CREATE.sender()
+						.replaceString(replaces)
+						.replace("<points>", EWMessages.REGION_DEFINE_CUBOID_POINTS.getFormat()
+								.toText2(replaces).toBuilder()
+								.onHover(TextActions.showText(EWMessages.REGION_DEFINE_CUBOID_POINTS_HOVER.getFormat()
+										.toText2(replaces)))
+								.build())
+						.sendTo(player);
+					return true;
+				});
 		} catch (RegionIdentifierException e) {
 			EWMessages.REGION_DEFINE_ERROR_IDENTIFIER_INVALID.sender()
 				.replace("<region>", region_id)
@@ -195,27 +213,6 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 				.sendTo(player);
 			return false;
 		}
-		
-		Vector3i min = region.getMinimumPoint();
-		Vector3i max = region.getMaximumPoint();
-		Map<String, EReplace<?>> replaces = new HashMap<String, EReplace<?>>();
-		replaces.put("<min_x>", EReplace.of(String.valueOf(min.getX())));
-		replaces.put("<min_y>", EReplace.of(String.valueOf(min.getY())));
-		replaces.put("<min_z>", EReplace.of(String.valueOf(min.getZ())));
-		replaces.put("<max_x>", EReplace.of(String.valueOf(max.getX())));
-		replaces.put("<max_y>", EReplace.of(String.valueOf(max.getY())));
-		replaces.put("<max_z>", EReplace.of(String.valueOf(max.getZ())));
-		replaces.put("<region>", EReplace.of(region.getName()));
-		replaces.put("<type>", EReplace.of(region.getType().getNameFormat()));
-		
-		EWMessages.REGION_DEFINE_CUBOID_CREATE.sender()
-			.replaceString(replaces)
-			.replace("<points>", EWMessages.REGION_DEFINE_CUBOID_POINTS.getFormat()
-					.toText2(replaces).toBuilder()
-					.onHover(TextActions.showText(EWMessages.REGION_DEFINE_CUBOID_POINTS_HOVER.getFormat()
-							.toText2(replaces)))
-					.build())
-			.sendTo(player);
 		return true;
 	}
 	
@@ -229,9 +226,43 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 			return false;
 		}
 		
-		ProtectedRegion.Polygonal region = null;
 		try {
-			region = this.plugin.getProtectionService().getOrCreateWorld(player.getWorld()).createRegionPolygonal(region_id, selector.get().getPositions(), players, groups);
+			this.plugin.getProtectionService().getOrCreateEWorld(player.getWorld()).createRegionPolygonal(region_id, selector.get().getPositions(), players, groups)
+				.thenApply(region -> {
+					Vector3i min = region.getMinimumPoint();
+					Vector3i max = region.getMaximumPoint();
+					List<Text> positions_text = new ArrayList<Text>();
+					Map<String, EReplace<?>> replaces = new HashMap<String, EReplace<?>>();
+					replaces.put("<min_x>", EReplace.of(String.valueOf(min.getX())));
+					replaces.put("<min_y>", EReplace.of(String.valueOf(min.getY())));
+					replaces.put("<min_z>", EReplace.of(String.valueOf(min.getZ())));
+					replaces.put("<max_x>", EReplace.of(String.valueOf(max.getX())));
+					replaces.put("<max_y>", EReplace.of(String.valueOf(max.getY())));
+					replaces.put("<max_z>", EReplace.of(String.valueOf(max.getZ())));
+					replaces.put("<region>", EReplace.of(region.getName()));
+					replaces.put("<type>", EReplace.of(region.getType().getNameFormat()));
+					
+					int num = 1;
+					for(Vector3i pos : region.getPoints()) {
+						positions_text.add(EWMessages.REGION_DEFINE_POLYGONAL_POINTS_HOVER_LINE.getFormat()
+								.toText("<num>", String.valueOf(num),
+										"<x>", String.valueOf(pos.getX()),
+										"<y>", String.valueOf(pos.getY()),
+										"<z>", String.valueOf(pos.getZ())));
+						num++;
+					}				
+					replaces.put("<positions>", EReplace.of(Text.joinWith(EWMessages.REGION_DEFINE_POLYGONAL_POINTS_HOVER_JOIN.getText(), positions_text)));
+					
+					EWMessages.REGION_DEFINE_POLYGONAL_CREATE.sender()
+						.replaceString(replaces)
+						.replace("<points>", EWMessages.REGION_DEFINE_POLYGONAL_POINTS.getFormat()
+								.toText2(replaces).toBuilder()
+								.onHover(TextActions.showText(EWMessages.REGION_DEFINE_POLYGONAL_POINTS_HOVER.getFormat()
+										.toText2(replaces)))
+								.build())
+						.sendTo(player);
+					return true;
+				});
 		} catch (RegionIdentifierException e) {
 			EWMessages.REGION_DEFINE_ERROR_IDENTIFIER_INVALID.sender()
 				.replace("<region>", region_id)
@@ -239,39 +270,6 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 				.sendTo(player);
 			return false;
 		}
-		
-		Vector3i min = region.getMinimumPoint();
-		Vector3i max = region.getMaximumPoint();
-		List<Text> positions_text = new ArrayList<Text>();
-		Map<String, EReplace<?>> replaces = new HashMap<String, EReplace<?>>();
-		replaces.put("<min_x>", EReplace.of(String.valueOf(min.getX())));
-		replaces.put("<min_y>", EReplace.of(String.valueOf(min.getY())));
-		replaces.put("<min_z>", EReplace.of(String.valueOf(min.getZ())));
-		replaces.put("<max_x>", EReplace.of(String.valueOf(max.getX())));
-		replaces.put("<max_y>", EReplace.of(String.valueOf(max.getY())));
-		replaces.put("<max_z>", EReplace.of(String.valueOf(max.getZ())));
-		replaces.put("<region>", EReplace.of(region.getName()));
-		replaces.put("<type>", EReplace.of(region.getType().getNameFormat()));
-		
-		int num = 1;
-		for(Vector3i pos : region.getPoints()) {
-			positions_text.add(EWMessages.REGION_DEFINE_POLYGONAL_POINTS_HOVER_LINE.getFormat()
-					.toText("<num>", String.valueOf(num),
-							"<x>", String.valueOf(pos.getX()),
-							"<y>", String.valueOf(pos.getY()),
-							"<z>", String.valueOf(pos.getZ())));
-			num++;
-		}				
-		replaces.put("<positions>", EReplace.of(Text.joinWith(EWMessages.REGION_DEFINE_POLYGONAL_POINTS_HOVER_JOIN.getText(), positions_text)));
-		
-		EWMessages.REGION_DEFINE_POLYGONAL_CREATE.sender()
-			.replaceString(replaces)
-			.replace("<points>", EWMessages.REGION_DEFINE_POLYGONAL_POINTS.getFormat()
-					.toText2(replaces).toBuilder()
-					.onHover(TextActions.showText(EWMessages.REGION_DEFINE_POLYGONAL_POINTS_HOVER.getFormat()
-							.toText2(replaces)))
-					.build())
-			.sendTo(player);
 		return true;
 	}
 	
@@ -282,10 +280,15 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 				.sendTo(player);
 		}
 		
-		
-		ProtectedRegion.Template region = null;
 		try {
-			region = this.plugin.getProtectionService().getOrCreateWorld(player.getWorld()).createRegionTemplate(region_id, players, groups);
+			this.plugin.getProtectionService().getOrCreateEWorld(player.getWorld()).createRegionTemplate(region_id, players, groups)
+				.thenApply(region -> {
+					EWMessages.REGION_DEFINE_TEMPLATE_CREATE.sender()
+						.replace("<region>", region.getName())
+						.replace("<type>", region.getType().getNameFormat())
+						.sendTo(player);
+					return true;
+				});
 		} catch (RegionIdentifierException e) {
 			EWMessages.REGION_DEFINE_ERROR_IDENTIFIER_INVALID.sender()
 				.replace("<region>", region_id)
@@ -293,11 +296,6 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 				.sendTo(player);
 			return false;
 		}
-		
-		EWMessages.REGION_DEFINE_TEMPLATE_CREATE.sender()
-			.replace("<region>", region.getName())
-			.replace("<type>", region.getType().getNameFormat())
-			.sendTo(player);
 		return true;
 	}
 }

@@ -81,7 +81,7 @@ public class FlagCommand extends StringsFlag {
 		// Bypass
 		if (this.plugin.getProtectionService().hasBypass(player)) return;
 		
-		WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateWorld(player.getWorld());
+		WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateEWorld(player.getWorld());
 		EntryFlagValue<String> flag = world.getRegions(player.getLocation().getPosition()).getFlag(player, player.getLocation(), this);
 		
 		Optional<? extends CommandMapping> optCommand = this.plugin.getGame().getCommandManager().get(event.getCommand(), player);

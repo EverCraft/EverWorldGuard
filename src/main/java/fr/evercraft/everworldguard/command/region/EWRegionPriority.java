@@ -60,7 +60,7 @@ public class EWRegionPriority extends ESubCommand<EverWorldGuard> {
 					return Arrays.asList();
 				}
 				
-				return this.plugin.getProtectionService().getOrCreateWorld(world.get()).getAll().stream()
+				return this.plugin.getProtectionService().getOrCreateEWorld(world.get()).getAll().stream()
 							.map(region -> region.getName())
 							.collect(Collectors.toSet());
 			})
@@ -124,7 +124,7 @@ public class EWRegionPriority extends ESubCommand<EverWorldGuard> {
 			return false;
 		}
 		
-		WorldGuardWorld manager = this.plugin.getProtectionService().getOrCreateWorld(world);
+		WorldGuardWorld manager = this.plugin.getProtectionService().getOrCreateEWorld(world);
 		
 		Optional<ProtectedRegion> region = manager.getRegion(args_string.get(0));
 		// Region introuvable

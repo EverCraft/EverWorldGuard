@@ -87,7 +87,7 @@ public class FlagPotionSplash extends CatalogTypeFlag<PotionEffectType> {
 		// Bypass
 		if (this.plugin.getProtectionService().hasBypass(player)) return;
 		
-		WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateWorld(player.getWorld());
+		WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateEWorld(player.getWorld());
 		for (PotionEffectType potion : potions.get().stream().map(potion -> potion.getType()).collect(Collectors.toSet())) {
 			if (this.getDefault().containsValue(potion) && !world.getRegions(player.getLocation().getPosition()).getFlag(player, player.getLocation(), this).containsValue(potion)) {
 				event.setCancelled(true);

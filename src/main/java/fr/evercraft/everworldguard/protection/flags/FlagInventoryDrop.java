@@ -69,7 +69,7 @@ public class FlagInventoryDrop extends StateFlag {
 		if (player.get(Keys.HEALTH).orElse(0.0) > 0.0) return;
 		
 		Location<World> location = player.getLocation();
-		if (this.plugin.getProtectionService().getOrCreateWorld(player.getWorld()).getRegions(location.getPosition()).getFlag(player, location, this).equals(State.DENY)) {
+		if (this.plugin.getProtectionService().getOrCreateEWorld(player.getWorld()).getRegions(location.getPosition()).getFlag(player, location, this).equals(State.DENY)) {
 			event.setCancelled(true);
 		}
 	}
@@ -81,7 +81,7 @@ public class FlagInventoryDrop extends StateFlag {
 	// Permet de redonner l'inventaire
 	public void onRespawnPlayer(RespawnPlayerEvent event) {
 		Location<World> location = event.getOriginalPlayer().getLocation();
-		if (this.plugin.getProtectionService().getOrCreateWorld(event.getOriginalPlayer().getWorld())
+		if (this.plugin.getProtectionService().getOrCreateEWorld(event.getOriginalPlayer().getWorld())
 				.getRegions(location.getPosition()).getFlag(event.getOriginalPlayer(), location, this).equals(State.ALLOW)) return;
 		
 		Iterator<Inventory> originalInventory = event.getOriginalPlayer().getInventory().query(PlayerInventory.class).slots().iterator();

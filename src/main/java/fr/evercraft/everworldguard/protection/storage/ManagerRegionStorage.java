@@ -19,6 +19,7 @@ package fr.evercraft.everworldguard.protection.storage;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import fr.evercraft.everapi.services.worldguard.Flag;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
@@ -27,114 +28,122 @@ import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.protection.index.EWWorld;
 import fr.evercraft.everworldguard.protection.regions.EProtectedRegion;
 
-public class RegionStorageSql implements RegionStorage {
-	
-	@SuppressWarnings("unused")
+public class ManagerRegionStorage implements RegionStorage {	
 	private final EverWorldGuard plugin;
+	private final EWWorld world;
+	private RegionStorage storage;
 	
-	public RegionStorageSql(EverWorldGuard plugin, EWWorld world) {		
+	public ManagerRegionStorage(EverWorldGuard plugin, EWWorld world) {
 		this.plugin = plugin;
+		this.world = world;
+		
+		if (this.plugin.getDataBase().isEnable()) {
+			this.storage = new RegionStorageSql(this.plugin, this.world);
+		} else {
+			this.storage = new RegionStorageConf(this.plugin, this.world);
+		}
 	}
 
 	@Override
 	public void reload() {
-		// TODO Auto-generated method stub
-		
+		if (this.plugin.getDataBase().isEnable() && !(this.storage instanceof RegionStorageSql)) {
+			this.storage = new RegionStorageSql(this.plugin, this.world);
+		} else if (!this.plugin.getDataBase().isEnable() && !(this.storage instanceof RegionStorageConf)) {
+			this.storage = new RegionStorageConf(this.plugin, this.world);
+		} else {
+			this.storage.reload();
+		}
 	}
 
 	@Override
 	public CompletableFuture<Set<EProtectedRegion>> getAll() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.storage.getAll();
 	}
 
 	@Override
 	public <T> CompletableFuture<Boolean> add(EProtectedRegion region) {
-		// TODO Auto-generated method stub
-		return null;
+		if (region.isTransient()) return CompletableFuture.completedFuture(true);
+		return this.storage.add(region);
 	}
 
 	@Override
 	public CompletableFuture<Boolean> setName(EProtectedRegion region, String identifier) {
-		// TODO Auto-generated method stub
-		return null;
+		if (region.isTransient()) return CompletableFuture.completedFuture(true);
+		return this.storage.setName(region, identifier);
 	}
 
 	@Override
 	public CompletableFuture<Boolean> setPriority(EProtectedRegion region, int priority) {
-		// TODO Auto-generated method stub
-		return null;
+		if (region.isTransient()) return CompletableFuture.completedFuture(true);
+		return this.storage.setPriority(region, priority);
 	}
 
 	@Override
 	public CompletableFuture<Boolean> setParent(EProtectedRegion region, ProtectedRegion parent) {
-		// TODO Auto-generated method stub
-		return null;
+		if (region.isTransient()) return CompletableFuture.completedFuture(true);
+		return this.storage.setParent(region, parent);
 	}
 
 	@Override
 	public <V> CompletableFuture<Boolean> setFlag(EProtectedRegion region, Flag<V> flag, Group group, V value) {
-		// TODO Auto-generated method stub
-		return null;
+		if (region.isTransient()) return CompletableFuture.completedFuture(true);
+		return this.storage.setFlag(region, flag, group, value);
 	}
 
 	@Override
 	public CompletableFuture<Boolean> addOwnerPlayer(EProtectedRegion region, Set<UUID> players) {
-		// TODO Auto-generated method stub
-		return null;
+		if (region.isTransient()) return CompletableFuture.completedFuture(true);
+		return this.storage.addOwnerPlayer(region, players);
 	}
 
 	@Override
 	public CompletableFuture<Boolean> addOwnerGroup(EProtectedRegion region, Set<String> groups) {
-		// TODO Auto-generated method stub
-		return null;
+		if (region.isTransient()) return CompletableFuture.completedFuture(true);
+		return this.storage.addOwnerGroup(region, groups);
 	}
 
 	@Override
 	public CompletableFuture<Boolean> addMemberPlayer(EProtectedRegion region, Set<UUID> players) {
-		// TODO Auto-generated method stub
-		return null;
+		if (region.isTransient()) return CompletableFuture.completedFuture(true);
+		return this.storage.addMemberPlayer(region, players);
 	}
 
 	@Override
 	public CompletableFuture<Boolean> addMemberGroup(EProtectedRegion region, Set<String> groups) {
-		// TODO Auto-generated method stub
-		return null;
+		if (region.isTransient()) return CompletableFuture.completedFuture(true);
+		return this.storage.addMemberGroup(region, groups);
 	}
 
 	@Override
 	public CompletableFuture<Boolean> removeOwnerPlayer(EProtectedRegion region, Set<UUID> players) {
-		// TODO Auto-generated method stub
-		return null;
+		if (region.isTransient()) return CompletableFuture.completedFuture(true);
+		return this.storage.removeOwnerPlayer(region, players);
 	}
 
 	@Override
 	public CompletableFuture<Boolean> removeOwnerGroup(EProtectedRegion region, Set<String> groups) {
-		// TODO Auto-generated method stub
-		return null;
+		if (region.isTransient()) return CompletableFuture.completedFuture(true);
+		return this.storage.removeOwnerGroup(region, groups);
 	}
 
 	@Override
 	public CompletableFuture<Boolean> removeMemberPlayer(EProtectedRegion region, Set<UUID> players) {
-		// TODO Auto-generated method stub
-		return null;
+		if (region.isTransient()) return CompletableFuture.completedFuture(true);
+		return this.storage.removeMemberPlayer(region, players);
 	}
 
 	@Override
 	public CompletableFuture<Boolean> removeMemberGroup(EProtectedRegion region, Set<String> groups) {
-		// TODO Auto-generated method stub
-		return null;
+		if (region.isTransient()) return CompletableFuture.completedFuture(true);
+		return this.storage.removeMemberGroup(region, groups);
 	}
 
-	@Override
 	public CompletableFuture<Boolean> removeClearParent(EProtectedRegion region, Set<EProtectedRegion> regions) {
-		// TODO Auto-generated method stub
-		return null;
+		if (region.isTransient()) return CompletableFuture.completedFuture(true);
+		return this.storage.removeClearParent(region, regions);
 	}
 
-	@Override
 	public CompletableFuture<Boolean> removeRemoveChildren(Set<ProtectedRegion> regions) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.storage.removeRemoveChildren(regions.stream().filter(region -> !region.isTransient()).collect(Collectors.toSet()));
 	}
 }

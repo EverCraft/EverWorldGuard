@@ -25,19 +25,32 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.context.Context;
 import org.spongepowered.api.service.permission.Subject;
 
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class EDomain implements Domain {
+	
+	// MultiThreading
+	private final ReadWriteLock lock;
+	private final Lock write_lock;
+	private final Lock read_lock;
 
 	private final Set<UUID> players;
 	private final Set<String> groups;
 
 	public EDomain() {
-		this.players = new CopyOnWriteArraySet<UUID>();
-		this.groups = new CopyOnWriteArraySet<String>();
+		// MultiThreading
+		this.lock = new ReentrantReadWriteLock();
+		this.write_lock = this.lock.writeLock();
+		this.read_lock = this.lock.readLock();
+		
+		this.players = new HashSet<UUID>();
+		this.groups = new HashSet<String>();
 	}
 
 	public EDomain(EDomain existing) {
@@ -65,44 +78,45 @@ public class EDomain implements Domain {
 	public void addPlayer(UUID uniqueId) {
 		Preconditions.checkNotNull(uniqueId);
 		
-		this.players.add(uniqueId);
+		this.write_lock.lock();
+		try {
+			this.players.add(uniqueId);
+		} finally {
+			this.write_lock.unlock();
+		}
 	}
 	
 	public void removePlayer(UUID uniqueId) {
 		Preconditions.checkNotNull(uniqueId);
 		
-		this.players.remove(uniqueId);
-	}
-	
-	public void addPlayer(User player) {
-		Preconditions.checkNotNull(player);
-		
-		this.players.add(player.getUniqueId());
-	}
-	
-	public void removePlayer(User player) {
-		Preconditions.checkNotNull(player);
-		
-		this.players.remove(player.getUniqueId());
+		this.write_lock.lock();
+		try {
+			this.players.remove(uniqueId);
+		} finally {
+			this.write_lock.unlock();
+		}
 	}
 	
 	@Override
 	public Set<UUID> getPlayers() {
-		return ImmutableSet.copyOf(this.players);
+		this.read_lock.lock();
+		try {
+			return ImmutableSet.copyOf(this.players);
+		} finally {
+			this.read_lock.unlock();
+		}
 	}
 	
 	@Override
 	public boolean containsPlayer(UUID uniqueId) {
 		Preconditions.checkNotNull(uniqueId);
 		
-		return this.players.contains(uniqueId);
-	}
-	
-	@Override
-	public boolean containsPlayer(User player) {
-		Preconditions.checkNotNull(player);
-		
-		return this.players.contains(player.getUniqueId());
+		this.read_lock.lock();
+		try {
+			return this.players.contains(uniqueId);
+		} finally {
+			this.read_lock.unlock();
+		}
 	}
 	
 	/*
@@ -112,44 +126,45 @@ public class EDomain implements Domain {
 	public void addGroup(String name) {
 		Preconditions.checkNotNull(name);
 		
-		this.groups.add(name);
+		this.write_lock.lock();
+		try {
+			this.groups.add(name);
+		} finally {
+			this.write_lock.unlock();
+		}
 	}
 	
 	public void removeGroup(String name) {
 		Preconditions.checkNotNull(name);
 		
-		this.groups.remove(name);
-	}
-	
-	public void addGroup(Subject subject) {
-		Preconditions.checkNotNull(subject);
-		
-		this.groups.add(subject.getIdentifier());
-	}
-	
-	public void removeGroup(Subject subject) {
-		Preconditions.checkNotNull(subject);
-		
-		this.groups.remove(subject.getIdentifier());
+		this.write_lock.lock();
+		try {
+			this.groups.remove(name);
+		} finally {
+			this.write_lock.unlock();
+		}
 	}
 	
 	@Override
 	public Set<String> getGroups() {
-		return ImmutableSet.copyOf(this.groups);
+		this.read_lock.lock();
+		try {
+			return ImmutableSet.copyOf(this.groups);
+		} finally {
+			this.read_lock.unlock();
+		}
 	}
 	
 	@Override
 	public boolean containsGroup(String group) {
 		Preconditions.checkNotNull(group);
 		
-		return this.groups.contains(group);
-	}
-	
-	@Override
-	public boolean containsGroup(Subject subject) {
-		Preconditions.checkNotNull(subject);
-		
-		return this.groups.contains(subject);
+		this.read_lock.lock();
+		try {
+			return this.groups.contains(group);
+		} finally {
+			this.read_lock.unlock();
+		}
 	}
 
 	@Override
@@ -157,27 +172,42 @@ public class EDomain implements Domain {
 		Preconditions.checkNotNull(player);
 		Preconditions.checkNotNull(contexts);
 		
-		if (this.containsPlayer(player)) {
-			return true;
+		this.read_lock.lock();
+		try {
+			if (this.containsPlayer(player.getUniqueId())) {
+				return true;
+			}
+			
+			Optional<Subject> group = player.getParents(contexts)
+				.stream()
+				.filter(subject -> this.groups.contains(subject.getIdentifier()))
+				.findAny();
+			
+			return group.isPresent();
+		} finally {
+			this.read_lock.unlock();
 		}
-		
-		Optional<Subject> group = player.getParents()
-			.stream()
-			.filter(subject -> this.groups.contains(subject.getIdentifier()))
-			.findAny();
-		
-		return group.isPresent();
 	}
 	
 	@Override
 	public int size() {
-		return this.groups.size() + this.players.size();
+		this.read_lock.lock();
+		try {
+			return this.groups.size() + this.players.size();
+		} finally {
+			this.read_lock.unlock();
+		}
 	}
 
 	@Override
 	public void clear() {
-		this.groups.clear();
-		this.players.clear();
+		this.read_lock.lock();
+		try {
+			this.groups.clear();
+			this.players.clear();
+		} finally {
+			this.read_lock.unlock();
+		}
 	}
 	
 	@Override

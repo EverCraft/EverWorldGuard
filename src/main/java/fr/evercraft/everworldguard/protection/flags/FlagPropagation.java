@@ -96,7 +96,7 @@ public class FlagPropagation extends CatalogTypeFlag<BlockType> {
 				Optional<Location<World>> location = transaction.getFinal().getLocation();
 				if (!location.isPresent()) return;
 
-				if(!service.getOrCreateWorld(location.get().getExtent()).getRegions(location.get().getPosition()).getFlagDefault(this).containsValue(typeSource)) {
+				if(!service.getOrCreateEWorld(location.get().getExtent()).getRegions(location.get().getPosition()).getFlagDefault(this).containsValue(typeSource)) {
 					transaction.setValid(false);
 				}
 			});

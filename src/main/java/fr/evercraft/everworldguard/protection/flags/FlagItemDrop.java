@@ -116,7 +116,7 @@ public class FlagItemDrop extends CatalogTypeFlag<ItemType> {
 			ItemType type = ((Item) entity).getItemType();
 			
 			if (this.getDefault().containsValue(type) && 
-					!service.getOrCreateWorld(entity.getWorld()).getRegions(entity.getLocation().getPosition()).getFlag(player, entity.getLocation(), this).containsValue(type)) {
+					!service.getOrCreateEWorld(entity.getWorld()).getRegions(entity.getLocation().getPosition()).getFlag(player, entity.getLocation(), this).containsValue(type)) {
 				return false;
 			}
 			return true;
@@ -179,7 +179,7 @@ public class FlagItemDrop extends CatalogTypeFlag<ItemType> {
 		if (this.plugin.getProtectionService().hasBypass(player)) return;
 		
 		EntryFlagValue<ItemType> flag = this.plugin.getProtectionService()
-			.getOrCreateWorld(player.getWorld())
+			.getOrCreateEWorld(player.getWorld())
 			.getRegions(player.getLocation().getPosition())
 			.getFlag(player, player.getLocation(), this);
 		

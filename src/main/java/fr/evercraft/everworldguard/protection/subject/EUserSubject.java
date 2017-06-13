@@ -78,7 +78,7 @@ public class EUserSubject implements WorldGuardSubject {
 	public void rebuild() {
 		if (this.lastLocation == null) return;
 		
-		this.lastRegions = this.plugin.getProtectionService().getOrCreateWorld(this.lastLocation.getExtent()).getRegions(this.lastLocation.getPosition());
+		this.lastRegions = this.plugin.getProtectionService().getOrCreateEWorld(this.lastLocation.getExtent()).getRegions(this.lastLocation.getPosition());
 	}
 	
 	/*
@@ -116,7 +116,7 @@ public class EUserSubject implements WorldGuardSubject {
 		if (!UtilsLocation.isDifferentBlock(this.lastLocation, toLocation)) return Optional.empty();
 		
 		EPlayer player = this.plugin.getEServer().getEPlayer(player_sponge);
-		SetProtectedRegion toRegions = this.plugin.getProtectionService().getOrCreateWorld(toLocation.getExtent()).getRegions(toLocation.getPosition());
+		SetProtectedRegion toRegions = this.plugin.getProtectionService().getOrCreateEWorld(toLocation.getExtent()).getRegions(toLocation.getPosition());
 		SetProtectedRegion entered = new ESetProtectedRegion(Sets.difference(toRegions.getAll(), this.lastRegions.getAll()));
         SetProtectedRegion exited = new ESetProtectedRegion(Sets.difference(this.lastRegions.getAll(), toRegions.getAll()));
 		
@@ -141,7 +141,7 @@ public class EUserSubject implements WorldGuardSubject {
 		if (!force && !UtilsLocation.isDifferentBlock(this.lastLocation, toLocation)) return;
 
 		EPlayer player = this.plugin.getEServer().getEPlayer(player_sponge);
-		SetProtectedRegion toRegions = this.plugin.getProtectionService().getOrCreateWorld(toLocation.getExtent()).getRegions(toLocation.getPosition());
+		SetProtectedRegion toRegions = this.plugin.getProtectionService().getOrCreateEWorld(toLocation.getExtent()).getRegions(toLocation.getPosition());
 		SetProtectedRegion entered = new ESetProtectedRegion(Sets.difference(toRegions.getAll(), this.lastRegions.getAll()));
         SetProtectedRegion exited = new ESetProtectedRegion(Sets.difference(this.lastRegions.getAll(), toRegions.getAll()));
         

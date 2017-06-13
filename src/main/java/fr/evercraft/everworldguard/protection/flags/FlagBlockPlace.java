@@ -91,7 +91,7 @@ public class FlagBlockPlace extends CatalogTypeFlag<BlockType> {
 		
 		Optional<LocatableBlock> piston = event.getCause().get(NamedCause.SOURCE, LocatableBlock.class);
 		if (piston.isPresent()) {
-			WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateWorld(piston.get().getWorld());
+			WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateEWorld(piston.get().getWorld());
 			
 			// Extend
 			if (event.getCause().containsNamed(NamedCause.PISTON_EXTEND)) {
@@ -223,7 +223,7 @@ public class FlagBlockPlace extends CatalogTypeFlag<BlockType> {
 		if (!this.getDefault().containsValue(type)) return false;
 		
 		Location<World> location = block.getLocation().get();
-		if (!service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, location, this).containsValue(type)) {
+		if (!service.getOrCreateEWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, location, this).containsValue(type)) {
 			transaction.setValid(false);
 			return true;
 		}
@@ -240,7 +240,7 @@ public class FlagBlockPlace extends CatalogTypeFlag<BlockType> {
 		if (!this.getDefault().containsValue(type)) return false;
 		
 		Location<World> location = block.getLocation().get();
-		if (!service.getOrCreateWorld(location.getExtent()).getRegions(location.getPosition()).getFlagDefault(this).containsValue(type)) {
+		if (!service.getOrCreateEWorld(location.getExtent()).getRegions(location.getPosition()).getFlagDefault(this).containsValue(type)) {
 			transaction.setValid(false);
 			return true;
 		}
