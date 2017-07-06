@@ -50,5 +50,5 @@ public interface RegionStorage {
 	CompletableFuture<Boolean> removeMemberGroup(EProtectedRegion region, Set<String> groups);
 	
 	CompletableFuture<Boolean> removeClearParent(EProtectedRegion region, Set<EProtectedRegion> regions);
-	CompletableFuture<Boolean> removeRemoveChildren(Set<ProtectedRegion> regions);
+	CompletableFuture<Boolean> removeRemoveChildren(Set<EProtectedRegion> regions);
 }

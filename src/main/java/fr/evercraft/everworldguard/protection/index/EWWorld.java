@@ -132,6 +132,10 @@ public class EWWorld implements WorldGuardWorld {
 		return this.world;
 	}
 	
+	public UUID getUniqueId() {
+		return this.world.getUniqueId();
+	}
+	
 	public void rebuild() {
 		this.write_lock.lock();
 		try {
@@ -396,7 +400,7 @@ public class EWWorld implements WorldGuardWorld {
 	}
 	
 	private CompletableFuture<Set<ProtectedRegion>> removeRemoveChildren(EProtectedRegion region) {
-		Set<ProtectedRegion> regions = new HashSet<ProtectedRegion>();
+		Set<EProtectedRegion> regions = new HashSet<EProtectedRegion>();
 		this.removeRemoveChildren(region, regions);
 		
 		return this.storage.removeRemoveChildren(regions)
@@ -406,7 +410,7 @@ public class EWWorld implements WorldGuardWorld {
 			});
 	}
 	
-	private void removeRemoveChildren(EProtectedRegion region, Set<ProtectedRegion> regions) {
+	private void removeRemoveChildren(EProtectedRegion region, Set<EProtectedRegion> regions) {
 		regions.add(region);
 		
 		for (EProtectedRegion children : this.regionsIdentifier.values()) {
@@ -414,7 +418,7 @@ public class EWWorld implements WorldGuardWorld {
 				children.getParent().ifPresent(parent -> {
 					if (parent.equals(region)) {
 						if (region.getType().equals(ProtectedRegion.Types.GLOBAL)) {
-							regions.add(parent);
+							regions.add((EProtectedRegion) parent);
 						} else {
 							this.removeRemoveChildren(children, regions);
 						}

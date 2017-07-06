@@ -107,7 +107,7 @@ public class EverWorldGuard extends EPlugin<EverWorldGuard> {
 		return this.configs;
 	}
 	
-	public EWDataBases getDataBase() {
+	public EWDataBases getDataBases() {
 		return this.database;
 	}
 	

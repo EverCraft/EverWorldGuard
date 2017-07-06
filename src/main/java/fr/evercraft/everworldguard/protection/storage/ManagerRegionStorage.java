@@ -37,7 +37,7 @@ public class ManagerRegionStorage implements RegionStorage {
 		this.plugin = plugin;
 		this.world = world;
 		
-		if (this.plugin.getDataBase().isEnable()) {
+		if (this.plugin.getDataBases().isEnable()) {
 			this.storage = new RegionStorageSql(this.plugin, this.world);
 		} else {
 			this.storage = new RegionStorageConf(this.plugin, this.world);
@@ -46,9 +46,9 @@ public class ManagerRegionStorage implements RegionStorage {
 
 	@Override
 	public void reload() {
-		if (this.plugin.getDataBase().isEnable() && !(this.storage instanceof RegionStorageSql)) {
+		if (this.plugin.getDataBases().isEnable() && !(this.storage instanceof RegionStorageSql)) {
 			this.storage = new RegionStorageSql(this.plugin, this.world);
-		} else if (!this.plugin.getDataBase().isEnable() && !(this.storage instanceof RegionStorageConf)) {
+		} else if (!this.plugin.getDataBases().isEnable() && !(this.storage instanceof RegionStorageConf)) {
 			this.storage = new RegionStorageConf(this.plugin, this.world);
 		} else {
 			this.storage.reload();
@@ -143,7 +143,7 @@ public class ManagerRegionStorage implements RegionStorage {
 		return this.storage.removeClearParent(region, regions);
 	}
 
-	public CompletableFuture<Boolean> removeRemoveChildren(Set<ProtectedRegion> regions) {
+	public CompletableFuture<Boolean> removeRemoveChildren(Set<EProtectedRegion> regions) {
 		return this.storage.removeRemoveChildren(regions.stream().filter(region -> !region.isTransient()).collect(Collectors.toSet()));
 	}
 }

@@ -16,29 +16,829 @@
  */
 package fr.evercraft.everworldguard.protection.storage;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.Map.Entry;
+
+import javax.annotation.Nullable;
+
+import com.flowpowered.math.vector.Vector3i;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+
 import fr.evercraft.everapi.exception.PluginDisableException;
 import fr.evercraft.everapi.exception.ServerDisableException;
 import fr.evercraft.everapi.plugin.EDataBase;
+import fr.evercraft.everapi.services.worldguard.Flag;
+import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
+import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion.Group;
+import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion.Groups;
 import fr.evercraft.everworldguard.EverWorldGuard;
+import fr.evercraft.everworldguard.protection.flag.EFlagValue;
+import fr.evercraft.everworldguard.protection.index.EWWorld;
+import fr.evercraft.everworldguard.protection.regions.EProtectedCuboidRegion;
+import fr.evercraft.everworldguard.protection.regions.EProtectedGlobalRegion;
+import fr.evercraft.everworldguard.protection.regions.EProtectedPolygonalRegion;
+import fr.evercraft.everworldguard.protection.regions.EProtectedRegion;
+import fr.evercraft.everworldguard.protection.regions.EProtectedTemplateRegion;
 
 public class EWDataBases extends EDataBase<EverWorldGuard> {
-	private String table_users;
+	
+	private static final String REGIONS = "regions";
+	private static final String POSITIONS = "positions";
+	private static final String USERS = "users";
+	private static final String GROUPS = "groups";
+	private static final String FLAGS = "flags";
 
 	public EWDataBases(EverWorldGuard plugin) throws PluginDisableException {
 		super(plugin);
 	}
 
 	public boolean init() throws ServerDisableException {
-		this.table_users = "table_users";
-		String permissions ="CREATE TABLE IF NOT EXISTS <table> (" +
-							"`uuid` varchar(36) NOT NULL," +
-							"`region` INTEGER," +
-							"PRIMARY KEY (`uuid`, `region`));";
-		initTable(this.getTableUsersPermissions(), permissions);
+		String regions =  "CREATE TABLE IF NOT EXISTS <table> ("
+							+ "`uuid` VARCHAR(36) NOT NULL, "
+							+ "`world` VARCHAR(36) NOT NULL, "
+							+ "`name` VARCHAR(45) NOT NULL, "
+							+ "`type` VARCHAR(45) NOT NULL, "
+							+ "`priority` INT NOT NULL, "
+							+ "`parent` VARCHAR(36), "
+							+ "PRIMARY KEY (`uuid`, `world`));";
+		initTable(this.getTableRegions(), regions);
+		
+		String positions =  "CREATE TABLE IF NOT EXISTS <table> ("
+							+ "`region` VARCHAR(36) NOT NULL, "
+							+ "`world` VARCHAR(36) NOT NULL, "
+							+ "`id` INT NOT NULL, "
+							+ "`x` INT NOT NULL, "
+							+ "`y` INT NOT NULL, "
+							+ "`z` INT NOT NULL, "
+							+ "PRIMARY KEY (`id`, `region`, `world`), "
+							+ "INDEX `fk_position_region_idx` (`region` ASC, `world` ASC), "
+							+ "CONSTRAINT `fk_position_region` "
+							+ " FOREIGN KEY (`region` , `world`) "
+							+ " REFERENCES " + this.getTableRegions() + " (`uuid` , `world`) "
+							+ " ON DELETE NO ACTION "
+							+ " ON UPDATE NO ACTION);";
+		initTable(this.getTablePositions(), positions);
+		
+		String users =  "CREATE TABLE IF NOT EXISTS <table> ("
+							+ "`region` VARCHAR(36) NOT NULL, "
+							+ "`world` VARCHAR(36) NOT NULL, "
+							+ "`group` VARCHAR(45) NOT NULL , "
+							+ "`uuid` VARCHAR(36) NOT NULL, "
+							+ "PRIMARY KEY (`uuid`, `group`, `region`, `world`), "
+							+ "INDEX `fk_users_region_idx` (`region` ASC, `world` ASC), "
+							+ "CONSTRAINT `fk_users_region` "
+							+ " FOREIGN KEY (`region` , `world`) "
+							+ " REFERENCES " + this.getTableRegions() + " (`uuid` , `world`) "
+							+ " ON DELETE NO ACTION "
+							+ " ON UPDATE NO ACTION);";
+		initTable(this.getTableUsers(), users);
+		
+		String groups =  "CREATE TABLE IF NOT EXISTS <table> ("
+							+ "`region` VARCHAR(36) NOT NULL, "
+							+ "`world` VARCHAR(36) NOT NULL, "
+							+ "`group` VARCHAR(45) NOT NULL , "
+							+ "`name` VARCHAR(50) NOT NULL, "
+							+ "PRIMARY KEY (`name`, `group`, `region`, `world`), "
+							+ "INDEX `fk_groups_region_idx` (`region` ASC, `world` ASC), "
+							+ "CONSTRAINT `fk_groups_region` "
+							+ " FOREIGN KEY (`region` , `world`) "
+							+ " REFERENCES " + this.getTableRegions() + " (`uuid` , `world`) "
+							+ " ON DELETE NO ACTION "
+							+ " ON UPDATE NO ACTION);";
+		initTable(this.getTableGroups(), groups);
+		
+		String flags =  "CREATE TABLE IF NOT EXISTS <table> ("
+							+ "`region` VARCHAR(36) NOT NULL, "
+							+ "`world` VARCHAR(36) NOT NULL, "
+							+ "`group` VARCHAR(45) NOT NULL , "
+							+ "`flag` VARCHAR(45) NOT NULL, "
+							+ "`value` LONGTEXT NULL, "
+							+ "PRIMARY KEY (`flag`, `group`, `world`, `region`), "
+							+ "INDEX `fk_flags_region_idx` (`region` ASC, `world` ASC), "
+							+ "CONSTRAINT `fk_flags_region` "
+							+ " FOREIGN KEY (`region` , `world`) "
+							+ " REFERENCES " + this.getTableRegions() + " (`uuid` , `world`) "
+							+ " ON DELETE NO ACTION "
+							+ " ON UPDATE NO ACTION);";
+		initTable(this.getTableFlags(), flags);
+		
 		return true;
 	}
 
-	public String getTableUsersPermissions() {
-		return this.getPrefix() + this.table_users;
+	public String getTableRegions() {
+		return this.getPrefix() + REGIONS;
+	}
+	
+	public String getTablePositions() {
+		return this.getPrefix() + POSITIONS;
+	}
+	
+	public String getTableUsers() {
+		return this.getPrefix() + USERS;
+	}
+	
+	public String getTableGroups() {
+		return this.getPrefix() + GROUPS;
+	}
+	
+	public String getTableFlags() {
+		return this.getPrefix() + FLAGS;
+	}
+	
+	public Set<EProtectedRegion> getAllRegions(EWWorld world) {
+		Connection connection = null;
+    	try {
+    		connection = this.plugin.getDataBases().getConnection();
+    		return this.getAllRegions(connection, world);
+		} catch (ServerDisableException e) {
+			e.execute();
+		} finally {
+			try {if (connection != null) connection.close();} catch (SQLException e) {}
+	    }
+		return ImmutableSet.of();
+	}
+	
+	public Set<EProtectedRegion> getAllRegions(Connection connection, EWWorld world) {
+		Map<UUID, EProtectedRegion> regions = new HashMap<UUID, EProtectedRegion>();
+		Map<UUID, UUID> parents = new HashMap<UUID, UUID>();
+		
+		Map<UUID, List<Vector3i>> positions = this.getAllPositions(connection, world.getWorld().getUniqueId());
+		Map<UUID, Map<Group, Set<UUID>>> users = this.getAllUsers(connection, world.getWorld().getUniqueId());
+		Map<UUID, Map<Group, Set<String>>> groups = this.getAllGroups(connection, world.getWorld().getUniqueId());
+		Map<UUID, Map<Flag<?>, EFlagValue<?>>> flags = this.getAllFlags(connection, world.getWorld().getUniqueId());
+		
+		PreparedStatement preparedStatement = null;
+		String query = 	  "SELECT * " 
+						+ "FROM `" + this.getTableRegions() + "` "
+						+ "WHERE `world` = ? ;";
+    	try {    		
+    		preparedStatement = connection.prepareStatement(query);
+			preparedStatement.setString(1, world.getUniqueId().toString());
+			ResultSet list = preparedStatement.executeQuery();
+			
+			while (list.next()) {
+				UUID identifier = UUID.fromString(list.getString("uuid"));
+				Optional<ProtectedRegion.Type> optType = this.plugin.getGame().getRegistry().getType(ProtectedRegion.Type.class, list.getString("type"));
+				if (optType.isPresent()) {
+					EProtectedRegion region = null;
+					String name = list.getString("name");
+					
+					ProtectedRegion.Type type = optType.get();
+					if (type.equals(ProtectedRegion.Types.GLOBAL)) {
+						region = new EProtectedGlobalRegion(world, identifier, name);
+					} else if (type.equals(ProtectedRegion.Types.TEMPLATE)) {
+						region = new EProtectedTemplateRegion(world, identifier, name);
+					} else if (type.equals(ProtectedRegion.Types.CUBOID)) {
+						List<Vector3i> vectors = positions.get(identifier);
+						if (vectors != null && vectors.size() == 2) {
+							region = new EProtectedCuboidRegion(world, identifier, name, vectors.get(0), vectors.get(1));
+						} else {
+							this.plugin.getELogger().warn("Erreur : Nombre de positions (uuid='" + identifier + "';type='" + type.getName() + "')");
+							continue;
+						}
+					} else if (type.equals(ProtectedRegion.Types.POLYGONAL)) {
+						List<Vector3i> vectors = positions.get(identifier);
+						if (vectors != null && !vectors.isEmpty()) {
+							region = new EProtectedPolygonalRegion(world, identifier, name, vectors);
+						} else {
+							this.plugin.getELogger().warn("Erreur : Nombre de positions (uuid='" + identifier + "';type='" + type.getName() + "')");
+							continue;
+						}
+					} else {
+						this.plugin.getELogger().warn("Erreur : Type inconnue (uuid='" + identifier + "';type='" + type.getName() + "')");
+						continue;
+					}
+					
+					String parent = list.getString("parent"); 
+					if (parent != null) {
+						parents.put(identifier, UUID.fromString(list.getString("parent")));
+					}
+					
+					int priority = list.getInt("priority");
+					Set<UUID> owners = this.get(users, identifier, Groups.OWNER);
+					Set<UUID> members = this.get(users, identifier, Groups.MEMBER);
+					Set<String> group_owners = this.get(groups, identifier, Groups.OWNER);
+					Set<String> group_members = this.get(groups, identifier, Groups.MEMBER);
+					Map<Flag<?>, EFlagValue<?>> flag = flags.containsKey(identifier) ? flags.get(identifier) : ImmutableMap.of();
+					
+					region.init(priority, owners, group_owners, members, group_members, flag);
+					regions.put(identifier, region);
+				} else {
+					this.plugin.getELogger().warn("Erreur : Type incorrect (uuid='" + identifier + "';type='" + list.getString("type") + "')");
+				}
+			}
+		} catch (SQLException e) {
+			this.plugin.getELogger().warn(" : " + e.getMessage());
+		} finally {
+			try {if (preparedStatement != null) preparedStatement.close();} catch (SQLException e) {}
+	    }
+    	
+    	// Parents
+		for (Entry<UUID, UUID> entry : parents.entrySet()) {
+			EProtectedRegion region = regions.get(entry.getKey());
+			EProtectedRegion parent = regions.get(entry.getValue());
+			
+			if (parent == null) {
+				this.plugin.getELogger().warn("Erreur : Parent incorrect : (uuid='" + region.getId() + "';type='" + region.getType().getName() + "')");
+				continue;
+			}
+			
+			region.init(parent);
+		}
+    	
+		return ImmutableSet.copyOf(regions.values());
+	}
+	
+	public <T> Set<T> get(Map<UUID, Map<Group, Set<T>>> users, UUID identifier, Group group) {
+		Map<Group, Set<T>> map = users.get(identifier);
+		if (map == null) return ImmutableSet.of();
+		
+		Set<T> set = map.get(group);
+		if (set == null) return ImmutableSet.of();
+		
+		return set;
+	}
+	
+	public Map<UUID, List<Vector3i>> getAllPositions(Connection connection, UUID world) {
+		Map<UUID, List<Vector3i>> positions = new HashMap<UUID, List<Vector3i>>();
+		PreparedStatement preparedStatement = null;
+		
+		String query = 	  "SELECT * " 
+						+ "FROM `" + this.getTablePositions() + "` "
+						+ "WHERE `world` = ? "
+						+ "ORDER BY `id` ASC;";
+    	try {    		
+    		preparedStatement = connection.prepareStatement(query);
+			preparedStatement.setString(1, world.toString());
+			ResultSet list = preparedStatement.executeQuery();
+			
+			while (list.next()) {
+				UUID uuid = UUID.fromString(list.getString("region"));
+				List<Vector3i> value = positions.get(uuid);
+				if (value == null) {
+					value = new ArrayList<Vector3i>();
+					positions.put(uuid, value);
+				}
+				value.add(Vector3i.from(list.getInt("x"), list.getInt("y"), list.getInt("z")));
+			}
+		} catch (SQLException e) {
+			this.plugin.getELogger().warn(" : " + e.getMessage());
+		} finally {
+			try {if (preparedStatement != null) preparedStatement.close();} catch (SQLException e) {}
+	    }
+		return positions;
+	}
+	
+	public Map<UUID, Map<Group, Set<UUID>>> getAllUsers(Connection connection, UUID world) {
+		Map<UUID, Map<Group, Set<UUID>>> users = new HashMap<UUID, Map<Group, Set<UUID>>>();
+		PreparedStatement preparedStatement = null;
+		
+		String query = 	  "SELECT * " 
+						+ "FROM `" + this.getTableUsers() + "` "
+						+ "WHERE `world` = ? ;";
+    	try {    		
+    		preparedStatement = connection.prepareStatement(query);
+			preparedStatement.setString(1, world.toString());
+			ResultSet list = preparedStatement.executeQuery();
+			
+			while (list.next()) {
+				UUID uuid = UUID.fromString(list.getString("region"));
+				Group group = this.plugin.getGame().getRegistry().getType(Group.class, list.getString("group")).orElse(Groups.DEFAULT);
+				
+				Map<Group, Set<UUID>> map = users.get(uuid);
+				if (map == null) {
+					map = new HashMap<Group, Set<UUID>>();
+					users.put(uuid, map);
+				}
+				Set<UUID> value = map.get(group);
+				if (value == null) {
+					value = new HashSet<UUID>();
+					map.put(group, value);
+				}
+				
+				value.add(UUID.fromString(list.getString("uuid")));
+			}
+		} catch (SQLException e) {
+			this.plugin.getELogger().warn(" : " + e.getMessage());
+		} finally {
+			try {if (preparedStatement != null) preparedStatement.close();} catch (SQLException e) {}
+	    }
+		return users;
+	}
+	
+	public Map<UUID, Map<Group, Set<String>>> getAllGroups(Connection connection, UUID world) {
+		Map<UUID, Map<Group, Set<String>>> groups = new HashMap<UUID, Map<Group, Set<String>>>();
+		PreparedStatement preparedStatement = null;
+		
+		String query = 	  "SELECT * " 
+						+ "FROM `" + this.getTableUsers() + "` "
+						+ "WHERE `world` = ? ;";
+    	try {    		
+    		preparedStatement = connection.prepareStatement(query);
+			preparedStatement.setString(1, world.toString());
+			ResultSet list = preparedStatement.executeQuery();
+			
+			while (list.next()) {
+				UUID uuid = UUID.fromString(list.getString("region"));
+				Group group = this.plugin.getGame().getRegistry().getType(Group.class, list.getString("group")).orElse(Groups.DEFAULT);
+				
+				Map<Group, Set<String>> map = groups.get(uuid);
+				if (map == null) {
+					map = new HashMap<Group, Set<String>>();
+					groups.put(uuid, map);
+				}
+				Set<String> value = map.get(group);
+				if (value == null) {
+					value = new HashSet<String>();
+					map.put(group, value);
+				}
+				
+				value.add(list.getString("name"));
+			}
+		} catch (SQLException e) {
+			this.plugin.getELogger().warn(" : " + e.getMessage());
+		} finally {
+			try {if (preparedStatement != null) preparedStatement.close();} catch (SQLException e) {}
+	    }
+		return groups;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <T> Map<UUID, Map<Flag<?>, EFlagValue<?>>> getAllFlags(Connection connection, UUID world) {
+		Map<UUID, Map<Flag<?>, EFlagValue<?>>> flags = new HashMap<UUID, Map<Flag<?>, EFlagValue<?>>>();
+		PreparedStatement preparedStatement = null;
+		
+		String query = 	  "SELECT * " 
+						+ "FROM `" + this.getTableFlags() + "` "
+						+ "WHERE `world` = ? ;";
+    	try {    		
+    		preparedStatement = connection.prepareStatement(query);
+			preparedStatement.setString(1, world.toString());
+			ResultSet list = preparedStatement.executeQuery();
+			
+			while (list.next()) {
+				UUID uuid = UUID.fromString(list.getString("region"));
+				Map<Flag<?>, EFlagValue<?>> map = flags.get(uuid);
+				if (map == null) {
+					map = new HashMap<Flag<?>, EFlagValue<?>>();
+					flags.put(uuid, map);
+				}
+				
+				Optional<Flag<?>> optFlag = this.plugin.getProtectionService().getFlag(list.getString("flag"));
+				Group group = this.plugin.getGame().getRegistry().getType(Group.class, list.getString("group")).orElse(Groups.DEFAULT);
+				if (optFlag.isPresent()) {
+					Flag<T> flag = (Flag<T>) optFlag.get();
+					
+					EFlagValue<T> flagValue = (EFlagValue<T>) map.get(flag);
+					if (flagValue == null) {
+						flagValue = new EFlagValue<T>();
+						map.put(flag, flagValue);
+					}
+					
+					try {
+						T value = flag.deserialize(list.getString("value"));
+						flagValue.set(group, value);
+					} catch(Exception e) {
+					}
+				} else {
+				}
+			}
+		} catch (SQLException e) {
+			this.plugin.getELogger().warn(" : " + e.getMessage());
+		} finally {
+			try {if (preparedStatement != null) preparedStatement.close();} catch (SQLException e) {}
+	    }
+		return flags;
+	}
+	
+	public <V> boolean insertRegion(Connection connection, UUID world, UUID identifier, String name, ProtectedRegion.Type type, int priority, @Nullable UUID parent) {
+		PreparedStatement preparedStatement = null;
+		
+		String query = 	  "INSERT INTO `" + this.getTableRegions() + "` (`uuid`, `world`, `name`, `type`, `priority`, `parent`) " 
+						+ "VALUES (?, ?, ?, ?, ?, ?);";
+    	try {
+    		preparedStatement = connection.prepareStatement(query);
+    		preparedStatement.setString(1, identifier.toString());
+			preparedStatement.setString(2, world.toString());
+			preparedStatement.setString(3, name);
+			preparedStatement.setString(4, type.getId());
+			preparedStatement.setInt(5, priority);
+			preparedStatement.setString(6, (parent != null) ? parent.toString() : null);
+			
+			preparedStatement.execute();
+			return true;
+		} catch (SQLException e) {
+			this.plugin.getELogger().warn(" : " + e.getMessage());
+		}
+		return false;
+	}
+	
+	public <V> boolean deleteRegion(Connection connection, UUID world, UUID identifier) {
+		PreparedStatement preparedStatement = null;
+		
+		String query = 	  "DELETE FROM `" + this.getTableRegions() + "` "
+						+ "WHERE `region` = ? AND `world` = ? ;";
+    	try {    		
+    		preparedStatement = connection.prepareStatement(query);
+			preparedStatement.setString(1, identifier.toString());
+			preparedStatement.setString(2, world.toString());
+			
+			preparedStatement.execute();
+			return true;
+		} catch (SQLException e) {
+			this.plugin.getELogger().warn(" : " + e.getMessage());
+		} finally {
+			try {if (preparedStatement != null) preparedStatement.close();} catch (SQLException e) {}
+	    }
+		return false;
+	}
+	
+	public <V> boolean insertPositions(Connection connection, UUID world, UUID identifier, List<Vector3i> positions) {
+		PreparedStatement preparedStatement = null;
+		
+		String query = 	  "INSERT INTO `" + this.getTablePositions() + "` (`region`, `world`, `id`, `x`, `y`, `z`) " 
+						+ "VALUES (?, ?, ?, ?, ?, ?);";
+    	try {
+    		int id = 1;
+    		for (Vector3i position : positions) {
+	    		preparedStatement = connection.prepareStatement(query);
+	    		preparedStatement.setString(1, identifier.toString());
+				preparedStatement.setString(2, world.toString());
+				preparedStatement.setInt(3, id);
+				preparedStatement.setInt(4, position.getX());
+				preparedStatement.setInt(5, position.getY());
+				preparedStatement.setInt(6, position.getZ());
+				
+				preparedStatement.execute();
+				preparedStatement.close();
+				id++;
+    		}
+			return true;
+		} catch (SQLException e) {
+			this.plugin.getELogger().warn(" : " + e.getMessage());
+		}
+		return false;
+	}
+	
+	public <V> boolean deletePositions(Connection connection, UUID world, UUID identifier) {
+		PreparedStatement preparedStatement = null;
+		
+		String query = 	  "DELETE FROM `" + this.getTablePositions() + "` "
+						+ "WHERE `region` = ? AND `world` = ? ;";
+    	try {    		
+    		preparedStatement = connection.prepareStatement(query);
+			preparedStatement.setString(1, identifier.toString());
+			preparedStatement.setString(2, world.toString());
+			
+			preparedStatement.execute();
+			return true;
+		} catch (SQLException e) {
+			this.plugin.getELogger().warn(" : " + e.getMessage());
+		} finally {
+			try {if (preparedStatement != null) preparedStatement.close();} catch (SQLException e) {}
+	    }
+		return false;
+	}
+	
+	public boolean updateName(Connection connection, UUID world, UUID identifier, String name) {
+		PreparedStatement preparedStatement = null;
+		
+		String query = 	  "UPDATE `" + this.getTableRegions() + "` " 
+						+ "SET `name` = ? "
+						+ "WHERE `uuid` = ? AND `world` = ? ;";
+    	try {    		
+    		preparedStatement = connection.prepareStatement(query);
+			preparedStatement.setString(1, name);
+			preparedStatement.setString(2, identifier.toString());
+			preparedStatement.setString(3, world.toString());
+			
+			preparedStatement.execute();
+			return true;
+		} catch (SQLException e) {
+			this.plugin.getELogger().warn(" : " + e.getMessage());
+		} finally {
+			try {if (preparedStatement != null) preparedStatement.close();} catch (SQLException e) {}
+	    }
+		return false;
+	}
+	
+	public boolean updatePriority(Connection connection, UUID world, UUID identifier, int priority) {
+		PreparedStatement preparedStatement = null;
+		
+		String query = 	  "UPDATE `" + this.getTableRegions() + "` " 
+						+ "SET `priority` = ? "
+						+ "WHERE `uuid` = ? AND `world` = ? ;";
+    	try {    		
+    		preparedStatement = connection.prepareStatement(query);
+			preparedStatement.setInt(1, priority);
+			preparedStatement.setString(2, identifier.toString());
+			preparedStatement.setString(3, world.toString());
+			
+			preparedStatement.execute();
+			return true;
+		} catch (SQLException e) {
+			this.plugin.getELogger().warn(" : " + e.getMessage());
+		} finally {
+			try {if (preparedStatement != null) preparedStatement.close();} catch (SQLException e) {}
+	    }
+		return false;
+	}
+	
+	public boolean updateParent(Connection connection, UUID world, UUID identifier, @Nullable UUID parent) {
+		PreparedStatement preparedStatement = null;
+		
+		String query = 	  "UPDATE `" + this.getTableRegions() + "` " 
+						+ "SET `parent` = ? "
+						+ "WHERE `uuid` = ? AND `world` = ? ;";
+    	try {    		
+    		preparedStatement = connection.prepareStatement(query);
+    		if (parent == null) {
+    			preparedStatement.setString(1, null);
+    		} else {
+    			preparedStatement.setString(1, parent.toString());
+    		}
+			preparedStatement.setString(2, identifier.toString());
+			preparedStatement.setString(3, world.toString());
+			
+			preparedStatement.execute();
+			return true;
+		} catch (SQLException e) {
+			this.plugin.getELogger().warn(" : " + e.getMessage());
+		} finally {
+			try {if (preparedStatement != null) preparedStatement.close();} catch (SQLException e) {}
+	    }
+		return false;
+	}
+	
+	public <V> boolean insertFlag(Connection connection, UUID world, UUID identifier, Flag<V> flag, Group group, V value) {
+		PreparedStatement preparedStatement = null;
+		
+		String query = 	  "INSERT INTO `" + this.getTableFlags() + "` (`region`, `world`, `group`, `flag`, `value`) " 
+						+ "VALUES (?, ?, ?, ?, ?);";
+    	try {    		
+    		preparedStatement = connection.prepareStatement(query);
+    		preparedStatement.setString(1, identifier.toString());
+			preparedStatement.setString(2, world.toString());
+			preparedStatement.setString(3, group.getId());
+			preparedStatement.setString(4, flag.getName());
+			preparedStatement.setString(5, flag.serialize(value));
+			
+			preparedStatement.execute();
+			return true;
+		} catch (SQLException e) {
+			this.plugin.getELogger().warn("Erreur : Ajoute un flag : " + e.getMessage());
+		} finally {
+			try {if (preparedStatement != null) preparedStatement.close();} catch (SQLException e) {}
+	    }
+		return false;
+	}
+	
+	public <V> boolean updateFlag(Connection connection, UUID world, UUID identifier, Flag<V> flag, Group group, V value) {
+		PreparedStatement preparedStatement = null;
+		
+		String query = 	  "UPDATE `" + this.getTableFlags() + "` " 
+						+ "SET `value` = ? "
+						+ "WHERE `region` = ? AND `world` = ? AND `flag` = ? AND `group` = ? ;";
+    	try {    		
+    		preparedStatement = connection.prepareStatement(query);
+    		preparedStatement.setString(1, flag.serialize(value));
+			preparedStatement.setString(2, identifier.toString());
+			preparedStatement.setString(3, world.toString());
+			preparedStatement.setString(4, flag.getId());
+			preparedStatement.setString(5, group.getId());
+			
+			preparedStatement.execute();
+			return true;
+		} catch (SQLException e) {
+			this.plugin.getELogger().warn("Erreur : Met à jour un flag : " + e.getMessage());
+		} finally {
+			try {if (preparedStatement != null) preparedStatement.close();} catch (SQLException e) {}
+	    }
+		return false;
+	}
+	
+	public <V> boolean deleteFlag(Connection connection, UUID world, UUID identifier, Flag<V> flag, Group group) {
+		PreparedStatement preparedStatement = null;
+		
+		String query = 	  "DELETE FROM `" + this.getTableFlags() + "` "
+						+ "WHERE `region` = ? AND `world` = ? AND `flag` = ? AND `group` = ? ;";
+    	try {    		
+    		preparedStatement = connection.prepareStatement(query);
+			preparedStatement.setString(1, identifier.toString());
+			preparedStatement.setString(2, world.toString());
+			preparedStatement.setString(3, flag.getId());
+			preparedStatement.setString(4, group.getId());
+			
+			preparedStatement.execute();
+			return true;
+		} catch (SQLException e) {
+			this.plugin.getELogger().warn("Erreur : Supprime un flag : " + e.getMessage());
+		} finally {
+			try {if (preparedStatement != null) preparedStatement.close();} catch (SQLException e) {}
+	    }
+		return false;
+	}
+	
+	public <V> boolean deleteFlag(Connection connection, UUID world, UUID identifier) {
+		PreparedStatement preparedStatement = null;
+		
+		String query = 	  "DELETE FROM `" + this.getTableFlags() + "` "
+						+ "WHERE `region` = ? AND `world` = ? ;";
+    	try {    		
+    		preparedStatement = connection.prepareStatement(query);
+			preparedStatement.setString(1, identifier.toString());
+			preparedStatement.setString(2, world.toString());
+			
+			preparedStatement.execute();
+			return true;
+		} catch (SQLException e) {
+			this.plugin.getELogger().warn("Erreur : Supprime tous les flags : " + e.getMessage());
+		} finally {
+			try {if (preparedStatement != null) preparedStatement.close();} catch (SQLException e) {}
+	    }
+		return false;
+	}
+	
+	public <V> boolean insertUser(Connection connection, UUID world, UUID identifier, Group group, Set<UUID> users) {
+		PreparedStatement preparedStatement = null;
+		
+		String query = 	  "INSERT INTO `" + this.getTableUsers() + "` (`region`, `world`, `group`, `uuid`) " 
+						+ "VALUES (?, ?, ?, ?);";
+    	try {
+    		for (UUID user : users) {
+	    		preparedStatement = connection.prepareStatement(query);
+	    		preparedStatement.setString(1, identifier.toString());
+				preparedStatement.setString(2, world.toString());
+				preparedStatement.setString(3, group.getId());
+				preparedStatement.setString(4, user.toString());
+				
+				preparedStatement.execute();
+				preparedStatement.close();
+    		}
+			return true;
+		} catch (SQLException e) {
+			this.plugin.getELogger().warn(" : " + e.getMessage());
+		}
+		return false;
+	}
+	
+	public <V> boolean deleteUser(Connection connection, UUID world, UUID identifier, Group group, Set<UUID> users) {
+		PreparedStatement preparedStatement = null;
+		
+		String query = 	  "DELETE FROM `" + this.getTableUsers() + "`"
+						+ "WHERE `region` = ? AND `world` = ? AND `group` = ? AND `uuid` IN (`" + users.stream().map(user -> user.toString()).reduce((u1, u2) -> u1 + "`, `" + u2).orElse("") + "`) ;";
+    	try {    		
+    		preparedStatement = connection.prepareStatement(query);
+			preparedStatement.setString(1, identifier.toString());
+			preparedStatement.setString(2, world.toString());
+			preparedStatement.setString(3, group.getId());
+			
+			preparedStatement.execute();
+			return true;
+		} catch (SQLException e) {
+			this.plugin.getELogger().warn(" : " + e.getMessage());
+		} finally {
+			try {if (preparedStatement != null) preparedStatement.close();} catch (SQLException e) {}
+	    }
+		return false;
+	}
+	
+	public <V> boolean deleteUser(Connection connection, UUID world, UUID identifier) {
+		PreparedStatement preparedStatement = null;
+		
+		String query = 	  "DELETE FROM `" + this.getTableUsers() + "`"
+						+ "WHERE `region` = ? AND `world` = ? ;";
+    	try {    		
+    		preparedStatement = connection.prepareStatement(query);
+			preparedStatement.setString(1, identifier.toString());
+			preparedStatement.setString(2, world.toString());
+			
+			preparedStatement.execute();
+			return true;
+		} catch (SQLException e) {
+			this.plugin.getELogger().warn(" : " + e.getMessage());
+		} finally {
+			try {if (preparedStatement != null) preparedStatement.close();} catch (SQLException e) {}
+	    }
+		return false;
+	}
+	
+	public <V> boolean insertGroup(Connection connection, UUID world, UUID identifier, Group group, Set<String> groups) {
+		PreparedStatement preparedStatement = null;
+		
+		String query = 	  "INSERT INTO `" + this.getTableGroups() + "` (`region`, `world`, `group`, `name`) " 
+						+ "VALUES (?, ?, ?, ?);";
+    	try {
+    		for (String name : groups) {
+	    		preparedStatement = connection.prepareStatement(query);
+	    		preparedStatement.setString(1, identifier.toString());
+				preparedStatement.setString(2, world.toString());
+				preparedStatement.setString(3, group.getId());
+				preparedStatement.setString(4, name);
+				
+				preparedStatement.execute();
+				preparedStatement.close();
+    		}
+			return true;
+		} catch (SQLException e) {
+			this.plugin.getELogger().warn(" : " + e.getMessage());
+		}
+		return false;
+	}
+	
+	public <V> boolean deleteGroup(Connection connection, UUID world, UUID identifier, Group group, Set<String> groups) {
+		PreparedStatement preparedStatement = null;
+		
+		String query = 	  "DELETE FROM `" + this.getTableGroups() + "`"
+						+ "WHERE `region` = ? AND `world` = ? AND `group` = ? AND `name` IN (`" + String.join("`, `", groups) + "`) ;";
+    	try {    		
+    		preparedStatement = connection.prepareStatement(query);
+			preparedStatement.setString(1, identifier.toString());
+			preparedStatement.setString(2, world.toString());
+			preparedStatement.setString(3, group.getId());
+			
+			preparedStatement.execute();
+			return true;
+		} catch (SQLException e) {
+			this.plugin.getELogger().warn(" : " + e.getMessage());
+		} finally {
+			try {if (preparedStatement != null) preparedStatement.close();} catch (SQLException e) {}
+	    }
+		return false;
+	}
+	
+	public <V> boolean deleteGroup(Connection connection, UUID world, UUID identifier) {
+		PreparedStatement preparedStatement = null;
+		
+		String query = 	  "DELETE FROM `" + this.getTableGroups() + "`"
+						+ "WHERE `region` = ? AND `world` = ? ;";
+    	try {    		
+    		preparedStatement = connection.prepareStatement(query);
+			preparedStatement.setString(1, identifier.toString());
+			preparedStatement.setString(2, world.toString());
+			
+			preparedStatement.execute();
+			return true;
+		} catch (SQLException e) {
+			this.plugin.getELogger().warn(" : " + e.getMessage());
+		} finally {
+			try {if (preparedStatement != null) preparedStatement.close();} catch (SQLException e) {}
+	    }
+		return false;
+	}
+	
+	/**
+	 * Supprimé les données de la base de données
+	 * @param connection La connection SQL
+	 * @return Retourne True s'il n'y a pas eu d'erreur
+	 */
+	public boolean clear(final Connection connection) {
+		boolean resultat = false;
+		PreparedStatement preparedStatement = null;
+		try {
+			// Permissions
+    		preparedStatement = connection.prepareStatement("TRUNCATE  `" + this.getTableRegions() + "` ;");
+			preparedStatement.execute();
+			preparedStatement.close();
+			
+			// Groupes
+			preparedStatement = connection.prepareStatement("TRUNCATE  `" + this.getTablePositions() + "` ;");
+			preparedStatement.execute();
+			preparedStatement.close();
+		    	
+			// Options
+			preparedStatement = connection.prepareStatement("TRUNCATE  `" + this.getTableUsers() + "` ;");
+			preparedStatement.execute();
+			preparedStatement.close();
+			
+			// Options
+			preparedStatement = connection.prepareStatement("TRUNCATE  `" + this.getTableGroups() + "` ;");
+			preparedStatement.execute();
+			preparedStatement.close();
+			
+			// Options
+			preparedStatement = connection.prepareStatement("TRUNCATE  `" + this.getTableFlags() + "` ;");
+			preparedStatement.execute();
+			preparedStatement.close();
+
+			resultat = true;
+    	} catch (SQLException e) {
+			this.plugin.getELogger().warn("Error while deleting the database : " + e.getMessage());
+		} finally {
+			try {if (preparedStatement != null) preparedStatement.close();} catch (SQLException e) {}
+	    }
+		return resultat;
 	}
 }

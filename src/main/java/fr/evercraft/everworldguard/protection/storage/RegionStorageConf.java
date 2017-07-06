@@ -125,6 +125,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 		}
 		ProtectedRegion.Type type = optType.get();
 		
+		// Priority
 		int priority = config.getNode("priority").getInt(0);
 		
 		// Owners
@@ -494,7 +495,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 	}
 	
 	@Override
-	public CompletableFuture<Boolean> removeRemoveChildren(Set<ProtectedRegion> regions) {
+	public CompletableFuture<Boolean> removeRemoveChildren(Set<EProtectedRegion> regions) {
 		regions.forEach(children -> {
 			if (children.getType().equals(ProtectedRegion.Types.GLOBAL)) {
 				this.getNode().getNode(children.getId().toString()).removeChild("parent");
