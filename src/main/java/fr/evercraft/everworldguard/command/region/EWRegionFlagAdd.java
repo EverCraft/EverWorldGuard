@@ -207,9 +207,27 @@ public class EWRegionFlagAdd extends ESubCommand<EverWorldGuard> {
 	}
 
 	private <T> boolean commandRegionFlagAdd(final CommandSource source, ProtectedRegion region, Group group, Flag<T> flag, List<String> values, World world) {
-		T value = null;
 		try {
-			value = flag.parseAdd(source, region, group, values);
+			T value = flag.parseAdd(source, region, group, values);
+			
+			region.setFlag(flag, group, value)
+			.thenApply(result -> {
+				if (!result) {
+					EAMessages.COMMAND_ERROR.sendTo(source);
+					return false;
+				}
+				
+				EWMessages.REGION_FLAG_ADD_PLAYER.sender()
+				.replace("<region>", region.getName())
+				.replace("<group>", group.getNameFormat())
+				.replace("<flag>", flag.getNameFormat())
+				.replace("<world>", world.getName())
+				.replace("<value>", flag.getValueFormat(value))
+				.sendTo(source);
+				return true;
+			});
+			
+			return true;
 		} catch (IllegalArgumentException e) {
 			if (e.getMessage() == null || e.getMessage().isEmpty()) {
 				EWMessages.REGION_FLAG_ADD_ERROR.sender()
@@ -228,17 +246,6 @@ public class EWRegionFlagAdd extends ESubCommand<EverWorldGuard> {
 			}
 			return false;
 		}
-		
-		region.setFlag(flag, group, value);
-		EWMessages.REGION_FLAG_ADD_PLAYER.sender()
-			.replace("<region>", region.getName())
-			.replace("<group>", group.getNameFormat())
-			.replace("<flag>", flag.getNameFormat())
-			.replace("<world>", world.getName())
-			.replace("<value>", flag.getValueFormat(value))
-			.sendTo(source);
-		
-		return true;
 	}
 	
 	private boolean hasPermission(final CommandSource source, final ProtectedRegion region, final World world) {

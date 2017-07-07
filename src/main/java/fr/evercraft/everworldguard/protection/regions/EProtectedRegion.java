@@ -152,8 +152,8 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 		if (!this.world.rename(this, name)) throw new RegionIdentifierException();
 
 		return this.world.getStorage().setName(this, name)
-			.thenApply(value -> {
-				if (value) return false;
+			.thenApply(result -> {
+				if (!result) return false;
 				
 				this.write_lock.lock();
 				try {
@@ -170,8 +170,8 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 		if (this.priority == priority) CompletableFuture.completedFuture(false);
 		
 		return this.world.getStorage().setPriority(this, priority)
-			.thenApply(value -> {
-				if (value) return false;
+			.thenApply(result -> {
+				if (!result) return false;
 				
 				this.write_lock.lock();
 				try {
@@ -198,8 +198,8 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 		if (this.parent == null) CompletableFuture.completedFuture(false);
 		
 		return this.world.getStorage().setParent(this, null)
-			.thenApply(value -> {
-				if (value) return false;
+			.thenApply(result -> {
+				if (!result) return false;
 				
 				this.write_lock.lock();
 				try {
@@ -225,8 +225,8 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 		}
 
 		return this.world.getStorage().setParent(this, parent)
-			.thenApply(value -> {
-				if (value) return false;
+			.thenApply(result -> {
+				if (!result) return false;
 				
 				this.write_lock.lock();
 				try {
@@ -239,15 +239,15 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 	
 	@Override
-	public CompletableFuture<Set<UUID>> addPlayerOwner(Set<UUID> players) {
+	public CompletableFuture<Optional<Set<UUID>>> addPlayerOwner(Set<UUID> players) {
 		Preconditions.checkNotNull(players, "players");
 		
 		Set<UUID> difference = Sets.difference(players, this.getOwners().getPlayers());
-		if (difference.isEmpty()) return CompletableFuture.completedFuture(ImmutableSet.of());
+		if (difference.isEmpty()) return CompletableFuture.completedFuture(Optional.of(ImmutableSet.of()));
 		
 		return this.world.getStorage().addOwnerPlayer(this, difference)
 			.thenApply(value -> {
-				if (value) return difference;
+				if (!value) return Optional.empty();
 				
 				this.write_lock.lock();
 				try {
@@ -255,20 +255,20 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 				} finally {
 					this.write_lock.unlock();
 				}
-				return difference;
+				return Optional.of(difference);
 			});
 	}
 
 	@Override
-	public CompletableFuture<Set<UUID>> removePlayerOwner(Set<UUID> players) {
+	public CompletableFuture<Optional<Set<UUID>>> removePlayerOwner(Set<UUID> players) {
 		Preconditions.checkNotNull(players, "players");
 		
 		Set<UUID> intersection = Sets.intersection(players, this.getOwners().getPlayers());
-		if (intersection.isEmpty()) return CompletableFuture.completedFuture(ImmutableSet.of());
+		if (intersection.isEmpty()) return CompletableFuture.completedFuture(Optional.of(ImmutableSet.of()));
 		
 		return this.world.getStorage().removeOwnerPlayer(this, intersection)
-			.thenApply(value -> {
-				if (value) return intersection;
+			.thenApply(result -> {
+				if (!result) return Optional.empty();
 				
 				this.write_lock.lock();
 				try {
@@ -276,20 +276,20 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 				} finally {
 					this.write_lock.unlock();
 				}
-				return intersection;
+				return Optional.of(intersection);
 			});
 	}
 	
 	@Override
-	public CompletableFuture<Set<String>> addGroupOwner(Set<String> groups) {
+	public CompletableFuture<Optional<Set<String>>> addGroupOwner(Set<String> groups) {
 		Preconditions.checkNotNull(groups, "groups");
 		
 		Set<String> difference = Sets.difference(groups, this.getOwners().getGroups());
-		if (difference.isEmpty()) return CompletableFuture.completedFuture(ImmutableSet.of());
+		if (difference.isEmpty()) return CompletableFuture.completedFuture(Optional.of(ImmutableSet.of()));
 		
 		return this.world.getStorage().addOwnerGroup(this, difference)
-			.thenApply(value -> {
-				if (value) return difference;
+			.thenApply(result -> {
+				if (!result) return Optional.empty();
 				
 				this.write_lock.lock();
 				try {
@@ -297,20 +297,20 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 				} finally {
 					this.write_lock.unlock();
 				}
-				return difference;
+				return Optional.of(difference);
 			});
 	}
 
 	@Override
-	public CompletableFuture<Set<String>> removeGroupOwner(Set<String> groups) {
+	public CompletableFuture<Optional<Set<String>>> removeGroupOwner(Set<String> groups) {
 		Preconditions.checkNotNull(groups, "groups");
 		
 		Set<String> intersection = Sets.intersection(groups, this.getOwners().getGroups());
-		if (intersection.isEmpty()) return CompletableFuture.completedFuture(ImmutableSet.of());
+		if (intersection.isEmpty()) return CompletableFuture.completedFuture(Optional.of(ImmutableSet.of()));
 		
 		return this.world.getStorage().removeOwnerGroup(this, intersection)
-			.thenApply(value -> {
-				if (value) return intersection;
+			.thenApply(result -> {
+				if (!result) return Optional.empty();
 				
 				this.write_lock.lock();
 				try {
@@ -318,20 +318,20 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 				} finally {
 					this.write_lock.unlock();
 				}
-				return intersection;
+				return Optional.of(intersection);
 			});
 	}
 	
 	@Override
-	public CompletableFuture<Set<UUID>> addPlayerMember(Set<UUID> players) {
+	public CompletableFuture<Optional<Set<UUID>>> addPlayerMember(Set<UUID> players) {
 		Preconditions.checkNotNull(players, "players");
 		
 		Set<UUID> difference = Sets.difference(players, this.getMembers().getPlayers());
-		if (difference.isEmpty()) return CompletableFuture.completedFuture(ImmutableSet.of());
+		if (difference.isEmpty()) return CompletableFuture.completedFuture(Optional.of(ImmutableSet.of()));
 		
 		return this.world.getStorage().addMemberPlayer(this, difference)
-			.thenApply(value -> {
-				if (value) return difference;
+			.thenApply(result -> {
+				if (!result) return Optional.empty();
 				
 				this.write_lock.lock();
 				try {
@@ -339,20 +339,20 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 				} finally {
 					this.write_lock.unlock();
 				}
-				return difference;
+				return Optional.of(difference);
 			});
 	}
 
 	@Override
-	public CompletableFuture<Set<UUID>> removePlayerMember(Set<UUID> players) {
+	public CompletableFuture<Optional<Set<UUID>>> removePlayerMember(Set<UUID> players) {
 		Preconditions.checkNotNull(players, "players");
 		
 		Set<UUID> intersection = Sets.intersection(players, this.getMembers().getPlayers());
-		if (intersection.isEmpty()) return CompletableFuture.completedFuture(ImmutableSet.of());
+		if (intersection.isEmpty()) return CompletableFuture.completedFuture(Optional.of(ImmutableSet.of()));
 		
 		return this.world.getStorage().removeMemberPlayer(this, intersection)
-			.thenApply(value -> {
-				if (value) return intersection;
+			.thenApply(result -> {
+				if (!result) return Optional.empty();
 				
 				this.write_lock.lock();
 				try {
@@ -360,20 +360,20 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 				} finally {
 					this.write_lock.unlock();
 				}
-				return intersection;
+				return Optional.of(intersection);
 			});
 	}
 	
 	@Override
-	public CompletableFuture<Set<String>> addGroupMember(Set<String> groups) {
+	public CompletableFuture<Optional<Set<String>>> addGroupMember(Set<String> groups) {
 		Preconditions.checkNotNull(groups, "groups");
 		
 		Set<String> difference = Sets.difference(groups, this.getMembers().getGroups());
-		if (difference.isEmpty()) return CompletableFuture.completedFuture(ImmutableSet.of());
+		if (difference.isEmpty()) return CompletableFuture.completedFuture(Optional.of(ImmutableSet.of()));
 		
 		return this.world.getStorage().addMemberGroup(this, difference)
-			.thenApply(value -> {
-				if (value) return difference;
+			.thenApply(result -> {
+				if (!result) return Optional.empty();
 				
 				this.write_lock.lock();
 				try {
@@ -381,20 +381,20 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 				} finally {
 					this.write_lock.unlock();
 				}
-				return difference;
+				return Optional.of(difference);
 			});
 	}
 
 	@Override
-	public CompletableFuture<Set<String>> removeGroupMember(Set<String> groups) {
+	public CompletableFuture<Optional<Set<String>>> removeGroupMember(Set<String> groups) {
 		Preconditions.checkNotNull(groups, "groups");
 		
 		Set<String> intersection = Sets.intersection(groups, this.getMembers().getGroups());
-		if (intersection.isEmpty()) return CompletableFuture.completedFuture(ImmutableSet.of());
+		if (intersection.isEmpty()) return CompletableFuture.completedFuture(Optional.of(ImmutableSet.of()));
 		
 		return this.world.getStorage().removeMemberGroup(this, intersection)
-			.thenApply(value -> {
-				if (value) return intersection;
+			.thenApply(result -> {
+				if (!result) return Optional.empty();
 				
 				this.write_lock.lock();
 				try {
@@ -402,7 +402,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 				} finally {
 					this.write_lock.unlock();
 				}
-				return intersection;
+				return Optional.of(intersection);
 			});
 	}
 	

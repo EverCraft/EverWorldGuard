@@ -199,9 +199,36 @@ public class EWRegionFlagRemove extends ESubCommand<EverWorldGuard> {
 	}
 
 	private <T> boolean commandRegionFlagRemove(final CommandSource source, ProtectedRegion region, Group group, Flag<T> flag, List<String> values, World world) {
-		Optional<T> value = null;
 		try {
-			value = flag.parseRemove(source, region, group, values);
+			Optional<T> value = flag.parseRemove(source, region, group, values);
+			
+			region.setFlag(flag, group, value.orElse(null))
+				.thenApply(result -> {
+					if (!result) {
+						EAMessages.COMMAND_ERROR.sendTo(source);
+						return false;
+					}
+					
+					if (value.isPresent()) {
+						EWMessages.REGION_FLAG_REMOVE_UPDATE.sender()
+							.replace("<region>", region.getName())
+							.replace("<group>", group.getNameFormat())
+							.replace("<flag>", flag.getNameFormat())
+							.replace("<world>", world.getName())
+							.replace("<value>", flag.getValueFormat(value.get()))
+							.sendTo(source);
+					} else {
+						EWMessages.REGION_FLAG_REMOVE_PLAYER.sender()
+							.replace("<region>", region.getName())
+							.replace("<group>", group.getNameFormat())
+							.replace("<flag>", flag.getNameFormat())
+							.replace("<world>", world.getName())
+							.sendTo(source);
+					}
+					return true;
+				});
+			
+			return true;
 		} catch (IllegalArgumentException e) {
 			if (e.getMessage() == null || e.getMessage().isEmpty()) {
 				EWMessages.REGION_FLAG_REMOVE_ERROR.sender()
@@ -220,26 +247,6 @@ public class EWRegionFlagRemove extends ESubCommand<EverWorldGuard> {
 			}
 			return false;
 		}
-		
-		region.setFlag(flag, group, value.orElse(null));
-		
-		if (value.isPresent()) {
-			EWMessages.REGION_FLAG_REMOVE_UPDATE.sender()
-				.replace("<region>", region.getName())
-				.replace("<group>", group.getNameFormat())
-				.replace("<flag>", flag.getNameFormat())
-				.replace("<world>", world.getName())
-				.replace("<value>", flag.getValueFormat(value.get()))
-				.sendTo(source);
-		} else {
-			EWMessages.REGION_FLAG_REMOVE_PLAYER.sender()
-				.replace("<region>", region.getName())
-				.replace("<group>", group.getNameFormat())
-				.replace("<flag>", flag.getNameFormat())
-				.replace("<world>", world.getName())
-				.sendTo(source);
-		}
-		return true;
 	}
 	
 	private boolean hasPermission(final CommandSource source, final ProtectedRegion region, final World world) {

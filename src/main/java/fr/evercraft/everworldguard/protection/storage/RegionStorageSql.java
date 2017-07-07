@@ -52,9 +52,7 @@ public class RegionStorageSql implements RegionStorage {
 	}
 	
 	@Override
-	public void reload() {
-		// TODO Auto-generated method stub
-	}
+	public void reload() {}
 
 	@Override
 	public CompletableFuture<Set<EProtectedRegion>> getAll() {

@@ -183,64 +183,72 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 		String query = 	  "SELECT * " 
 						+ "FROM `" + this.getTableRegions() + "` "
 						+ "WHERE `world` = ? ;";
-    	try {    		
+    	try {	
     		preparedStatement = connection.prepareStatement(query);
 			preparedStatement.setString(1, world.getUniqueId().toString());
 			ResultSet list = preparedStatement.executeQuery();
 			
 			while (list.next()) {
-				UUID identifier = UUID.fromString(list.getString("uuid"));
+				UUID identifier = null;
+				try {
+					identifier = UUID.fromString(list.getString("uuid"));
+				} catch (IllegalArgumentException e) {
+					this.plugin.getELogger().warn("Error the uuid of the region is incorrect : (region='" + identifier + "';world='" + world.getUniqueId() + "')");
+					continue;
+				}
+				
 				Optional<ProtectedRegion.Type> optType = this.plugin.getGame().getRegistry().getType(ProtectedRegion.Type.class, list.getString("type"));
-				if (optType.isPresent()) {
-					EProtectedRegion region = null;
-					String name = list.getString("name");
-					
-					ProtectedRegion.Type type = optType.get();
-					if (type.equals(ProtectedRegion.Types.GLOBAL)) {
-						region = new EProtectedGlobalRegion(world, identifier, name);
-					} else if (type.equals(ProtectedRegion.Types.TEMPLATE)) {
-						region = new EProtectedTemplateRegion(world, identifier, name);
-					} else if (type.equals(ProtectedRegion.Types.CUBOID)) {
-						List<Vector3i> vectors = positions.get(identifier);
-						if (vectors != null && vectors.size() == 2) {
-							region = new EProtectedCuboidRegion(world, identifier, name, vectors.get(0), vectors.get(1));
-						} else {
-							this.plugin.getELogger().warn("Erreur : Nombre de positions (uuid='" + identifier + "';type='" + type.getName() + "')");
-							continue;
-						}
-					} else if (type.equals(ProtectedRegion.Types.POLYGONAL)) {
-						List<Vector3i> vectors = positions.get(identifier);
-						if (vectors != null && !vectors.isEmpty()) {
-							region = new EProtectedPolygonalRegion(world, identifier, name, vectors);
-						} else {
-							this.plugin.getELogger().warn("Erreur : Nombre de positions (uuid='" + identifier + "';type='" + type.getName() + "')");
-							continue;
-						}
+				if (!optType.isPresent()) {
+					this.plugin.getELogger().warn("Error : Type unknown (region='" + identifier + "';world='" + world.getUniqueId() + "';type='" + list.getString("type") + "')");
+					continue;
+				}
+				
+				EProtectedRegion region = null;
+				String name = list.getString("name");
+				
+				ProtectedRegion.Type type = optType.get();
+				if (type.equals(ProtectedRegion.Types.GLOBAL)) {
+					region = new EProtectedGlobalRegion(world, identifier, name);
+				} else if (type.equals(ProtectedRegion.Types.TEMPLATE)) {
+					region = new EProtectedTemplateRegion(world, identifier, name);
+				} else if (type.equals(ProtectedRegion.Types.CUBOID)) {
+					List<Vector3i> vectors = positions.get(identifier);
+					if (vectors != null && vectors.size() == 2) {
+						region = new EProtectedCuboidRegion(world, identifier, name, vectors.get(0), vectors.get(1));
 					} else {
-						this.plugin.getELogger().warn("Erreur : Type inconnue (uuid='" + identifier + "';type='" + type.getName() + "')");
+						this.plugin.getELogger().warn("Error : The position number is incorrect (region='" + identifier + "';world='" + world.getUniqueId() + "';type='" + type.getName() + "')");
 						continue;
 					}
-					
-					String parent = list.getString("parent"); 
-					if (parent != null) {
-						parents.put(identifier, UUID.fromString(list.getString("parent")));
+				} else if (type.equals(ProtectedRegion.Types.POLYGONAL)) {
+					List<Vector3i> vectors = positions.get(identifier);
+					if (vectors != null && !vectors.isEmpty()) {
+						region = new EProtectedPolygonalRegion(world, identifier, name, vectors);
+					} else {
+						this.plugin.getELogger().warn("Error : The position number is incorrect (region='" + identifier + "';world='" + world.getUniqueId() + "';type='" + type.getName() + "')");
+						continue;
 					}
-					
-					int priority = list.getInt("priority");
-					Set<UUID> owners = this.get(users, identifier, Groups.OWNER);
-					Set<UUID> members = this.get(users, identifier, Groups.MEMBER);
-					Set<String> group_owners = this.get(groups, identifier, Groups.OWNER);
-					Set<String> group_members = this.get(groups, identifier, Groups.MEMBER);
-					Map<Flag<?>, EFlagValue<?>> flag = flags.containsKey(identifier) ? flags.get(identifier) : ImmutableMap.of();
-					
-					region.init(priority, owners, group_owners, members, group_members, flag);
-					regions.put(identifier, region);
 				} else {
-					this.plugin.getELogger().warn("Erreur : Type incorrect (uuid='" + identifier + "';type='" + list.getString("type") + "')");
+					this.plugin.getELogger().warn("Error : Unsupported Type (region='" + identifier + "';world='" + world.getUniqueId() + "';type='" + type.getName() + "')");
+					continue;
 				}
+				
+				String parent = list.getString("parent"); 
+				if (parent != null) {
+					parents.put(identifier, UUID.fromString(list.getString("parent")));
+				}
+				
+				int priority = list.getInt("priority");
+				Set<UUID> owners = this.get(users, identifier, Groups.OWNER);
+				Set<UUID> members = this.get(users, identifier, Groups.MEMBER);
+				Set<String> group_owners = this.get(groups, identifier, Groups.OWNER);
+				Set<String> group_members = this.get(groups, identifier, Groups.MEMBER);
+				Map<Flag<?>, EFlagValue<?>> flag = flags.containsKey(identifier) ? flags.get(identifier) : ImmutableMap.of();
+				
+				region.init(priority, owners, group_owners, members, group_members, flag);
+				regions.put(identifier, region);
 			}
 		} catch (SQLException e) {
-			this.plugin.getELogger().warn(" : " + e.getMessage());
+			this.plugin.getELogger().warn("Error during the load of regions (world='" + world.getUniqueId() + "') : " + e.getMessage());
 		} finally {
 			try {if (preparedStatement != null) preparedStatement.close();} catch (SQLException e) {}
 	    }
@@ -251,7 +259,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 			EProtectedRegion parent = regions.get(entry.getValue());
 			
 			if (parent == null) {
-				this.plugin.getELogger().warn("Erreur : Parent incorrect : (uuid='" + region.getId() + "';type='" + region.getType().getName() + "')");
+				this.plugin.getELogger().warn("Unable to find the parent region '" + entry.getValue() + "' (region='" + region.getId() + "';world='" + world.getUniqueId() + "')");
 				continue;
 			}
 			
@@ -285,7 +293,14 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 			ResultSet list = preparedStatement.executeQuery();
 			
 			while (list.next()) {
-				UUID uuid = UUID.fromString(list.getString("region"));
+				UUID uuid = null;
+				try {
+					uuid = UUID.fromString(list.getString("region"));
+				} catch (IllegalArgumentException e) {
+					this.plugin.getELogger().warn("Error the uuid of the region is incorrect : (region='" + list.getString("region") + "';world='" + world + "',x='" + list.getString("x") + "';y='" + list.getString("y") + "';z='" + list.getString("z") + "')");
+					continue;
+				}
+				
 				List<Vector3i> value = positions.get(uuid);
 				if (value == null) {
 					value = new ArrayList<Vector3i>();
@@ -294,7 +309,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 				value.add(Vector3i.from(list.getInt("x"), list.getInt("y"), list.getInt("z")));
 			}
 		} catch (SQLException e) {
-			this.plugin.getELogger().warn(" : " + e.getMessage());
+			this.plugin.getELogger().warn("Error during the load of the positions : (world='" + world + "') " + e.getMessage());
 		} finally {
 			try {if (preparedStatement != null) preparedStatement.close();} catch (SQLException e) {}
 	    }
@@ -314,24 +329,40 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 			ResultSet list = preparedStatement.executeQuery();
 			
 			while (list.next()) {
-				UUID uuid = UUID.fromString(list.getString("region"));
-				Group group = this.plugin.getGame().getRegistry().getType(Group.class, list.getString("group")).orElse(Groups.DEFAULT);
+				UUID uuid = null;
+				try {
+					uuid = UUID.fromString(list.getString("region"));
+				} catch (IllegalArgumentException e) {
+					this.plugin.getELogger().warn("Error the uuid of the region is incorrect : (region='" + list.getString("region") + "';world='" + world + "',region_group='" + list.getString("group") + "';user='" + list.getString("uuid") + "')");
+					continue;
+				}
+				
+				Optional<Group> group = this.plugin.getGame().getRegistry().getType(Group.class, list.getString("group"));
+				if (!group.isPresent()) {
+					this.plugin.getELogger().warn("Error : Unsupported Group (region='" + uuid + "';world='" + world + "',region_group='" + list.getString("group") + "';user='" + list.getString("uuid") + "')");
+					continue;
+				}
 				
 				Map<Group, Set<UUID>> map = users.get(uuid);
 				if (map == null) {
 					map = new HashMap<Group, Set<UUID>>();
 					users.put(uuid, map);
 				}
-				Set<UUID> value = map.get(group);
+				Set<UUID> value = map.get(group.get());
 				if (value == null) {
 					value = new HashSet<UUID>();
-					map.put(group, value);
+					map.put(group.get(), value);
 				}
-				
-				value.add(UUID.fromString(list.getString("uuid")));
+					
+				try {
+					value.add(UUID.fromString(list.getString("uuid")));
+				} catch (IllegalArgumentException e) {
+					this.plugin.getELogger().warn("Error the uuid of the user is incorrect : (region='" + uuid + "';world='" + world + "',region_group='" + group.get().getId() + "';user='" + list.getString("uuid") + "')");
+					continue;
+				}
 			}
 		} catch (SQLException e) {
-			this.plugin.getELogger().warn(" : " + e.getMessage());
+			this.plugin.getELogger().warn("Error during the load of users : (world='" + world + "') " + e.getMessage());
 		} finally {
 			try {if (preparedStatement != null) preparedStatement.close();} catch (SQLException e) {}
 	    }
@@ -343,7 +374,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 		PreparedStatement preparedStatement = null;
 		
 		String query = 	  "SELECT * " 
-						+ "FROM `" + this.getTableUsers() + "` "
+						+ "FROM `" + this.getTableGroups() + "` "
 						+ "WHERE `world` = ? ;";
     	try {    		
     		preparedStatement = connection.prepareStatement(query);
@@ -351,24 +382,35 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 			ResultSet list = preparedStatement.executeQuery();
 			
 			while (list.next()) {
-				UUID uuid = UUID.fromString(list.getString("region"));
-				Group group = this.plugin.getGame().getRegistry().getType(Group.class, list.getString("group")).orElse(Groups.DEFAULT);
+				UUID uuid = null;
+				try {
+					uuid = UUID.fromString(list.getString("region"));
+				} catch (IllegalArgumentException e) {
+					this.plugin.getELogger().warn("Error the uuid of the region is incorrect : (region='" + list.getString("uuid") + "';world='" + world + "',region_group='" + list.getString("group") + "';group='" + list.getString("name") + "')");
+					continue;
+				}
+				
+				Optional<Group> group = this.plugin.getGame().getRegistry().getType(Group.class, list.getString("group"));
+				if (!group.isPresent()) {
+					this.plugin.getELogger().warn("Error : Unsupported Group (region='" + uuid + "';world='" + world + "',region_group='" + list.getString("group") + "';group='" + list.getString("name") + "')");
+					continue;
+				}
 				
 				Map<Group, Set<String>> map = groups.get(uuid);
 				if (map == null) {
 					map = new HashMap<Group, Set<String>>();
 					groups.put(uuid, map);
 				}
-				Set<String> value = map.get(group);
+				Set<String> value = map.get(group.get());
 				if (value == null) {
 					value = new HashSet<String>();
-					map.put(group, value);
+					map.put(group.get(), value);
 				}
 				
 				value.add(list.getString("name"));
 			}
 		} catch (SQLException e) {
-			this.plugin.getELogger().warn(" : " + e.getMessage());
+			this.plugin.getELogger().warn("Error during the load of groups : (world='" + world + "') " + e.getMessage());
 		} finally {
 			try {if (preparedStatement != null) preparedStatement.close();} catch (SQLException e) {}
 	    }
@@ -389,34 +431,49 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 			ResultSet list = preparedStatement.executeQuery();
 			
 			while (list.next()) {
-				UUID uuid = UUID.fromString(list.getString("region"));
+				UUID uuid = null;
+				try {
+					uuid = UUID.fromString(list.getString("region"));
+				} catch (IllegalArgumentException e) {
+					this.plugin.getELogger().warn("Error the uuid of the region is incorrect : (region='" + list.getString("uuid") + "';world='" + world + "',region_group='" + list.getString("group") + "';flag='" + list.getString("flag") + "')");
+					continue;
+				}
+				
 				Map<Flag<?>, EFlagValue<?>> map = flags.get(uuid);
 				if (map == null) {
 					map = new HashMap<Flag<?>, EFlagValue<?>>();
 					flags.put(uuid, map);
 				}
 				
+				Optional<Group> group = this.plugin.getGame().getRegistry().getType(Group.class, list.getString("group"));
+				if (!group.isPresent()) {
+					this.plugin.getELogger().warn("Error : Unsupported Group (region='" + uuid + "';world='" + world + "',region_group='" + list.getString("group") + "';flag='" + list.getString("flag") + "')");
+					continue;
+				}
+				
 				Optional<Flag<?>> optFlag = this.plugin.getProtectionService().getFlag(list.getString("flag"));
-				Group group = this.plugin.getGame().getRegistry().getType(Group.class, list.getString("group")).orElse(Groups.DEFAULT);
-				if (optFlag.isPresent()) {
-					Flag<T> flag = (Flag<T>) optFlag.get();
-					
-					EFlagValue<T> flagValue = (EFlagValue<T>) map.get(flag);
-					if (flagValue == null) {
-						flagValue = new EFlagValue<T>();
-						map.put(flag, flagValue);
-					}
-					
-					try {
-						T value = flag.deserialize(list.getString("value"));
-						flagValue.set(group, value);
-					} catch(Exception e) {
-					}
-				} else {
+				if (!optFlag.isPresent()) {
+					this.plugin.getELogger().warn("Error : Unsupported Flag (region='" + uuid + "';world='" + world + "',region_group='" + list.getString("group") + "';flag='" + list.getString("flag") + "')");
+					continue;
+				}
+				
+				Flag<T> flag = (Flag<T>) optFlag.get();
+				
+				EFlagValue<T> flagValue = (EFlagValue<T>) map.get(flag);
+				if (flagValue == null) {
+					flagValue = new EFlagValue<T>();
+					map.put(flag, flagValue);
+				}
+				
+				try {
+					T value = flag.deserialize(list.getString("value"));
+					flagValue.set(group.get(), value);
+				} catch(Exception e) {
+					this.plugin.getELogger().warn("The value of the flag is incorrect (region='" + uuid + "';world='" + world + "',region_group='" + list.getString("group") + "';flag='" + list.getString("flag") + "')");
 				}
 			}
 		} catch (SQLException e) {
-			this.plugin.getELogger().warn(" : " + e.getMessage());
+			this.plugin.getELogger().warn("Error during the load of flags : (world='" + world + "') " + e.getMessage());
 		} finally {
 			try {if (preparedStatement != null) preparedStatement.close();} catch (SQLException e) {}
 	    }
@@ -440,7 +497,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 			preparedStatement.execute();
 			return true;
 		} catch (SQLException e) {
-			this.plugin.getELogger().warn(" : " + e.getMessage());
+			this.plugin.getELogger().warn("Error during the addition of a region (name='" + name + "';world='" + world + "') : " + e.getMessage());
 		}
 		return false;
 	}
@@ -458,7 +515,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 			preparedStatement.execute();
 			return true;
 		} catch (SQLException e) {
-			this.plugin.getELogger().warn(" : " + e.getMessage());
+			this.plugin.getELogger().warn("Error during the deletion of a region (uuid='" + identifier + "';world='" + world + "') : " + e.getMessage());
 		} finally {
 			try {if (preparedStatement != null) preparedStatement.close();} catch (SQLException e) {}
 	    }
@@ -487,7 +544,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
     		}
 			return true;
 		} catch (SQLException e) {
-			this.plugin.getELogger().warn(" : " + e.getMessage());
+			this.plugin.getELogger().warn("Error during the addition of a position (region='" + identifier + "';world='" + world + "') : " + e.getMessage());
 		}
 		return false;
 	}
@@ -505,7 +562,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 			preparedStatement.execute();
 			return true;
 		} catch (SQLException e) {
-			this.plugin.getELogger().warn(" : " + e.getMessage());
+			this.plugin.getELogger().warn("Error during the deletion of a position (region='" + identifier + "';world='" + world + "') : " + e.getMessage());
 		} finally {
 			try {if (preparedStatement != null) preparedStatement.close();} catch (SQLException e) {}
 	    }
@@ -527,7 +584,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 			preparedStatement.execute();
 			return true;
 		} catch (SQLException e) {
-			this.plugin.getELogger().warn(" : " + e.getMessage());
+			this.plugin.getELogger().warn("Error during the update of the name of a region (region='" + identifier + "';world='" + world + "') : " + e.getMessage());
 		} finally {
 			try {if (preparedStatement != null) preparedStatement.close();} catch (SQLException e) {}
 	    }
@@ -549,7 +606,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 			preparedStatement.execute();
 			return true;
 		} catch (SQLException e) {
-			this.plugin.getELogger().warn(" : " + e.getMessage());
+			this.plugin.getELogger().warn("Error during the update of the priority of a region (region='" + identifier + "';world='" + world + "') : " + e.getMessage());
 		} finally {
 			try {if (preparedStatement != null) preparedStatement.close();} catch (SQLException e) {}
 	    }
@@ -575,7 +632,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 			preparedStatement.execute();
 			return true;
 		} catch (SQLException e) {
-			this.plugin.getELogger().warn(" : " + e.getMessage());
+			this.plugin.getELogger().warn("Error during the update of the parent of a region (region='" + identifier + "';world='" + world + "') : " + e.getMessage());
 		} finally {
 			try {if (preparedStatement != null) preparedStatement.close();} catch (SQLException e) {}
 	    }
@@ -598,7 +655,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 			preparedStatement.execute();
 			return true;
 		} catch (SQLException e) {
-			this.plugin.getELogger().warn("Erreur : Ajoute un flag : " + e.getMessage());
+			this.plugin.getELogger().warn("Error during the addition of a flag (region='" + identifier + "';world='" + world + "') : " + e.getMessage());
 		} finally {
 			try {if (preparedStatement != null) preparedStatement.close();} catch (SQLException e) {}
 	    }
@@ -622,7 +679,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 			preparedStatement.execute();
 			return true;
 		} catch (SQLException e) {
-			this.plugin.getELogger().warn("Erreur : Met à jour un flag : " + e.getMessage());
+			this.plugin.getELogger().warn("Error during the update of a flag (region='" + identifier + "';world='" + world + "') : " + e.getMessage());
 		} finally {
 			try {if (preparedStatement != null) preparedStatement.close();} catch (SQLException e) {}
 	    }
@@ -644,7 +701,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 			preparedStatement.execute();
 			return true;
 		} catch (SQLException e) {
-			this.plugin.getELogger().warn("Erreur : Supprime un flag : " + e.getMessage());
+			this.plugin.getELogger().warn("Error during the deletion of a flag (region='" + identifier + "';world='" + world + "') : " + e.getMessage());
 		} finally {
 			try {if (preparedStatement != null) preparedStatement.close();} catch (SQLException e) {}
 	    }
@@ -664,7 +721,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 			preparedStatement.execute();
 			return true;
 		} catch (SQLException e) {
-			this.plugin.getELogger().warn("Erreur : Supprime tous les flags : " + e.getMessage());
+			this.plugin.getELogger().warn("Error during the deletion of flags (region='" + identifier + "';world='" + world + "') : " + e.getMessage());
 		} finally {
 			try {if (preparedStatement != null) preparedStatement.close();} catch (SQLException e) {}
 	    }
@@ -689,7 +746,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
     		}
 			return true;
 		} catch (SQLException e) {
-			this.plugin.getELogger().warn(" : " + e.getMessage());
+			this.plugin.getELogger().warn("Error during the addition of a user (region='" + identifier + "';world='" + world + "') : " + e.getMessage());
 		}
 		return false;
 	}
@@ -697,8 +754,8 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 	public <V> boolean deleteUser(Connection connection, UUID world, UUID identifier, Group group, Set<UUID> users) {
 		PreparedStatement preparedStatement = null;
 		
-		String query = 	  "DELETE FROM `" + this.getTableUsers() + "`"
-						+ "WHERE `region` = ? AND `world` = ? AND `group` = ? AND `uuid` IN (`" + users.stream().map(user -> user.toString()).reduce((u1, u2) -> u1 + "`, `" + u2).orElse("") + "`) ;";
+		String query = 	  "DELETE FROM `" + this.getTableUsers() + "` "
+						+ "WHERE `region` = ? AND `world` = ? AND `group` = ? AND `uuid` IN ('" + users.stream().map(user -> user.toString()).reduce((u1, u2) -> u1 + "', '" + u2).orElse("") + "') ;";
     	try {    		
     		preparedStatement = connection.prepareStatement(query);
 			preparedStatement.setString(1, identifier.toString());
@@ -708,7 +765,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 			preparedStatement.execute();
 			return true;
 		} catch (SQLException e) {
-			this.plugin.getELogger().warn(" : " + e.getMessage());
+			this.plugin.getELogger().warn("Error during the deletion of a user (region='" + identifier + "';world='" + world + "') : " + e.getMessage());
 		} finally {
 			try {if (preparedStatement != null) preparedStatement.close();} catch (SQLException e) {}
 	    }
@@ -718,7 +775,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 	public <V> boolean deleteUser(Connection connection, UUID world, UUID identifier) {
 		PreparedStatement preparedStatement = null;
 		
-		String query = 	  "DELETE FROM `" + this.getTableUsers() + "`"
+		String query = 	  "DELETE FROM `" + this.getTableUsers() + "` "
 						+ "WHERE `region` = ? AND `world` = ? ;";
     	try {    		
     		preparedStatement = connection.prepareStatement(query);
@@ -728,7 +785,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 			preparedStatement.execute();
 			return true;
 		} catch (SQLException e) {
-			this.plugin.getELogger().warn(" : " + e.getMessage());
+			this.plugin.getELogger().warn("Error during the deletion of users (region='" + identifier + "';world='" + world + "') : " + e.getMessage());
 		} finally {
 			try {if (preparedStatement != null) preparedStatement.close();} catch (SQLException e) {}
 	    }
@@ -753,7 +810,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
     		}
 			return true;
 		} catch (SQLException e) {
-			this.plugin.getELogger().warn(" : " + e.getMessage());
+			this.plugin.getELogger().warn("Error during the addition of a group (region='" + identifier + "';world='" + world + "') : " + e.getMessage());
 		}
 		return false;
 	}
@@ -761,8 +818,8 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 	public <V> boolean deleteGroup(Connection connection, UUID world, UUID identifier, Group group, Set<String> groups) {
 		PreparedStatement preparedStatement = null;
 		
-		String query = 	  "DELETE FROM `" + this.getTableGroups() + "`"
-						+ "WHERE `region` = ? AND `world` = ? AND `group` = ? AND `name` IN (`" + String.join("`, `", groups) + "`) ;";
+		String query = 	  "DELETE FROM `" + this.getTableGroups() + "` "
+						+ "WHERE `region` = ? AND `world` = ? AND `group` = ? AND `name` IN ('" + String.join("', '", groups) + "') ;";
     	try {    		
     		preparedStatement = connection.prepareStatement(query);
 			preparedStatement.setString(1, identifier.toString());
@@ -772,7 +829,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 			preparedStatement.execute();
 			return true;
 		} catch (SQLException e) {
-			this.plugin.getELogger().warn(" : " + e.getMessage());
+			this.plugin.getELogger().warn("Error during the deletion of a group (region='" + identifier + "';world='" + world + "') : " + e.getMessage());
 		} finally {
 			try {if (preparedStatement != null) preparedStatement.close();} catch (SQLException e) {}
 	    }
@@ -782,7 +839,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 	public <V> boolean deleteGroup(Connection connection, UUID world, UUID identifier) {
 		PreparedStatement preparedStatement = null;
 		
-		String query = 	  "DELETE FROM `" + this.getTableGroups() + "`"
+		String query = 	  "DELETE FROM `" + this.getTableGroups() + "` "
 						+ "WHERE `region` = ? AND `world` = ? ;";
     	try {    		
     		preparedStatement = connection.prepareStatement(query);
@@ -792,7 +849,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 			preparedStatement.execute();
 			return true;
 		} catch (SQLException e) {
-			this.plugin.getELogger().warn(" : " + e.getMessage());
+			this.plugin.getELogger().warn("Error during the deletion of group (region='" + identifier + "';world='" + world + "') : " + e.getMessage());
 		} finally {
 			try {if (preparedStatement != null) preparedStatement.close();} catch (SQLException e) {}
 	    }

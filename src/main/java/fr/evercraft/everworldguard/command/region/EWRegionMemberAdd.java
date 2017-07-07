@@ -190,19 +190,27 @@ public class EWRegionMemberAdd extends ESubCommand<EverWorldGuard> {
 		}
 	}
 	
-	private boolean commandRegionMemberAddPlayer(final CommandSource source, ProtectedRegion region, Set<User> players, World world) {
+	private boolean commandRegionMemberAddPlayer(final CommandSource source, final ProtectedRegion region, final Set<User> players, final World world) {
 		region.addPlayerMember(players.stream()
 				.map(user -> user.getUniqueId())
-				.collect(Collectors.toSet()));
-		EWMessages.REGION_MEMBER_ADD_PLAYERS.sender()
-			.replace("<region>", region.getName())
-			.replace("<world>", world.getName())
-			.replace("<players>", String.join(EWMessages.REGION_MEMBER_ADD_PLAYERS_JOIN.getString(), players.stream().map(owner -> owner.getName()).collect(Collectors.toList())))
-			.sendTo(source);
+				.collect(Collectors.toSet()))
+			.thenApply(result -> {
+				if (result == null) {
+					EAMessages.COMMAND_ERROR.sendTo(source);
+					return false;
+				}
+				
+				EWMessages.REGION_MEMBER_ADD_PLAYERS.sender()
+					.replace("<region>", region.getName())
+					.replace("<world>", world.getName())
+					.replace("<players>", String.join(EWMessages.REGION_MEMBER_ADD_PLAYERS_JOIN.getString(), players.stream().map(owner -> owner.getName()).collect(Collectors.toList())))
+					.sendTo(source);
+				return true;
+			});
 		return true;
 	}
 	
-	private boolean commandRegionMemberAddPlayer(final CommandSource source, ProtectedRegion region, User player, World world) {
+	private boolean commandRegionMemberAddPlayer(final CommandSource source, final ProtectedRegion region, final User player, final World world) {
 		if (region.getMembers().containsPlayer(player.getUniqueId())) {
 			EWMessages.REGION_MEMBER_ADD_PLAYER_ERROR.sender()
 				.replace("<region>", region.getName())
