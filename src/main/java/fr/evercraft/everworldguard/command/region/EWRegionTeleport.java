@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.spongepowered.api.command.CommandException;
@@ -92,17 +93,17 @@ public class EWRegionTeleport extends ESubCommand<EverWorldGuard> {
 	}
 	
 	@Override
-	public Collection<String> subTabCompleter(final CommandSource source, final List<String> args) throws CommandException {
+	public Collection<String> tabCompleter(final CommandSource source, final List<String> args) throws CommandException {
 		return this.pattern.suggest(source, args);
 	}
 	
 	@Override
-	public boolean subExecute(final CommandSource source, final List<String> args_list) throws CommandException {
+	public CompletableFuture<Boolean> execute(final CommandSource source, final List<String> args_list) throws CommandException {
 		if (!(source instanceof EPlayer)) {
 			EAMessages.COMMAND_ERROR_FOR_PLAYER.sender()
 				.prefix(EWMessages.PREFIX)
 				.sendTo(source);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		EPlayer player = (EPlayer) source;
 		
@@ -110,7 +111,7 @@ public class EWRegionTeleport extends ESubCommand<EverWorldGuard> {
 		
 		if (args.getArgs().size() != 1) {
 			source.sendMessage(this.help(source));
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		List<String> args_string = args.getArgs();
 		
@@ -125,7 +126,7 @@ public class EWRegionTeleport extends ESubCommand<EverWorldGuard> {
 					.prefix(EWMessages.PREFIX)
 					.replace("<world>", world_arg.get())
 					.sendTo(source);
-				return false;
+				return CompletableFuture.completedFuture(false);
 			}
 		} else if (source instanceof EPlayer) {
 			world = ((EPlayer) source).getWorld();
@@ -133,7 +134,7 @@ public class EWRegionTeleport extends ESubCommand<EverWorldGuard> {
 			EAMessages.COMMAND_ERROR_FOR_PLAYER.sender()
 				.prefix(EWMessages.PREFIX)
 				.sendTo(source);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		Optional<ProtectedRegion> region = this.plugin.getProtectionService().getOrCreateEWorld(world).getRegion(args_string.get(0));
@@ -143,14 +144,14 @@ public class EWRegionTeleport extends ESubCommand<EverWorldGuard> {
 				.prefix(EWMessages.PREFIX)
 				.replace("<region>", args_string.get(0))
 				.sendTo(source);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		if (!this.hasPermission(source, region.get(), world)) {
 			EWMessages.REGION_NO_PERMISSION.sender()
 				.replace("<region>", region.get().getName())
 				.sendTo(source);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		 if (args.isOption(MARKER_SPAWN)) {
@@ -160,7 +161,7 @@ public class EWRegionTeleport extends ESubCommand<EverWorldGuard> {
 		}
 	}
 
-	private boolean commandRegionTeleport(EPlayer player, ProtectedRegion region, World world) {
+	private CompletableFuture<Boolean> commandRegionTeleport(EPlayer player, ProtectedRegion region, World world) {
 		VirtualTransform location = region.getFlag(Flags.TELEPORT)
 				.getInherit(region.getGroup(player, UtilsContexts.get(world.getName())))
 				.orElseGet(() -> Flags.TELEPORT.getDefault(region));
@@ -170,12 +171,12 @@ public class EWRegionTeleport extends ESubCommand<EverWorldGuard> {
 				.replace("<region>", region.getName())
 				.replace("<world>", world.getName())
 				.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		if (!player.teleportSafeZone(location.getTransform(player.getTransform()), true)) {
 			EAMessages.PLAYER_ERROR_TELEPORT.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		EWMessages.REGION_TELEPORT_TELEPORT.sender()
@@ -183,7 +184,7 @@ public class EWRegionTeleport extends ESubCommand<EverWorldGuard> {
 			.replace("<world>", world.getName())
 			.replace("<position>", () -> this.getTeleportHover(location)) 
 			.sendTo(player);
-		return true;
+		return CompletableFuture.completedFuture(true);
 	}
 	
 	private Text getTeleportHover(final VirtualTransform location) {
@@ -200,12 +201,12 @@ public class EWRegionTeleport extends ESubCommand<EverWorldGuard> {
 				.build();
 	}
 
-	private boolean commandRegionSpawn(EPlayer player, ProtectedRegion region, World world) {
+	private CompletableFuture<Boolean> commandRegionSpawn(EPlayer player, ProtectedRegion region, World world) {
 		if (!player.hasPermission(EWPermissions.REGION_TELEPORT_SPAWN.get())) {
 			EAMessages.NO_PERMISSION.sender()
 				.prefix(EWMessages.PREFIX)
 				.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		Optional<VirtualTransform> optLocation = region.getFlag(Flags.SPAWN).getInherit(region.getGroup(player, UtilsContexts.get(world.getName())));
@@ -214,7 +215,7 @@ public class EWRegionTeleport extends ESubCommand<EverWorldGuard> {
 				.replace("<region>", region.getName())
 				.replace("<world>", world.getName())
 				.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		VirtualTransform location = optLocation.get();
 		
@@ -223,12 +224,12 @@ public class EWRegionTeleport extends ESubCommand<EverWorldGuard> {
 				.replace("<region>", region.getName())
 				.replace("<world>", world.getName())
 				.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		if (!player.teleportSafe(location.getTransform().get(), true)) {
 			EAMessages.PLAYER_ERROR_TELEPORT.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		EWMessages.REGION_TELEPORT_SPAWN.sender()
@@ -236,7 +237,7 @@ public class EWRegionTeleport extends ESubCommand<EverWorldGuard> {
 			.replace("<world>", world.getName())
 			.replace("<position>", () -> this.getSpawnHover(location)) 
 			.sendTo(player);
-		return true;
+		return CompletableFuture.completedFuture(true);
 	}
 	
 	private Text getSpawnHover(final VirtualTransform location) {

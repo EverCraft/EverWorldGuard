@@ -19,6 +19,7 @@ package fr.evercraft.everworldguard.command.select;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -78,18 +79,15 @@ public class EWSelectCui extends ESubCommand<EverWorldGuard> {
 	}
 	
 	@Override
-	public Collection<String> subTabCompleter(final CommandSource source, final List<String> args) throws CommandException {
+	public Collection<String> tabCompleter(final CommandSource source, final List<String> args) throws CommandException {
 		return Arrays.asList();
 	}
 	
 	@Override
-	public boolean subExecute(final CommandSource source, final List<String> args) throws CommandException {
-		// Résultat de la commande :
-		boolean resultat = false;
-		
+	public CompletableFuture<Boolean> execute(final CommandSource source, final List<String> args) throws CommandException {
 		if (args.size() == 0) {
 			if (source instanceof EPlayer) {
-				resultat = this.commandSelectClear(((EPlayer) source).get());
+				return this.commandSelectClear(((EPlayer) source).get());
 			} else {
 				EAMessages.COMMAND_ERROR_FOR_PLAYER.sender()
 					.prefix(EWMessages.PREFIX)
@@ -99,14 +97,14 @@ public class EWSelectCui extends ESubCommand<EverWorldGuard> {
 			source.sendMessage(this.help(source));
 		}
 		
-		return resultat;
+		return CompletableFuture.completedFuture(false);
 	}
 
-	private boolean commandSelectClear(final Player player) {
+	private CompletableFuture<Boolean> commandSelectClear(final Player player) {
 		this.plugin.getSelectionService().getSubject(player.getUniqueId()).ifPresent(subject -> {
 			subject.setCuiSupport(true);
 			subject.describeCUI(player);
 		});
-		return true;
+		return CompletableFuture.completedFuture(true);
 	}
 }

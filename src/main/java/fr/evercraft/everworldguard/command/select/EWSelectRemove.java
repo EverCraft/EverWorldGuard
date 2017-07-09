@@ -19,6 +19,7 @@ package fr.evercraft.everworldguard.command.select;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandSource;
@@ -61,18 +62,15 @@ public class EWSelectRemove extends ESubCommand<EverWorldGuard> {
 	}
 	
 	@Override
-	public Collection<String> subTabCompleter(final CommandSource source, final List<String> args) throws CommandException {
+	public Collection<String> tabCompleter(final CommandSource source, final List<String> args) throws CommandException {
 		return Arrays.asList();
 	}
 	
 	@Override
-	public boolean subExecute(final CommandSource source, final List<String> args) throws CommandException {
-		// Résultat de la commande :
-		boolean resultat = false;
-		
+	public CompletableFuture<Boolean> execute(final CommandSource source, final List<String> args) throws CommandException {
 		if (args.size() == 0) {
 			if (source instanceof EPlayer) {
-				resultat = this.commandSelectRemove((EPlayer) source);
+				return this.commandSelectRemove((EPlayer) source);
 			} else {
 				EAMessages.COMMAND_ERROR_FOR_PLAYER.sender()
 					.prefix(EWMessages.PREFIX)
@@ -82,19 +80,19 @@ public class EWSelectRemove extends ESubCommand<EverWorldGuard> {
 			source.sendMessage(this.help(source));
 		}
 		
-		return resultat;
+		return CompletableFuture.completedFuture(false);
 	}
 
-	private boolean commandSelectRemove(final EPlayer player) {		
+	private CompletableFuture<Boolean> commandSelectRemove(final EPlayer player) {		
 		if (!player.getSelectorType().equals(SelectionRegion.Types.POLYGONAL)) {
 			EWMessages.SELECT_REMOVE_ERROR.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		List<Vector3i> positions = player.getSelectorPositions();
 		if (player.getSelectorPositions().isEmpty()) {
 			EWMessages.SELECT_REMOVE_EMPTY.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		Vector3i pos = positions.get(positions.size() - 1);
 		try {
@@ -104,6 +102,6 @@ public class EWSelectRemove extends ESubCommand<EverWorldGuard> {
 		EWMessages.SELECT_REMOVE_PLAYER.sender()
 			.replace("<pos>", EWSelect.getPositionHover(pos))
 			.sendTo(player);
-		return true;
+		return CompletableFuture.completedFuture(true);
 	}
 }

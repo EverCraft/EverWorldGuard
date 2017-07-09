@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.spongepowered.api.command.CommandException;
@@ -108,17 +109,17 @@ public class EWRegionOwnerAdd extends ESubCommand<EverWorldGuard> {
 	}
 	
 	@Override
-	public Collection<String> subTabCompleter(final CommandSource source, final List<String> args) throws CommandException {
+	public Collection<String> tabCompleter(final CommandSource source, final List<String> args) throws CommandException {
 		return this.pattern.suggest(source, args);
 	}
 	
 	@Override
-	public boolean subExecute(final CommandSource source, final List<String> args_list) throws CommandException {
+	public CompletableFuture<Boolean> execute(final CommandSource source, final List<String> args_list) throws CommandException {
 		Args args = this.pattern.build(args_list);
 		
 		if (args.getArgs().size() < 2) {
 			source.sendMessage(this.help(source));
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		List<String> args_string = args.getArgs();
 		
@@ -133,7 +134,7 @@ public class EWRegionOwnerAdd extends ESubCommand<EverWorldGuard> {
 					.prefix(EWMessages.PREFIX)
 					.replace("<world>", world_arg.get())
 					.sendTo(source);
-				return false;
+				return CompletableFuture.completedFuture(false);
 			}
 		} else if (source instanceof EPlayer) {
 			world = ((EPlayer) source).getWorld();
@@ -141,7 +142,7 @@ public class EWRegionOwnerAdd extends ESubCommand<EverWorldGuard> {
 			EAMessages.COMMAND_ERROR_FOR_PLAYER.sender()
 				.prefix(EWMessages.PREFIX)
 				.sendTo(source);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		Optional<ProtectedRegion> region = this.plugin.getProtectionService().getOrCreateEWorld(world).getRegion(args_string.get(0));
@@ -151,14 +152,14 @@ public class EWRegionOwnerAdd extends ESubCommand<EverWorldGuard> {
 				.prefix(EWMessages.PREFIX)
 				.replace("<region>", args_string.get(0))
 				.sendTo(source);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		if (!this.hasPermission(source, region.get(), world)) {
 			EWMessages.REGION_NO_PERMISSION.sender()
 				.replace("<region>", region.get().getName())
 				.sendTo(source);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		if (args.isOption(MARKER_OWNER_GROUP)) {
@@ -168,7 +169,7 @@ public class EWRegionOwnerAdd extends ESubCommand<EverWorldGuard> {
 		}
 	}
 	
-	private boolean commandRegionOwnerAddPlayer(final CommandSource source, ProtectedRegion region, List<String> players_string, World world) {		
+	private CompletableFuture<Boolean> commandRegionOwnerAddPlayer(final CommandSource source, ProtectedRegion region, List<String> players_string, World world) {		
 		Set<User> players = new HashSet<User>();
 		for (String player_string : players_string) {
 			Optional<EUser> user = this.plugin.getEServer().getEUser(player_string);
@@ -179,7 +180,7 @@ public class EWRegionOwnerAdd extends ESubCommand<EverWorldGuard> {
 					.prefix(EWMessages.PREFIX)
 					.replace("<player>", player_string)
 					.sendTo(source);
-				return false;
+				return CompletableFuture.completedFuture(false);
 			}
 		}
 		
@@ -190,7 +191,7 @@ public class EWRegionOwnerAdd extends ESubCommand<EverWorldGuard> {
 		}
 	}
 	
-	private boolean commandRegionOwnerAddPlayer(final CommandSource source, ProtectedRegion region, Set<User> players, World world) {
+	private CompletableFuture<Boolean> commandRegionOwnerAddPlayer(final CommandSource source, ProtectedRegion region, Set<User> players, World world) {
 		region.addPlayerOwner(players.stream()
 				.map(user -> user.getUniqueId())
 				.collect(Collectors.toSet()));
@@ -199,10 +200,10 @@ public class EWRegionOwnerAdd extends ESubCommand<EverWorldGuard> {
 			.replace("<world>", world.getName())
 			.replace("<players>", String.join(EWMessages.REGION_OWNER_ADD_PLAYERS_JOIN.getString(), players.stream().map(owner -> owner.getName()).collect(Collectors.toList())))
 			.sendTo(source);
-		return true;
+		return CompletableFuture.completedFuture(true);
 	}
 	
-	private boolean commandRegionOwnerAddPlayer(final CommandSource source, ProtectedRegion region, User player, World world) {
+	private CompletableFuture<Boolean> commandRegionOwnerAddPlayer(final CommandSource source, ProtectedRegion region, User player, World world) {
 		if (region.getOwners().containsPlayer(player.getUniqueId())) {
 			EWMessages.REGION_OWNER_ADD_PLAYER_ERROR.sender()
 				.replace("<region>", region.getName())
@@ -217,10 +218,10 @@ public class EWRegionOwnerAdd extends ESubCommand<EverWorldGuard> {
 				.replace("<player>", player.getName())
 				.sendTo(source);
 		}
-		return true;
+		return CompletableFuture.completedFuture(true);
 	}
 	
-	private boolean commandRegionOwnerAddGroup(final CommandSource source, ProtectedRegion region, List<String> groups_string, World world) {
+	private CompletableFuture<Boolean> commandRegionOwnerAddGroup(final CommandSource source, ProtectedRegion region, List<String> groups_string, World world) {
 		Set<Subject> groups = new HashSet<Subject>();
 		for (String group_string : groups_string) {
 			Subject group = this.plugin.getEverAPI().getManagerService().getPermission().getGroupSubjects().get(group_string);
@@ -231,7 +232,7 @@ public class EWRegionOwnerAdd extends ESubCommand<EverWorldGuard> {
 					.prefix(EWMessages.PREFIX)
 					.replace("<group>", group_string)
 					.sendTo(source);
-				return false;
+				return CompletableFuture.completedFuture(false);
 			}
 		}
 		
@@ -242,7 +243,7 @@ public class EWRegionOwnerAdd extends ESubCommand<EverWorldGuard> {
 		}
 	}
 	
-	private boolean commandRegionOwnerAddGroup(final CommandSource source, ProtectedRegion region, Set<Subject> groups, World world) {
+	private CompletableFuture<Boolean> commandRegionOwnerAddGroup(final CommandSource source, ProtectedRegion region, Set<Subject> groups, World world) {
 		region.addGroupOwner(groups.stream()
 				.map(group -> group.getIdentifier())
 				.collect(Collectors.toSet()));
@@ -251,17 +252,17 @@ public class EWRegionOwnerAdd extends ESubCommand<EverWorldGuard> {
 			.replace("<world>", world.getName())
 			.replace("<groups>", String.join(EWMessages.REGION_OWNER_ADD_GROUPS_JOIN.getString(), groups.stream().map(owner -> owner.getIdentifier()).collect(Collectors.toList())))
 			.sendTo(source);
-		return true;
+		return CompletableFuture.completedFuture(true);
 	}
 	
-	private boolean commandRegionOwnerAddGroup(final CommandSource source, ProtectedRegion region, Subject group, World world) {
+	private CompletableFuture<Boolean> commandRegionOwnerAddGroup(final CommandSource source, ProtectedRegion region, Subject group, World world) {
 		if (region.getOwners().containsGroup(group)) {
 			EWMessages.REGION_OWNER_ADD_GROUP_ERROR.sender()
 				.replace("<region>", region.getName())
 				.replace("<world>", world.getName())
 				.replace("<group>", group.getIdentifier())
 				.sendTo(source);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 			
 		region.addGroupOwner(ImmutableSet.of(group.getIdentifier()));
@@ -270,7 +271,7 @@ public class EWRegionOwnerAdd extends ESubCommand<EverWorldGuard> {
 			.replace("<world>", world.getName())
 			.replace("<group>", group.getIdentifier())
 			.sendTo(source);
-		return true;
+		return CompletableFuture.completedFuture(true);
 	}
 	
 	private boolean hasPermission(final CommandSource source, final ProtectedRegion region, final World world) {

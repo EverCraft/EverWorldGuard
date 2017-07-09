@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.spongepowered.api.command.CommandException;
@@ -95,17 +96,17 @@ public class EWRegionSelect extends ESubCommand<EverWorldGuard> {
 	}
 	
 	@Override
-	public Collection<String> subTabCompleter(final CommandSource source, final List<String> args) throws CommandException {
+	public Collection<String> tabCompleter(final CommandSource source, final List<String> args) throws CommandException {
 		return this.pattern.suggest(source, args);
 	}
 	
 	@Override
-	public boolean subExecute(final CommandSource source, final List<String> args_list) throws CommandException {
+	public CompletableFuture<Boolean> execute(final CommandSource source, final List<String> args_list) throws CommandException {
 		if (!(source instanceof EPlayer)) {
 			EAMessages.COMMAND_ERROR_FOR_PLAYER.sender()
 				.prefix(EWMessages.PREFIX)
 				.sendTo(source);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		EPlayer player = (EPlayer) source;
 		
@@ -113,7 +114,7 @@ public class EWRegionSelect extends ESubCommand<EverWorldGuard> {
 		
 		if (args.getArgs().size() != 1) {
 			source.sendMessage(this.help(source));
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		List<String> args_string = args.getArgs();
 		
@@ -128,7 +129,7 @@ public class EWRegionSelect extends ESubCommand<EverWorldGuard> {
 					.prefix(EWMessages.PREFIX)
 					.replace("<world>", world_arg.get())
 					.sendTo(source);
-				return false;
+				return CompletableFuture.completedFuture(false);
 			}
 		} else if (source instanceof EPlayer) {
 			world = ((EPlayer) source).getWorld();
@@ -136,7 +137,7 @@ public class EWRegionSelect extends ESubCommand<EverWorldGuard> {
 			EAMessages.COMMAND_ERROR_FOR_PLAYER.sender()
 				.prefix(EWMessages.PREFIX)
 				.sendTo(source);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		Optional<ProtectedRegion> region = this.plugin.getProtectionService().getOrCreateEWorld(world).getRegion(args_string.get(0));
@@ -146,20 +147,20 @@ public class EWRegionSelect extends ESubCommand<EverWorldGuard> {
 				.prefix(EWMessages.PREFIX)
 				.replace("<region>", args_string.get(0))
 				.sendTo(source);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		if (!this.hasPermission(source, region.get(), world)) {
 			EWMessages.REGION_NO_PERMISSION.sender()
 				.replace("<region>", region.get().getName())
 				.sendTo(source);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		return this.commandRegionSelect(player, region.get(), world);
 	}
 	
-	private boolean commandRegionSelect(final EPlayer player, final ProtectedRegion region, final World world) {
+	private CompletableFuture<Boolean> commandRegionSelect(final EPlayer player, final ProtectedRegion region, final World world) {
 		Type type = region.getType();
 		if (type.equals(Types.CUBOID)) {
 			return this.commandRegionSelectCuboid(player, region, world);
@@ -178,10 +179,10 @@ public class EWRegionSelect extends ESubCommand<EverWorldGuard> {
 				.replace("<type>", type.getNameFormat())
 				.sendTo(player);
 		}
-		return false;
+		return CompletableFuture.completedFuture(false);
 	}
 	
-	private boolean commandRegionSelectCuboid(final EPlayer player, final ProtectedRegion region, final World world) {
+	private CompletableFuture<Boolean> commandRegionSelectCuboid(final EPlayer player, final ProtectedRegion region, final World world) {
 		Vector3i min = region.getMinimumPoint();
 		Vector3i max = region.getMaximumPoint();
 		
@@ -209,10 +210,10 @@ public class EWRegionSelect extends ESubCommand<EverWorldGuard> {
 							.toText2(replaces)))
 					.build())
 			.sendTo(player);
-		return false;
+		return CompletableFuture.completedFuture(false);
 	}
 	
-	private boolean commandRegionSelectPolygonal(final EPlayer player, final ProtectedRegion region, final World world) {
+	private CompletableFuture<Boolean> commandRegionSelectPolygonal(final EPlayer player, final ProtectedRegion region, final World world) {
 		player.setSelectorType(SelectionRegion.Types.POLYGONAL);
 		Iterator<Vector3i> iterator = region.getPoints().iterator();
 		if (iterator.hasNext()) {
@@ -253,7 +254,7 @@ public class EWRegionSelect extends ESubCommand<EverWorldGuard> {
 							.toText2(replaces)))
 					.build())
 			.sendTo(player);
-		return false;
+		return CompletableFuture.completedFuture(false);
 	}
 	
 	private boolean hasPermission(final CommandSource source, final ProtectedRegion region, final World world) {

@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.spongepowered.api.command.CommandException;
@@ -88,17 +89,17 @@ public class EWRegionRename extends ESubCommand<EverWorldGuard> {
 	}
 	
 	@Override
-	public Collection<String> subTabCompleter(final CommandSource source, final List<String> args) throws CommandException {
+	public Collection<String> tabCompleter(final CommandSource source, final List<String> args) throws CommandException {
 		return this.pattern.suggest(source, args);
 	}
 	
 	@Override
-	public boolean subExecute(final CommandSource source, final List<String> args_list) throws CommandException {
+	public CompletableFuture<Boolean> execute(final CommandSource source, final List<String> args_list) throws CommandException {
 		Args args = this.pattern.build(args_list);
 		
 		if (args.getArgs().size() != 2) {
 			source.sendMessage(this.help(source));
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		List<String> args_string = args.getArgs();
 		
@@ -113,7 +114,7 @@ public class EWRegionRename extends ESubCommand<EverWorldGuard> {
 					.prefix(EWMessages.PREFIX)
 					.replace("<world>", world_arg.get())
 					.sendTo(source);
-				return false;
+				return CompletableFuture.completedFuture(false);
 			}
 		} else if (source instanceof EPlayer) {
 			world = ((EPlayer) source).getWorld();
@@ -121,7 +122,7 @@ public class EWRegionRename extends ESubCommand<EverWorldGuard> {
 			EAMessages.COMMAND_ERROR_FOR_PLAYER.sender()
 				.prefix(EWMessages.PREFIX)
 				.sendTo(source);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		WorldGuardWorld manager = this.plugin.getProtectionService().getOrCreateEWorld(world);
@@ -132,20 +133,20 @@ public class EWRegionRename extends ESubCommand<EverWorldGuard> {
 				.prefix(EWMessages.PREFIX)
 				.replace("<region>", args_string.get(0))
 				.sendTo(source);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		if (!this.hasPermission(source, region.get(), world)) {
 			EWMessages.REGION_NO_PERMISSION.sender()
 				.replace("<region>", region.get().getName())
 				.sendTo(source);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		return this.commandRegionRename(source, manager, region.get(), args.getArg(1).get(), world);
 	}
 
-	private boolean commandRegionRename(final CommandSource player, WorldGuardWorld manager, ProtectedRegion region, String region_string, World world) {
+	private CompletableFuture<Boolean> commandRegionRename(final CommandSource player, WorldGuardWorld manager, ProtectedRegion region, String region_string, World world) {
 		String before_identifier = region.getName();
 		if (region.getType().equals(ProtectedRegion.Types.GLOBAL)) {
 			EWMessages.REGION_RENAME_ERROR_GLOBAL.sender()
@@ -153,7 +154,7 @@ public class EWRegionRename extends ESubCommand<EverWorldGuard> {
 				.replace("<type>", region.getType().getNameFormat())
 				.replace("<world>", world.getName())
 				.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		if (manager.getRegion(region_string).isPresent()) {
@@ -163,7 +164,7 @@ public class EWRegionRename extends ESubCommand<EverWorldGuard> {
 				.replace("<type>", region.getType().getNameFormat())
 				.replace("<world>", world.getName())
 				.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		try {
@@ -175,7 +176,7 @@ public class EWRegionRename extends ESubCommand<EverWorldGuard> {
 				.replace("<type>", region.getType().getNameFormat())
 				.replace("<world>", world.getName())
 				.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		EWMessages.REGION_RENAME_SET.sender()
@@ -184,7 +185,7 @@ public class EWRegionRename extends ESubCommand<EverWorldGuard> {
 			.replace("<type>", region.getType().getNameFormat())
 			.replace("<world>", world.getName())
 			.sendTo(player);
-		return true;
+		return CompletableFuture.completedFuture(true);
 	}
 	
 	private boolean hasPermission(final CommandSource source, final ProtectedRegion region, final World world) {

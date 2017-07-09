@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.spongepowered.api.command.CommandException;
@@ -103,17 +104,17 @@ public class EWRegionParent extends ESubCommand<EverWorldGuard> {
 	}
 	
 	@Override
-	public Collection<String> subTabCompleter(final CommandSource source, final List<String> args) throws CommandException {
+	public Collection<String> tabCompleter(final CommandSource source, final List<String> args) throws CommandException {
 		return this.pattern.suggest(source, args);
 	}
 	
 	@Override
-	public boolean subExecute(final CommandSource source, final List<String> args_list) throws CommandException {
+	public CompletableFuture<Boolean> execute(final CommandSource source, final List<String> args_list) throws CommandException {
 		Args args = this.pattern.build(args_list);
 		
 		if (args.getArgs().isEmpty() || args.getArgs().size() > 2) {
 			source.sendMessage(this.help(source));
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		List<String> args_string = args.getArgs();
 		
@@ -128,7 +129,7 @@ public class EWRegionParent extends ESubCommand<EverWorldGuard> {
 					.prefix(EWMessages.PREFIX)
 					.replace("<world>", world_arg.get())
 					.sendTo(source);
-				return false;
+				return CompletableFuture.completedFuture(false);
 			}
 		} else if (source instanceof EPlayer) {
 			world = ((EPlayer) source).getWorld();
@@ -136,7 +137,7 @@ public class EWRegionParent extends ESubCommand<EverWorldGuard> {
 			EAMessages.COMMAND_ERROR_FOR_PLAYER.sender()
 				.prefix(EWMessages.PREFIX)
 				.sendTo(source);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		WorldGuardWorld manager = this.plugin.getProtectionService().getOrCreateEWorld(world);
@@ -148,14 +149,14 @@ public class EWRegionParent extends ESubCommand<EverWorldGuard> {
 				.prefix(EWMessages.PREFIX)
 				.replace("<region>", args_string.get(0))
 				.sendTo(source);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		if (!this.hasPermission(source, region.get(), world)) {
 			EWMessages.REGION_NO_PERMISSION.sender()
 				.replace("<region>", region.get().getName())
 				.sendTo(source);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		String parent = args.getArg(1).orElse("");
@@ -166,7 +167,7 @@ public class EWRegionParent extends ESubCommand<EverWorldGuard> {
 		}
 	}
 
-	private boolean commandRegionSetParent(final CommandSource source, ProtectedRegion region, WorldGuardWorld manager, String parent_string, World world) {
+	private CompletableFuture<Boolean> commandRegionSetParent(final CommandSource source, ProtectedRegion region, WorldGuardWorld manager, String parent_string, World world) {
 		Optional<ProtectedRegion> optParent = manager.getRegion(parent_string);
 		// Region introuvable
 		if (!optParent.isPresent()) {
@@ -174,7 +175,7 @@ public class EWRegionParent extends ESubCommand<EverWorldGuard> {
 				.prefix(EWMessages.PREFIX)
 				.replace("<region>", parent_string)
 				.sendTo(source);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		ProtectedRegion parent = optParent.get();
 		
@@ -184,7 +185,7 @@ public class EWRegionParent extends ESubCommand<EverWorldGuard> {
 				.replace("<parent>", parent.getName())
 				.replace("<world>", world.getName())
 				.sendTo(source);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		Optional<ProtectedRegion> region_parent = region.getParent();
@@ -194,7 +195,7 @@ public class EWRegionParent extends ESubCommand<EverWorldGuard> {
 				.replace("<parent>", parent.getName())
 				.replace("<world>", world.getName())
 				.sendTo(source);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		try {
@@ -205,7 +206,7 @@ public class EWRegionParent extends ESubCommand<EverWorldGuard> {
 				.replace("<parent>", parent.getName())
 				.replace("<world>", world.getName())
 				.sendTo(source);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		// Héritage
@@ -244,16 +245,16 @@ public class EWRegionParent extends ESubCommand<EverWorldGuard> {
 				.replace("<heritage>", Text.joinWith(Text.of("\n"), messages))
 				.sendTo(source);
 		}		
-		return true;
+		return CompletableFuture.completedFuture(true);
 	}
 	
-	private boolean commandRegionRemoveParent(final CommandSource source, ProtectedRegion region, World world) {
+	private CompletableFuture<Boolean> commandRegionRemoveParent(final CommandSource source, ProtectedRegion region, World world) {
 		if (!region.getParent().isPresent()) {
 			EWMessages.REGION_PARENT_REMOVE_EMPTY.sender()
 				.replace("<region>", region.getName())
 				.replace("<world>", world.getName())
 				.sendTo(source);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		region.clearParent();
@@ -261,7 +262,7 @@ public class EWRegionParent extends ESubCommand<EverWorldGuard> {
 			.replace("<region>", region.getName())
 			.replace("<world>", world.getName())
 			.sendTo(source);
-		return true;
+		return CompletableFuture.completedFuture(true);
 	}
 	
 	private boolean hasPermission(final CommandSource source, final ProtectedRegion region, final World world) {

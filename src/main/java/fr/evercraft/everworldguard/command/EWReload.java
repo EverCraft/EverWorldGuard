@@ -19,6 +19,7 @@ package fr.evercraft.everworldguard.command;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandSource;
@@ -46,7 +47,7 @@ public class EWReload extends ESubCommand<EverWorldGuard> {
 		return EAMessages.RELOAD_DESCRIPTION.getText();
 	}
 	
-	public Collection<String> subTabCompleter(final CommandSource source, final List<String> args) throws CommandException {
+	public Collection<String> tabCompleter(final CommandSource source, final List<String> args) throws CommandException {
 		return Arrays.asList();
 	}
 
@@ -57,17 +58,17 @@ public class EWReload extends ESubCommand<EverWorldGuard> {
 					.build();
 	}
 	
-	public boolean subExecute(final CommandSource source, final List<String> args) {
+	public CompletableFuture<Boolean> execute(final CommandSource source, final List<String> args) {
 		if (args.size() == 0) {
-			return commandReload(source);
+			return this.commandReload(source);
 		}
 		source.sendMessage(this.help(source));
-		return false;
+		return CompletableFuture.completedFuture(false);
 	}
 
-	private boolean commandReload(final CommandSource source) {
+	private CompletableFuture<Boolean> commandReload(final CommandSource source) {
 		this.plugin.reload();
 		EAMessages.RELOAD_COMMAND.sender().prefix(EWMessages.PREFIX).sendTo(source);
-		return true;
+		return CompletableFuture.completedFuture(true);
 	}
 }

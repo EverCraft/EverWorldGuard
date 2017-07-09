@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandSource;
@@ -62,18 +63,15 @@ public class EWSelectPos2 extends ESubCommand<EverWorldGuard> {
 	}
 	
 	@Override
-	public Collection<String> subTabCompleter(final CommandSource source, final List<String> args) throws CommandException {
+	public Collection<String> tabCompleter(final CommandSource source, final List<String> args) throws CommandException {
 		return Arrays.asList();
 	}
 	
 	@Override
-	public boolean subExecute(final CommandSource source, final List<String> args) throws CommandException {
-		// Résultat de la commande :
-		boolean resultat = false;
-		
+	public CompletableFuture<Boolean> execute(final CommandSource source, final List<String> args) throws CommandException {
 		if (args.size() == 0) {
 			if (source instanceof EPlayer) {
-				resultat = this.commandSelectPos2((EPlayer) source);
+				return this.commandSelectPos2((EPlayer) source);
 			} else {
 				EAMessages.COMMAND_ERROR_FOR_PLAYER.sender()
 					.prefix(EWMessages.PREFIX)
@@ -83,10 +81,10 @@ public class EWSelectPos2 extends ESubCommand<EverWorldGuard> {
 			source.sendMessage(this.help(source));
 		}
 		
-		return resultat;
+		return CompletableFuture.completedFuture(false);
 	}
 
-	private boolean commandSelectPos2(final EPlayer player) {		
+	private CompletableFuture<Boolean> commandSelectPos2(final EPlayer player) {		
 		Vector3i position = player.getLocation().getPosition().toInt();
 		
 		if (player.getSelectorType().equals(SelectionRegion.Types.CUBOID) || 
@@ -103,17 +101,17 @@ public class EWSelectPos2 extends ESubCommand<EverWorldGuard> {
 		EAMessages.COMMAND_ERROR.sender()
 			.prefix(EWMessages.PREFIX)
 			.sendTo(player);
-		return false;
+		return CompletableFuture.completedFuture(false);
 	}
 	
-	private boolean commandSelectPos2Cuboid(final EPlayer player, final Vector3i position) {
+	private CompletableFuture<Boolean> commandSelectPos2Cuboid(final EPlayer player, final Vector3i position) {
 		Optional<Vector3i> pos2 = player.getSelectorSecondary();
 		
 		if (pos2.isPresent() && pos2.get().equals(position)) {
 			EWMessages.SELECT_POS2_EQUALS.sender()
 				.replace("<position>", EWSelect.getPositionHover(position))
 				.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		try {
@@ -121,13 +119,13 @@ public class EWSelectPos2 extends ESubCommand<EverWorldGuard> {
 				EWMessages.SELECT_POS2_CANCEL.sender()
 					.replace("<position>", EWSelect.getPositionHover(position))
 					.sendTo(player);
-				return false;
+				return CompletableFuture.completedFuture(false);
 			}
 		} catch (SelectorSecondaryException e) {
 			EAMessages.COMMAND_ERROR.sender()
 				.prefix(EWMessages.PREFIX)
 				.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		if (!player.getSelectorPrimary().isPresent()) {
@@ -140,17 +138,17 @@ public class EWSelectPos2 extends ESubCommand<EverWorldGuard> {
 				.replace("<area>", String.valueOf(player.getSelectorVolume()))
 				.sendTo(player);
 		}
-		return true;
+		return CompletableFuture.completedFuture(true);
 	}
 	
-	private boolean commandSelectPos2Poly(final EPlayer player, final Vector3i position) {
+	private CompletableFuture<Boolean> commandSelectPos2Poly(final EPlayer player, final Vector3i position) {
 		List<Vector3i> points = player.getSelectorPositions();
 		
 		if (!points.isEmpty() && points.get(points.size() - 1).equals(position)) {
 			EWMessages.SELECT_POS2_EQUALS.sender()
 				.replace("<pos>", EWSelect.getPositionHover(position))
 				.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		try {
@@ -158,13 +156,13 @@ public class EWSelectPos2 extends ESubCommand<EverWorldGuard> {
 				EWMessages.SELECT_POS2_CANCEL.sender()
 					.replace("<pos>", EWSelect.getPositionHover(position))
 					.sendTo(player);
-				return false;
+				return CompletableFuture.completedFuture(false);
 			}
 		} catch (SelectorSecondaryException e) {
 			EAMessages.COMMAND_ERROR.sender()
 				.prefix(EWMessages.PREFIX)
 				.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		if (points.isEmpty()) {
@@ -179,10 +177,10 @@ public class EWSelectPos2 extends ESubCommand<EverWorldGuard> {
 				.replace("<area>", String.valueOf(player.getSelectorVolume()))
 				.sendTo(player);
 		}
-		return true;
+		return CompletableFuture.completedFuture(true);
 	}
 	
-	private boolean commandSelectPos2Cylinder(final EPlayer player, final Vector3i position) {
+	private CompletableFuture<Boolean> commandSelectPos2Cylinder(final EPlayer player, final Vector3i position) {
 		Optional<Vector3i> pos1 = player.getSelectorPrimary();
 		Optional<Vector3i> pos2 = player.getSelectorSecondary();
 
@@ -190,7 +188,7 @@ public class EWSelectPos2 extends ESubCommand<EverWorldGuard> {
 			EWMessages.SELECT_POS2_EQUALS.sender()
 				.replace("<pos>", EWSelect.getPositionHover(position))
 				.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		try {
@@ -198,13 +196,13 @@ public class EWSelectPos2 extends ESubCommand<EverWorldGuard> {
 				EWMessages.SELECT_POS2_CANCEL.sender()
 					.replace("<pos>", EWSelect.getPositionHover(position))
 					.sendTo(player);
-				return false;
+				return CompletableFuture.completedFuture(false);
 			}
 		} catch (SelectorSecondaryException e) {
 			EWMessages.SELECT_POS2_NO_CENTER.sender()
 				.replace("<pos>", EWSelect.getPositionHover(position))
 				.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		EWMessages.SELECT_POS2_RADIUS.sender()
@@ -212,6 +210,6 @@ public class EWSelectPos2 extends ESubCommand<EverWorldGuard> {
 			.replace("<radius>", String.valueOf(position.distance(pos1.get())))
 			.replace("<area>", String.valueOf(player.getSelectorVolume()))
 			.sendTo(player);
-		return true;
+		return CompletableFuture.completedFuture(true);
 	}
 }

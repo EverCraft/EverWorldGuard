@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.TreeMap;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.spongepowered.api.command.CommandException;
@@ -71,18 +72,18 @@ public class EWRegionFlags extends ESubCommand<EverWorldGuard> {
 	}
 	
 	@Override
-	public Collection<String> subTabCompleter(final CommandSource source, final List<String> args) throws CommandException {
+	public Collection<String> tabCompleter(final CommandSource source, final List<String> args) throws CommandException {
 		return this.pattern.suggest(source, args);
 	}
 	
 	@Override
-	public boolean subExecute(final CommandSource source, final List<String> args_list) throws CommandException {
+	public CompletableFuture<Boolean> execute(final CommandSource source, final List<String> args_list) throws CommandException {
 		Args args = this.pattern.build(args_list);
 		List<String> args_string = args.getArgs();
 		
 		if (args_string.size() > 1) {
 			source.sendMessage(this.help(source));
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		if (args_string.size() == 1) {
@@ -92,7 +93,7 @@ public class EWRegionFlags extends ESubCommand<EverWorldGuard> {
 		return this.commandRegionFlags(source);
 	}
 	
-	private boolean commandRegionFlags(CommandSource source) {
+	private CompletableFuture<Boolean> commandRegionFlags(CommandSource source) {
 		TreeMap<String, Text> map = new TreeMap<String, Text>();
 		for (Flag<?> flag : this.plugin.getProtectionService().getFlags()) {
 			map.put(flag.getName(), EWMessages.REGION_FLAGS_LIST_LINE.getFormat().toText(
@@ -106,22 +107,22 @@ public class EWRegionFlags extends ESubCommand<EverWorldGuard> {
 				.onClick(TextActions.runCommand("/" + this.getName()))
 				.build(), 
 				new ArrayList<Text>(map.values()), source);
-		return false;
+		return CompletableFuture.completedFuture(false);
 	}
 
-	private boolean commandRegionFlags(CommandSource source, String flagString) {
+	private CompletableFuture<Boolean> commandRegionFlags(CommandSource source, String flagString) {
 		Optional<Flag<?>> flag = this.plugin.getProtectionService().getFlag(flagString);
 		if (!flag.isPresent()) {
 			EWMessages.FLAG_NOT_FOUND.sender()
 				.replace("<flag>", flagString)
 				.sendTo(source);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		EWMessages.REGION_FLAGS_MESSAGE.sender()
 			.replace("<flag>", flag.get().getName())
 			.replace("<description>", flag.get().getDescription())
 			.sendTo(source);
-		return false;
+		return CompletableFuture.completedFuture(false);
 	}
 }

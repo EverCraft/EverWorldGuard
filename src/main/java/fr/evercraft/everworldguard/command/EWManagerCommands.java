@@ -19,7 +19,7 @@ package fr.evercraft.everworldguard.command;
 import java.util.HashSet;
 
 import fr.evercraft.everapi.plugin.command.ECommand;
-import fr.evercraft.everapi.plugin.command.EReloadCommand;
+import fr.evercraft.everapi.plugin.command.ReloadCommand;
 import fr.evercraft.everworldguard.EWCommand;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.command.region.*;
@@ -86,8 +86,8 @@ public class EWManagerCommands extends HashSet<ECommand<EverWorldGuard>> {
 	
 	public void reload(){
 		for (ECommand<EverWorldGuard> command : this) {
-			if (command instanceof EReloadCommand) {
-				((EReloadCommand<EverWorldGuard>) command).reload();
+			if (command instanceof ReloadCommand) {
+				((ReloadCommand) command).reload();
 			}
 		}
 	}

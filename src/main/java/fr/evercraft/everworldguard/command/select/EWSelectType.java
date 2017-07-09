@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandSource;
@@ -70,7 +71,7 @@ public class EWSelectType extends ESubCommand<EverWorldGuard> {
 	}
 	
 	@Override
-	public Collection<String> subTabCompleter(final CommandSource source, final List<String> args) throws CommandException {
+	public Collection<String> tabCompleter(final CommandSource source, final List<String> args) throws CommandException {
 		if (args.size() == 1) {
 			List<String> suggests = new ArrayList<String>();
 			for (SelectionRegion.Type type : this.plugin.getGame().getRegistry().getAllOf(SelectionRegion.Type.class)){
@@ -82,13 +83,10 @@ public class EWSelectType extends ESubCommand<EverWorldGuard> {
 	}
 	
 	@Override
-	public boolean subExecute(final CommandSource source, final List<String> args) throws CommandException {
-		// Résultat de la commande :
-		boolean resultat = false;
-		
+	public CompletableFuture<Boolean> execute(final CommandSource source, final List<String> args) throws CommandException {
 		if (args.size() == 1) {
 			if (source instanceof EPlayer) {
-				resultat = this.commandSelectType((EPlayer) source, args.get(0));
+				return this.commandSelectType((EPlayer) source, args.get(0));
 			} else {
 				EAMessages.COMMAND_ERROR_FOR_PLAYER.sender()
 					.prefix(EWMessages.PREFIX)
@@ -98,28 +96,28 @@ public class EWSelectType extends ESubCommand<EverWorldGuard> {
 			source.sendMessage(this.help(source));
 		}
 		
-		return resultat;
+		return CompletableFuture.completedFuture(false);
 	}
 
-	private boolean commandSelectType(final EPlayer player, final String type_string) {
+	private CompletableFuture<Boolean> commandSelectType(final EPlayer player, final String type_string) {
 		Optional<SelectionRegion.Type> type = this.plugin.getGame().getRegistry().getType(SelectionRegion.Type.class, type_string);
 		if (!type.isPresent()) {
 			player.sendMessage(this.help(player));
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		if (player.getSelectorType().equals(type.get())) {
 			EWMessages.SELECT_TYPE_EQUALS.sender()
 				.replace("<type>", type.get().getName())
 				.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		if (!player.setSelectorType(type.get())) {
 			EWMessages.SELECT_TYPE_CANCEL.sender()
 				.replace("<type>", type.get().getName())
 				.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		if (player.getSelectorType().equals(SelectionRegion.Types.CUBOID)) {
@@ -136,9 +134,9 @@ public class EWSelectType extends ESubCommand<EverWorldGuard> {
 			EWMessages.SELECT_TYPE_SPHERE.sendTo(player);
 		} else {
 			player.sendMessage(this.help(player));
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
-		return true;
+		return CompletableFuture.completedFuture(true);
 	}
 }

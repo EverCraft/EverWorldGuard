@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.TreeMap;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.spongepowered.api.command.CommandException;
@@ -89,17 +90,17 @@ public class EWRegionCheck extends ESubCommand<EverWorldGuard> {
 	}
 	
 	@Override
-	public Collection<String> subTabCompleter(final CommandSource source, final List<String> args) throws CommandException {
+	public Collection<String> tabCompleter(final CommandSource source, final List<String> args) throws CommandException {
 		return this.pattern.suggest(source, args);
 	}
 	
 	@Override
-	public boolean subExecute(final CommandSource source, final List<String> args_list) throws CommandException {
+	public CompletableFuture<Boolean> execute(final CommandSource source, final List<String> args_list) throws CommandException {
 		if (!(source instanceof EPlayer)) {
 			EAMessages.COMMAND_ERROR_FOR_PLAYER.sender()
 				.prefix(EWMessages.PREFIX)
 				.sendTo(source);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		EPlayer player = (EPlayer) source;
 		
@@ -110,7 +111,7 @@ public class EWRegionCheck extends ESubCommand<EverWorldGuard> {
 		
 		if (!args.getArgs().isEmpty() || args.countValues() != 1) {
 			player.sendMessage(this.help(player));
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		if (optGroupString.isPresent()) {
@@ -119,7 +120,7 @@ public class EWRegionCheck extends ESubCommand<EverWorldGuard> {
 				EWMessages.GROUP_NOT_FOUND.sender()
 					.replace("<group>", optGroupString.get())
 					.sendTo(source);
-				return false;
+				return CompletableFuture.completedFuture(false);
 			}
 			
 			return this.commandRegionCheck(player, group.get());
@@ -131,15 +132,15 @@ public class EWRegionCheck extends ESubCommand<EverWorldGuard> {
 				EWMessages.FLAG_NOT_FOUND.sender()
 					.replace("<flag>", optFlagString.get())
 					.sendTo(source);
-				return false;
+				return CompletableFuture.completedFuture(false);
 			}
 			
 			return this.commandRegionCheck(player, flag.get());
 		}
-		return false;
+		return CompletableFuture.completedFuture(false);
 	}
 	
-	private boolean commandRegionCheck(final EPlayer player, ProtectedRegion.Group group) {
+	private CompletableFuture<Boolean> commandRegionCheck(final EPlayer player, ProtectedRegion.Group group) {
 		SetProtectedRegion regions = player.getRegions();
 		TreeMap<String, Text> map = new TreeMap<String, Text>();
 		
@@ -158,10 +159,10 @@ public class EWRegionCheck extends ESubCommand<EverWorldGuard> {
 					.build(), 
 					new ArrayList<Text>(map.values()), player);
 		
-		return true;
+		return CompletableFuture.completedFuture(true);
 	}
 
-	private boolean commandRegionCheck(final EPlayer player, Flag<?> flag) {
+	private CompletableFuture<Boolean> commandRegionCheck(final EPlayer player, Flag<?> flag) {
 		SetProtectedRegion regions = player.getRegions();
 		List<Text> list = new ArrayList<Text>();
 		
@@ -185,7 +186,7 @@ public class EWRegionCheck extends ESubCommand<EverWorldGuard> {
 					.build(), 
 				list, player);
 		
-		return true;
+		return CompletableFuture.completedFuture(true);
 	}
 	
 	private <V> Text getMessage(SetProtectedRegion regions, World world, Flag<V> flag, ProtectedRegion.Group group, EWMessages messageRegion, EWMessages messageDefault) {

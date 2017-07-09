@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandSource;
@@ -66,7 +67,7 @@ public class EWSelectShift extends ESubCommand<EverWorldGuard> {
 	}
 	
 	@Override
-	public Collection<String> subTabCompleter(final CommandSource source, final List<String> args) throws CommandException {
+	public Collection<String> tabCompleter(final CommandSource source, final List<String> args) throws CommandException {
 		if (args.size() == 1) {
 			return Arrays.asList("vert", "10", "20", "30");
 		} else if (args.size() == 2) {
@@ -83,53 +84,49 @@ public class EWSelectShift extends ESubCommand<EverWorldGuard> {
 	}
 	
 	@Override
-	public boolean subExecute(final CommandSource source, final List<String> args) throws CommandException {
+	public CompletableFuture<Boolean> execute(final CommandSource source, final List<String> args) throws CommandException {
 		if (!(source instanceof EPlayer)) {
 			EAMessages.COMMAND_ERROR_FOR_PLAYER.sender()
 				.prefix(EWMessages.PREFIX)
 				.sendTo(source);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		EPlayer player = (EPlayer) source;
 		
 		try {
-			boolean resultat = false;
-			
 			if (args.size() == 1) {
-				resultat = this.commandSelectShift(player, args.get(0));
+				return this.commandSelectShift(player, args.get(0));
 			} else if (args.size() == 2) {
-				resultat = this.commandSelectShift(player, args.get(0), args.get(1));
+				return this.commandSelectShift(player, args.get(0), args.get(1));
 			} else {
 				source.sendMessage(this.help(source));
 			}
-			return resultat;
 		} catch (RegionOperationException e) {
 			EWMessages.SELECT_SHIFT_ERROR_OPERATION.sender()
 				.replace("<exception>", e.getMessage())
 				.sendTo(player);
-			return false;
 		} catch (NoSelectedRegionException e) {
 			EWMessages.SELECT_SHIFT_ERROR_NO_REGION.sender()
 				.replace("<exception>", e.getMessage())
 				.sendTo(player);
-			return false;
 		}
+		return CompletableFuture.completedFuture(false);
 	}
 
-	private boolean commandSelectShift(final EPlayer player, final String amount_string) throws RegionOperationException, NoSelectedRegionException {
+	private CompletableFuture<Boolean> commandSelectShift(final EPlayer player, final String amount_string) throws RegionOperationException, NoSelectedRegionException {
 		Optional<Integer> amount = UtilsInteger.parseInt(amount_string);
 		if (!amount.isPresent()) {
 			EAMessages.IS_NOT_NUMBER.sender()
 				.prefix(EWMessages.PREFIX)
 				.replace("<number>", amount_string)
 				.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		return this.commandSelectShift(player, amount.get(), player.getDirection());
 	}
 	
-	private boolean commandSelectShift(final EPlayer player, final String amount_string, final String direction_string) 
+	private CompletableFuture<Boolean> commandSelectShift(final EPlayer player, final String amount_string, final String direction_string) 
 			throws RegionOperationException, NoSelectedRegionException {
 		Optional<Integer> amount = UtilsInteger.parseInt(amount_string);
 		if (!amount.isPresent()) {
@@ -137,7 +134,7 @@ public class EWSelectShift extends ESubCommand<EverWorldGuard> {
 				.prefix(EWMessages.PREFIX)
 				.replace("<number>", amount_string)
 				.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		Optional<Direction> direction = null;
@@ -152,13 +149,13 @@ public class EWSelectShift extends ESubCommand<EverWorldGuard> {
 				.prefix(EWMessages.PREFIX)
 				.replace("<direction>", direction_string)
 				.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		return this.commandSelectShift(player, amount.get(), direction.get());
 	}
 	
-	private boolean commandSelectShift(final EPlayer player, final int amount, final Direction direction) 
+	private CompletableFuture<Boolean> commandSelectShift(final EPlayer player, final int amount, final Direction direction) 
 			throws RegionOperationException, NoSelectedRegionException {
 		Selector selector = player.getSelector();
 		
@@ -168,6 +165,6 @@ public class EWSelectShift extends ESubCommand<EverWorldGuard> {
 			.replace("<amount>", String.valueOf(amount))
 			.replace("<direction>", UtilsDirection.getText(direction))
 			.sendTo(player);
-		return true;
+		return CompletableFuture.completedFuture(true);
 	}
 }

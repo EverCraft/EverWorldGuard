@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandSource;
@@ -64,18 +65,15 @@ public class EWSelectInfo extends ESubCommand<EverWorldGuard> {
 	}
 	
 	@Override
-	public Collection<String> subTabCompleter(final CommandSource source, final List<String> args) throws CommandException {
+	public Collection<String> tabCompleter(final CommandSource source, final List<String> args) throws CommandException {
 		return Arrays.asList();
 	}
 	
 	@Override
-	public boolean subExecute(final CommandSource source, final List<String> args) throws CommandException {
-		// Résultat de la commande :
-		boolean resultat = false;
-		
+	public CompletableFuture<Boolean> execute(final CommandSource source, final List<String> args) throws CommandException {
 		if (args.size() == 0) {
 			if (source instanceof EPlayer) {
-				resultat = this.commandSelect((EPlayer) source);
+				return this.commandSelect((EPlayer) source);
 			} else {
 				EAMessages.COMMAND_ERROR_FOR_PLAYER.sender()
 					.prefix(EWMessages.PREFIX)
@@ -85,10 +83,10 @@ public class EWSelectInfo extends ESubCommand<EverWorldGuard> {
 			source.sendMessage(this.help(source));
 		}
 		
-		return resultat;
+		return CompletableFuture.completedFuture(false);
 	}
 
-	private boolean commandSelect(final EPlayer player) {
+	private CompletableFuture<Boolean> commandSelect(final EPlayer player) {
 		if (player.getSelectorType().equals(SelectionRegion.Types.CUBOID)) {
 			return this.commandSelectCuboid(player);
 		} else if (player.getSelectorType().equals(SelectionRegion.Types.EXTEND)) {
@@ -105,11 +103,11 @@ public class EWSelectInfo extends ESubCommand<EverWorldGuard> {
 			EAMessages.COMMAND_ERROR.sender()
 				.prefix(EWMessages.PREFIX)
 				.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 	}
 	
-	private boolean commandSelectCuboid(final EPlayer player) {
+	private CompletableFuture<Boolean> commandSelectCuboid(final EPlayer player) {
 		Optional<Vector3i> pos1 = player.getSelectorPrimary();
 		Optional<Vector3i> pos2 = player.getSelectorSecondary();
 		
@@ -132,7 +130,7 @@ public class EWSelectInfo extends ESubCommand<EverWorldGuard> {
 				.toText(false);
 		} else {
 			EWMessages.SELECT_INFO_CUBOID_EMPTY.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		this.plugin.getEverAPI().getManagerService().getEPagination().sendTo(
@@ -141,10 +139,10 @@ public class EWSelectInfo extends ESubCommand<EverWorldGuard> {
 				.onClick(TextActions.runCommand("/" + this.getName()))
 				.build(), 
 				Arrays.asList(text), player);
-		return true;
+		return CompletableFuture.completedFuture(true);
 	}
 	
-	private boolean commandSelectExtend(final EPlayer player) {
+	private CompletableFuture<Boolean> commandSelectExtend(final EPlayer player) {
 		Optional<Vector3i> pos1 = player.getSelectorPrimary();
 		Optional<Vector3i> pos2 = player.getSelectorSecondary();
 		
@@ -167,7 +165,7 @@ public class EWSelectInfo extends ESubCommand<EverWorldGuard> {
 				.toText(false);
 		} else {
 			EWMessages.SELECT_INFO_EXTEND_EMPTY.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		this.plugin.getEverAPI().getManagerService().getEPagination().sendTo(
@@ -176,10 +174,10 @@ public class EWSelectInfo extends ESubCommand<EverWorldGuard> {
 				.onClick(TextActions.runCommand("/" + this.getName()))
 				.build(), 
 				Arrays.asList(text), player);
-		return true;
+		return CompletableFuture.completedFuture(true);
 	}
 	
-	private boolean commandSelectPoly(final EPlayer player) {
+	private CompletableFuture<Boolean> commandSelectPoly(final EPlayer player) {
 		List<Vector3i> points = player.getSelectorPositions();
 		
 		if (!points.isEmpty()) {
@@ -199,12 +197,12 @@ public class EWSelectInfo extends ESubCommand<EverWorldGuard> {
 					lists, player);
 		} else {
 			EWMessages.SELECT_INFO_POLY_EMPTY.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
-		return true;
+		return CompletableFuture.completedFuture(true);
 	}
 	
-	private boolean commandSelectCylinder(final EPlayer player) {
+	private CompletableFuture<Boolean> commandSelectCylinder(final EPlayer player) {
 		Optional<Vector3i> pos1 = player.getSelectorPrimary();
 		Optional<Cylinder> optRegion = player.getSelectorRegion(SelectionRegion.Cylinder.class);
 		
@@ -224,7 +222,7 @@ public class EWSelectInfo extends ESubCommand<EverWorldGuard> {
 				.toText(false);
 		} else {
 			EWMessages.SELECT_INFO_CYLINDER_EMPTY.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		this.plugin.getEverAPI().getManagerService().getEPagination().sendTo(
@@ -233,10 +231,10 @@ public class EWSelectInfo extends ESubCommand<EverWorldGuard> {
 				.onClick(TextActions.runCommand("/" + this.getName()))
 				.build(), 
 				Arrays.asList(text), player);
-		return true;
+		return CompletableFuture.completedFuture(true);
 	}
 	
-	private boolean commandSelectEllipsoid(final EPlayer player) {
+	private CompletableFuture<Boolean> commandSelectEllipsoid(final EPlayer player) {
 		Optional<Vector3i> pos1 = player.getSelectorPrimary();
 		Optional<Ellipsoid> optRegion = player.getSelectorRegion(SelectionRegion.Ellipsoid.class);
 		
@@ -256,7 +254,7 @@ public class EWSelectInfo extends ESubCommand<EverWorldGuard> {
 				.toText(false);
 		} else {
 			EWMessages.SELECT_INFO_ELLIPSOID_EMPTY.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		this.plugin.getEverAPI().getManagerService().getEPagination().sendTo(
@@ -265,10 +263,10 @@ public class EWSelectInfo extends ESubCommand<EverWorldGuard> {
 				.onClick(TextActions.runCommand("/" + this.getName()))
 				.build(), 
 				Arrays.asList(text), player);
-		return true;
+		return CompletableFuture.completedFuture(true);
 	}
 	
-	private boolean commandSelectSphere(final EPlayer player) {
+	private CompletableFuture<Boolean> commandSelectSphere(final EPlayer player) {
 		Optional<Vector3i> pos1 = player.getSelectorPrimary();
 		Optional<Ellipsoid> optRegion = player.getSelectorRegion(SelectionRegion.Ellipsoid.class);
 		
@@ -289,7 +287,7 @@ public class EWSelectInfo extends ESubCommand<EverWorldGuard> {
 				.toText(false);
 		} else {
 			EWMessages.SELECT_INFO_SPHERE_EMPTY.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		this.plugin.getEverAPI().getManagerService().getEPagination().sendTo(
@@ -298,6 +296,6 @@ public class EWSelectInfo extends ESubCommand<EverWorldGuard> {
 				.onClick(TextActions.runCommand("/" + this.getName()))
 				.build(), 
 				Arrays.asList(text), player);
-		return true;
+		return CompletableFuture.completedFuture(true);
 	}
 }

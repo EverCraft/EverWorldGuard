@@ -26,6 +26,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.spongepowered.api.command.CommandException;
@@ -100,13 +101,12 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 	}
 	
 	@Override
-	public Collection<String> subTabCompleter(final CommandSource source, final List<String> args) throws CommandException {
+	public Collection<String> tabCompleter(final CommandSource source, final List<String> args) throws CommandException {
 		return this.pattern.suggest(source, args);
 	}
 	
 	@Override
-	public boolean subExecute(final CommandSource source, final List<String> args_list) throws CommandException {
-		boolean resultat = false;
+	public CompletableFuture<Boolean> execute(final CommandSource source, final List<String> args_list) throws CommandException {
 		Args args = this.pattern.build(args_list);
 		
 		if (args.getArgs().size() == 0) {
@@ -116,7 +116,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 					source.sendMessage(this.help(source));
 				} else {
 					EPlayer player = (EPlayer) source;
-					resultat = this.commandRegionInfo(source, player.getRegions(), player.getWorld());
+					return this.commandRegionInfo(source, player.getRegions(), player.getWorld());
 				}
 			} else {
 				EAMessages.COMMAND_ERROR_FOR_PLAYER.sender()
@@ -126,10 +126,10 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 		} else if (args.getArgs().size() == 1) {
 			Optional<String> world = args.getValue(MARKER_WORLD);
 			if (world.isPresent()) {
-				resultat = this.commandRegionInfo(source, args.getArgs().get(0), world.get());
+				return this.commandRegionInfo(source, args.getArgs().get(0), world.get());
 			} else {
 				if (source instanceof EPlayer) {
-					resultat = this.commandRegionInfo(source, args.getArgs().get(0), ((EPlayer) source).getWorld());
+					return this.commandRegionInfo(source, args.getArgs().get(0), ((EPlayer) source).getWorld());
 				} else {
 					EAMessages.COMMAND_ERROR_FOR_PLAYER.sender()
 						.prefix(EWMessages.PREFIX)
@@ -140,15 +140,15 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 			source.sendMessage(this.help(source));
 		}
 		
-		return resultat;
+		return CompletableFuture.completedFuture(false);
 	}
 	
-	private boolean commandRegionInfo(final CommandSource player, final SetProtectedRegion setregions, final World world) {
+	private CompletableFuture<Boolean> commandRegionInfo(final CommandSource player, final SetProtectedRegion setregions, final World world) {
 		if (setregions.getAll().isEmpty()) {
 			EAMessages.COMMAND_ERROR.sender()
 				.prefix(EWMessages.PREFIX)
 				.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		Set<ProtectedRegion> regions = setregions.getAll().stream()
@@ -157,7 +157,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 				
 		if (regions.isEmpty()) {
 			EWMessages.REGION_INFO_EMPTY.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		} else if (regions.size() == 1) {
 			return this.commandRegionInfo(player, regions.iterator().next(), world);
 		} else {
@@ -167,7 +167,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 			
 			if (regions.isEmpty()) {
 				EWMessages.REGION_INFO_EMPTY.sendTo(player);
-				return false;
+				return CompletableFuture.completedFuture(false);
 			} else if (regions.size() == 1) {
 				return this.commandRegionInfo(player, regions.iterator().next(), world);
 			} else {
@@ -176,7 +176,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 		}
 	}	
 	
-	private boolean commandRegionInfo(final CommandSource player, final String region_string, final String world_string) {
+	private CompletableFuture<Boolean> commandRegionInfo(final CommandSource player, final String region_string, final String world_string) {
 		Optional<World> world = this.plugin.getEServer().getEWorld(world_string);
 		// Monde introuvable
 		if (!world.isPresent()) {
@@ -184,13 +184,13 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 				.prefix(EWMessages.PREFIX)
 				.replace("<world>", world_string)
 				.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		return this.commandRegionInfo(player, region_string, world.get());
 	}
 	
-	private boolean commandRegionInfo(final CommandSource player, final String region_string, final World world) {
+	private CompletableFuture<Boolean> commandRegionInfo(final CommandSource player, final String region_string, final World world) {
 		Optional<ProtectedRegion> region = this.plugin.getProtectionService().getOrCreateEWorld(world).getRegion(region_string);
 		// Region introuvable
 		if (!region.isPresent()) {
@@ -198,20 +198,20 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 				.prefix(EWMessages.PREFIX)
 				.replace("<region>", region_string)
 				.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		if (!this.hasPermission(player, region.get(), world)) {
 			EWMessages.REGION_NO_PERMISSION.sender()
 				.replace("<region>", region.get().getName())
 				.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}		
 		
 		return this.commandRegionInfo(player, region.get(), world);
 	}
 	
-	private boolean commandRegionInfo(final CommandSource player, final Set<ProtectedRegion> regions, final World world) {
+	private CompletableFuture<Boolean> commandRegionInfo(final CommandSource player, final Set<ProtectedRegion> regions, final World world) {
 		TreeMap<ProtectedRegion, Text> map = new TreeMap<ProtectedRegion, Text>();
 		
 		for (ProtectedRegion region : regions) {
@@ -235,11 +235,11 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 					.onClick(TextActions.runCommand("/" + this.getName() + " -w \"" + world.getName() + "\""))
 					.build(), 
 				new ArrayList<Text>(map.values()), player);		
-		return true;
+		return CompletableFuture.completedFuture(true);
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> boolean commandRegionInfo(final CommandSource player, final ProtectedRegion region, final World world) {
+	private <T> CompletableFuture<Boolean> commandRegionInfo(final CommandSource player, final ProtectedRegion region, final World world) {
 		List<Text> list = new ArrayList<Text>();
 		
 		// World
@@ -529,7 +529,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 					.build(), 
 				list, player);
 		
-		return true;
+		return CompletableFuture.completedFuture(true);
 	}
 	
 	private void addLine(TreeMap<ProtectedRegion, Text> map, ProtectedRegion region, Text line) {

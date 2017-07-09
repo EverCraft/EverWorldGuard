@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandSource;
@@ -88,17 +89,17 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 	}
 	
 	@Override
-	public Collection<String> subTabCompleter(final CommandSource source, final List<String> args) throws CommandException {
+	public Collection<String> tabCompleter(final CommandSource source, final List<String> args) throws CommandException {
 		return this.pattern.suggest(source, args);
 	}
 	
 	@Override
-	public boolean subExecute(final CommandSource source, final List<String> args_list) throws CommandException {
+	public CompletableFuture<Boolean> execute(final CommandSource source, final List<String> args_list) throws CommandException {
 		if (!(source instanceof EPlayer)) {
 			EAMessages.COMMAND_ERROR_FOR_PLAYER.sender()
 				.prefix(EWMessages.PREFIX)
 				.sendTo(source);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		EPlayer player = (EPlayer) source;
 		
@@ -106,14 +107,14 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 		Optional<String> region_id = args.getArg(0);
 		if (args.getArgs().size() != 1 || !region_id.isPresent()) {
 			source.sendMessage(this.help(source));
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		if (this.plugin.getProtectionService().getOrCreateEWorld(player.getWorld()).getRegion(region_id.get()).isPresent()) {
 			EWMessages.REGION_DEFINE_ERROR_IDENTIFIER_EQUALS.sender()
 				.replace("<region>", region_id.get())
 				.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		Set<UUID> players = new HashSet<UUID>();
@@ -128,7 +129,7 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 						.prefix(EWMessages.PREFIX)
 						.replace("<player>", player_string)
 						.sendTo(source);
-					return false;
+					return CompletableFuture.completedFuture(false);
 				}
 			}
 		}
@@ -145,7 +146,7 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 						.prefix(EWMessages.PREFIX)
 						.replace("<player>", group_string)
 						.sendTo(source);
-					return false;
+					return CompletableFuture.completedFuture(false);
 				}
 			}
 		}
@@ -157,7 +158,7 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 		}
 	}
 	
-	private boolean commandRegionDefine(final EPlayer player, final String region_id, final Set<UUID> players, final Set<String> groups) {
+	private CompletableFuture<Boolean> commandRegionDefine(final EPlayer player, final String region_id, final Set<UUID> players, final Set<String> groups) {
 		if (player.getSelectorType().equals(SelectionRegion.Types.CUBOID)) {
 			return this.commandRegionDefineCuboid(player, region_id, players, groups);
 		} else if (player.getSelectorType().equals(SelectionRegion.Types.POLYGONAL)) {
@@ -167,18 +168,18 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 				.replace("<region>", region_id)
 				.replace("<type>", player.getSelectorType().getName())
 				.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 	}
 	
-	private boolean commandRegionDefineCuboid(final EPlayer player, final String region_id, final Set<UUID> players, final Set<String> groups) {
+	private CompletableFuture<Boolean> commandRegionDefineCuboid(final EPlayer player, final String region_id, final Set<UUID> players, final Set<String> groups) {
 		Optional<SelectionRegion.Cuboid> selection = player.getSelectorRegion(SelectionRegion.Cuboid.class);
 		if (!selection.isPresent()) {
 			EWMessages.REGION_DEFINE_CUBOID_ERROR_POSITION.sender()
 				.replace("<region>", region_id)
 				.replace("<type>", ProtectedRegion.Types.CUBOID.getNameFormat())
 				.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		try {
 			this.plugin.getProtectionService().getOrCreateEWorld(player.getWorld()).createRegionCuboid(region_id, 
@@ -204,26 +205,26 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 										.toText2(replaces)))
 								.build())
 						.sendTo(player);
-					return true;
+					return CompletableFuture.completedFuture(true);
 				});
 		} catch (RegionIdentifierException e) {
 			EWMessages.REGION_DEFINE_ERROR_IDENTIFIER_INVALID.sender()
 				.replace("<region>", region_id)
 				.replace("<type>", ProtectedRegion.Types.CUBOID.getNameFormat())
 				.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
-		return true;
+		return CompletableFuture.completedFuture(true);
 	}
 	
-	private boolean commandRegionDefinePolygonal(final EPlayer player, final String region_id, final Set<UUID> players, final Set<String> groups) {
+	private CompletableFuture<Boolean> commandRegionDefinePolygonal(final EPlayer player, final String region_id, final Set<UUID> players, final Set<String> groups) {
 		Optional<SelectionRegion.Polygonal> selector = player.getSelectorRegion(SelectionRegion.Polygonal.class);
 		if (!selector.isPresent()) {
 			EWMessages.REGION_DEFINE_POLYGONAL_ERROR_POSITION.sender()
 				.replace("<region>", region_id)
 				.replace("<type>", ProtectedRegion.Types.POLYGONAL.getNameFormat())
 				.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		try {
@@ -261,19 +262,19 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 										.toText2(replaces)))
 								.build())
 						.sendTo(player);
-					return true;
+					return CompletableFuture.completedFuture(true);
 				});
 		} catch (RegionIdentifierException e) {
 			EWMessages.REGION_DEFINE_ERROR_IDENTIFIER_INVALID.sender()
 				.replace("<region>", region_id)
 				.replace("<type>", ProtectedRegion.Types.POLYGONAL.getNameFormat())
 				.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
-		return true;
+		return CompletableFuture.completedFuture(true);
 	}
 	
-	private boolean commandRegionDefineTemplate(final EPlayer player, final String region_id, final Set<UUID> players, final Set<String> groups) {
+	private CompletableFuture<Boolean> commandRegionDefineTemplate(final EPlayer player, final String region_id, final Set<UUID> players, final Set<String> groups) {
 		if (player.hasPermission(EWPermissions.REGION_DEFINE_TEMPLATE.get())) {
 			EAMessages.NO_PERMISSION.sender()
 				.prefix(EWMessages.PREFIX)
@@ -287,15 +288,15 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 						.replace("<region>", region.getName())
 						.replace("<type>", region.getType().getNameFormat())
 						.sendTo(player);
-					return true;
+					return CompletableFuture.completedFuture(true);
 				});
 		} catch (RegionIdentifierException e) {
 			EWMessages.REGION_DEFINE_ERROR_IDENTIFIER_INVALID.sender()
 				.replace("<region>", region_id)
 				.replace("<type>", ProtectedRegion.Types.TEMPLATE.getNameFormat())
 				.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
-		return true;
+		return CompletableFuture.completedFuture(true);
 	}
 }

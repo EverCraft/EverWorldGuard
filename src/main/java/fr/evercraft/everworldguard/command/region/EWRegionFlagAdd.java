@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.spongepowered.api.command.CommandException;
@@ -126,17 +127,17 @@ public class EWRegionFlagAdd extends ESubCommand<EverWorldGuard> {
 	}
 	
 	@Override
-	public Collection<String> subTabCompleter(final CommandSource source, final List<String> args) throws CommandException {
+	public Collection<String> tabCompleter(final CommandSource source, final List<String> args) throws CommandException {
 		return this.pattern.suggest(source, args);
 	}
 	
 	@Override
-	public boolean subExecute(final CommandSource source, final List<String> args_list) throws CommandException {
+	public CompletableFuture<Boolean> execute(final CommandSource source, final List<String> args_list) throws CommandException {
 		Args args = this.pattern.build(args_list);
 		
 		if (args.getArgs().size() < 4) {
 			source.sendMessage(this.help(source));
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		List<String> args_string = args.getArgs();
 		
@@ -151,7 +152,7 @@ public class EWRegionFlagAdd extends ESubCommand<EverWorldGuard> {
 					.prefix(EWMessages.PREFIX)
 					.replace("<world>", world_arg.get())
 					.sendTo(source);
-				return false;
+				return CompletableFuture.completedFuture(false);
 			}
 		} else if (source instanceof EPlayer) {
 			world = ((EPlayer) source).getWorld();
@@ -159,7 +160,7 @@ public class EWRegionFlagAdd extends ESubCommand<EverWorldGuard> {
 			EAMessages.COMMAND_ERROR_FOR_PLAYER.sender()
 				.prefix(EWMessages.PREFIX)
 				.sendTo(source);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		Optional<ProtectedRegion> region = this.plugin.getProtectionService().getOrCreateEWorld(world).getRegion(args_string.get(0));
@@ -169,14 +170,14 @@ public class EWRegionFlagAdd extends ESubCommand<EverWorldGuard> {
 				.prefix(EWMessages.PREFIX)
 				.replace("<region>", args_string.get(0))
 				.sendTo(source);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		if (!this.hasPermission(source, region.get(), world)) {
 			EWMessages.REGION_NO_PERMISSION.sender()
 				.replace("<region>", region.get().getName())
 				.sendTo(source);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}	
 		
 		Optional<Flag<?>> flag = this.plugin.getProtectionService().getFlag(args_string.get(1));
@@ -184,7 +185,7 @@ public class EWRegionFlagAdd extends ESubCommand<EverWorldGuard> {
 			EWMessages.FLAG_NOT_FOUND.sender()
 				.replace("<flag>", args_string.get(1))
 				.sendTo(source);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		Optional<Group> group = this.plugin.getGame().getRegistry().getType(Group.class, args_string.get(2));
@@ -192,7 +193,7 @@ public class EWRegionFlagAdd extends ESubCommand<EverWorldGuard> {
 			EWMessages.GROUP_NOT_FOUND.sender()
 				.replace("<group>", args_string.get(2))
 				.sendTo(source);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		if (!flag.get().getGroups().contains(group.get())) {
@@ -200,13 +201,13 @@ public class EWRegionFlagAdd extends ESubCommand<EverWorldGuard> {
 				.replace("<flag>", flag.get().getName())
 				.replace("<group>", group.get().getName())
 				.sendTo(source);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		return this.commandRegionFlagAdd(source, region.get(), group.get(), flag.get(), args.getArgs(3), world);
 	}
 
-	private <T> boolean commandRegionFlagAdd(final CommandSource source, ProtectedRegion region, Group group, Flag<T> flag, List<String> values, World world) {
+	private <T> CompletableFuture<Boolean> commandRegionFlagAdd(final CommandSource source, ProtectedRegion region, Group group, Flag<T> flag, List<String> values, World world) {
 		try {
 			T value = flag.parseAdd(source, region, group, values);
 			
@@ -227,7 +228,7 @@ public class EWRegionFlagAdd extends ESubCommand<EverWorldGuard> {
 				return true;
 			});
 			
-			return true;
+			return CompletableFuture.completedFuture(true);
 		} catch (IllegalArgumentException e) {
 			if (e.getMessage() == null || e.getMessage().isEmpty()) {
 				EWMessages.REGION_FLAG_ADD_ERROR.sender()
@@ -244,7 +245,7 @@ public class EWRegionFlagAdd extends ESubCommand<EverWorldGuard> {
 					.build().sender()
 					.sendTo(source);
 			}
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 	}
 	

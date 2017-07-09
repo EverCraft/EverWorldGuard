@@ -19,6 +19,7 @@ package fr.evercraft.everworldguard.command.region;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandSource;
@@ -69,12 +70,12 @@ public class EWRegionLoad extends ESubCommand<EverWorldGuard> {
 	}
 	
 	@Override
-	public Collection<String> subTabCompleter(final CommandSource source, final List<String> args) throws CommandException {
+	public Collection<String> tabCompleter(final CommandSource source, final List<String> args) throws CommandException {
 		return this.pattern.suggest(source, args);
 	}
 	
 	@Override
-	public boolean subExecute(final CommandSource source, final List<String> args_list) throws CommandException {
+	public CompletableFuture<Boolean> execute(final CommandSource source, final List<String> args_list) throws CommandException {
 		Args args = this.pattern.build(args_list);
 		
 		Optional<String> worldString = args.getValue(MARKER_WORLD);
@@ -86,7 +87,7 @@ public class EWRegionLoad extends ESubCommand<EverWorldGuard> {
 					.prefix(EWMessages.PREFIX)
 					.replace("<world>", worldString.get())
 					.sendTo(source);
-				return false;
+				return CompletableFuture.completedFuture(false);
 			}
 			
 			return this.commandRegionLoad(source, world.get());
@@ -96,16 +97,16 @@ public class EWRegionLoad extends ESubCommand<EverWorldGuard> {
 			EAMessages.COMMAND_ERROR_FOR_PLAYER.sender()
 				.prefix(EWMessages.PREFIX)
 				.sendTo(source);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		return this.commandRegionLoad(source, ((EPlayer) source).getWorld());
 	}
 
-	private boolean commandRegionLoad(CommandSource source, World world) {
+	private CompletableFuture<Boolean> commandRegionLoad(CommandSource source, World world) {
 		this.plugin.getProtectionService().getOrCreateEWorld(world).reload();
 		EWMessages.REGION_LOAD_MESSAGE.sender()
 			.replace("<world>", world.getName())
 			.sendTo(source);
-		return true;
+		return CompletableFuture.completedFuture(true);
 	}
 }

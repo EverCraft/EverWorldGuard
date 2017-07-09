@@ -19,6 +19,7 @@ package fr.evercraft.everworldguard.command.select;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandSource;
@@ -57,18 +58,15 @@ public class EWSelectClear extends ESubCommand<EverWorldGuard> {
 	}
 	
 	@Override
-	public Collection<String> subTabCompleter(final CommandSource source, final List<String> args) throws CommandException {
+	public Collection<String> tabCompleter(final CommandSource source, final List<String> args) throws CommandException {
 		return Arrays.asList();
 	}
 	
 	@Override
-	public boolean subExecute(final CommandSource source, final List<String> args) throws CommandException {
-		// Résultat de la commande :
-		boolean resultat = false;
-		
+	public CompletableFuture<Boolean> execute(final CommandSource source, final List<String> args) throws CommandException {
 		if (args.size() == 0) {
 			if (source instanceof EPlayer) {
-				resultat = this.commandSelectClear((EPlayer) source);
+				return this.commandSelectClear((EPlayer) source);
 			} else {
 				EAMessages.COMMAND_ERROR_FOR_PLAYER.sender()
 					.prefix(EWMessages.PREFIX)
@@ -78,13 +76,13 @@ public class EWSelectClear extends ESubCommand<EverWorldGuard> {
 			source.sendMessage(this.help(source));
 		}
 		
-		return resultat;
+		return CompletableFuture.completedFuture(false);
 	}
 
-	private boolean commandSelectClear(final EPlayer player) {
+	private CompletableFuture<Boolean> commandSelectClear(final EPlayer player) {
 		player.clearSelector();
 		
 		EWMessages.SELECT_CLEAR_PLAYER.sendTo(player);
-		return true;
+		return CompletableFuture.completedFuture(true);
 	}
 }

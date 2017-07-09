@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.spongepowered.api.command.CommandException;
@@ -94,24 +95,24 @@ public class EWRegionRedefine extends ESubCommand<EverWorldGuard> {
 	}
 	
 	@Override
-	public Collection<String> subTabCompleter(final CommandSource source, final List<String> args) throws CommandException {
+	public Collection<String> tabCompleter(final CommandSource source, final List<String> args) throws CommandException {
 		return this.pattern.suggest(source, args);
 	}
 	
 	@Override
-	public boolean subExecute(final CommandSource source, final List<String> args_list) throws CommandException {
+	public CompletableFuture<Boolean> execute(final CommandSource source, final List<String> args_list) throws CommandException {
 		if (!(source instanceof EPlayer)) {
 			EAMessages.COMMAND_ERROR_FOR_PLAYER.sender()
 				.prefix(EWMessages.PREFIX)
 				.sendTo(source);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		EPlayer player = (EPlayer) source;
 		
 		Args args = this.pattern.build(args_list);
 		if (args.getArgs().size() != 1) {
 			source.sendMessage(this.help(source));
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		List<String> args_string = args.getArgs();
 				
@@ -122,14 +123,14 @@ public class EWRegionRedefine extends ESubCommand<EverWorldGuard> {
 				.prefix(EWMessages.PREFIX)
 				.replace("<region>", args_string.get(0))
 				.sendTo(source);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		if (!this.hasPermission(source, region.get(), player.getWorld())) {
 			EWMessages.REGION_NO_PERMISSION.sender()
 				.replace("<region>", region.get().getName())
 				.sendTo(source);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		if (region.get().getType().equals(ProtectedRegion.Types.GLOBAL)) {
@@ -138,7 +139,7 @@ public class EWRegionRedefine extends ESubCommand<EverWorldGuard> {
 				.replace("<type>", region.get().getType().getNameFormat())
 				.replace("<world>", player.getWorld().getName())
 				.sendTo(source);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		if (args.isOption(MARKER_TEMPLATE)) {
@@ -148,7 +149,7 @@ public class EWRegionRedefine extends ESubCommand<EverWorldGuard> {
 		}
 	}
 	
-	private boolean commandRegionRedefine(final EPlayer player, final ProtectedRegion region) {
+	private CompletableFuture<Boolean> commandRegionRedefine(final EPlayer player, final ProtectedRegion region) {
 		if (player.getSelectorType().equals(SelectionRegion.Types.CUBOID)) {
 			return this.commandRegionRedefineCuboid(player, region);
 		} else if (player.getSelectorType().equals(SelectionRegion.Types.POLYGONAL)) {
@@ -158,18 +159,18 @@ public class EWRegionRedefine extends ESubCommand<EverWorldGuard> {
 				.replace("<region>", region.getName())
 				.replace("<type>", player.getSelectorType().getName())
 				.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 	}
 	
-	private boolean commandRegionRedefineCuboid(final EPlayer player, final ProtectedRegion region) {
+	private CompletableFuture<Boolean> commandRegionRedefineCuboid(final EPlayer player, final ProtectedRegion region) {
 		Optional<SelectionRegion.Cuboid> selector = player.getSelectorRegion(SelectionRegion.Cuboid.class);
 		if (!selector.isPresent()) {
 			EWMessages.REGION_REDEFINE_CUBOID_ERROR_POSITION.sender()
 				.replace("<region>", region.getName())
 				.replace("<type>", ProtectedRegion.Types.CUBOID.getNameFormat())
 				.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		Optional<ProtectedRegion.Cuboid> region_new = region.redefineCuboid(
@@ -179,7 +180,7 @@ public class EWRegionRedefine extends ESubCommand<EverWorldGuard> {
 			EAMessages.COMMAND_ERROR.sender()
 				.prefix(EWMessages.PREFIX)
 				.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		Vector3i min = region.getMinimumPoint();
@@ -201,17 +202,17 @@ public class EWRegionRedefine extends ESubCommand<EverWorldGuard> {
 							.toText2(replaces)))
 					.build())
 			.sendTo(player);
-		return true;
+		return CompletableFuture.completedFuture(true);
 	}
 	
-	private boolean commandRegionRedefinePolygonal(final EPlayer player, final ProtectedRegion region) {
+	private CompletableFuture<Boolean> commandRegionRedefinePolygonal(final EPlayer player, final ProtectedRegion region) {
 		Optional<SelectionRegion.Polygonal> selector = player.getSelectorRegion(SelectionRegion.Polygonal.class);
 		if (!selector.isPresent()) {
 			EWMessages.REGION_REDEFINE_POLYGONAL_ERROR_POSITION.sender()
 				.replace("<region>", region.getName())
 				.replace("<type>", ProtectedRegion.Types.POLYGONAL.getNameFormat())
 				.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		Optional<ProtectedRegion.Polygonal> region_new = region.redefinePolygonal(selector.get().getPositions());
@@ -219,7 +220,7 @@ public class EWRegionRedefine extends ESubCommand<EverWorldGuard> {
 			EAMessages.COMMAND_ERROR.sender()
 				.prefix(EWMessages.PREFIX)
 				.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		Vector3i min = region.getMinimumPoint();
@@ -250,23 +251,23 @@ public class EWRegionRedefine extends ESubCommand<EverWorldGuard> {
 							.toText2(replaces)))
 					.build())
 			.sendTo(player);
-		return true;
+		return CompletableFuture.completedFuture(true);
 	}
 	
-	private boolean commandRegionRedefineTemplate(final EPlayer player, final ProtectedRegion region) {
+	private CompletableFuture<Boolean> commandRegionRedefineTemplate(final EPlayer player, final ProtectedRegion region) {
 		Optional<ProtectedRegion.Template> region_new = region.redefineTemplate();
 		if (!region_new.isPresent()) {
 			EAMessages.COMMAND_ERROR.sender()
 				.prefix(EWMessages.PREFIX)
 				.sendTo(player);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		EWMessages.REGION_REDEFINE_TEMPLATE_CREATE.sender()
 			.replace("<region>", region.getName())
 			.replace("<type>", region.getType().getNameFormat())
 			.sendTo(player);
-		return true;
+		return CompletableFuture.completedFuture(true);
 	}
 	
 	private boolean hasPermission(final CommandSource source, final ProtectedRegion region, final World world) {

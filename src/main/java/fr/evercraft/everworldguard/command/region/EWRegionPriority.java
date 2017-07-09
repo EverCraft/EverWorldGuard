@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.spongepowered.api.command.CommandException;
@@ -88,17 +89,17 @@ public class EWRegionPriority extends ESubCommand<EverWorldGuard> {
 	}
 	
 	@Override
-	public Collection<String> subTabCompleter(final CommandSource source, final List<String> args) throws CommandException {
+	public Collection<String> tabCompleter(final CommandSource source, final List<String> args) throws CommandException {
 		return this.pattern.suggest(source, args);
 	}
 	
 	@Override
-	public boolean subExecute(final CommandSource source, final List<String> args_list) throws CommandException {
+	public CompletableFuture<Boolean> execute(final CommandSource source, final List<String> args_list) throws CommandException {
 		Args args = this.pattern.build(args_list);
 		
 		if (args.getArgs().size() != 2) {
 			source.sendMessage(this.help(source));
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		List<String> args_string = args.getArgs();
 		
@@ -113,7 +114,7 @@ public class EWRegionPriority extends ESubCommand<EverWorldGuard> {
 					.prefix(EWMessages.PREFIX)
 					.replace("<world>", world_arg.get())
 					.sendTo(source);
-				return false;
+				return CompletableFuture.completedFuture(false);
 			}
 		} else if (source instanceof EPlayer) {
 			world = ((EPlayer) source).getWorld();
@@ -121,7 +122,7 @@ public class EWRegionPriority extends ESubCommand<EverWorldGuard> {
 			EAMessages.COMMAND_ERROR_FOR_PLAYER.sender()
 				.prefix(EWMessages.PREFIX)
 				.sendTo(source);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		WorldGuardWorld manager = this.plugin.getProtectionService().getOrCreateEWorld(world);
@@ -133,14 +134,14 @@ public class EWRegionPriority extends ESubCommand<EverWorldGuard> {
 				.prefix(EWMessages.PREFIX)
 				.replace("<region>", args_string.get(0))
 				.sendTo(source);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		if (!this.hasPermission(source, region.get(), world)) {
 			EWMessages.REGION_NO_PERMISSION.sender()
 				.replace("<region>", region.get().getName())
 				.sendTo(source);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		Optional<Integer> priority = UtilsInteger.parseInt(args_string.get(1));
@@ -149,13 +150,13 @@ public class EWRegionPriority extends ESubCommand<EverWorldGuard> {
 				.prefix(EWMessages.PREFIX)
 				.replace("<number>", args_string.get(1))
 				.sendTo(source);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		return this.commandRegionSetPriority(source, region.get(), priority.get(), world);
 	}
 
-	private boolean commandRegionSetPriority(final CommandSource source, ProtectedRegion region, Integer priority, World world) {
+	private CompletableFuture<Boolean> commandRegionSetPriority(final CommandSource source, ProtectedRegion region, Integer priority, World world) {
 		region.setPriority(priority);
 		
 		EWMessages.REGION_PRIORITY_SET.sender()
@@ -163,7 +164,7 @@ public class EWRegionPriority extends ESubCommand<EverWorldGuard> {
 			.replace("<priority>", priority.toString())
 			.replace("<world>", world.getName())
 			.sendTo(source);		
-		return true;
+		return CompletableFuture.completedFuture(true);
 	}
 	
 	private boolean hasPermission(final CommandSource source, final ProtectedRegion region, final World world) {

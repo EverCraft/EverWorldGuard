@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.spongepowered.api.command.CommandException;
@@ -94,17 +95,17 @@ public class EWRegionRemove extends ESubCommand<EverWorldGuard> {
 	}
 	
 	@Override
-	public Collection<String> subTabCompleter(final CommandSource source, final List<String> args) throws CommandException {
+	public Collection<String> tabCompleter(final CommandSource source, final List<String> args) throws CommandException {
 		return this.pattern.suggest(source, args);
 	}
 	
 	@Override
-	public boolean subExecute(final CommandSource source, final List<String> args_list) throws CommandException {
+	public CompletableFuture<Boolean> execute(final CommandSource source, final List<String> args_list) throws CommandException {
 		Args args = this.pattern.build(args_list);
 		
 		if (args.getArgs().size() != 1) {
 			source.sendMessage(this.help(source));
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		List<String> args_string = args.getArgs();
 		
@@ -119,7 +120,7 @@ public class EWRegionRemove extends ESubCommand<EverWorldGuard> {
 					.prefix(EWMessages.PREFIX)
 					.replace("<world>", world_arg.get())
 					.sendTo(source);
-				return false;
+				return CompletableFuture.completedFuture(false);
 			}
 		} else if (source instanceof EPlayer) {
 			world = ((EPlayer) source).getWorld();
@@ -127,7 +128,7 @@ public class EWRegionRemove extends ESubCommand<EverWorldGuard> {
 			EAMessages.COMMAND_ERROR_FOR_PLAYER.sender()
 				.prefix(EWMessages.PREFIX)
 				.sendTo(source);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		Optional<ProtectedRegion> region = this.plugin.getProtectionService().getOrCreateEWorld(world).getRegion(args_string.get(0));
@@ -137,14 +138,14 @@ public class EWRegionRemove extends ESubCommand<EverWorldGuard> {
 				.prefix(EWMessages.PREFIX)
 				.replace("<region>", args_string.get(0))
 				.sendTo(source);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		if (!this.hasPermission(source, region.get(), world)) {
 			EWMessages.REGION_NO_PERMISSION.sender()
 				.replace("<region>", region.get().getName())
 				.sendTo(source);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		if (region.get().getType().equals(ProtectedRegion.Types.GLOBAL)) {
@@ -153,12 +154,12 @@ public class EWRegionRemove extends ESubCommand<EverWorldGuard> {
 				.replace("<type>", region.get().getType().getNameFormat())
 				.replace("<world>", world.getName())
 				.sendTo(source);
-			return false;
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		if (args.isOption(MARKER_FORCE) && args.isOption(MARKER_UNSET_PARENT_IN_CHILDREN)) {
 			source.sendMessage(this.help(source));
-			return false;
+			return CompletableFuture.completedFuture(false);
 		} else if (args.isOption(MARKER_FORCE)) {
 			return this.commandRegionRemoveForce(source, region.get(), world);
 		} else if (args.isOption(MARKER_UNSET_PARENT_IN_CHILDREN)) {
@@ -168,7 +169,7 @@ public class EWRegionRemove extends ESubCommand<EverWorldGuard> {
 		}
 	}
 	
-	private boolean commandRegionRemove(final CommandSource player, final ProtectedRegion region, final World world) {
+	private CompletableFuture<Boolean> commandRegionRemove(final CommandSource player, final ProtectedRegion region, final World world) {
 		for (ProtectedRegion others : this.plugin.getProtectionService().getOrCreateEWorld(world).getAll()) {
 			Optional<ProtectedRegion> parent = others.getParent();
 			if (parent.isPresent() && parent.get().equals(region)) {
@@ -177,7 +178,7 @@ public class EWRegionRemove extends ESubCommand<EverWorldGuard> {
 					.replace("<children>", others.getName())
 					.replace("<world>", world.getName())
 					.sendTo(player);
-				return false;
+				return CompletableFuture.completedFuture(false);
 			}
 		}
 		
@@ -186,27 +187,27 @@ public class EWRegionRemove extends ESubCommand<EverWorldGuard> {
 			.replace("<region>", region.getName())
 			.replace("<world>", world.getName())
 			.sendTo(player);
-		return false;
+		return CompletableFuture.completedFuture(false);
 	}
 	
-	private boolean commandRegionRemoveForce(final CommandSource player, final ProtectedRegion region, final World world) {
+	private CompletableFuture<Boolean> commandRegionRemoveForce(final CommandSource player, final ProtectedRegion region, final World world) {
 		this.plugin.getProtectionService().getOrCreateEWorld(world).removeRegion(region.getId(), RemoveTypes.REMOVE_CHILDREN);
 		
 		EWMessages.REGION_REMOVE_CHILDREN_REMOVE.sender()
 			.replace("<region>", region.getName())
 			.replace("<world>", world.getName())
 			.sendTo(player);
-		return false;
+		return CompletableFuture.completedFuture(false);
 	}
 	
-	private boolean commandRegionRemoveUnset(final CommandSource player, final ProtectedRegion region, final World world) {
+	private CompletableFuture<Boolean> commandRegionRemoveUnset(final CommandSource player, final ProtectedRegion region, final World world) {
 		this.plugin.getProtectionService().getOrCreateEWorld(world).removeRegion(region.getId(), RemoveTypes.UNSET_PARENT_IN_CHILDREN);
 		
 		EWMessages.REGION_REMOVE_CHILDREN_UNSET.sender()
 			.replace("<region>", region.getName())
 			.replace("<world>", world.getName())
 			.sendTo(player);
-		return false;
+		return CompletableFuture.completedFuture(false);
 	}
 	
 	private boolean hasPermission(final CommandSource source, final ProtectedRegion region, final World world) {
