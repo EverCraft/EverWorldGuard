@@ -199,53 +199,60 @@ public class EWRegionParent extends ESubCommand<EverWorldGuard> {
 		}
 		
 		try {
-			region.setParent(parent);
+			region.setParent(parent)
+				.exceptionally(e -> false)
+				.thenApply(result -> {
+					if (!result) {
+						EAMessages.COMMAND_ERROR.sendTo(source);
+						return false;
+					}
+					
+					// Héritage
+					List<ProtectedRegion> parents = null;
+					try {
+						parents = region.getHeritage();
+					} catch (CircularInheritanceException e) {}
+						
+					if (parents == null || parents.size() == 1) {
+						EWMessages.REGION_PARENT_SET.sender()
+							.replace("<region>", region.getName())
+							.replace("<parent>", parent.getName())
+							.replace("<world>", world.getName())
+							.sendTo(source);
+					} else {
+						List<Text> messages = new ArrayList<Text>();
+						Text padding = Text.EMPTY;
+						
+						for (int cpt=0; cpt < parents.size(); cpt++) {
+							padding = padding.concat(EWMessages.REGION_PARENT_SET_HERITAGE_PADDING.getText());
+							
+							ProtectedRegion curParent = parents.get(cpt);
+							messages.add(padding.concat(EWMessages.REGION_PARENT_SET_HERITAGE_LINE.getFormat()
+								.toText("<region>", Text.builder(curParent.getName())
+											.onShiftClick(TextActions.insertText(curParent.getName()))
+											.onClick(TextActions.runCommand("/" + this.getName() + " -w \"" + world.getName() + "\" \"" + curParent.getName() + "\" "))
+											.build(),
+										"<type>", curParent.getType().getNameFormat(),
+										"<priority>", String.valueOf(curParent.getPriority()))));
+						}
+						
+						EWMessages.REGION_PARENT_SET_HERITAGE.sender()
+							.replace("<region>", region.getName())
+							.replace("<parent>", parent.getName())
+							.replace("<world>", world.getName())
+							.replace("<heritage>", Text.joinWith(Text.of("\n"), messages))
+							.sendTo(source);
+					}		
+					return true;
+				});
 		} catch (CircularInheritanceException e) {
 			EWMessages.REGION_PARENT_SET_CIRCULAR.sender()
 				.replace("<region>", region.getName())
 				.replace("<parent>", parent.getName())
 				.replace("<world>", world.getName())
 				.sendTo(source);
-			return CompletableFuture.completedFuture(false);
 		}
-		
-		// Héritage
-		List<ProtectedRegion> parents = null;
-		try {
-			parents = region.getHeritage();
-		} catch (CircularInheritanceException e) {}
-			
-		if (parents == null || parents.size() == 1) {
-			EWMessages.REGION_PARENT_SET.sender()
-				.replace("<region>", region.getName())
-				.replace("<parent>", parent.getName())
-				.replace("<world>", world.getName())
-				.sendTo(source);
-		} else {
-			List<Text> messages = new ArrayList<Text>();
-			Text padding = Text.EMPTY;
-			
-			for (int cpt=0; cpt < parents.size(); cpt++) {
-				padding = padding.concat(EWMessages.REGION_PARENT_SET_HERITAGE_PADDING.getText());
-				
-				ProtectedRegion curParent = parents.get(cpt);
-				messages.add(padding.concat(EWMessages.REGION_PARENT_SET_HERITAGE_LINE.getFormat()
-					.toText("<region>", Text.builder(curParent.getName())
-								.onShiftClick(TextActions.insertText(curParent.getName()))
-								.onClick(TextActions.runCommand("/" + this.getName() + " -w \"" + world.getName() + "\" \"" + curParent.getName() + "\" "))
-								.build(),
-							"<type>", curParent.getType().getNameFormat(),
-							"<priority>", String.valueOf(curParent.getPriority()))));
-			}
-			
-			EWMessages.REGION_PARENT_SET_HERITAGE.sender()
-				.replace("<region>", region.getName())
-				.replace("<parent>", parent.getName())
-				.replace("<world>", world.getName())
-				.replace("<heritage>", Text.joinWith(Text.of("\n"), messages))
-				.sendTo(source);
-		}		
-		return CompletableFuture.completedFuture(true);
+		return CompletableFuture.completedFuture(false);
 	}
 	
 	private CompletableFuture<Boolean> commandRegionRemoveParent(final CommandSource source, ProtectedRegion region, World world) {
@@ -257,12 +264,20 @@ public class EWRegionParent extends ESubCommand<EverWorldGuard> {
 			return CompletableFuture.completedFuture(false);
 		}
 		
-		region.clearParent();
-		EWMessages.REGION_PARENT_REMOVE.sender()
-			.replace("<region>", region.getName())
-			.replace("<world>", world.getName())
-			.sendTo(source);
-		return CompletableFuture.completedFuture(true);
+		return region.clearParent()
+			.exceptionally(e -> false)
+			.thenApply(result -> {
+				if (!result) {
+					EAMessages.COMMAND_ERROR.sendTo(source);
+					return false;
+				}
+				
+				EWMessages.REGION_PARENT_REMOVE.sender()
+					.replace("<region>", region.getName())
+					.replace("<world>", world.getName())
+					.sendTo(source);
+				return true;
+			});
 	}
 	
 	private boolean hasPermission(final CommandSource source, final ProtectedRegion region, final World world) {

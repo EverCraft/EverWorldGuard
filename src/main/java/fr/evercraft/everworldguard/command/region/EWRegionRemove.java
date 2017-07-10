@@ -169,7 +169,7 @@ public class EWRegionRemove extends ESubCommand<EverWorldGuard> {
 		}
 	}
 	
-	private CompletableFuture<Boolean> commandRegionRemove(final CommandSource player, final ProtectedRegion region, final World world) {
+	private CompletableFuture<Boolean> commandRegionRemove(final CommandSource source, final ProtectedRegion region, final World world) {
 		for (ProtectedRegion others : this.plugin.getProtectionService().getOrCreateEWorld(world).getAll()) {
 			Optional<ProtectedRegion> parent = others.getParent();
 			if (parent.isPresent() && parent.get().equals(region)) {
@@ -177,37 +177,59 @@ public class EWRegionRemove extends ESubCommand<EverWorldGuard> {
 					.replace("<region>", region.getName())
 					.replace("<children>", others.getName())
 					.replace("<world>", world.getName())
-					.sendTo(player);
+					.sendTo(source);
 				return CompletableFuture.completedFuture(false);
 			}
 		}
 		
-		this.plugin.getProtectionService().getOrCreateEWorld(world).removeRegion(region.getId(), RemoveTypes.UNSET_PARENT_IN_CHILDREN);
-		EWMessages.REGION_REMOVE_REGION.sender()
-			.replace("<region>", region.getName())
-			.replace("<world>", world.getName())
-			.sendTo(player);
-		return CompletableFuture.completedFuture(false);
+		return this.plugin.getProtectionService().getOrCreateEWorld(world).removeRegion(region.getId(), RemoveTypes.UNSET_PARENT_IN_CHILDREN)
+			.exceptionally(e -> null)
+			.thenApply(result -> {
+				if (result == null) {
+					EAMessages.COMMAND_ERROR.sendTo(source);
+					return false;
+				}
+				
+				EWMessages.REGION_REMOVE_REGION.sender()
+					.replace("<region>", region.getName())
+					.replace("<world>", world.getName())
+					.sendTo(source);	
+				return true;
+			});
 	}
 	
-	private CompletableFuture<Boolean> commandRegionRemoveForce(final CommandSource player, final ProtectedRegion region, final World world) {
-		this.plugin.getProtectionService().getOrCreateEWorld(world).removeRegion(region.getId(), RemoveTypes.REMOVE_CHILDREN);
-		
-		EWMessages.REGION_REMOVE_CHILDREN_REMOVE.sender()
-			.replace("<region>", region.getName())
-			.replace("<world>", world.getName())
-			.sendTo(player);
-		return CompletableFuture.completedFuture(false);
+	private CompletableFuture<Boolean> commandRegionRemoveForce(final CommandSource source, final ProtectedRegion region, final World world) {
+		return this.plugin.getProtectionService().getOrCreateEWorld(world).removeRegion(region.getId(), RemoveTypes.REMOVE_CHILDREN)
+			.exceptionally(e -> null)
+			.thenApply(result -> {
+				if (result == null) {
+					EAMessages.COMMAND_ERROR.sendTo(source);
+					return false;
+				}
+				
+				EWMessages.REGION_REMOVE_CHILDREN_REMOVE.sender()
+					.replace("<region>", region.getName())
+					.replace("<world>", world.getName())
+					.sendTo(source);	
+				return true;
+			});
 	}
 	
-	private CompletableFuture<Boolean> commandRegionRemoveUnset(final CommandSource player, final ProtectedRegion region, final World world) {
-		this.plugin.getProtectionService().getOrCreateEWorld(world).removeRegion(region.getId(), RemoveTypes.UNSET_PARENT_IN_CHILDREN);
-		
-		EWMessages.REGION_REMOVE_CHILDREN_UNSET.sender()
-			.replace("<region>", region.getName())
-			.replace("<world>", world.getName())
-			.sendTo(player);
-		return CompletableFuture.completedFuture(false);
+	private CompletableFuture<Boolean> commandRegionRemoveUnset(final CommandSource source, final ProtectedRegion region, final World world) {
+		return this.plugin.getProtectionService().getOrCreateEWorld(world).removeRegion(region.getId(), RemoveTypes.UNSET_PARENT_IN_CHILDREN)
+			.exceptionally(e -> null)
+			.thenApply(result -> {
+				if (result == null) {
+					EAMessages.COMMAND_ERROR.sendTo(source);
+					return false;
+				}
+				
+				EWMessages.REGION_REMOVE_CHILDREN_UNSET.sender()
+					.replace("<region>", region.getName())
+					.replace("<world>", world.getName())
+					.sendTo(source);
+				return true;
+			});
 	}
 	
 	private boolean hasPermission(final CommandSource source, final ProtectedRegion region, final World world) {

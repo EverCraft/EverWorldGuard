@@ -211,24 +211,23 @@ public class EWRegionFlagAdd extends ESubCommand<EverWorldGuard> {
 		try {
 			T value = flag.parseAdd(source, region, group, values);
 			
-			region.setFlag(flag, group, value)
-			.thenApply(result -> {
-				if (!result) {
-					EAMessages.COMMAND_ERROR.sendTo(source);
-					return false;
-				}
-				
-				EWMessages.REGION_FLAG_ADD_PLAYER.sender()
-				.replace("<region>", region.getName())
-				.replace("<group>", group.getNameFormat())
-				.replace("<flag>", flag.getNameFormat())
-				.replace("<world>", world.getName())
-				.replace("<value>", flag.getValueFormat(value))
-				.sendTo(source);
-				return true;
-			});
-			
-			return CompletableFuture.completedFuture(true);
+			return region.setFlag(flag, group, value)
+				.exceptionally(e -> false)
+				.thenApply(result -> {
+					if (!result) {
+						EAMessages.COMMAND_ERROR.sendTo(source);
+						return false;
+					}
+					
+					EWMessages.REGION_FLAG_ADD_PLAYER.sender()
+					.replace("<region>", region.getName())
+					.replace("<group>", group.getNameFormat())
+					.replace("<flag>", flag.getNameFormat())
+					.replace("<world>", world.getName())
+					.replace("<value>", flag.getValueFormat(value))
+					.sendTo(source);
+					return true;
+				});
 		} catch (IllegalArgumentException e) {
 			if (e.getMessage() == null || e.getMessage().isEmpty()) {
 				EWMessages.REGION_FLAG_ADD_ERROR.sender()
@@ -245,8 +244,8 @@ public class EWRegionFlagAdd extends ESubCommand<EverWorldGuard> {
 					.build().sender()
 					.sendTo(source);
 			}
-			return CompletableFuture.completedFuture(false);
 		}
+		return CompletableFuture.completedFuture(false);
 	}
 	
 	private boolean hasPermission(final CommandSource source, final ProtectedRegion region, final World world) {

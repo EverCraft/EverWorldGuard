@@ -157,14 +157,21 @@ public class EWRegionPriority extends ESubCommand<EverWorldGuard> {
 	}
 
 	private CompletableFuture<Boolean> commandRegionSetPriority(final CommandSource source, ProtectedRegion region, Integer priority, World world) {
-		region.setPriority(priority);
-		
-		EWMessages.REGION_PRIORITY_SET.sender()
-			.replace("<region>", region.getName())
-			.replace("<priority>", priority.toString())
-			.replace("<world>", world.getName())
-			.sendTo(source);		
-		return CompletableFuture.completedFuture(true);
+		return region.setPriority(priority)
+			.exceptionally(e -> false)
+			.thenApply(result -> {
+				if (!result) {
+					EAMessages.COMMAND_ERROR.sendTo(source);
+					return false;
+				}
+				
+				EWMessages.REGION_PRIORITY_SET.sender()
+					.replace("<region>", region.getName())
+					.replace("<priority>", priority.toString())
+					.replace("<world>", world.getName())
+					.sendTo(source);	
+				return true;
+			});
 	}
 	
 	private boolean hasPermission(final CommandSource source, final ProtectedRegion region, final World world) {

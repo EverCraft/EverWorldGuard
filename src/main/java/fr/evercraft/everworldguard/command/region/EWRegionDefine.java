@@ -182,9 +182,15 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 			return CompletableFuture.completedFuture(false);
 		}
 		try {
-			this.plugin.getProtectionService().getOrCreateEWorld(player.getWorld()).createRegionCuboid(region_id, 
+			return this.plugin.getProtectionService().getOrCreateEWorld(player.getWorld()).createRegionCuboid(region_id, 
 					selection.get().getPrimaryPosition(), selection.get().getSecondaryPosition(), players, groups)
+				.exceptionally(e -> null)
 				.thenApply(region -> {
+					if (region == null) {
+						EAMessages.COMMAND_ERROR.sendTo(player);
+						return false;
+					}
+					
 					Vector3i min = region.getMinimumPoint();
 					Vector3i max = region.getMaximumPoint();
 					Map<String, EReplace<?>> replaces = new HashMap<String, EReplace<?>>();
@@ -205,7 +211,7 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 										.toText2(replaces)))
 								.build())
 						.sendTo(player);
-					return CompletableFuture.completedFuture(true);
+					return true;
 				});
 		} catch (RegionIdentifierException e) {
 			EWMessages.REGION_DEFINE_ERROR_IDENTIFIER_INVALID.sender()
@@ -214,7 +220,6 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 				.sendTo(player);
 			return CompletableFuture.completedFuture(false);
 		}
-		return CompletableFuture.completedFuture(true);
 	}
 	
 	private CompletableFuture<Boolean> commandRegionDefinePolygonal(final EPlayer player, final String region_id, final Set<UUID> players, final Set<String> groups) {
@@ -228,8 +233,14 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 		}
 		
 		try {
-			this.plugin.getProtectionService().getOrCreateEWorld(player.getWorld()).createRegionPolygonal(region_id, selector.get().getPositions(), players, groups)
+			return this.plugin.getProtectionService().getOrCreateEWorld(player.getWorld()).createRegionPolygonal(region_id, selector.get().getPositions(), players, groups)
+				.exceptionally(e -> null)
 				.thenApply(region -> {
+					if (region == null) {
+						EAMessages.COMMAND_ERROR.sendTo(player);
+						return false;
+					}
+					
 					Vector3i min = region.getMinimumPoint();
 					Vector3i max = region.getMaximumPoint();
 					List<Text> positions_text = new ArrayList<Text>();
@@ -262,7 +273,7 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 										.toText2(replaces)))
 								.build())
 						.sendTo(player);
-					return CompletableFuture.completedFuture(true);
+					return true;
 				});
 		} catch (RegionIdentifierException e) {
 			EWMessages.REGION_DEFINE_ERROR_IDENTIFIER_INVALID.sender()
@@ -271,7 +282,6 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 				.sendTo(player);
 			return CompletableFuture.completedFuture(false);
 		}
-		return CompletableFuture.completedFuture(true);
 	}
 	
 	private CompletableFuture<Boolean> commandRegionDefineTemplate(final EPlayer player, final String region_id, final Set<UUID> players, final Set<String> groups) {
@@ -282,13 +292,19 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 		}
 		
 		try {
-			this.plugin.getProtectionService().getOrCreateEWorld(player.getWorld()).createRegionTemplate(region_id, players, groups)
+			return this.plugin.getProtectionService().getOrCreateEWorld(player.getWorld()).createRegionTemplate(region_id, players, groups)
+				.exceptionally(e -> null)
 				.thenApply(region -> {
+					if (region == null) {
+						EAMessages.COMMAND_ERROR.sendTo(player);
+						return false;
+					}
+					
 					EWMessages.REGION_DEFINE_TEMPLATE_CREATE.sender()
 						.replace("<region>", region.getName())
 						.replace("<type>", region.getType().getNameFormat())
 						.sendTo(player);
-					return CompletableFuture.completedFuture(true);
+					return true;
 				});
 		} catch (RegionIdentifierException e) {
 			EWMessages.REGION_DEFINE_ERROR_IDENTIFIER_INVALID.sender()
@@ -297,6 +313,5 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 				.sendTo(player);
 			return CompletableFuture.completedFuture(false);
 		}
-		return CompletableFuture.completedFuture(true);
 	}
 }

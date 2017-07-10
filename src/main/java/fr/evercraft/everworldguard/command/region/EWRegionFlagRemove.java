@@ -203,7 +203,8 @@ public class EWRegionFlagRemove extends ESubCommand<EverWorldGuard> {
 		try {
 			Optional<T> value = flag.parseRemove(source, region, group, values);
 			
-			region.setFlag(flag, group, value.orElse(null))
+			return region.setFlag(flag, group, value.orElse(null))
+				.exceptionally(e -> false)
 				.thenApply(result -> {
 					if (!result) {
 						EAMessages.COMMAND_ERROR.sendTo(source);
@@ -228,8 +229,6 @@ public class EWRegionFlagRemove extends ESubCommand<EverWorldGuard> {
 					}
 					return true;
 				});
-			
-			return CompletableFuture.completedFuture(true);
 		} catch (IllegalArgumentException e) {
 			if (e.getMessage() == null || e.getMessage().isEmpty()) {
 				EWMessages.REGION_FLAG_REMOVE_ERROR.sender()
@@ -246,8 +245,8 @@ public class EWRegionFlagRemove extends ESubCommand<EverWorldGuard> {
 					.build().sender()
 					.sendTo(source);
 			}
-			return CompletableFuture.completedFuture(false);
 		}
+		return CompletableFuture.completedFuture(false);
 	}
 	
 	private boolean hasPermission(final CommandSource source, final ProtectedRegion region, final World world) {

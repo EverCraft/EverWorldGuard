@@ -206,15 +206,23 @@ public class EWRegionMemberRemove extends ESubCommand<EverWorldGuard> {
 	}
 	
 	private CompletableFuture<Boolean> commandRegionMemberRemovePlayer(final CommandSource source, ProtectedRegion region, Set<User> players, World world) {
-		region.removePlayerMember(players.stream()
+		return region.removePlayerMember(players.stream()
 				.map(user -> user.getUniqueId())
-				.collect(Collectors.toSet()));
-		EWMessages.REGION_MEMBER_REMOVE_PLAYERS.sender()
-			.replace("<region>", region.getName())
-			.replace("<world>", world.getName())
-			.replace("<players>", String.join(EWMessages.REGION_MEMBER_REMOVE_PLAYERS_JOIN.getString(), players.stream().map(owner -> owner.getName()).collect(Collectors.toList())))
-			.sendTo(source);
-		return CompletableFuture.completedFuture(true);
+				.collect(Collectors.toSet()))
+			.exceptionally(e -> null)
+			.thenApply(result -> {
+				if (result == null) {
+					EAMessages.COMMAND_ERROR.sendTo(source);
+					return false;
+				}
+				
+				EWMessages.REGION_MEMBER_REMOVE_PLAYERS.sender()
+					.replace("<region>", region.getName())
+					.replace("<world>", world.getName())
+					.replace("<players>", String.join(EWMessages.REGION_MEMBER_REMOVE_PLAYERS_JOIN.getString(), players.stream().map(owner -> owner.getName()).collect(Collectors.toList())))
+					.sendTo(source);
+				return true;
+			});
 	}
 	
 	private CompletableFuture<Boolean> commandRegionMemberRemovePlayer(final CommandSource source, ProtectedRegion region, User player, World world) {
@@ -224,15 +232,24 @@ public class EWRegionMemberRemove extends ESubCommand<EverWorldGuard> {
 				.replace("<world>", world.getName())
 				.replace("<player>", player.getName())
 				.sendTo(source);
-		} else {
-			region.removePlayerMember(ImmutableSet.of(player.getUniqueId()));
-			EWMessages.REGION_MEMBER_REMOVE_PLAYER.sender()
-				.replace("<region>", region.getName())
-				.replace("<world>", world.getName())
-				.replace("<player>", player.getName())
-				.sendTo(source);
+			return CompletableFuture.completedFuture(false);
 		}
-		return CompletableFuture.completedFuture(true);
+		
+		return region.removePlayerMember(ImmutableSet.of(player.getUniqueId()))
+			.exceptionally(e -> null)
+			.thenApply(result -> {
+				if (result == null) {
+					EAMessages.COMMAND_ERROR.sendTo(source);
+					return false;
+				}
+				
+				EWMessages.REGION_MEMBER_REMOVE_PLAYER.sender()
+					.replace("<region>", region.getName())
+					.replace("<world>", world.getName())
+					.replace("<player>", player.getName())
+					.sendTo(source);
+				return true;
+			});
 	}
 	
 	private CompletableFuture<Boolean> commandRegionMemberRemoveGroup(final CommandSource source, ProtectedRegion region, List<String> groups_string, World world) {		
@@ -258,15 +275,23 @@ public class EWRegionMemberRemove extends ESubCommand<EverWorldGuard> {
 	}
 	
 	private CompletableFuture<Boolean> commandRegionMemberRemoveGroup(final CommandSource source, ProtectedRegion region, Set<Subject> groups, World world) {
-		region.removeGroupMember(groups.stream()
+		return region.removeGroupMember(groups.stream()
 				.map(group -> group.getIdentifier())
-				.collect(Collectors.toSet()));
-		EWMessages.REGION_MEMBER_REMOVE_GROUPS.sender()
-			.replace("<region>", region.getName())
-			.replace("<world>", world.getName())
-			.replace("<groups>", String.join(EWMessages.REGION_MEMBER_REMOVE_GROUPS_JOIN.getString(), groups.stream().map(owner -> owner.getIdentifier()).collect(Collectors.toList())))
-			.sendTo(source);
-		return CompletableFuture.completedFuture(true);
+				.collect(Collectors.toSet()))
+			.exceptionally(e -> null)
+			.thenApply(result -> {
+				if (result == null) {
+					EAMessages.COMMAND_ERROR.sendTo(source);
+					return false;
+				}
+				
+				EWMessages.REGION_MEMBER_REMOVE_GROUPS.sender()
+					.replace("<region>", region.getName())
+					.replace("<world>", world.getName())
+					.replace("<groups>", String.join(EWMessages.REGION_MEMBER_REMOVE_GROUPS_JOIN.getString(), groups.stream().map(owner -> owner.getIdentifier()).collect(Collectors.toList())))
+					.sendTo(source);
+				return true;
+			});
 	}
 	
 	private CompletableFuture<Boolean> commandRegionMemberRemoveGroup(final CommandSource source, ProtectedRegion region, Subject group, World world) {
@@ -276,16 +301,24 @@ public class EWRegionMemberRemove extends ESubCommand<EverWorldGuard> {
 				.replace("<world>", world.getName())
 				.replace("<group>", group.getIdentifier())
 				.sendTo(source);
-			return CompletableFuture.completedFuture(true);
+			return CompletableFuture.completedFuture(false);
 		}
 			
-		region.removeGroupMember(ImmutableSet.of(group.getIdentifier()));
-		EWMessages.REGION_MEMBER_REMOVE_GROUP.sender()
-			.replace("<region>", region.getName())
-			.replace("<world>", world.getName())
-			.replace("<group>", group.getIdentifier())
-			.sendTo(source);
-		return CompletableFuture.completedFuture(true);
+		return region.removeGroupMember(ImmutableSet.of(group.getIdentifier()))
+			.exceptionally(e -> null)
+			.thenApply(result -> {
+				if (result == null) {
+					EAMessages.COMMAND_ERROR.sendTo(source);
+					return false;
+				}
+				
+				EWMessages.REGION_MEMBER_REMOVE_GROUP.sender()
+					.replace("<region>", region.getName())
+					.replace("<world>", world.getName())
+					.replace("<group>", group.getIdentifier())
+					.sendTo(source);
+				return true;
+			});
 	}
 	
 	private boolean hasPermission(final CommandSource source, final ProtectedRegion region, final World world) {
