@@ -356,6 +356,7 @@ public class EWWorld implements WorldGuardWorld {
 								this.regionsName.remove(children.getName().toLowerCase());
 							}
 						}
+						this.rebuild();
 					} finally {
 						this.write_lock.unlock();
 					}
@@ -376,6 +377,7 @@ public class EWWorld implements WorldGuardWorld {
 						}
 						this.regionsIdentifier.remove(regionRemove.getId());
 						this.regionsName.remove(regionRemove.getName().toLowerCase());
+						this.rebuild();
 					} finally {
 						this.write_lock.unlock();
 					}
@@ -435,6 +437,18 @@ public class EWWorld implements WorldGuardWorld {
 			
 			this.regionsName.remove(region.getName().toLowerCase());
 			this.regionsName.put(name.toLowerCase(), region);
+			return true;
+		} finally {
+			this.write_lock.unlock();
+		}
+	}
+	
+	public boolean redefine(UUID identifier, EProtectedRegion region) {
+		this.write_lock.lock();
+		try {
+			this.regionsIdentifier.put(identifier, region);
+			this.regionsName.put(region.getName().toLowerCase(), region);
+			this.rebuild();
 			return true;
 		} finally {
 			this.write_lock.unlock();

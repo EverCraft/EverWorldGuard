@@ -31,11 +31,18 @@ import java.util.stream.Collectors;
 
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.Order;
+import org.spongepowered.api.event.filter.cause.First;
+import org.spongepowered.api.event.item.inventory.InteractItemEvent;
+import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.World;
 
+import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
 
 import fr.evercraft.everapi.EAMessage.EAMessages;
@@ -64,6 +71,8 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 	
 	public EWRegionInfo(final EverWorldGuard plugin, final EWRegion command) {
         super(plugin, command, "info");
+        
+        this.plugin.getGame().getEventManager().registerListeners(this.plugin, this);
         
         this.pattern = Args.builder()
     		.value(MARKER_WORLD, 
@@ -575,5 +584,22 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 			}
 		}
 		return false;
+	}
+	
+	@Listener(order=Order.FIRST)
+	public void onPlayerInteractEntity(InteractItemEvent.Secondary event, @First Player player) {
+		Optional<ItemStack> optItemInHand = player.getItemInHand(event.getHandType());
+		Optional<Vector3d> optPosition = event.getInteractionPoint();
+		
+		if (optItemInHand.isPresent() && optPosition.isPresent()) {
+			ItemStack itemInHand = optItemInHand.get();
+
+			if (itemInHand.getItem().equals(this.plugin.getConfigs().getRegionInfo()) && player.hasPermission(EWPermissions.REGION_INFO_ITEM.get())) { 
+				Vector3i position = optPosition.get().toInt();
+				
+				this.commandRegionInfo(player, this.plugin.getProtectionService().getOrCreateEWorld(player.getWorld()).getRegions(position), player.getWorld());
+				event.setCancelled(true);
+			}
+		}
 	}
 }

@@ -87,7 +87,7 @@ public class FlagBuild extends StateFlag {
 	public void reload() {
 		this.entities.clear();
 		
-		Map<String, Set<EntityTemplate>> config = this.plugin.getProtectionService().getConfigFlags().getEntities("BUILD");
+		Map<String, Set<EntityTemplate>> config = this.plugin.getConfigFlags().getEntities("BUILD");
 		if (config.containsKey("entities")) {
 			this.entities.addAll(config.get("entities"));
 		}

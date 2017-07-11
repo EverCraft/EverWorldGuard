@@ -51,4 +51,6 @@ public interface RegionStorage {
 	
 	CompletableFuture<Boolean> removeClearParent(EProtectedRegion region, Set<EProtectedRegion> regions);
 	CompletableFuture<Boolean> removeRemoveChildren(Set<EProtectedRegion> regions);
+	
+	CompletableFuture<Boolean> redefine(EProtectedRegion region, EProtectedRegion newRegion);
 }

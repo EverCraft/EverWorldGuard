@@ -34,20 +34,16 @@ import fr.evercraft.everapi.services.worldguard.WorldGuardService;
 import fr.evercraft.everapi.services.worldguard.WorldGuardWorld;
 import fr.evercraft.everworldguard.EWPermissions;
 import fr.evercraft.everworldguard.EverWorldGuard;
-import fr.evercraft.everworldguard.protection.flag.EWFlagConfig;
 import fr.evercraft.everworldguard.protection.index.EWWorld;
 import fr.evercraft.everworldguard.protection.subject.EUserSubject;
 
 public class EProtectionService implements WorldGuardService {
-	
-	public static final String GLOBAL_REGION = "__global__";
 	
 	private final EverWorldGuard plugin;
 	
 	private final EUserSubjectList subjects;
 	private final EWorldList worlds;
 	private final FlagRegister flagsRegister;
-	private final EWFlagConfig flagsConfig;
 	
 	private int intervalMessage;
 	
@@ -58,7 +54,6 @@ public class EProtectionService implements WorldGuardService {
 		this.subjects = new EUserSubjectList(this.plugin);
 		this.worlds = new EWorldList(this.plugin);
 		this.flagsRegister = new FlagRegister(this.plugin);
-		this.flagsConfig = new EWFlagConfig(this.plugin);
 		
 		this.reload();
 	}
@@ -185,9 +180,5 @@ public class EProtectionService implements WorldGuardService {
 	
 	public FlagRegister getRegister() {
 		return this.flagsRegister;
-	}
-
-	public EWFlagConfig getConfigFlags() {
-		return this.flagsConfig;
 	}
 }

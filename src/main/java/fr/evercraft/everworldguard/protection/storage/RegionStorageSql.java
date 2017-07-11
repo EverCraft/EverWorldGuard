@@ -432,4 +432,39 @@ public class RegionStorageSql implements RegionStorage {
 		    }
 		}, this.plugin.getThreadAsync());
 	}
+
+	@Override
+	public CompletableFuture<Boolean> redefine(EProtectedRegion region, EProtectedRegion newRegion) {
+		return CompletableFuture.supplyAsync(() -> {
+			Connection connection = null;
+			try {
+	    		connection = this.plugin.getDataBases().getConnection();
+	    		
+	    		if (!region.getType().equals(newRegion.getType())) {
+	    			if(!this.plugin.getDataBases().updateType(connection, this.world.getUniqueId(), region.getId(), newRegion.getType())) {
+		    			return false;
+		    		}
+	    		}
+	    		
+	    		if (!region.getType().equals(ProtectedRegion.Types.TEMPLATE)) {
+	    			if(!this.plugin.getDataBases().deletePositions(connection, this.world.getUniqueId(), region.getId())) {
+		    			return false;
+		    		}
+	    		}
+	    		
+	    		if (!newRegion.getType().equals(ProtectedRegion.Types.TEMPLATE)) {
+		    		if(!this.plugin.getDataBases().insertPositions(connection, this.world.getUniqueId(), region.getId(), newRegion.getPoints())) {
+		    			return false;
+		    		}
+	    		}
+	    		
+	    		return true;
+			} catch (ServerDisableException e) {
+				e.execute();
+				return false;
+			} finally {
+				try {if (connection != null) connection.close();} catch (SQLException e) {}
+		    }
+		}, this.plugin.getThreadAsync());
+	}
 }

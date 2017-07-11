@@ -54,6 +54,7 @@ public class EWConfig extends EConfig<EverWorldGuard> {
 		addDefault("select.item", ItemTypes.WOODEN_AXE.getId());
 		addDefault("select.maxPolygonalPoints", 20);
 		
+		addDefault("region.info", ItemTypes.LEATHER.getId());
 		addDefault("region.maxRegionCountPerPlayer", 10, "");
 	}
 
@@ -80,5 +81,15 @@ public class EWConfig extends EConfig<EverWorldGuard> {
 	
 	public int getRegionMaxRegionCountPerPlayer() {
 		return this.get("region.maxRegionCountPerPlayer").getInt(10);
+	}
+	
+	public ItemType getRegionInfo() {
+		String item_string = this.get("region.info").getString("");
+		Optional<ItemType> item = UtilsItemType.getItemType(item_string);
+		if (!item.isPresent()) {
+			this.plugin.getELogger().warn("[Config] 'region.info' : Can not find itemType '" + item_string + "'");
+			return ItemTypes.LEATHER;
+		}
+		return item.get();
 	}
 }

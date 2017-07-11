@@ -52,7 +52,7 @@ public class FlagSnow extends CatalogTypeFlag<SnowType> {
 	
 	@Override
 	protected Map<String, Set<SnowType>> getConfig() {
-		return this.plugin.getProtectionService().getConfigFlags().get(this.getName(), SnowType.class);
+		return this.plugin.getConfigFlags().get(this.getName(), SnowType.class);
 	}
 	
 	@Override

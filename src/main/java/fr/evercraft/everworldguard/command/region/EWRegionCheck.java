@@ -37,7 +37,6 @@ import fr.evercraft.everapi.plugin.command.ESubCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everapi.services.worldguard.Flag;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
-import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion.Group;
 import fr.evercraft.everapi.services.worldguard.region.SetProtectedRegion;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EWPermissions;
@@ -115,7 +114,7 @@ public class EWRegionCheck extends ESubCommand<EverWorldGuard> {
 		}
 		
 		if (optGroupString.isPresent()) {
-			Optional<Group> group = this.plugin.getGame().getRegistry().getType(Group.class, optGroupString.get());
+			Optional<ProtectedRegion.Group> group = this.plugin.getGame().getRegistry().getType(ProtectedRegion.Group.class, optGroupString.get());
 			if (!group.isPresent()) {
 				EWMessages.GROUP_NOT_FOUND.sender()
 					.replace("<group>", optGroupString.get())
@@ -140,7 +139,7 @@ public class EWRegionCheck extends ESubCommand<EverWorldGuard> {
 		return CompletableFuture.completedFuture(false);
 	}
 	
-	private CompletableFuture<Boolean> commandRegionCheck(final EPlayer player, ProtectedRegion.Group group) {
+	private CompletableFuture<Boolean> commandRegionCheck(final EPlayer player, final ProtectedRegion.Group group) {
 		SetProtectedRegion regions = player.getRegions();
 		TreeMap<String, Text> map = new TreeMap<String, Text>();
 		
@@ -162,7 +161,7 @@ public class EWRegionCheck extends ESubCommand<EverWorldGuard> {
 		return CompletableFuture.completedFuture(true);
 	}
 
-	private CompletableFuture<Boolean> commandRegionCheck(final EPlayer player, Flag<?> flag) {
+	private CompletableFuture<Boolean> commandRegionCheck(final EPlayer player, final Flag<?> flag) {
 		SetProtectedRegion regions = player.getRegions();
 		List<Text> list = new ArrayList<Text>();
 		
@@ -189,7 +188,8 @@ public class EWRegionCheck extends ESubCommand<EverWorldGuard> {
 		return CompletableFuture.completedFuture(true);
 	}
 	
-	private <V> Text getMessage(SetProtectedRegion regions, World world, Flag<V> flag, ProtectedRegion.Group group, EWMessages messageRegion, EWMessages messageDefault) {
+	private <V> Text getMessage(final SetProtectedRegion regions, final World world, final Flag<V> flag, 
+			final ProtectedRegion.Group group, final EWMessages messageRegion, final EWMessages messageDefault) {
 		V value = regions.getFlag(ProtectedRegion.Groups.DEFAULT, flag);
 		String valueString = flag.serialize(value);
 		Text valueFormat = flag.getValueFormat(value);

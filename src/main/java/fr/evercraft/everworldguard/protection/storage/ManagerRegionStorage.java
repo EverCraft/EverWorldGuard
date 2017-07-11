@@ -146,4 +146,10 @@ public class ManagerRegionStorage implements RegionStorage {
 	public CompletableFuture<Boolean> removeRemoveChildren(Set<EProtectedRegion> regions) {
 		return this.storage.removeRemoveChildren(regions.stream().filter(region -> !region.isTransient()).collect(Collectors.toSet()));
 	}
+
+	@Override
+	public CompletableFuture<Boolean> redefine(EProtectedRegion region, EProtectedRegion newRegion) {
+		if (region.isTransient()) return CompletableFuture.completedFuture(true);
+		return this.storage.redefine(region, newRegion);
+	}
 }

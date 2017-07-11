@@ -53,7 +53,7 @@ public class FlagPotionSplash extends CatalogTypeFlag<PotionEffectType> {
 	
 	@Override
 	protected Map<String, Set<PotionEffectType>> getConfig() {
-		return this.plugin.getProtectionService().getConfigFlags().get(this.getName(), PotionEffectType.class);
+		return this.plugin.getConfigFlags().get(this.getName(), PotionEffectType.class);
 	}
 	
 	@Override

@@ -93,7 +93,7 @@ public class EWRegionFlags extends ESubCommand<EverWorldGuard> {
 		return this.commandRegionFlags(source);
 	}
 	
-	private CompletableFuture<Boolean> commandRegionFlags(CommandSource source) {
+	private CompletableFuture<Boolean> commandRegionFlags(final CommandSource source) {
 		TreeMap<String, Text> map = new TreeMap<String, Text>();
 		for (Flag<?> flag : this.plugin.getProtectionService().getFlags()) {
 			map.put(flag.getName(), EWMessages.REGION_FLAGS_LIST_LINE.getFormat().toText(
@@ -110,7 +110,7 @@ public class EWRegionFlags extends ESubCommand<EverWorldGuard> {
 		return CompletableFuture.completedFuture(false);
 	}
 
-	private CompletableFuture<Boolean> commandRegionFlags(CommandSource source, String flagString) {
+	private CompletableFuture<Boolean> commandRegionFlags(final CommandSource source, final String flagString) {
 		Optional<Flag<?>> flag = this.plugin.getProtectionService().getFlag(flagString);
 		if (!flag.isPresent()) {
 			EWMessages.FLAG_NOT_FOUND.sender()
@@ -123,6 +123,6 @@ public class EWRegionFlags extends ESubCommand<EverWorldGuard> {
 			.replace("<flag>", flag.get().getName())
 			.replace("<description>", flag.get().getDescription())
 			.sendTo(source);
-		return CompletableFuture.completedFuture(false);
+		return CompletableFuture.completedFuture(true);
 	}
 }

@@ -64,7 +64,7 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
         this.pattern = Args.builder()
 			.empty(MARKER_TEMPLATE)
 			.arg((source, args) -> Arrays.asList("region..."))
-			.list(MARKER_OWNER_PLAYER, (source, args) -> this.getAllPlayers(source, false))
+			.list(MARKER_OWNER_PLAYER, (source, args) -> this.getAllUsers(args.getValue(MARKER_OWNER_PLAYER).orElse(""), source))
 			.list(MARKER_OWNER_GROUP, (source, args) -> this.getAllGroups());
     }
 	
@@ -285,10 +285,11 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 	}
 	
 	private CompletableFuture<Boolean> commandRegionDefineTemplate(final EPlayer player, final String region_id, final Set<UUID> players, final Set<String> groups) {
-		if (player.hasPermission(EWPermissions.REGION_DEFINE_TEMPLATE.get())) {
+		if (!player.hasPermission(EWPermissions.REGION_DEFINE_TEMPLATE.get())) {
 			EAMessages.NO_PERMISSION.sender()
 				.prefix(EWMessages.PREFIX)
 				.sendTo(player);
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		try {

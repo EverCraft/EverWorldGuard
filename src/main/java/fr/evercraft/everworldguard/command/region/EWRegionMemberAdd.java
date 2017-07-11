@@ -238,7 +238,7 @@ public class EWRegionMemberAdd extends ESubCommand<EverWorldGuard> {
 			});
 	}
 	
-	private CompletableFuture<Boolean> commandRegionMemberAddGroup(final CommandSource source, ProtectedRegion region, List<String> groups_string, World world) {
+	private CompletableFuture<Boolean> commandRegionMemberAddGroup(final CommandSource source, final ProtectedRegion region, final List<String> groups_string, final World world) {
 		Set<Subject> groups = new HashSet<Subject>();
 		for (String group_string : groups_string) {
 			Subject group = this.plugin.getEverAPI().getManagerService().getPermission().getGroupSubjects().get(group_string);
@@ -260,7 +260,7 @@ public class EWRegionMemberAdd extends ESubCommand<EverWorldGuard> {
 		}
 	}
 	
-	private CompletableFuture<Boolean> commandRegionMemberAddGroup(final CommandSource source, ProtectedRegion region, Set<Subject> groups, World world) {
+	private CompletableFuture<Boolean> commandRegionMemberAddGroup(final CommandSource source, final ProtectedRegion region, final Set<Subject> groups, final World world) {
 		return region.addGroupMember(groups.stream()
 				.map(group -> group.getIdentifier())
 				.collect(Collectors.toSet()))
@@ -280,7 +280,7 @@ public class EWRegionMemberAdd extends ESubCommand<EverWorldGuard> {
 			});
 	}
 	
-	private CompletableFuture<Boolean> commandRegionMemberAddGroup(final CommandSource source, ProtectedRegion region, Subject group, World world) {
+	private CompletableFuture<Boolean> commandRegionMemberAddGroup(final CommandSource source, final ProtectedRegion region, final Subject group, final World world) {
 		if (region.getMembers().containsGroup(group)) {
 			EWMessages.REGION_MEMBER_ADD_GROUP_ERROR.sender()
 				.replace("<region>", region.getName())

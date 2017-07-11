@@ -50,7 +50,7 @@ public class FlagChat extends CatalogTypeFlag<ChatType> {
 	
 	@Override
 	protected Map<String, Set<ChatType>> getConfig() {
-		return this.plugin.getProtectionService().getConfigFlags().get(this.getName(), ChatType.class);
+		return this.plugin.getConfigFlags().get(this.getName(), ChatType.class);
 	}
 	
 	@Override

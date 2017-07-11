@@ -49,7 +49,7 @@ public class FlagCommand extends StringsFlag {
 	
 	@Override
 	protected Map<String, Set<String>> getConfig() {
-		return this.plugin.getProtectionService().getConfigFlags().getString(this.getName());
+		return this.plugin.getConfigFlags().getString(this.getName());
 	}
 	
 	@Override

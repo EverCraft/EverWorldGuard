@@ -44,7 +44,7 @@ public class FlagExplosionDamage extends EntityTemplateFlag {
 	
 	@Override
 	protected Map<String, Set<EntityTemplate>> getConfig() {
-		return this.plugin.getProtectionService().getConfigFlags().getEntities(this.getName());
+		return this.plugin.getConfigFlags().getEntities(this.getName());
 	}
 	
 	@Override

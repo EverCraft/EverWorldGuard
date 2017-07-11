@@ -34,10 +34,10 @@ import com.google.common.math.LongMath;
 public class EProtectedCuboidRegion extends EProtectedRegion implements ProtectedRegion.Cuboid {
 	
 	public EProtectedCuboidRegion(EWWorld world, UUID identifier, String name, Vector3i pos1, Vector3i pos2) {
-		this(world, identifier, name, false, pos1, pos2);
+		this(world, identifier, name, pos1, pos2, false);
 	}
 	
-	public EProtectedCuboidRegion(EWWorld world, UUID identifier, String name, boolean transientRegion, Vector3i pos1, Vector3i pos2) {
+	public EProtectedCuboidRegion(EWWorld world, UUID identifier, String name, Vector3i pos1, Vector3i pos2, boolean transientRegion) {
 		super(world, identifier, name, transientRegion);
 		Preconditions.checkNotNull(pos1, "pos1");
 		Preconditions.checkNotNull(pos2, "pos2");

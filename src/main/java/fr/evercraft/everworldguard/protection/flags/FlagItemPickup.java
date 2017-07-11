@@ -45,7 +45,7 @@ public class FlagItemPickup extends CatalogTypeFlag<ItemType> {
 
 	@Override
 	protected Map<String, Set<ItemType>> getConfig() {
-		return this.plugin.getProtectionService().getConfigFlags().get(this.getName(), ItemType.class);
+		return this.plugin.getConfigFlags().get(this.getName(), ItemType.class);
 	}
 
 	@Override

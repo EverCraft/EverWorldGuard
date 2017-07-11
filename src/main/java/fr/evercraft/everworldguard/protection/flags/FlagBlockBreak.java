@@ -66,7 +66,7 @@ public class FlagBlockBreak extends CatalogTypeFlag<BlockType> {
 
 	@Override
 	protected Map<String, Set<BlockType>> getConfig() {
-		return this.plugin.getProtectionService().getConfigFlags().get(this.getName(), BlockType.class);
+		return this.plugin.getConfigFlags().get(this.getName(), BlockType.class);
 	}
 
 	@Override

@@ -38,7 +38,6 @@ import fr.evercraft.everapi.plugin.command.ESubCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everapi.services.worldguard.Flag;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
-import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion.Group;
 import fr.evercraft.everapi.sponge.UtilsContexts;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EWPermissions;
@@ -84,7 +83,7 @@ public class EWRegionFlagRemove extends ESubCommand<EverWorldGuard> {
 				}
 				
 				List<String> suggests = new ArrayList<String>();
-				for(Group group : flag.get().getGroups()) {
+				for(ProtectedRegion.Group group : flag.get().getGroups()) {
 					suggests.add(group.getName());
 				}
 				return suggests;
@@ -188,7 +187,7 @@ public class EWRegionFlagRemove extends ESubCommand<EverWorldGuard> {
 			return CompletableFuture.completedFuture(false);
 		}
 		
-		Optional<Group> group = this.plugin.getGame().getRegistry().getType(Group.class, args_string.get(2));
+		Optional<ProtectedRegion.Group> group = this.plugin.getGame().getRegistry().getType(ProtectedRegion.Group.class, args_string.get(2));
 		if (!group.isPresent()) {
 			EWMessages.GROUP_NOT_FOUND.sender()
 				.replace("<group>", args_string.get(2))
@@ -199,7 +198,8 @@ public class EWRegionFlagRemove extends ESubCommand<EverWorldGuard> {
 		return this.commandRegionFlagRemove(source, region.get(), group.get(), flag.get(), args.getArgs(3), world);
 	}
 
-	private <T> CompletableFuture<Boolean> commandRegionFlagRemove(final CommandSource source, ProtectedRegion region, Group group, Flag<T> flag, List<String> values, World world) {
+	private <T> CompletableFuture<Boolean> commandRegionFlagRemove(final CommandSource source, final ProtectedRegion region, 
+			final ProtectedRegion.Group group, final Flag<T> flag, final List<String> values, final World world) {
 		try {
 			Optional<T> value = flag.parseRemove(source, region, group, values);
 			

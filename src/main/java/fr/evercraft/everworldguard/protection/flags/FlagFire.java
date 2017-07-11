@@ -73,7 +73,7 @@ public class FlagFire extends CatalogTypeFlag<FireType> {
 	
 	@Override
 	protected Map<String, Set<FireType>> getConfig() {
-		return this.plugin.getProtectionService().getConfigFlags().get(this.getName(), FireType.class);
+		return this.plugin.getConfigFlags().get(this.getName(), FireType.class);
 	}
 	
 	public void reload() {

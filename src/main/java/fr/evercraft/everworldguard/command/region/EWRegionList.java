@@ -174,7 +174,7 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 		}
 	}
 
-	private CompletableFuture<Boolean> commandRegionList(CommandSource player, World world) {
+	private CompletableFuture<Boolean> commandRegionList(final CommandSource player, final World world) {
 		TreeMap<String, Text> list = new TreeMap<String, Text>();
 		for (ProtectedRegion region : this.plugin.getProtectionService().getOrCreateEWorld(world).getAll()) {
 			list.put(region.getName(), EWMessages.REGION_LIST_ALL_LINE.getFormat()
@@ -204,7 +204,7 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 		return CompletableFuture.completedFuture(true);
 	}
 
-	private CompletableFuture<Boolean> commandRegionListPlayer(CommandSource staff, World world, String player_string) {
+	private CompletableFuture<Boolean> commandRegionListPlayer(final CommandSource staff, final World world, final String player_string) {
 		Optional<EUser> user = this.plugin.getEServer().getEUser(player_string);
 		// Le joueur est introuvable
 		if (!user.isPresent()) {
@@ -217,7 +217,7 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 		return this.commandRegionListPlayer(staff, world, user.get());
 	}
 	
-	private CompletableFuture<Boolean> commandRegionListPlayer(CommandSource staff, World world, EUser user) {
+	private CompletableFuture<Boolean> commandRegionListPlayer(final CommandSource staff, final World world, final EUser user) {
 		TreeMap<String, Text> list = new TreeMap<String, Text>();
 		for (ProtectedRegion region : this.plugin.getProtectionService().getOrCreateEWorld(world).getAll()) {
 			if (region.isOwnerOrMember(user, UtilsContexts.get(world.getName()))) {
@@ -257,7 +257,7 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 		return CompletableFuture.completedFuture(true);
 	}
 	
-	private CompletableFuture<Boolean> commandRegionListGroup(CommandSource player, World world, String group_string) {
+	private CompletableFuture<Boolean> commandRegionListGroup(final CommandSource player, final World world, final String group_string) {
 		Subject group = this.plugin.getEverAPI().getManagerService().getPermission().getGroupSubjects().get(group_string);
 		// Le joueur est introuvable
 		if (group == null){

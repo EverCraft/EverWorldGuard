@@ -52,7 +52,7 @@ public class FlagIce extends CatalogTypeFlag<IceType> {
 	
 	@Override
 	protected Map<String, Set<IceType>> getConfig() {
-		return this.plugin.getProtectionService().getConfigFlags().get(this.getName(), IceType.class);
+		return this.plugin.getConfigFlags().get(this.getName(), IceType.class);
 	}
 	
 	@Override

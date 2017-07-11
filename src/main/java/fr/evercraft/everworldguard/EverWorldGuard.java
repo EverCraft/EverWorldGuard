@@ -27,6 +27,7 @@ import fr.evercraft.everapi.services.worldguard.WorldGuardService;
 import fr.evercraft.everworldguard.command.EWManagerCommands;
 import fr.evercraft.everworldguard.listeners.EWListener;
 import fr.evercraft.everworldguard.protection.EProtectionService;
+import fr.evercraft.everworldguard.protection.flag.EWFlagConfig;
 import fr.evercraft.everworldguard.protection.flag.EWManagerFlags;
 import fr.evercraft.everworldguard.protection.storage.EWDataBases;
 import fr.evercraft.everworldguard.selection.ESelectionService;
@@ -45,6 +46,7 @@ import fr.evercraft.everworldguard.selection.ESelectionService;
 public class EverWorldGuard extends EPlugin<EverWorldGuard> {
 	
 	private EWConfig configs;
+	private EWFlagConfig configFlags;
 	private EWMessage messages;
 	
 	private EProtectionService protection;
@@ -66,6 +68,7 @@ public class EverWorldGuard extends EPlugin<EverWorldGuard> {
 	
 	@Override
 	protected void onEnable() {
+		this.configFlags = new EWFlagConfig(this);
 		this.flags = new EWManagerFlags(this);
 		
 		if (!this.getGame().getServiceManager().isRegistered(SelectionService.class)) {
@@ -81,7 +84,7 @@ public class EverWorldGuard extends EPlugin<EverWorldGuard> {
 		this.protection.getRegister().setInitialized(false);
 	}
 
-	protected void onReload() throws PluginDisableException{
+	protected void onReload() throws PluginDisableException {
 		this.reloadConfigurations();
 		this.database.reload();
 		this.protection.reload();
@@ -105,6 +108,10 @@ public class EverWorldGuard extends EPlugin<EverWorldGuard> {
 	
 	public EWConfig getConfigs() {
 		return this.configs;
+	}
+	
+	public EWFlagConfig getConfigFlags() {
+		return this.configFlags;
 	}
 	
 	public EWDataBases getDataBases() {

@@ -32,6 +32,7 @@ import fr.evercraft.everapi.EAMessage.EAMessages;
 import fr.evercraft.everapi.plugin.command.Args;
 import fr.evercraft.everapi.plugin.command.ESubCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
+import fr.evercraft.everapi.server.user.EUser;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EWPermissions;
 import fr.evercraft.everworldguard.EverWorldGuard;
@@ -46,7 +47,7 @@ public class EWRegionBypass extends ESubCommand<EverWorldGuard> {
         super(plugin, command, "bypass");
         
         this.pattern = Args.builder()
-        	.value(MARKER_PLAYER, (source, args) -> this.getAllPlayers(source, false))
+        	.value(MARKER_PLAYER, (source, args) -> this.getAllUsers(args.getValue(MARKER_PLAYER).orElse(""), source))
     		.arg((source, args) -> Arrays.asList("on", "off", "status"));
     }
 	
@@ -92,6 +93,7 @@ public class EWRegionBypass extends ESubCommand<EverWorldGuard> {
 			EAMessages.COMMAND_ERROR_FOR_PLAYER.sender()
 				.prefix(EWMessages.PREFIX)
 				.sendTo(source);
+			return CompletableFuture.completedFuture(false);
 		}
 		
 		String value = this.getValue((EPlayer) source, argsString);
@@ -107,7 +109,7 @@ public class EWRegionBypass extends ESubCommand<EverWorldGuard> {
 		return CompletableFuture.completedFuture(false);
 	}
 	
-	private String getValue(EPlayer player, List<String> argsString) {
+	private String getValue(final EUser player, final List<String> argsString) {
 		if (argsString.isEmpty()) {
 			if (!player.hasProtectionBypass()) {
 				return "on";
@@ -119,7 +121,7 @@ public class EWRegionBypass extends ESubCommand<EverWorldGuard> {
 		}
 	}
 	
-	private CompletableFuture<Boolean> commandRegionBypassOn(EPlayer player) {
+	private CompletableFuture<Boolean> commandRegionBypassOn(final EPlayer player) {
 		if (player.hasProtectionBypass()) {
 			EWMessages.REGION_BYPASS_ON_PLAYER_ERROR.sendTo(player);
 			return CompletableFuture.completedFuture(false);
@@ -130,7 +132,7 @@ public class EWRegionBypass extends ESubCommand<EverWorldGuard> {
 		return CompletableFuture.completedFuture(true);
 	}
 	
-	private CompletableFuture<Boolean> commandRegionBypassOff(EPlayer player) {
+	private CompletableFuture<Boolean> commandRegionBypassOff(final EPlayer player) {
 		if (!player.hasProtectionBypass()) {
 			EWMessages.REGION_BYPASS_OFF_PLAYER_ERROR.sendTo(player);
 			return CompletableFuture.completedFuture(false);
@@ -141,17 +143,17 @@ public class EWRegionBypass extends ESubCommand<EverWorldGuard> {
 		return CompletableFuture.completedFuture(true);
 	}
 	
-	private CompletableFuture<Boolean> commandRegionBypassStatus(EPlayer player) {
+	private CompletableFuture<Boolean> commandRegionBypassStatus(final EPlayer player) {
 		if (player.hasProtectionBypass()) {
 			EWMessages.REGION_BYPASS_STATUS_PLAYER_ON.sendTo(player);
 		} else {
 			EWMessages.REGION_BYPASS_STATUS_PLAYER_OFF.sendTo(player);
 		}
-		return CompletableFuture.completedFuture(true);
+		return CompletableFuture.completedFuture(false);
 	}
 	
-	private CompletableFuture<Boolean> commandRegionBypass(CommandSource staff, String playerString, List<String> argsString) {
-		Optional<EPlayer> optPlayer = this.plugin.getEServer().getEPlayer(playerString);
+	private CompletableFuture<Boolean> commandRegionBypass(final CommandSource staff, final String playerString, final List<String> argsString) {
+		Optional<EUser> optPlayer = this.plugin.getEServer().getEUser(playerString);
 		if (!optPlayer.isPresent()) {
 			EAMessages.PLAYER_NOT_FOUND.sender()
 				.prefix(EWMessages.PREFIX)
@@ -160,7 +162,7 @@ public class EWRegionBypass extends ESubCommand<EverWorldGuard> {
 			return CompletableFuture.completedFuture(false);
 		}
 		
-		EPlayer player = optPlayer.get();
+		EUser player = optPlayer.get();
 		String value = this.getValue(player, argsString);
 		if (value.equalsIgnoreCase("on")) {
 			return this.commandRegionBypassOn(staff, player);
@@ -174,7 +176,7 @@ public class EWRegionBypass extends ESubCommand<EverWorldGuard> {
 		return CompletableFuture.completedFuture(false);
 	}
 	
-	private CompletableFuture<Boolean> commandRegionBypassOn(CommandSource staff, EPlayer player) {
+	private CompletableFuture<Boolean> commandRegionBypassOn(final CommandSource staff, final EUser player) {
 		if (player.hasProtectionBypass()) {
 			EWMessages.REGION_BYPASS_ON_OTHERS_ERROR.sender()
 				.replace("<player>", player.getName())
@@ -182,7 +184,7 @@ public class EWRegionBypass extends ESubCommand<EverWorldGuard> {
 			return CompletableFuture.completedFuture(false);
 		}
 		
-		player.setProtectionBypass(false);
+		player.setProtectionBypass(true);
 		EWMessages.REGION_BYPASS_ON_OTHERS_PLAYER.sender()
 			.replace("<staff>", staff.getName())
 			.sendTo(player);
@@ -192,7 +194,7 @@ public class EWRegionBypass extends ESubCommand<EverWorldGuard> {
 		return CompletableFuture.completedFuture(true);
 	}
 	
-	private CompletableFuture<Boolean> commandRegionBypassOff(CommandSource staff, EPlayer player) {
+	private CompletableFuture<Boolean> commandRegionBypassOff(final CommandSource staff, final EUser player) {
 		if (!player.hasProtectionBypass()) {
 			EWMessages.REGION_BYPASS_OFF_OTHERS_ERROR.sender()
 				.replace("<player>", player.getName())
@@ -200,7 +202,7 @@ public class EWRegionBypass extends ESubCommand<EverWorldGuard> {
 			return CompletableFuture.completedFuture(false);
 		}
 		
-		player.setProtectionBypass(true);
+		player.setProtectionBypass(false);
 		EWMessages.REGION_BYPASS_OFF_OTHERS_PLAYER.sender()
 			.replace("<staff>", staff.getName())
 			.sendTo(player);
@@ -210,7 +212,7 @@ public class EWRegionBypass extends ESubCommand<EverWorldGuard> {
 		return CompletableFuture.completedFuture(true);
 	}
 	
-	private CompletableFuture<Boolean> commandRegionBypassStatus(CommandSource staff, EPlayer player) {
+	private CompletableFuture<Boolean> commandRegionBypassStatus(final CommandSource staff, final EUser player) {
 		if (player.hasProtectionBypass()) {
 			EWMessages.REGION_BYPASS_STATUS_OTHERS_ON.sender()
 				.replace("<player>", player.getName())

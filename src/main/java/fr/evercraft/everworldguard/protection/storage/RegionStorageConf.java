@@ -512,4 +512,32 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 		
 		return CompletableFuture.supplyAsync(() -> this.save(true));
 	}
+
+	@Override
+	public CompletableFuture<Boolean> redefine(EProtectedRegion region, EProtectedRegion newRegion) {
+		ConfigurationNode config = this.getNode().getNode(region.getId().toString());
+		
+		//Type
+		config.getNode("type").setValue(newRegion.getType().getName());
+		
+		config.removeChild("min");
+		config.removeChild("max");
+		config.removeChild("positions");
+		
+		// Points
+		if (newRegion.getType().equals(ProtectedRegion.Types.CUBOID)) {
+			try {
+				config.getNode("min").setValue(TypeToken.of(Vector3i.class), newRegion.getMinimumPoint());
+				config.getNode("max").setValue(TypeToken.of(Vector3i.class), newRegion.getMaximumPoint());
+			} catch (ObjectMappingException e) {}
+		} else if (region.getType().equals(ProtectedRegion.Types.POLYGONAL)) {
+			newRegion.getPoints().forEach(point -> {
+				try {
+					config.getNode("positions").getAppendedNode().setValue(TypeToken.of(Vector3i.class), point);
+				} catch (ObjectMappingException e) {}
+			});
+		}
+		
+		return CompletableFuture.supplyAsync(() -> this.save(true));
+	}
 }

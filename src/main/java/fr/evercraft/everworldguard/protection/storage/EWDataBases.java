@@ -639,6 +639,28 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 		return false;
 	}
 	
+	public boolean updateType(Connection connection, UUID world, UUID identifier, ProtectedRegion.Type type) {
+		PreparedStatement preparedStatement = null;
+		
+		String query = 	  "UPDATE `" + this.getTableRegions() + "` " 
+						+ "SET `type` = ? "
+						+ "WHERE `uuid` = ? AND `world` = ? ;";
+    	try {    		
+    		preparedStatement = connection.prepareStatement(query);
+    		preparedStatement.setString(1, type.getId());
+			preparedStatement.setString(2, identifier.toString());
+			preparedStatement.setString(3, world.toString());
+			
+			preparedStatement.execute();
+			return true;
+		} catch (SQLException e) {
+			this.plugin.getELogger().warn("Error during the update of the type of a region (region='" + identifier + "';world='" + world + "') : " + e.getMessage());
+		} finally {
+			try {if (preparedStatement != null) preparedStatement.close();} catch (SQLException e) {}
+	    }
+		return false;
+	}
+	
 	public <V> boolean insertFlag(Connection connection, UUID world, UUID identifier, Flag<V> flag, Group group, V value) {
 		PreparedStatement preparedStatement = null;
 		
