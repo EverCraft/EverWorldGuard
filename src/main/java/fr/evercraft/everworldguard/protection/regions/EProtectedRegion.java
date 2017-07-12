@@ -79,7 +79,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	
 	private final ConcurrentMap<Flag<?>, EFlagValue<?>> flags;
 	
-	public EProtectedRegion(EWWorld world, UUID identifier, String name, boolean transientRegion) {
+	public EProtectedRegion(final EWWorld world, final UUID identifier, final String name, boolean transientRegion) {
 		Preconditions.checkNotNull(world);
 		Preconditions.checkNotNull(identifier);
 		Preconditions.checkNotNull(name);
@@ -100,12 +100,12 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 		this.transientRegion = transientRegion;
 	}
 	
-	public void init(EProtectedRegion parent) {
+	public void init(final EProtectedRegion parent) {
 		this.parent = parent;
 	}
 	
-	public void init(int priority, Set<UUID> owners, Set<String> group_owners, 
-			Set<UUID> members, Set<String> group_members, Map<Flag<?>, EFlagValue<?>> flags) {
+	public void init(int priority, final Set<UUID> owners, final Set<String> group_owners, 
+			final Set<UUID> members, final Set<String> group_members, final Map<Flag<?>, EFlagValue<?>> flags) {
 		this.flags.clear();
 		
 		this.priority = priority;
@@ -118,7 +118,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	 * Setters
 	 */
 	
-	protected void setMinMaxPoints(List<Vector3i> points) {
+	protected void setMinMaxPoints(final List<Vector3i> points) {
 		int minX = points.get(0).getX();
 		int minY = points.get(0).getY();
 		int minZ = points.get(0).getZ();
@@ -212,7 +212,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 	
 	@Override
-	public CompletableFuture<Boolean> setParent(ProtectedRegion parent) throws CircularInheritanceException {
+	public CompletableFuture<Boolean> setParent(final ProtectedRegion parent) throws CircularInheritanceException {
 		Preconditions.checkNotNull(parent, "parent");
 		
 		if (parent.equals(this.parent)) CompletableFuture.completedFuture(true);
@@ -239,7 +239,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 	
 	@Override
-	public CompletableFuture<Set<UUID>> addPlayerOwner(Set<UUID> players) {
+	public CompletableFuture<Set<UUID>> addPlayerOwner(final Set<UUID> players) {
 		Preconditions.checkNotNull(players, "players");
 		
 		Set<UUID> difference = Sets.difference(players, this.getOwners().getPlayers());
@@ -260,7 +260,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 
 	@Override
-	public CompletableFuture<Set<UUID>> removePlayerOwner(Set<UUID> players) {
+	public CompletableFuture<Set<UUID>> removePlayerOwner(final Set<UUID> players) {
 		Preconditions.checkNotNull(players, "players");
 		
 		Set<UUID> intersection = Sets.intersection(players, this.getOwners().getPlayers());
@@ -281,7 +281,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 	
 	@Override
-	public CompletableFuture<Set<String>> addGroupOwner(Set<String> groups) {
+	public CompletableFuture<Set<String>> addGroupOwner(final Set<String> groups) {
 		Preconditions.checkNotNull(groups, "groups");
 		
 		Set<String> difference = Sets.difference(groups, this.getOwners().getGroups());
@@ -302,7 +302,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 
 	@Override
-	public CompletableFuture<Set<String>> removeGroupOwner(Set<String> groups) {
+	public CompletableFuture<Set<String>> removeGroupOwner(final Set<String> groups) {
 		Preconditions.checkNotNull(groups, "groups");
 		
 		Set<String> intersection = Sets.intersection(groups, this.getOwners().getGroups());
@@ -323,7 +323,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 	
 	@Override
-	public CompletableFuture<Set<UUID>> addPlayerMember(Set<UUID> players) {
+	public CompletableFuture<Set<UUID>> addPlayerMember(final Set<UUID> players) {
 		Preconditions.checkNotNull(players, "players");
 		
 		Set<UUID> difference = Sets.difference(players, this.getMembers().getPlayers());
@@ -344,7 +344,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 
 	@Override
-	public CompletableFuture<Set<UUID>> removePlayerMember(Set<UUID> players) {
+	public CompletableFuture<Set<UUID>> removePlayerMember(final Set<UUID> players) {
 		Preconditions.checkNotNull(players, "players");
 		
 		Set<UUID> intersection = Sets.intersection(players, this.getMembers().getPlayers());
@@ -365,7 +365,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 	
 	@Override
-	public CompletableFuture<Set<String>> addGroupMember(Set<String> groups) {
+	public CompletableFuture<Set<String>> addGroupMember(final Set<String> groups) {
 		Preconditions.checkNotNull(groups, "groups");
 		
 		Set<String> difference = Sets.difference(groups, this.getMembers().getGroups());
@@ -386,7 +386,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 
 	@Override
-	public CompletableFuture<Set<String>> removeGroupMember(Set<String> groups) {
+	public CompletableFuture<Set<String>> removeGroupMember(final Set<String> groups) {
 		Preconditions.checkNotNull(groups, "groups");
 		
 		Set<String> intersection = Sets.intersection(groups, this.getMembers().getGroups());
@@ -408,7 +408,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public <V> CompletableFuture<Boolean> setFlag(Flag<V> flag, Group group, @Nullable V value) {
+	public <V> CompletableFuture<Boolean> setFlag(final Flag<V> flag, final Group group, final @Nullable V value) {
 		Preconditions.checkNotNull(flag, "flag");
 		Preconditions.checkNotNull(group, "group");
 		
@@ -440,7 +440,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	
 	
 	@Override
-	public CompletableFuture<ProtectedRegion.Cuboid> redefineCuboid(Vector3i pos1, Vector3i pos2) {
+	public CompletableFuture<ProtectedRegion.Cuboid> redefineCuboid(final Vector3i pos1, final Vector3i pos2) {
 		Preconditions.checkNotNull(pos1, "pos1");
 		Preconditions.checkNotNull(pos2, "pos2");
 		
@@ -463,7 +463,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 
 	@Override
-	public CompletableFuture<ProtectedRegion.Polygonal> redefinePolygonal(List<Vector3i> positions) {
+	public CompletableFuture<ProtectedRegion.Polygonal> redefinePolygonal(final List<Vector3i> positions) {
 		Preconditions.checkNotNull(positions, "positions");
 		
 		EProtectedPolygonalRegion newRegion = new EProtectedPolygonalRegion(this.world, this.identifier, this.name, positions, this.transientRegion);
@@ -587,7 +587,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 	
 	@Override
-	public boolean isPlayerOwner(User player, Set<Context> contexts) {
+	public boolean isPlayerOwner(final User player, final Set<Context> contexts) {
 		Preconditions.checkNotNull(player, "player");
 		Preconditions.checkNotNull(contexts, "contexts");
 
@@ -608,7 +608,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 	
 	@Override
-	public boolean isGroupOwner(Subject group) {
+	public boolean isGroupOwner(final Subject group) {
 		Preconditions.checkNotNull(group, "group");
 
 		this.read_lock.lock();
@@ -633,7 +633,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 	
 	@Override
-	public boolean isPlayerMember(User player, Set<Context> contexts) {
+	public boolean isPlayerMember(final User player, final Set<Context> contexts) {
 		Preconditions.checkNotNull(player, "player");
 		Preconditions.checkNotNull(contexts, "contexts");
 		
@@ -654,7 +654,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 
 	@Override
-	public boolean isGroupMember(Subject group) {
+	public boolean isGroupMember(final Subject group) {
 		Preconditions.checkNotNull(group);
 
 		this.read_lock.lock();
@@ -684,7 +684,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 	
 	@Override
-	public boolean isOwnerOrMember(User player, Set<Context> contexts) {
+	public boolean isOwnerOrMember(final User player, final Set<Context> contexts) {
 		Preconditions.checkNotNull(player, "player");
 		Preconditions.checkNotNull(contexts, "contexts");
 
@@ -707,7 +707,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 	
 	@Override
-	public boolean isOwnerOrMember(Subject group) {
+	public boolean isOwnerOrMember(final Subject group) {
 		Preconditions.checkNotNull(group, "group");
 
 		this.read_lock.lock();
@@ -728,7 +728,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 		}
 	}
 	
-	public ProtectedRegion.Group getGroup(User subject, Set<Context> contexts) {
+	public ProtectedRegion.Group getGroup(final User subject, final Set<Context> contexts) {
 		this.read_lock.lock();
 		try {
 			if (this.isPlayerOwner(subject, contexts)) return ProtectedRegion.Groups.OWNER;
@@ -741,7 +741,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public <V> FlagValue<V> getFlag(Flag<V> flag) {
+	public <V> FlagValue<V> getFlag(final Flag<V> flag) {
 		Preconditions.checkNotNull(flag);
 
 		this.read_lock.lock();
@@ -756,7 +756,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 	
 	@Override
-	public <V> Optional<V> getFlagInherit(Flag<V> flag, Group group) {
+	public <V> Optional<V> getFlagInherit(final Flag<V> flag, final Group group) {
 		Preconditions.checkNotNull(flag);
 
 		this.read_lock.lock();
@@ -797,7 +797,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 	
 	@Override
-	public boolean containsAnyPosition(List<Vector3i> positions) {
+	public boolean containsAnyPosition(final List<Vector3i> positions) {
 		Preconditions.checkNotNull(positions, "positions");
 
 		for (Vector3i position : positions) {
@@ -809,7 +809,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 	
 	@Override
-	public boolean containsChunck(Vector3i position) {
+	public boolean containsChunck(final Vector3i position) {
 		Preconditions.checkNotNull(position, "position");
 		
 		Vector3i min = position.mul(16);
@@ -821,14 +821,14 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 	
 	@Override
-	public List<ProtectedRegion> getIntersecting(ProtectedRegion region) {
+	public List<ProtectedRegion> getIntersecting(final ProtectedRegion region) {
 		Preconditions.checkNotNull(region, "region");
 		
 		return this.getIntersectingRegions(Arrays.asList(region));
 	}
 
 	@Override
-	public List<ProtectedRegion> getIntersectingRegions(Collection<ProtectedRegion> regions) {
+	public List<ProtectedRegion> getIntersectingRegions(final Collection<ProtectedRegion> regions) {
 		Preconditions.checkNotNull(regions, "regions");
 
 		Optional<Area> optThisArea = this.toArea();
@@ -850,7 +850,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 		return intersecting.build();
 	}
 	
-	protected boolean intersects(ProtectedRegion region, Area thisArea) {
+	protected boolean intersects(final ProtectedRegion region, final Area thisArea) {
 		if (this.intersectsBoundingBox(region)) {
 			Optional<Area> testArea = region.toArea();
 			if (testArea.isPresent()) {
@@ -861,7 +861,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 		return false;
 	}
 	
-	protected boolean intersectsBoundingBox(ProtectedRegion region) {
+	protected boolean intersectsBoundingBox(final ProtectedRegion region) {
 		Vector3i rMaxPoint = region.getMaximumPoint();
 		Vector3i min = this.getMinimumPoint();
 
@@ -879,7 +879,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 		return true;
 	}
 	
-	protected boolean intersectsEdges(ProtectedRegion region) {
+	protected boolean intersectsEdges(final ProtectedRegion region) {
         List<Vector3i> pos1 = getPoints();
         List<Vector3i> pos2 = region.getPoints();
         Vector3i lastPos1 = pos1.get(pos1.size() - 1);
@@ -912,7 +912,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	 */
 	
 	@Override
-	public int compareTo(ProtectedRegion other) {
+	public int compareTo(final ProtectedRegion other) {
 		Preconditions.checkNotNull(other, "other");
 		
 		if (this.getPriority() > other.getPriority()) {

@@ -53,6 +53,10 @@ public class RegionStorageSql implements RegionStorage {
 	
 	@Override
 	public void reload() {}
+	
+	public boolean isSql() {
+    	return true;
+    }
 
 	@Override
 	public CompletableFuture<Set<EProtectedRegion>> getAll() {

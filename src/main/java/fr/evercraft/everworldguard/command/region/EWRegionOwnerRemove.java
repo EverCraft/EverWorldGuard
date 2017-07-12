@@ -183,7 +183,7 @@ public class EWRegionOwnerRemove extends ESubCommand<EverWorldGuard> {
 		}
 	}
 	
-	private CompletableFuture<Boolean> commandRegionOwnerRemovePlayer(final CommandSource source, ProtectedRegion region, List<String> players_string, World world) {		
+	private CompletableFuture<Boolean> commandRegionOwnerRemovePlayer(final CommandSource source, final ProtectedRegion region, final List<String> players_string, final World world) {		
 		Set<User> players = new HashSet<User>();
 		for (String player_string : players_string) {
 			Optional<EUser> user = this.plugin.getEServer().getEUser(player_string);
@@ -205,7 +205,7 @@ public class EWRegionOwnerRemove extends ESubCommand<EverWorldGuard> {
 		}
 	}
 	
-	private CompletableFuture<Boolean> commandRegionOwnerRemovePlayer(final CommandSource source, ProtectedRegion region, Set<User> players, World world) {
+	private CompletableFuture<Boolean> commandRegionOwnerRemovePlayer(final CommandSource source, final ProtectedRegion region, final Set<User> players, final World world) {
 		return region.removePlayerOwner(players.stream()
 				.map(user -> user.getUniqueId())
 				.collect(Collectors.toSet()))
@@ -225,7 +225,7 @@ public class EWRegionOwnerRemove extends ESubCommand<EverWorldGuard> {
 			});
 	}
 	
-	private CompletableFuture<Boolean> commandRegionOwnerRemovePlayer(final CommandSource source, ProtectedRegion region, User player, World world) {
+	private CompletableFuture<Boolean> commandRegionOwnerRemovePlayer(final CommandSource source, final ProtectedRegion region, final User player, final World world) {
 		if (!region.getOwners().containsPlayer(player.getUniqueId())) {
 			EWMessages.REGION_OWNER_REMOVE_PLAYER_ERROR.sender()
 				.replace("<region>", region.getName())
@@ -251,7 +251,7 @@ public class EWRegionOwnerRemove extends ESubCommand<EverWorldGuard> {
 			});
 	}
 	
-	private CompletableFuture<Boolean> commandRegionOwnerRemoveGroup(final CommandSource source, ProtectedRegion region, List<String> groups_string, World world) {
+	private CompletableFuture<Boolean> commandRegionOwnerRemoveGroup(final CommandSource source, final ProtectedRegion region, final List<String> groups_string, final World world) {
 		Set<Subject> groups = new HashSet<Subject>();
 		for (String group_string : groups_string) {
 			Subject group = this.plugin.getEverAPI().getManagerService().getPermission().getGroupSubjects().get(group_string);
@@ -273,7 +273,7 @@ public class EWRegionOwnerRemove extends ESubCommand<EverWorldGuard> {
 		}
 	}
 	
-	private CompletableFuture<Boolean> commandRegionOwnerRemoveGroup(final CommandSource source, ProtectedRegion region, Set<Subject> groups, World world) {
+	private CompletableFuture<Boolean> commandRegionOwnerRemoveGroup(final CommandSource source, final ProtectedRegion region, final Set<Subject> groups, final World world) {
 		return region.removeGroupOwner(groups.stream()
 				.map(group -> group.getIdentifier())
 				.collect(Collectors.toSet()))
@@ -293,7 +293,7 @@ public class EWRegionOwnerRemove extends ESubCommand<EverWorldGuard> {
 			});
 	}
 	
-	private CompletableFuture<Boolean> commandRegionOwnerRemoveGroup(final CommandSource source, ProtectedRegion region, Subject group, World world) {
+	private CompletableFuture<Boolean> commandRegionOwnerRemoveGroup(final CommandSource source, final ProtectedRegion region, final Subject group, final World world) {
 		if (region.getOwners().containsGroup(group)) {
 			EWMessages.REGION_OWNER_REMOVE_GROUP_ERROR.sender()
 				.replace("<region>", region.getName())

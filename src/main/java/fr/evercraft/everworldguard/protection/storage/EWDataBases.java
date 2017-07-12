@@ -60,7 +60,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 	private static final String GROUPS = "groups";
 	private static final String FLAGS = "flags";
 
-	public EWDataBases(EverWorldGuard plugin) throws PluginDisableException {
+	public EWDataBases(final EverWorldGuard plugin) throws PluginDisableException {
 		super(plugin);
 	}
 
@@ -157,7 +157,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 		return this.getPrefix() + FLAGS;
 	}
 	
-	public Set<EProtectedRegion> getAllRegions(EWWorld world) {
+	public Set<EProtectedRegion> getAllRegions(final EWWorld world) {
 		Connection connection = null;
     	try {
     		connection = this.plugin.getDataBases().getConnection();
@@ -170,7 +170,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 		return ImmutableSet.of();
 	}
 	
-	public Set<EProtectedRegion> getAllRegions(Connection connection, EWWorld world) {
+	public Set<EProtectedRegion> getAllRegions(final Connection connection, final EWWorld world) {
 		Map<UUID, EProtectedRegion> regions = new HashMap<UUID, EProtectedRegion>();
 		Map<UUID, UUID> parents = new HashMap<UUID, UUID>();
 		
@@ -269,7 +269,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 		return ImmutableSet.copyOf(regions.values());
 	}
 	
-	public <T> Set<T> get(Map<UUID, Map<Group, Set<T>>> users, UUID identifier, Group group) {
+	public <T> Set<T> get(final Map<UUID, Map<Group, Set<T>>> users, final UUID identifier, final Group group) {
 		Map<Group, Set<T>> map = users.get(identifier);
 		if (map == null) return ImmutableSet.of();
 		
@@ -279,7 +279,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 		return set;
 	}
 	
-	public Map<UUID, List<Vector3i>> getAllPositions(Connection connection, UUID world) {
+	public Map<UUID, List<Vector3i>> getAllPositions(final Connection connection, final UUID world) {
 		Map<UUID, List<Vector3i>> positions = new HashMap<UUID, List<Vector3i>>();
 		PreparedStatement preparedStatement = null;
 		
@@ -316,7 +316,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 		return positions;
 	}
 	
-	public Map<UUID, Map<Group, Set<UUID>>> getAllUsers(Connection connection, UUID world) {
+	public Map<UUID, Map<Group, Set<UUID>>> getAllUsers(final Connection connection, final UUID world) {
 		Map<UUID, Map<Group, Set<UUID>>> users = new HashMap<UUID, Map<Group, Set<UUID>>>();
 		PreparedStatement preparedStatement = null;
 		
@@ -369,7 +369,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 		return users;
 	}
 	
-	public Map<UUID, Map<Group, Set<String>>> getAllGroups(Connection connection, UUID world) {
+	public Map<UUID, Map<Group, Set<String>>> getAllGroups(final Connection connection, final UUID world) {
 		Map<UUID, Map<Group, Set<String>>> groups = new HashMap<UUID, Map<Group, Set<String>>>();
 		PreparedStatement preparedStatement = null;
 		
@@ -418,7 +418,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public <T> Map<UUID, Map<Flag<?>, EFlagValue<?>>> getAllFlags(Connection connection, UUID world) {
+	public <T> Map<UUID, Map<Flag<?>, EFlagValue<?>>> getAllFlags(final Connection connection, final UUID world) {
 		Map<UUID, Map<Flag<?>, EFlagValue<?>>> flags = new HashMap<UUID, Map<Flag<?>, EFlagValue<?>>>();
 		PreparedStatement preparedStatement = null;
 		
@@ -480,7 +480,8 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 		return flags;
 	}
 	
-	public <V> boolean insertRegion(Connection connection, UUID world, UUID identifier, String name, ProtectedRegion.Type type, int priority, @Nullable UUID parent) {
+	public <V> boolean insertRegion(final Connection connection, final UUID world, final UUID identifier, final String name, 
+			final ProtectedRegion.Type type, int priority, final @Nullable UUID parent) {
 		PreparedStatement preparedStatement = null;
 		
 		String query = 	  "INSERT INTO `" + this.getTableRegions() + "` (`uuid`, `world`, `name`, `type`, `priority`, `parent`) " 
@@ -502,7 +503,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 		return false;
 	}
 	
-	public <V> boolean deleteRegion(Connection connection, UUID world, UUID identifier) {
+	public <V> boolean deleteRegion(final Connection connection, final UUID world, final UUID identifier) {
 		PreparedStatement preparedStatement = null;
 		
 		String query = 	  "DELETE FROM `" + this.getTableRegions() + "` "
@@ -522,7 +523,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 		return false;
 	}
 	
-	public <V> boolean insertPositions(Connection connection, UUID world, UUID identifier, List<Vector3i> positions) {
+	public <V> boolean insertPositions(final Connection connection, final UUID world, final UUID identifier, final List<Vector3i> positions) {
 		PreparedStatement preparedStatement = null;
 		
 		String query = 	  "INSERT INTO `" + this.getTablePositions() + "` (`region`, `world`, `id`, `x`, `y`, `z`) " 
@@ -549,7 +550,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 		return false;
 	}
 	
-	public <V> boolean deletePositions(Connection connection, UUID world, UUID identifier) {
+	public <V> boolean deletePositions(final Connection connection, final UUID world, final UUID identifier) {
 		PreparedStatement preparedStatement = null;
 		
 		String query = 	  "DELETE FROM `" + this.getTablePositions() + "` "
@@ -569,7 +570,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 		return false;
 	}
 	
-	public boolean updateName(Connection connection, UUID world, UUID identifier, String name) {
+	public boolean updateName(final Connection connection, final UUID world, final UUID identifier, final String name) {
 		PreparedStatement preparedStatement = null;
 		
 		String query = 	  "UPDATE `" + this.getTableRegions() + "` " 
@@ -591,7 +592,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 		return false;
 	}
 	
-	public boolean updatePriority(Connection connection, UUID world, UUID identifier, int priority) {
+	public boolean updatePriority(final Connection connection, final UUID world, final UUID identifier, int priority) {
 		PreparedStatement preparedStatement = null;
 		
 		String query = 	  "UPDATE `" + this.getTableRegions() + "` " 
@@ -613,7 +614,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 		return false;
 	}
 	
-	public boolean updateParent(Connection connection, UUID world, UUID identifier, @Nullable UUID parent) {
+	public boolean updateParent(final Connection connection, final UUID world, final UUID identifier, final @Nullable UUID parent) {
 		PreparedStatement preparedStatement = null;
 		
 		String query = 	  "UPDATE `" + this.getTableRegions() + "` " 
@@ -639,7 +640,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 		return false;
 	}
 	
-	public boolean updateType(Connection connection, UUID world, UUID identifier, ProtectedRegion.Type type) {
+	public boolean updateType(final Connection connection, final UUID world, final UUID identifier, final ProtectedRegion.Type type) {
 		PreparedStatement preparedStatement = null;
 		
 		String query = 	  "UPDATE `" + this.getTableRegions() + "` " 
@@ -661,7 +662,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 		return false;
 	}
 	
-	public <V> boolean insertFlag(Connection connection, UUID world, UUID identifier, Flag<V> flag, Group group, V value) {
+	public <V> boolean insertFlag(final Connection connection, final UUID world, final UUID identifier, final Flag<V> flag, final Group group, final V value) {
 		PreparedStatement preparedStatement = null;
 		
 		String query = 	  "INSERT INTO `" + this.getTableFlags() + "` (`region`, `world`, `group`, `flag`, `value`) " 
@@ -684,7 +685,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 		return false;
 	}
 	
-	public <V> boolean updateFlag(Connection connection, UUID world, UUID identifier, Flag<V> flag, Group group, V value) {
+	public <V> boolean updateFlag(final Connection connection, final UUID world, final UUID identifier, final Flag<V> flag, final Group group, final V value) {
 		PreparedStatement preparedStatement = null;
 		
 		String query = 	  "UPDATE `" + this.getTableFlags() + "` " 
@@ -708,7 +709,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 		return false;
 	}
 	
-	public <V> boolean deleteFlag(Connection connection, UUID world, UUID identifier, Flag<V> flag, Group group) {
+	public <V> boolean deleteFlag(final Connection connection, final UUID world, final UUID identifier, final Flag<V> flag, final Group group) {
 		PreparedStatement preparedStatement = null;
 		
 		String query = 	  "DELETE FROM `" + this.getTableFlags() + "` "
@@ -730,7 +731,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 		return false;
 	}
 	
-	public <V> boolean deleteFlag(Connection connection, UUID world, UUID identifier) {
+	public <V> boolean deleteFlag(final Connection connection, final UUID world, final UUID identifier) {
 		PreparedStatement preparedStatement = null;
 		
 		String query = 	  "DELETE FROM `" + this.getTableFlags() + "` "
@@ -750,7 +751,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 		return false;
 	}
 	
-	public <V> boolean insertUser(Connection connection, UUID world, UUID identifier, Group group, Set<UUID> users) {
+	public <V> boolean insertUser(final Connection connection, final UUID world, final UUID identifier, final Group group, final Set<UUID> users) {
 		PreparedStatement preparedStatement = null;
 		
 		String query = 	  "INSERT INTO `" + this.getTableUsers() + "` (`region`, `world`, `group`, `uuid`) " 
@@ -773,7 +774,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 		return false;
 	}
 	
-	public <V> boolean deleteUser(Connection connection, UUID world, UUID identifier, Group group, Set<UUID> users) {
+	public <V> boolean deleteUser(final Connection connection, final UUID world, final UUID identifier, final Group group, final Set<UUID> users) {
 		PreparedStatement preparedStatement = null;
 		
 		String query = 	  "DELETE FROM `" + this.getTableUsers() + "` "
@@ -794,7 +795,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 		return false;
 	}
 	
-	public <V> boolean deleteUser(Connection connection, UUID world, UUID identifier) {
+	public <V> boolean deleteUser(final Connection connection, final UUID world, final UUID identifier) {
 		PreparedStatement preparedStatement = null;
 		
 		String query = 	  "DELETE FROM `" + this.getTableUsers() + "` "
@@ -814,7 +815,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 		return false;
 	}
 	
-	public <V> boolean insertGroup(Connection connection, UUID world, UUID identifier, Group group, Set<String> groups) {
+	public <V> boolean insertGroup(final Connection connection, final UUID world, final UUID identifier, final Group group, final Set<String> groups) {
 		PreparedStatement preparedStatement = null;
 		
 		String query = 	  "INSERT INTO `" + this.getTableGroups() + "` (`region`, `world`, `group`, `name`) " 
@@ -837,7 +838,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 		return false;
 	}
 	
-	public <V> boolean deleteGroup(Connection connection, UUID world, UUID identifier, Group group, Set<String> groups) {
+	public <V> boolean deleteGroup(final Connection connection, final UUID world, final UUID identifier, final Group group, final Set<String> groups) {
 		PreparedStatement preparedStatement = null;
 		
 		String query = 	  "DELETE FROM `" + this.getTableGroups() + "` "
@@ -858,7 +859,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 		return false;
 	}
 	
-	public <V> boolean deleteGroup(Connection connection, UUID world, UUID identifier) {
+	public <V> boolean deleteGroup(final Connection connection, final UUID world, final UUID identifier) {
 		PreparedStatement preparedStatement = null;
 		
 		String query = 	  "DELETE FROM `" + this.getTableGroups() + "` "
@@ -887,28 +888,28 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 		boolean resultat = false;
 		PreparedStatement preparedStatement = null;
 		try {
-			// Permissions
-    		preparedStatement = connection.prepareStatement("TRUNCATE  `" + this.getTableRegions() + "` ;");
-			preparedStatement.execute();
-			preparedStatement.close();
-			
-			// Groupes
-			preparedStatement = connection.prepareStatement("TRUNCATE  `" + this.getTablePositions() + "` ;");
+			// Positions
+			preparedStatement = connection.prepareStatement("DELETE FROM  `" + this.getTablePositions() + "` ;");
 			preparedStatement.execute();
 			preparedStatement.close();
 		    	
-			// Options
-			preparedStatement = connection.prepareStatement("TRUNCATE  `" + this.getTableUsers() + "` ;");
+			// Users
+			preparedStatement = connection.prepareStatement("DELETE FROM  `" + this.getTableUsers() + "` ;");
 			preparedStatement.execute();
 			preparedStatement.close();
 			
-			// Options
-			preparedStatement = connection.prepareStatement("TRUNCATE  `" + this.getTableGroups() + "` ;");
+			// Groups
+			preparedStatement = connection.prepareStatement("DELETE FROM  `" + this.getTableGroups() + "` ;");
 			preparedStatement.execute();
 			preparedStatement.close();
 			
-			// Options
-			preparedStatement = connection.prepareStatement("TRUNCATE  `" + this.getTableFlags() + "` ;");
+			// Flags
+			preparedStatement = connection.prepareStatement("DELETE FROM  `" + this.getTableFlags() + "` ;");
+			preparedStatement.execute();
+			preparedStatement.close();
+			
+			// Regions
+			preparedStatement = connection.prepareStatement("DELETE FROM  `" + this.getTableRegions() + "` ;");
 			preparedStatement.execute();
 			preparedStatement.close();
 

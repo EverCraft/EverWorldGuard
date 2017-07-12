@@ -156,7 +156,7 @@ public class EWRegionPriority extends ESubCommand<EverWorldGuard> {
 		return this.commandRegionSetPriority(source, region.get(), priority.get(), world);
 	}
 
-	private CompletableFuture<Boolean> commandRegionSetPriority(final CommandSource source, ProtectedRegion region, Integer priority, World world) {
+	private CompletableFuture<Boolean> commandRegionSetPriority(final CommandSource source, final ProtectedRegion region, final Integer priority, final World world) {
 		return region.setPriority(priority)
 			.exceptionally(e -> false)
 			.thenApply(result -> {

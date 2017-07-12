@@ -53,7 +53,7 @@ public class EProtectedTemplateRegion extends EProtectedRegion implements Protec
 	}
 
 	@Override
-	public boolean containsPosition(Vector3i pos) {
+	public boolean containsPosition(final Vector3i pos) {
 		return false;
 	}
 
@@ -63,7 +63,7 @@ public class EProtectedTemplateRegion extends EProtectedRegion implements Protec
 	}
 
 	@Override
-	public List<ProtectedRegion> getIntersectingRegions(Collection<ProtectedRegion> regions) {
+	public List<ProtectedRegion> getIntersectingRegions(final Collection<ProtectedRegion> regions) {
 		return Collections.emptyList();
 	}
 

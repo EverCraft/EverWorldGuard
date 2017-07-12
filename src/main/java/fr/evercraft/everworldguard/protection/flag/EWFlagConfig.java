@@ -384,7 +384,7 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 	 * Accesseurs
 	 */
 	
-	public <T extends CatalogType> Map<String, Set<T>> get(String name, Class<T> type) {
+	public <T extends CatalogType> Map<String, Set<T>> get(final String name, final Class<T> type) {
 		ImmutableMap.Builder<String, Set<T>> groups = ImmutableMap.builder();
 		Set<T> all = null;
 		for (Entry<Object, ? extends ConfigurationNode> group : this.getContains(name).getChildrenMap().entrySet()) {
@@ -424,7 +424,7 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 		return map;
 	}
 	
-	public Map<String, Set<EntityTemplate>> getEntities(String name) {
+	public Map<String, Set<EntityTemplate>> getEntities(final String name) {
 		ImmutableMap.Builder<String, Set<EntityTemplate>> groups = ImmutableMap.builder();
 		this.getContains(name).getChildrenMap().forEach((group, list) -> {
 			ImmutableSet.Builder<EntityTemplate> set = ImmutableSet.builder();
@@ -441,7 +441,7 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 		return groups.build();
 	}
 	
-	public ConfigurationNode getContains(String name) {
+	public ConfigurationNode getContains(final String name) {
 		for (Entry<Object, ? extends ConfigurationNode> config : this.getNode().getChildrenMap().entrySet()) {
 			if (config.getKey().toString().contains(name)) {
 				return config.getValue();
@@ -450,7 +450,7 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 		return this.get(name);
 	}
 
-	public Map<String, Set<String>> getString(String name) {
+	public Map<String, Set<String>> getString(final String name) {
 		ImmutableMap.Builder<String, Set<String>> groups = ImmutableMap.builder();
 		for (Entry<Object, ? extends ConfigurationNode> group : this.getContains(name).getChildrenMap().entrySet()) {
 			Set<String> set = new HashSet<String>();

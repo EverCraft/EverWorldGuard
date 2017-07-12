@@ -53,12 +53,12 @@ public class EProtectedGlobalRegion extends EProtectedRegion implements Protecte
 	}
 
 	@Override
-	public boolean containsPosition(Vector3i pos) {
+	public boolean containsPosition(final Vector3i pos) {
 		return true;
 	}
 	
 	@Override
-	public boolean containsChunck(Vector3i pos) {
+	public boolean containsChunck(final Vector3i pos) {
 		return true;
 	}
 
@@ -68,7 +68,7 @@ public class EProtectedGlobalRegion extends EProtectedRegion implements Protecte
 	}
 
 	@Override
-	public List<ProtectedRegion> getIntersectingRegions(Collection<ProtectedRegion> regions) {
+	public List<ProtectedRegion> getIntersectingRegions(final Collection<ProtectedRegion> regions) {
 		return Collections.emptyList();
 	}
 

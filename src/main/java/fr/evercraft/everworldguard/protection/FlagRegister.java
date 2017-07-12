@@ -47,7 +47,7 @@ public class FlagRegister implements AdditionalCatalogRegistryModule<Flag<?>> {
 	private final Lock read_lock;
 	
 	@SuppressWarnings("unchecked")
-	public FlagRegister(EverWorldGuard plugin) {
+	public FlagRegister(final EverWorldGuard plugin) {
 		this.flags = new ConcurrentHashMap<String, Flag<?>>();
 		this.initialized = false;
 		
@@ -63,7 +63,7 @@ public class FlagRegister implements AdditionalCatalogRegistryModule<Flag<?>> {
 		this.initialized = initialized;
 	}
 	
-	public void registerAdditionalCatalog(Flag flag) throws FlagRegisterException {
+	public void registerAdditionalCatalog(final Flag flag) throws FlagRegisterException {
 		Preconditions.checkNotNull(flag, "flag");
 		
 		this.write_lock.lock();
@@ -81,7 +81,7 @@ public class FlagRegister implements AdditionalCatalogRegistryModule<Flag<?>> {
 		}
 	}
 	
-	public void registerAdditionalCatalog(Set<Flag<?>> flags) throws FlagRegisterException {
+	public void registerAdditionalCatalog(final Set<Flag<?>> flags) throws FlagRegisterException {
 		Preconditions.checkNotNull(flags, "flags");
 		
 		this.write_lock.lock();
@@ -94,7 +94,7 @@ public class FlagRegister implements AdditionalCatalogRegistryModule<Flag<?>> {
 		}
 	}
 	
-	public Optional<Flag<?>> getById(String identifier) {
+	public Optional<Flag<?>> getById(final String identifier) {
 		Preconditions.checkNotNull(identifier, "identifier");
 		Flag<?> flag;
 		
@@ -108,7 +108,7 @@ public class FlagRegister implements AdditionalCatalogRegistryModule<Flag<?>> {
 		return Optional.ofNullable(flag);
 	}
 
-	public <T> boolean hasRegistered(Flag<T> flag) {
+	public <T> boolean hasRegistered(final Flag<T> flag) {
 		Preconditions.checkNotNull(flag, "flag");
 		
 		boolean registered = false;

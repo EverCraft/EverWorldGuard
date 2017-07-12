@@ -146,7 +146,8 @@ public class EWRegionRename extends ESubCommand<EverWorldGuard> {
 		return this.commandRegionRename(source, manager, region.get(), args.getArg(1).get(), world);
 	}
 
-	private CompletableFuture<Boolean> commandRegionRename(final CommandSource source, WorldGuardWorld manager, ProtectedRegion region, String region_string, World world) {
+	private CompletableFuture<Boolean> commandRegionRename(final CommandSource source, final WorldGuardWorld manager, 
+			final ProtectedRegion region, final String region_string, final World world) {
 		String before_identifier = region.getName();
 		if (region.getType().equals(ProtectedRegion.Types.GLOBAL)) {
 			EWMessages.REGION_RENAME_ERROR_GLOBAL.sender()

@@ -45,7 +45,7 @@ public class EProtectedCuboidRegion extends EProtectedRegion implements Protecte
 		this.setMinMaxPoints(pos1, pos2);
 	}
 	
-	private void setMinMaxPoints(Vector3i pos1, Vector3i pos2) {
+	private void setMinMaxPoints(final Vector3i pos1, final Vector3i pos2) {
 		Preconditions.checkNotNull(pos1);
 		Preconditions.checkNotNull(pos2);
 
@@ -55,11 +55,11 @@ public class EProtectedCuboidRegion extends EProtectedRegion implements Protecte
 		super.setMinMaxPoints(points);
 	}
 	 
-	public void setMinimumPoint(Vector3i position) {
+	public void setMinimumPoint(final Vector3i position) {
 		this.setMinMaxPoints(position, this.max);
 	}
 	
-	public void setMaximumPoint(Vector3i position) {
+	public void setMaximumPoint(final Vector3i position) {
         this.setMinMaxPoints(this.min, position);
     }
 	
@@ -74,7 +74,7 @@ public class EProtectedCuboidRegion extends EProtectedRegion implements Protecte
     }
 
     @Override
-    public boolean containsPosition(Vector3i position) {
+    public boolean containsPosition(final Vector3i position) {
     	Preconditions.checkNotNull(position, "position");
     	
         final double x = position.getX();
@@ -95,7 +95,7 @@ public class EProtectedCuboidRegion extends EProtectedRegion implements Protecte
     }
 
     @Override
-    protected boolean intersects(ProtectedRegion region, Area thisArea) {
+    protected boolean intersects(final ProtectedRegion region, final Area thisArea) {
         if (region instanceof EProtectedCuboidRegion) {
             return this.intersectsBoundingBox(region);
         } else {

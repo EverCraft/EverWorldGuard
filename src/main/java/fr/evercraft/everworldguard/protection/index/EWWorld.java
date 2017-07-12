@@ -214,7 +214,7 @@ public class EWWorld implements WorldGuardWorld {
 	 */
 	
 	@Override
-	public Optional<ProtectedRegion> getRegion(String name) {
+	public Optional<ProtectedRegion> getRegion(final String name) {
 		Preconditions.checkNotNull(name, "name");
 		
 		this.read_lock.lock();
@@ -232,7 +232,7 @@ public class EWWorld implements WorldGuardWorld {
 	}
 	
 	@Override
-	public Optional<ProtectedRegion> getRegion(UUID identifier) {
+	public Optional<ProtectedRegion> getRegion(final UUID identifier) {
 		Preconditions.checkNotNull(identifier, "identifier");
 		
 		this.read_lock.lock();
@@ -244,7 +244,8 @@ public class EWWorld implements WorldGuardWorld {
 	}
 
 	@Override
-	public CompletableFuture<ProtectedRegion.Cuboid> createRegionCuboid(String name, Vector3i pos1, Vector3i pos2, Set<UUID> owner_players, Set<String> owner_groups) throws RegionIdentifierException {
+	public CompletableFuture<ProtectedRegion.Cuboid> createRegionCuboid(final String name, final Vector3i pos1, final Vector3i pos2, 
+			final Set<UUID> owner_players, final Set<String> owner_groups) throws RegionIdentifierException {
 		Preconditions.checkNotNull(name, "name");
 		Preconditions.checkNotNull(pos1, "pos1");
 		Preconditions.checkNotNull(pos2, "pos2");
@@ -272,7 +273,8 @@ public class EWWorld implements WorldGuardWorld {
 	}
 
 	@Override
-	public CompletableFuture<ProtectedRegion.Polygonal> createRegionPolygonal(String name, List<Vector3i> positions, Set<UUID> owner_players, Set<String> owner_groups) throws RegionIdentifierException {
+	public CompletableFuture<ProtectedRegion.Polygonal> createRegionPolygonal(final String name, final List<Vector3i> positions, 
+			final Set<UUID> owner_players, final Set<String> owner_groups) throws RegionIdentifierException {
 		Preconditions.checkNotNull(name, "name");
 		Preconditions.checkNotNull(positions, "positions");
 		Preconditions.checkNotNull(owner_players, "owner_players");
@@ -299,7 +301,8 @@ public class EWWorld implements WorldGuardWorld {
 	}
 
 	@Override
-	public CompletableFuture<ProtectedRegion.Template> createRegionTemplate(String name, Set<UUID> owner_players, Set<String> owner_groups) throws RegionIdentifierException {
+	public CompletableFuture<ProtectedRegion.Template> createRegionTemplate(final String name, final Set<UUID> owner_players, 
+			final Set<String> owner_groups) throws RegionIdentifierException {
 		Preconditions.checkNotNull(name, "name");
 		Preconditions.checkNotNull(owner_players, "owner_players");
 		Preconditions.checkNotNull(owner_groups, "owner_groups");
@@ -325,7 +328,7 @@ public class EWWorld implements WorldGuardWorld {
 	}
 	
 	@Override
-	public CompletableFuture<Set<ProtectedRegion>> removeRegion(UUID identifier, ProtectedRegion.RemoveType type) {
+	public CompletableFuture<Set<ProtectedRegion>> removeRegion(final UUID identifier, final ProtectedRegion.RemoveType type) {
 		EProtectedRegion region = null;
 		
 		this.read_lock.lock();
@@ -388,7 +391,7 @@ public class EWWorld implements WorldGuardWorld {
 		return CompletableFuture.completedFuture(ImmutableSet.of());		
 	}
 	
-	private CompletableFuture<Set<ProtectedRegion>> removeUnsetParentInChildren(EProtectedRegion region) {
+	private CompletableFuture<Set<ProtectedRegion>> removeUnsetParentInChildren(final EProtectedRegion region) {
 		Set<EProtectedRegion> regions = this.regionsIdentifier.values().stream().filter(children -> {
 			Optional<ProtectedRegion> parent = children.getParent();
 			return parent.isPresent() && parent.get().equals(region);
@@ -401,7 +404,7 @@ public class EWWorld implements WorldGuardWorld {
 			});
 	}
 	
-	private CompletableFuture<Set<ProtectedRegion>> removeRemoveChildren(EProtectedRegion region) {
+	private CompletableFuture<Set<ProtectedRegion>> removeRemoveChildren(final EProtectedRegion region) {
 		Set<EProtectedRegion> regions = new HashSet<EProtectedRegion>();
 		this.removeRemoveChildren(region, regions);
 		
@@ -412,7 +415,7 @@ public class EWWorld implements WorldGuardWorld {
 			});
 	}
 	
-	private void removeRemoveChildren(EProtectedRegion region, Set<EProtectedRegion> regions) {
+	private void removeRemoveChildren(final EProtectedRegion region, final Set<EProtectedRegion> regions) {
 		regions.add(region);
 		
 		for (EProtectedRegion children : this.regionsIdentifier.values()) {
@@ -430,7 +433,7 @@ public class EWWorld implements WorldGuardWorld {
 		}
 	}
 
-	public boolean rename(EProtectedRegion region, String name) {
+	public boolean rename(final EProtectedRegion region, final String name) {
 		this.write_lock.lock();
 		try {
 			if (this.regionsName.containsKey(name)) return false;
@@ -443,7 +446,7 @@ public class EWWorld implements WorldGuardWorld {
 		}
 	}
 	
-	public boolean redefine(UUID identifier, EProtectedRegion region) {
+	public boolean redefine(final UUID identifier, final EProtectedRegion region) {
 		this.write_lock.lock();
 		try {
 			this.regionsIdentifier.put(identifier, region);

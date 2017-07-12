@@ -161,7 +161,7 @@ public class EWRegionTeleport extends ESubCommand<EverWorldGuard> {
 		}
 	}
 
-	private CompletableFuture<Boolean> commandRegionTeleport(EPlayer player, ProtectedRegion region, World world) {
+	private CompletableFuture<Boolean> commandRegionTeleport(final EPlayer player, final ProtectedRegion region, final World world) {
 		VirtualTransform location = region.getFlag(Flags.TELEPORT)
 				.getInherit(region.getGroup(player, UtilsContexts.get(world.getName())))
 				.orElseGet(() -> Flags.TELEPORT.getDefault(region));
@@ -201,7 +201,7 @@ public class EWRegionTeleport extends ESubCommand<EverWorldGuard> {
 				.build();
 	}
 
-	private CompletableFuture<Boolean> commandRegionSpawn(EPlayer player, ProtectedRegion region, World world) {
+	private CompletableFuture<Boolean> commandRegionSpawn(final EPlayer player, final ProtectedRegion region, final World world) {
 		if (!player.hasPermission(EWPermissions.REGION_TELEPORT_SPAWN.get())) {
 			EAMessages.NO_PERMISSION.sender()
 				.prefix(EWMessages.PREFIX)

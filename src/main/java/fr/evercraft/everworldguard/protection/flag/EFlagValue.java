@@ -21,6 +21,8 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import javax.annotation.Nullable;
+
 import com.google.common.collect.ImmutableMap;
 
 import fr.evercraft.everapi.services.worldguard.FlagValue;
@@ -35,7 +37,7 @@ public class EFlagValue<T> implements FlagValue<T> {
 		this.values = new ConcurrentHashMap<Group, T>();
 	}
 	
-	public void set(Group group, T value) {
+	public void set(final Group group, @Nullable final T value) {
 		if (value == null) {
 			this.values.remove(group);
 		} else {
@@ -44,12 +46,12 @@ public class EFlagValue<T> implements FlagValue<T> {
 	}
 
 	@Override
-	public Optional<T> get(Group group) {
+	public Optional<T> get(final Group group) {
 		return Optional.ofNullable(this.values.get(group));
 	}
 	
 	@Override
-	public Optional<T> getInherit(Group group) {
+	public Optional<T> getInherit(final Group group) {
 		T value = null;
 		
 		if (group.equals(Groups.OWNER)) {

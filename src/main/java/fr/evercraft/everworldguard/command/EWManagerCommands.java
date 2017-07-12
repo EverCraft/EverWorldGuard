@@ -40,6 +40,7 @@ public class EWManagerCommands extends HashSet<ECommand<EverWorldGuard>> {
 		
 		this.command = new EWCommand(this.plugin);
 		this.command.add(new EWReload(this.plugin, this.command));
+		this.command.add(new EWTransfert(this.plugin, this.command));
 		
 		load();
 	}

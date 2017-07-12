@@ -167,7 +167,8 @@ public class EWRegionParent extends ESubCommand<EverWorldGuard> {
 		}
 	}
 
-	private CompletableFuture<Boolean> commandRegionSetParent(final CommandSource source, ProtectedRegion region, WorldGuardWorld manager, String parent_string, World world) {
+	private CompletableFuture<Boolean> commandRegionSetParent(final CommandSource source, final ProtectedRegion region, 
+			final WorldGuardWorld manager, final String parent_string, final World world) {
 		Optional<ProtectedRegion> optParent = manager.getRegion(parent_string);
 		// Region introuvable
 		if (!optParent.isPresent()) {
@@ -255,7 +256,7 @@ public class EWRegionParent extends ESubCommand<EverWorldGuard> {
 		return CompletableFuture.completedFuture(false);
 	}
 	
-	private CompletableFuture<Boolean> commandRegionRemoveParent(final CommandSource source, ProtectedRegion region, World world) {
+	private CompletableFuture<Boolean> commandRegionRemoveParent(final CommandSource source, final ProtectedRegion region, final World world) {
 		if (!region.getParent().isPresent()) {
 			EWMessages.REGION_PARENT_REMOVE_EMPTY.sender()
 				.replace("<region>", region.getName())

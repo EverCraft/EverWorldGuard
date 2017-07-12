@@ -53,14 +53,14 @@ public class EDomain implements Domain {
 		this.groups = new HashSet<String>();
 	}
 
-	public EDomain(EDomain existing) {
+	public EDomain(final EDomain existing) {
 		this();
 		
 		this.players.addAll(existing.getPlayers());
 		this.groups.addAll(existing.getGroups());
 	}
 	
-	public void init(Set<UUID> players, Set<String> name) {
+	public void init(final Set<UUID> players, final Set<String> name) {
 		Preconditions.checkNotNull(players);
 		Preconditions.checkNotNull(name);
 		
@@ -75,7 +75,7 @@ public class EDomain implements Domain {
 	 * Player
 	 */
 	
-	public void addPlayer(UUID uniqueId) {
+	public void addPlayer(final UUID uniqueId) {
 		Preconditions.checkNotNull(uniqueId);
 		
 		this.write_lock.lock();
@@ -86,7 +86,7 @@ public class EDomain implements Domain {
 		}
 	}
 	
-	public void removePlayer(UUID uniqueId) {
+	public void removePlayer(final UUID uniqueId) {
 		Preconditions.checkNotNull(uniqueId);
 		
 		this.write_lock.lock();
@@ -108,7 +108,7 @@ public class EDomain implements Domain {
 	}
 	
 	@Override
-	public boolean containsPlayer(UUID uniqueId) {
+	public boolean containsPlayer(final UUID uniqueId) {
 		Preconditions.checkNotNull(uniqueId);
 		
 		this.read_lock.lock();
@@ -123,7 +123,7 @@ public class EDomain implements Domain {
 	 * Groups
 	 */
 	
-	public void addGroup(String name) {
+	public void addGroup(final String name) {
 		Preconditions.checkNotNull(name);
 		
 		this.write_lock.lock();
@@ -134,7 +134,7 @@ public class EDomain implements Domain {
 		}
 	}
 	
-	public void removeGroup(String name) {
+	public void removeGroup(final String name) {
 		Preconditions.checkNotNull(name);
 		
 		this.write_lock.lock();
@@ -156,7 +156,7 @@ public class EDomain implements Domain {
 	}
 	
 	@Override
-	public boolean containsGroup(String group) {
+	public boolean containsGroup(final String group) {
 		Preconditions.checkNotNull(group);
 		
 		this.read_lock.lock();
@@ -168,7 +168,7 @@ public class EDomain implements Domain {
 	}
 
 	@Override
-	public boolean contains(User player, Set<Context> contexts) {
+	public boolean contains(final User player, final Set<Context> contexts) {
 		Preconditions.checkNotNull(player);
 		Preconditions.checkNotNull(contexts);
 		
@@ -212,7 +212,7 @@ public class EDomain implements Domain {
 	
 	@Override
 	public String toString() {
-		return "(players=" + this.players +", groups=" + this.groups + ')';
+		return "(players='" + this.players +"';groups='" + this.groups + "')";
 	}
 
 }

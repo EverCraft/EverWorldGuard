@@ -169,7 +169,7 @@ public class EWRegionMemberAdd extends ESubCommand<EverWorldGuard> {
 		}
 	}
 	
-	private CompletableFuture<Boolean> commandRegionMemberAddPlayer(final CommandSource source, ProtectedRegion region, List<String> players_string, World world) {		
+	private CompletableFuture<Boolean> commandRegionMemberAddPlayer(final CommandSource source, final ProtectedRegion region, final List<String> players_string, final World world) {		
 		Set<User> players = new HashSet<User>();
 		for (String player_string : players_string) {
 			Optional<EUser> user = this.plugin.getEServer().getEUser(player_string);

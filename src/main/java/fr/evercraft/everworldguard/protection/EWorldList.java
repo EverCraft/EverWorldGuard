@@ -45,13 +45,13 @@ public class EWorldList {
 		this.worlds = new ConcurrentHashMap<UUID, EWWorld>();
 	}
 	
-	public EWWorld get(World world) {
+	public EWWorld get(final World world) {
 		Preconditions.checkNotNull(world, "world");
 		
 		return Optional.ofNullable(this.worlds.get(world.getUniqueId())).orElseGet(() -> new EWWorld(this.plugin, world));
 	}
 	
-	public CompletableFuture<WorldGuardWorld> getOrCreate(World world) {
+	public CompletableFuture<WorldGuardWorld> getOrCreate(final World world) {
 		Preconditions.checkNotNull(world, "world");
 		
 		return CompletableFuture.supplyAsync(() -> {
@@ -64,7 +64,7 @@ public class EWorldList {
 		}, this.plugin.getThreadAsync());
 	}
 
-	public boolean hasRegistered(World world) {
+	public boolean hasRegistered(final World world) {
 		Preconditions.checkNotNull(world, "world");
 		
 		return this.worlds.containsKey(world.getUniqueId());
@@ -74,12 +74,11 @@ public class EWorldList {
 		this.worlds.forEach((uuid, world) -> world.reload());
 	}
 	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public Set<WorldGuardWorld> getAll() {
-		return (Set) ImmutableSet.copyOf(this.worlds.values());
+	public Set<EWWorld> getAll() {
+		return ImmutableSet.copyOf(this.worlds.values());
 	}
 
-	public void unLoad(World world) {
+	public void unLoad(final World world) {
 		Preconditions.checkNotNull(world, "world");
 		
 		this.worlds.remove(world.getUniqueId());

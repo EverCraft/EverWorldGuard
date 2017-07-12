@@ -27,6 +27,7 @@ public enum EWPermissions implements EnumPermission {
 	
 	HELP("help"),
 	RELOAD("reload"),
+	TRANSFERT("transfert"),
 	
 	SELECT("select.command"),
 	SELECT_WAND("select.wand"),

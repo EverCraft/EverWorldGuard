@@ -28,6 +28,8 @@ import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEvent;
 import org.spongepowered.api.event.filter.Getter;
+import org.spongepowered.api.event.filter.IsCancelled;
+import org.spongepowered.api.util.Tristate;
 import org.spongepowered.api.world.World;
 
 import com.flowpowered.math.vector.Vector3d;
@@ -73,9 +75,8 @@ public class PlayerMoveListener {
 	 */
 	
 	@Listener(order=Order.FIRST)
-	public void onMoveEntityFirst(MoveEntityEvent event, @Getter("getTargetEntity") Player player) {
-		if (event.isCancelled()) return;
-		
+	@IsCancelled(Tristate.FALSE)
+	public void onMoveEntityFirst(MoveEntityEvent event, @Getter("getTargetEntity") Player player) {		
 		Optional<EUserSubject> optSubject = this.plugin.getProtectionService().getSubject(player.getUniqueId());
 		if (!optSubject.isPresent()) return;
 		EUserSubject subject = optSubject.get();
@@ -111,9 +112,8 @@ public class PlayerMoveListener {
 	}
 	
 	@Listener(order=Order.POST)
+	@IsCancelled(Tristate.FALSE)
 	public void onMoveEntityPost(MoveEntityEvent event, @Getter("getTargetEntity") Player player) {
-		if (event.isCancelled()) return;
-		
 		Optional<EUserSubject> optSubject = this.plugin.getProtectionService().getSubject(player.getUniqueId());
 		if (!optSubject.isPresent()) return;
 		EUserSubject subject = optSubject.get();

@@ -54,6 +54,10 @@ public class ManagerRegionStorage implements RegionStorage {
 			this.storage.reload();
 		}
 	}
+	
+	public boolean isSql() {
+    	return this.storage.isSql();
+    }
 
 	@Override
 	public CompletableFuture<Set<EProtectedRegion>> getAll() {

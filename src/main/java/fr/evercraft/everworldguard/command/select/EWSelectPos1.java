@@ -103,7 +103,7 @@ public class EWSelectPos1 extends ESubCommand<EverWorldGuard> {
 		}
 	}
 	
-	private CompletableFuture<Boolean> commandSelectPos1Cuboid(final EPlayer player, Vector3i position) {
+	private CompletableFuture<Boolean> commandSelectPos1Cuboid(final EPlayer player, final Vector3i position) {
 		Optional<Vector3i> pos1 = player.getSelectorPrimary();
 		Optional<Vector3i> pos2 = player.getSelectorSecondary();
 		
@@ -134,7 +134,7 @@ public class EWSelectPos1 extends ESubCommand<EverWorldGuard> {
 		return CompletableFuture.completedFuture(true);
 	}
 	
-	private CompletableFuture<Boolean> commandSelectPos1Polygonal(final EPlayer player, Vector3i position) {
+	private CompletableFuture<Boolean> commandSelectPos1Polygonal(final EPlayer player, final Vector3i position) {
 		if (!player.setSelectorPrimary(position)) {
 			EWMessages.SELECT_POS1_CANCEL.sender()
 				.replace("<position>", EWSelect.getPositionHover(position))
@@ -148,7 +148,7 @@ public class EWSelectPos1 extends ESubCommand<EverWorldGuard> {
 		return CompletableFuture.completedFuture(true);
 	}
 	
-	private CompletableFuture<Boolean> commandSelectPos1Cylinder(final EPlayer player, Vector3i position) {		
+	private CompletableFuture<Boolean> commandSelectPos1Cylinder(final EPlayer player, final Vector3i position) {		
 		if (!player.setSelectorPrimary(position)) {
 			EWMessages.SELECT_POS1_CANCEL.sender()
 				.replace("<pos>", EWSelect.getPositionHover(position))

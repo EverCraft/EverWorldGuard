@@ -29,6 +29,7 @@ import fr.evercraft.everworldguard.protection.regions.EProtectedRegion;
 
 public interface RegionStorage {
 
+	boolean isSql();
 	void reload();
 	CompletableFuture<Set<EProtectedRegion>> getAll();
 	

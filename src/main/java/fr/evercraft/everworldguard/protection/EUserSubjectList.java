@@ -56,7 +56,7 @@ public class EUserSubjectList {
 		    	 * Ajoute un joueur au cache
 		    	 */
 		        @Override
-		        public EUserSubject load(UUID uuid){
+		        public EUserSubject load(final UUID uuid){
 		        	Chronometer chronometer = new Chronometer();
 		        	
 		        	EUserSubject subject = new EUserSubject(EUserSubjectList.this.plugin, uuid);
@@ -67,11 +67,11 @@ public class EUserSubjectList {
 		    });
 	}
 	
-	public Optional<WorldGuardSubject> get(UUID uuid) {
+	public Optional<WorldGuardSubject> get(final UUID uuid) {
 		return Optional.ofNullable(this.getSubject(uuid).orElse(null));
 	}
 	
-	public Optional<EUserSubject> getSubject(UUID uuid) {
+	public Optional<EUserSubject> getSubject(final UUID uuid) {
 		Preconditions.checkNotNull(uuid, "uuid");
 		try {
 			if (!this.subjects.containsKey(uuid)) {
@@ -84,12 +84,12 @@ public class EUserSubjectList {
 		}
 	}
 	
-	public Optional<EUserSubject> getOnline(UUID uuid) {
+	public Optional<EUserSubject> getOnline(final UUID uuid) {
 		Preconditions.checkNotNull(uuid, "uuid");
 		return Optional.ofNullable(this.subjects.get(uuid));
 	}
 	
-	public boolean hasRegistered(UUID uuid) {
+	public boolean hasRegistered(final UUID uuid) {
 		Preconditions.checkNotNull(uuid, "uuid");
 		
 		try {
@@ -110,7 +110,7 @@ public class EUserSubjectList {
 	 * @param identifier L'UUID du joueur
 	 * @return 
 	 */
-	public EUserSubject registerPlayer(UUID uuid) {
+	public EUserSubject registerPlayer(final UUID uuid) {
 		Preconditions.checkNotNull(uuid, "uuid");
 		
 		EUserSubject player = this.cache.getIfPresent(uuid);
@@ -132,7 +132,7 @@ public class EUserSubjectList {
 	 * Supprime un joueur à la liste et l'ajoute au cache
 	 * @param identifier L'UUID du joueur
 	 */
-	public void removePlayer(UUID uuid) {
+	public void removePlayer(final UUID uuid) {
 		Preconditions.checkNotNull(uuid, "uuid");
 		
 		EUserSubject player = this.subjects.remove(uuid);

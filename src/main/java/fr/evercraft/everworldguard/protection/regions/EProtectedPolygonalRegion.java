@@ -51,7 +51,7 @@ public class EProtectedPolygonalRegion extends EProtectedRegion implements Prote
 	}
 	
 	@Override
-	protected void setMinMaxPoints(List<Vector3i> positions) {
+	protected void setMinMaxPoints(final List<Vector3i> positions) {
 		int minX = positions.get(0).getX();
 		int minY = positions.get(0).getY();
 		int minZ = positions.get(0).getZ();
@@ -87,7 +87,7 @@ public class EProtectedPolygonalRegion extends EProtectedRegion implements Prote
     }
 
     @Override
-    public boolean containsPosition(Vector3i position) {
+    public boolean containsPosition(final Vector3i position) {
     	Preconditions.checkNotNull(position, "position");
     	
         final double x = position.getX();

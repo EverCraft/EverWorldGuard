@@ -73,11 +73,11 @@ public class EProtectionService implements WorldGuardService {
 		return this.intervalMessage;
 	}
 	
-	public boolean sendMessage(Player player, Flag<?> flag, EMessageSender message) {
+	public boolean sendMessage(final Player player, final Flag<?> flag, final EMessageSender message) {
 		return this.sendMessage(this.plugin.getEServer().getEPlayer(player), flag, message);
 	}
 	
-	public boolean sendMessage(EPlayer player, Flag<?> flag, EMessageSender message) {
+	public boolean sendMessage(final EPlayer player, final Flag<?> flag, final EMessageSender message) {
 		Optional<EUserSubject> subject = this.getSubject(player.getUniqueId());
 		if (subject.isPresent()) {
 			subject.get().sendMessage(player, flag, message);
@@ -90,11 +90,11 @@ public class EProtectionService implements WorldGuardService {
 	 * Bypass
 	 */
 	
-	public boolean hasBypass(User player) {
+	public boolean hasBypass(final User player) {
 		return this.hasBypass(player.getUniqueId());
 	}
 	
-	public boolean hasBypass(UUID uuid) {
+	public boolean hasBypass(final UUID uuid) {
 		Optional<WorldGuardSubject> subject = this.get(uuid);
 		if (subject.isPresent()) {
 			return subject.get().hasBypass();
@@ -111,16 +111,16 @@ public class EProtectionService implements WorldGuardService {
 	}
 
 	@Override
-	public Optional<WorldGuardSubject> get(UUID uuid) {
+	public Optional<WorldGuardSubject> get(final UUID uuid) {
 		return this.subjects.get(uuid);
 	}
 	
-	public Optional<EUserSubject> getSubject(UUID uuid) {
+	public Optional<EUserSubject> getSubject(final UUID uuid) {
 		return this.subjects.getSubject(uuid);
 	}
 	
 	@Override
-	public boolean hasRegistered(UUID uuid) {
+	public boolean hasRegistered(final UUID uuid) {
 		return this.subjects.hasRegistered(uuid);
 	}
 	
@@ -129,20 +129,25 @@ public class EProtectionService implements WorldGuardService {
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public CompletableFuture<WorldGuardWorld> getOrCreateWorld(World world) {
+	public CompletableFuture<WorldGuardWorld> getOrCreateWorld(final World world) {
 		return (CompletableFuture) this.worlds.getOrCreate(world);
 	}
 	
-	public EWWorld getOrCreateEWorld(World world) {
+	public EWWorld getOrCreateEWorld(final World world) {
 		return this.worlds.get(world);
 	}
 	
-	public void unLoadWorld(World world) {
+	public void unLoadWorld(final World world) {
 		this.worlds.unLoad(world);
 	}
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public Set<WorldGuardWorld> getAll() {
+		return (Set) this.worlds.getAll();
+	}
+	
+	public Set<EWWorld> getAllEWorld() {
 		return this.worlds.getAll();
 	}
 	
@@ -150,27 +155,27 @@ public class EProtectionService implements WorldGuardService {
 	 * Flags
 	 */
 
-	public boolean hasPermissionFlag(Subject subject, Flag<?> flag) {
+	public boolean hasPermissionFlag(final Subject subject, final Flag<?> flag) {
 		return subject.hasPermission(EWPermissions.FLAGS.get() + "." + flag.getId());
 	}
 	
 	@Override
-	public Optional<Flag<?>> getFlag(String name) {
+	public Optional<Flag<?>> getFlag(final String name) {
 		return this.flagsRegister.getById(name);
 	}
 
 	@Override
-	public void registerFlag(Flag<?> flag) {
+	public void registerFlag(final Flag<?> flag) {
 		this.flagsRegister.registerAdditionalCatalog(flag);
 	}
 	
 	@Override
-	public void registerFlag(Set<Flag<?>> flags) {
+	public void registerFlag(final Set<Flag<?>> flags) {
 		this.flagsRegister.registerAdditionalCatalog(flags);
 	}
 
 	@Override
-	public boolean hasRegisteredFlag(Flag<?> flag) {
+	public boolean hasRegisteredFlag(final Flag<?> flag) {
 		return this.flagsRegister.hasRegistered(flag);
 	}
 	

@@ -37,14 +37,14 @@ public class ESetProtectedRegion implements SetProtectedRegion {
 
 	private final TreeSet<ProtectedRegion> regions;
 	
-	public ESetProtectedRegion(Vector3i position, Set<EProtectedRegion> regions) {
+	public ESetProtectedRegion(final Vector3i position, final Set<EProtectedRegion> regions) {
 		this.regions = new TreeSet<ProtectedRegion>();
 		regions.stream()
 			.filter(region -> region.containsPosition(position))
 			.forEach(region -> this.regions.add(region));
 	}
 	
-	public ESetProtectedRegion(Set<ProtectedRegion> setView) {
+	public ESetProtectedRegion(final Set<ProtectedRegion> setView) {
 		this.regions = new TreeSet<ProtectedRegion>(setView);
 	}
 	
@@ -58,7 +58,7 @@ public class ESetProtectedRegion implements SetProtectedRegion {
 	 */
 
 	@Override
-	public <V> V getFlag(User user, Set<Context> context, Flag<V> flag) {
+	public <V> V getFlag(final User user, final Set<Context> context, final Flag<V> flag) {
 		for (ProtectedRegion region : this.regions) {
 			Optional<V> flag_value = region.getFlagInherit(flag, region.getGroup(user, context));
 			if (flag_value.isPresent()) {
@@ -69,7 +69,7 @@ public class ESetProtectedRegion implements SetProtectedRegion {
 	}
 
 	@Override
-	public <V> V getFlag(ProtectedRegion.Group group, Flag<V> flag) {
+	public <V> V getFlag(final ProtectedRegion.Group group, final Flag<V> flag) {
 		for (ProtectedRegion region : this.regions) {
 			Optional<V> flag_value = region.getFlagInherit(flag, group);
 			if (flag_value.isPresent()) {
@@ -84,7 +84,7 @@ public class ESetProtectedRegion implements SetProtectedRegion {
 	 */
 	
 	@Override
-	public <V> Optional<V> getFlagIfPresent(User user, Set<Context> context, Flag<V> flag) {
+	public <V> Optional<V> getFlagIfPresent(final User user, final Set<Context> context, final Flag<V> flag) {
 		for (ProtectedRegion region : this.regions) {
 			Optional<V> flag_value = region.getFlagInherit(flag, region.getGroup(user, context));
 			if (flag_value.isPresent()) {
@@ -95,7 +95,7 @@ public class ESetProtectedRegion implements SetProtectedRegion {
 	}
 
 	@Override
-	public <V> Optional<V> getFlagIfPresent(ProtectedRegion.Group group, Flag<V> flag) {
+	public <V> Optional<V> getFlagIfPresent(final ProtectedRegion.Group group, final Flag<V> flag) {
 		for (ProtectedRegion region : this.regions) {
 			Optional<V> flag_value = region.getFlagInherit(flag, group);
 			if (flag_value.isPresent()) {
@@ -110,7 +110,7 @@ public class ESetProtectedRegion implements SetProtectedRegion {
 	 */
 
 	@Override
-	public <V> Optional<ProtectedRegion> getRegion(Group group, Flag<V> flag) {
+	public <V> Optional<ProtectedRegion> getRegion(final Group group, final Flag<V> flag) {
 		for (ProtectedRegion region : this.regions) {
 			Optional<V> flag_value = region.getFlagInherit(flag, group);
 			if (flag_value.isPresent()) {

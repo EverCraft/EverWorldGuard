@@ -23,10 +23,12 @@ import org.spongepowered.api.event.command.SendCommandEvent;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEvent;
 import org.spongepowered.api.event.filter.Getter;
+import org.spongepowered.api.event.filter.IsCancelled;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.item.inventory.ChangeInventoryEvent;
 import org.spongepowered.api.event.message.MessageChannelEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
+import org.spongepowered.api.util.Tristate;
 
 import fr.evercraft.everapi.event.MoveRegionEvent;
 import fr.evercraft.everapi.services.worldguard.WorldGuardWorld;
@@ -107,11 +109,13 @@ public class PlayerListener {
 	public void onMoveRegionPreCancelled(MoveRegionEvent.Pre.Cancellable event) {
 		this.plugin.getManagerFlags().EXIT.onMoveRegionPreCancellable(event);
 		this.plugin.getManagerFlags().ENTRY.onMoveRegionPreCancellable(event);
-		
-		if (event.isCancelled()) {
-			this.plugin.getManagerFlags().EXIT_DENY_MESSAGE.onMoveRegionPreCancelled(event);
-			this.plugin.getManagerFlags().ENTRY_DENY_MESSAGE.onMoveRegionPreCancelled(event);
-		}
+	}
+	
+	@Listener(order=Order.LAST)
+	@IsCancelled(Tristate.TRUE)
+	public void onMoveRegionPreCancelledLast(MoveRegionEvent.Pre.Cancellable event) {
+		this.plugin.getManagerFlags().EXIT_DENY_MESSAGE.onMoveRegionPreCancelled(event);
+		this.plugin.getManagerFlags().ENTRY_DENY_MESSAGE.onMoveRegionPreCancelled(event);
 	}
 	
 	@Listener(order=Order.FIRST)

@@ -126,9 +126,8 @@ public class EntityListener {
 	
 	@Listener(order=Order.FIRST)
 	public void onCollideEntityImpact(CollideEntityEvent.Impact event) {
-		if (event.getEntities().isEmpty()) return;
-		WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateEWorld(event.getEntities().get(0).getWorld());
-
+		WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateEWorld(event.getImpactPoint().getExtent());
+		
 		this.plugin.getManagerFlags().PVP.onCollideEntityImpact(world, event);
 		this.plugin.getManagerFlags().DAMAGE_ENTITY.onCollideEntityImpact(world, event);
 		this.plugin.getManagerFlags().BUILD.onCollideEntityImpact(world, event);

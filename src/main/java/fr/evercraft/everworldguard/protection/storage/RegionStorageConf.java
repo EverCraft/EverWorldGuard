@@ -29,6 +29,7 @@ import java.util.concurrent.CompletableFuture;
 
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.reflect.TypeToken;
 
@@ -52,13 +53,13 @@ import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 
 public class RegionStorageConf extends EConfig<EverWorldGuard> implements RegionStorage {
 	
-	private static final String DIR = "worlds";
+	public static final String MKDIR = "worlds";
 	
 	private final EverWorldGuard plugin;
 	private final EWWorld world;
 	
 	public RegionStorageConf(EverWorldGuard plugin, EWWorld world) {
-		super(plugin, DIR + "/" + world.getWorld().getName() + "/regions", false);
+		super(plugin, MKDIR + "/" + world.getWorld().getName(), false);
 		Preconditions.checkNotNull(world);
 
 		this.plugin = plugin;
@@ -78,6 +79,10 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
     	
 		this.add(new EProtectedGlobalRegion(this.world, UUID.randomUUID(), EProtectionService.GLOBAL_REGION));
 	}
+    
+    public boolean isSql() {
+    	return false;
+    }
 
 	@Override
 	public CompletableFuture<Set<EProtectedRegion>> getAll() {
@@ -264,6 +269,16 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 		return values;
 	}
 	
+	public boolean addAll(Set<EProtectedRegion> regions) {
+		regions.forEach(region -> this.add(region, this.getNode().getNode(region.getId().toString())));
+		return this.save(true);
+	}
+	
+	public boolean clear() {
+		this.getNode().setValue(ImmutableMap.of());
+		return this.save(true);
+	}
+	
 	@Override
 	public CompletableFuture<Boolean> add(EProtectedRegion region) {
 		this.add(region, this.getNode().getNode(region.getId().toString()));
@@ -294,7 +309,11 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 		}
 		
 		// Parent
-		region.getParent().ifPresent(parent -> config.getNode("parent").setValue(parent));
+		region.getParent().ifPresent(parent -> {
+			try {
+				config.getNode("parent").setValue(TypeToken.of(UUID.class), parent.getId());
+			} catch (ObjectMappingException e1) {}
+		});
 		
 		// Flags
 		Map<String, String> flags_owner = new HashMap<String, String>();
