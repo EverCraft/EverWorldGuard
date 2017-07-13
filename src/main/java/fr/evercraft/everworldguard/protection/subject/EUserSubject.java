@@ -85,7 +85,7 @@ public class EUserSubject implements WorldGuardSubject {
 	 * Message
 	 */
 	
-	public boolean sendMessage(EPlayer player, Flag<?> flag, EMessageSender message) {
+	public boolean sendMessage(final EPlayer player, final Flag<?> flag, final EMessageSender message) {
 		Long time = this.messages.getIfPresent(flag);
 		if (time != null && time > System.currentTimeMillis()) return false;
 			
@@ -99,7 +99,7 @@ public class EUserSubject implements WorldGuardSubject {
 	 * Region
 	 */
 	
-	public void initialize(Player player) {
+	public void initialize(final Player player) {
 		this.lastLocation = player.getLocation();
 		this.lastLocation = this.lastLocation.setPosition(this.lastLocation.getBlockPosition().toDouble());
 		this.lastRide = player.getVehicle().isPresent();
@@ -112,7 +112,7 @@ public class EUserSubject implements WorldGuardSubject {
 		return this.lastRegions;
 	}
 	
-	public Optional<Location<World>> moveToPre(Player player_sponge, Location<World> toLocation, MoveType move, Cause cause) {
+	public Optional<Location<World>> moveToPre(final Player player_sponge, final Location<World> toLocation, final MoveType move, final Cause cause) {
 		if (!UtilsLocation.isDifferentBlock(this.lastLocation, toLocation)) return Optional.empty();
 		
 		EPlayer player = this.plugin.getEServer().getEPlayer(player_sponge);
@@ -133,11 +133,11 @@ public class EUserSubject implements WorldGuardSubject {
 		return Optional.empty();
 	}
 	
-	public void moveToPost(Player player_sponge, Location<World> toLocation, MoveType move, Cause cause) {
+	public void moveToPost(final Player player_sponge, final Location<World> toLocation, final MoveType move, final Cause cause) {
 		this.moveToPost(player_sponge, toLocation, move, cause, false);
 	}
 	
-	public void moveToPost(Player player_sponge, Location<World> toLocation, MoveType move, Cause cause, boolean force) {
+	public void moveToPost(final Player player_sponge, final Location<World> toLocation, final MoveType move, final Cause cause, boolean force) {
 		if (!force && !UtilsLocation.isDifferentBlock(this.lastLocation, toLocation)) return;
 
 		EPlayer player = this.plugin.getEServer().getEPlayer(player_sponge);

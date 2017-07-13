@@ -39,16 +39,16 @@ public class ECuboidSelector extends ESelector implements Selector.Cuboid, CUIRe
 	protected Vector3i position2;
 	protected final ESelectionCuboidRegion region;
 	
-	public ECuboidSelector(ESelectionSubject subject) {
+	public ECuboidSelector(final ESelectionSubject subject) {
 		this(subject, null);
 	}
 	
-	public ECuboidSelector(ESelectionSubject subject, World world) {
+	public ECuboidSelector(final ESelectionSubject subject, final World world) {
 		super(subject);
 		this.region = new ESelectionCuboidRegion(world, Vector3i.ZERO, Vector3i.ZERO);
 	}
 	
-	public ECuboidSelector(ESelectionSubject subject, World world, Vector3i min, Vector3i max) {
+	public ECuboidSelector(final ESelectionSubject subject, final World world, final Vector3i min, final Vector3i max) {
 		super(subject);
 		
 		this.position1 = min;
@@ -60,7 +60,7 @@ public class ECuboidSelector extends ESelector implements Selector.Cuboid, CUIRe
 		return this.region.getWorld();
 	}
 
-	public void setWorld(@Nullable World world) {
+	public void setWorld(final @Nullable World world) {
 		this.region.setWorld(world);
 	}
 
@@ -92,7 +92,7 @@ public class ECuboidSelector extends ESelector implements Selector.Cuboid, CUIRe
 	}
 	
 	@Override
-	public boolean selectPrimary(Vector3i position) {
+	public boolean selectPrimary(final Vector3i position) {
 		if (this.position1 != null && position != null && (position.compareTo(this.position1) == 0)) {
             return false;
         }
@@ -108,7 +108,7 @@ public class ECuboidSelector extends ESelector implements Selector.Cuboid, CUIRe
 	}
 
 	@Override
-	public boolean selectSecondary(Vector3i position) {
+	public boolean selectSecondary(final Vector3i position) {
 		if (this.position2 != null && position != null && (position.compareTo(this.position2) == 0)) {
             return false;
         }
@@ -136,7 +136,7 @@ public class ECuboidSelector extends ESelector implements Selector.Cuboid, CUIRe
 	}
 	
 	@Override
-	public boolean expand(Vector3i... changes) {
+	public boolean expand(final Vector3i... changes) {
 		if (this.position1 == null || this.position2 == null) return false;
 		if (!this.region.expand(changes)) return false;
 		
@@ -149,7 +149,7 @@ public class ECuboidSelector extends ESelector implements Selector.Cuboid, CUIRe
 	}
 
 	@Override
-	public boolean contract(Vector3i... changes) {
+	public boolean contract(final Vector3i... changes) {
 		if (this.position1 == null || this.position2 == null) return false;
 		if (!this.region.contract(changes)) return false;
 		
@@ -162,7 +162,7 @@ public class ECuboidSelector extends ESelector implements Selector.Cuboid, CUIRe
 	}
 
 	@Override
-	public boolean shift(Vector3i change) {
+	public boolean shift(final Vector3i change) {
 		if (this.position1 == null || this.position2 == null) return false;
 		if (!this.region.shift(change)) return false;
 		this.position1 = this.region.getPrimaryPosition();
@@ -193,7 +193,7 @@ public class ECuboidSelector extends ESelector implements Selector.Cuboid, CUIRe
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends SelectionRegion> Optional<T> getRegion(Class<T> type) {
+	public <T extends SelectionRegion> Optional<T> getRegion(final Class<T> type) {
 		if (!type.equals(SelectionRegion.Cuboid.class)) return Optional.empty();
 		if (this.position1 == null || this.position2 == null) return Optional.empty();
 		

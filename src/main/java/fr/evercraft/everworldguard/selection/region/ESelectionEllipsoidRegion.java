@@ -32,21 +32,21 @@ public class ESelectionEllipsoidRegion extends ESelectionRegion implements Selec
 	private Vector3i center;
 	private Vector3d radius;
 	
-	public ESelectionEllipsoidRegion(SelectionRegion.Ellipsoid region) {
+	public ESelectionEllipsoidRegion(final SelectionRegion.Ellipsoid region) {
 		super(region.getWorld().orElse(null));
 		
 		this.setCenter(region.getCenter());
 		this.setRadius(this.getRadius());
 	}
 	
-	public ESelectionEllipsoidRegion(World world, Vector3i center, Vector3d radius) {
+	public ESelectionEllipsoidRegion(final World world, final Vector3i center, final Vector3d radius) {
 		super(world);
 		
 		this.setCenter(center);
 		this.setRadius(radius);
 	}
 	
-	public void setCenter(Vector3i center) {
+	public void setCenter(final Vector3i center) {
 		this.center = center;
 	}
 	
@@ -54,7 +54,7 @@ public class ESelectionEllipsoidRegion extends ESelectionRegion implements Selec
 		return this.center;
 	}
 	
-	public void setRadius(Vector3d radius) {
+	public void setRadius(final Vector3d radius) {
 		this.radius = radius.abs();
 	}
 	
@@ -62,7 +62,7 @@ public class ESelectionEllipsoidRegion extends ESelectionRegion implements Selec
 		return this.radius;
 	}
 	
-	public void extendRadius(Vector3d radius) {
+	public void extendRadius(final Vector3d radius) {
 		this.setRadius(this.radius.max(radius.abs()));
     }
 	
@@ -98,7 +98,7 @@ public class ESelectionEllipsoidRegion extends ESelectionRegion implements Selec
     }
 	
 	@Override
-    public boolean containsPosition(Vector3i position) {
+    public boolean containsPosition(final Vector3i position) {
     	Preconditions.checkNotNull(position, "position");
     	
         double y = position.getY();
@@ -130,7 +130,7 @@ public class ESelectionEllipsoidRegion extends ESelectionRegion implements Selec
         return (int) (2 * this.radius.getZ());
     }
 
-    private Vector3i calculateDiff(Vector3i... changes) {
+    private Vector3i calculateDiff(final Vector3i... changes) {
         Vector3i diff = Vector3i.ZERO;
         for (Vector3i change : changes) {
             diff = diff.add(change);
@@ -139,7 +139,7 @@ public class ESelectionEllipsoidRegion extends ESelectionRegion implements Selec
         return diff.toDouble().div(2).floor().toInt();
     }
 
-    private Vector3d calculateChanges(Vector3i... changes) {
+    private Vector3d calculateChanges(final Vector3i... changes) {
     	Vector3i total = Vector3i.ZERO;
         for (Vector3i change : changes) {
             total = total.add(change.abs());
@@ -149,7 +149,7 @@ public class ESelectionEllipsoidRegion extends ESelectionRegion implements Selec
     }
 
 	@Override
-	public boolean expand(Vector3i... changes) {
+	public boolean expand(final Vector3i... changes) {
 		Preconditions.checkNotNull(changes, "changes");
 		
 		this.center = this.center.add(this.calculateDiff(changes));
@@ -158,7 +158,7 @@ public class ESelectionEllipsoidRegion extends ESelectionRegion implements Selec
 	}
 
 	@Override
-	public boolean contract(Vector3i... changes) {
+	public boolean contract(final Vector3i... changes) {
 		Preconditions.checkNotNull(changes, "changes");
 		
 		this.center = this.center.sub(this.calculateDiff(changes));
@@ -167,7 +167,7 @@ public class ESelectionEllipsoidRegion extends ESelectionRegion implements Selec
 	}
 
 	@Override
-	public boolean shift(Vector3i change) {
+	public boolean shift(final Vector3i change) {
 		this.center = this.center.add(change);
         return true;
 	}

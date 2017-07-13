@@ -30,15 +30,15 @@ import fr.evercraft.everapi.services.selection.exception.SelectorSecondaryExcept
 import fr.evercraft.everworldguard.selection.ESelectionSubject;
 
 public class ESphereSelector extends EEllipsoidSelector {
-	public ESphereSelector(ESelectionSubject subject) {
+	public ESphereSelector(final ESelectionSubject subject) {
 		this(subject, null);
 	}
 	
-	public ESphereSelector(ESelectionSubject subject, World world) {
+	public ESphereSelector(final ESelectionSubject subject, final World world) {
 		super(subject, world);
 	}
 	
-	public ESphereSelector(ESelectionSubject subject, World world, Vector3i min, Vector3i max) {
+	public ESphereSelector(final ESelectionSubject subject, final World world, final Vector3i min, final Vector3i max) {
 		super(subject, world, min, max);
 	}
 	
@@ -46,12 +46,12 @@ public class ESphereSelector extends EEllipsoidSelector {
 		return this.region.getWorld();
 	}
 
-	public void setWorld(@Nullable World world) {
+	public void setWorld(final @Nullable World world) {
 		this.region.setWorld(world);
 	}
 
 	@Override
-	public boolean selectSecondary(Vector3i position) throws SelectorSecondaryException {
+	public boolean selectSecondary(final Vector3i position) throws SelectorSecondaryException {
 		if (this.center == null) {
 			throw new SelectorSecondaryException("");
 		}
@@ -79,7 +79,7 @@ public class ESphereSelector extends EEllipsoidSelector {
 	}
 	
 	@Override
-	public boolean expand(Vector3i... changes) {
+	public boolean expand(final Vector3i... changes) {
 		for (int cpt=0; cpt < changes.length; cpt++) {
 			Vector3i change = changes[cpt];
 			changes[cpt] = Vector3i.from(Math.max(Math.max(change.getX(), change.getY()), change.getZ()));
@@ -88,7 +88,7 @@ public class ESphereSelector extends EEllipsoidSelector {
 	}
 
 	@Override
-	public boolean contract(Vector3i... changes) {
+	public boolean contract(final Vector3i... changes) {
 		for (int cpt=0; cpt < changes.length; cpt++) {
 			Vector3i change = changes[cpt];
 			changes[cpt] = Vector3i.from(Math.max(Math.max(change.getX(), change.getY()), change.getZ()));

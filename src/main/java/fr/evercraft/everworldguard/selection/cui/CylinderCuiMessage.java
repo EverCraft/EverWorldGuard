@@ -24,7 +24,7 @@ public class CylinderCuiMessage implements CUIMessage {
     protected final Vector3i positions;
     protected final Vector3d radius;
 
-    public CylinderCuiMessage(Vector3i positions, Vector3d radius) {
+    public CylinderCuiMessage(final Vector3i positions, final Vector3d radius) {
         this.positions = positions;
         this.radius = radius;
     }

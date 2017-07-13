@@ -39,7 +39,7 @@ public class CUIChannel implements RawDataListener {
     private final EverWorldGuard plugin;
     private final ChannelBinding.RawDataChannel channel;
 
-    public CUIChannel(EverWorldGuard plugin) {
+    public CUIChannel(final EverWorldGuard plugin) {
     	this.plugin = plugin;
     	this.channel = Sponge.getChannelRegistrar().createRawChannel(this.plugin, CUI_CHANNEL);
         this.channel.addListener(Platform.Type.SERVER, this);
@@ -51,7 +51,7 @@ public class CUIChannel implements RawDataListener {
     }
 
     @Override
-    public void handlePayload(ChannelBuf data, RemoteConnection connection, Platform.Type side) {
+    public void handlePayload(final ChannelBuf data, final RemoteConnection connection, final Platform.Type side) {
     	Preconditions.checkNotNull(data, "data");
     	Preconditions.checkNotNull(connection, "connection");
     	Preconditions.checkNotNull(side, "side");

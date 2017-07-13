@@ -73,7 +73,7 @@ public class ESelectionSubject implements SubjectSelection {
 	}
 	
 	@Override
-	public void setType(SelectionRegion.Type type) {
+	public void setType(final SelectionRegion.Type type) {
 		Preconditions.checkNotNull(type, "type");
 				
 		if (this.selector.getType().equals(type)) return;
@@ -143,7 +143,7 @@ public class ESelectionSubject implements SubjectSelection {
 		this.plugin.getEServer().getPlayer(this.getUniqueId()).ifPresent(player -> this.describeCUI(player));
 	}
 	
-	public void describeCUI(Player player) {
+	public void describeCUI(final Player player) {
 		Preconditions.checkNotNull(player, "player");
 		
 		if (!this.isCuiSupport()) return;
@@ -159,7 +159,7 @@ public class ESelectionSubject implements SubjectSelection {
 		}
 	}
 	
-	public void describeCUISelection(Player player) {
+	public void describeCUISelection(final Player player) {
 		Preconditions.checkNotNull(player, "player");
 		
 		if (!this.isCuiSupport()) return;
@@ -177,11 +177,11 @@ public class ESelectionSubject implements SubjectSelection {
 		}
 	}
 	
-	public void dispatchCUIEvent(CUIMessage message) {
+	public void dispatchCUIEvent(final CUIMessage message) {
 		this.plugin.getEServer().getPlayer(this.getUniqueId()).ifPresent(player -> this.dispatchCUIEvent(player, message));
 	}
 	
-	public void dispatchCUIEvent(Player player, CUIMessage message) {
+	public void dispatchCUIEvent(final Player player, final CUIMessage message) {
 		Preconditions.checkNotNull(message, "message");
 		
 		if (!this.isCuiSupport()) return;

@@ -43,18 +43,18 @@ public class EPolygonalSelector extends ESelector implements Selector.Polygonal,
 	private final List<Vector3i> positions;
 	private final ESelectionPolygonalRegion region;
 	
-	public EPolygonalSelector(ESelectionSubject subject) {
+	public EPolygonalSelector(final ESelectionSubject subject) {
 		this(subject, null);
 	}
 	
-	public EPolygonalSelector(ESelectionSubject subject, World world) {
+	public EPolygonalSelector(final ESelectionSubject subject, final World world) {
 		super(subject);
 		
 		this.positions = new ArrayList<Vector3i>();
 		this.region = new ESelectionPolygonalRegion(world, Arrays.asList(Vector3i.ZERO));
 	}
 	
-	public EPolygonalSelector(ESelectionSubject subject, World world, Vector3i min, Vector3i max) {
+	public EPolygonalSelector(final ESelectionSubject subject, final World world, final Vector3i min, final Vector3i max) {
 		super(subject);
 		
 		this.positions = new ArrayList<Vector3i>();
@@ -69,12 +69,12 @@ public class EPolygonalSelector extends ESelector implements Selector.Polygonal,
 		return this.region.getWorld();
 	}
 
-	public void setWorld(@Nullable World world) {
+	public void setWorld(final @Nullable World world) {
 		this.region.setWorld(world);
 	}
 
 	@Override
-	public boolean selectPrimary(@Nullable Vector3i position) {
+	public boolean selectPrimary(final @Nullable Vector3i position) {
 		this.positions.clear();
 		
 		if (position == null) {
@@ -95,7 +95,7 @@ public class EPolygonalSelector extends ESelector implements Selector.Polygonal,
 	}
 
 	@Override
-	public boolean selectSecondary(Vector3i position) {
+	public boolean selectSecondary(final Vector3i position) {
 		if (position == null) {
             if (this.positions.isEmpty())return false;
             this.positions.remove(this.positions.size() - 1);
@@ -147,7 +147,7 @@ public class EPolygonalSelector extends ESelector implements Selector.Polygonal,
 	}
 	
 	@Override
-	public boolean expand(Vector3i... changes) throws RegionOperationException {
+	public boolean expand(final Vector3i... changes) throws RegionOperationException {
 		if (this.positions.size() >= 2) return false;
 		if (!this.region.expand(changes)) return false;
 		
@@ -157,7 +157,7 @@ public class EPolygonalSelector extends ESelector implements Selector.Polygonal,
 	}
 
 	@Override
-	public boolean contract(Vector3i... changes) throws RegionOperationException {
+	public boolean contract(final Vector3i... changes) throws RegionOperationException {
 		if (this.positions.size() >= 2) return false;
 		if (!this.region.contract(changes)) return false;
 		
@@ -167,7 +167,7 @@ public class EPolygonalSelector extends ESelector implements Selector.Polygonal,
 	}
 
 	@Override
-	public boolean shift(Vector3i change) {
+	public boolean shift(final Vector3i change) {
 		if (this.positions.size() >= 2) return false;
 		if (!this.region.shift(change)) return false;
 		
@@ -189,7 +189,7 @@ public class EPolygonalSelector extends ESelector implements Selector.Polygonal,
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends SelectionRegion> Optional<T> getRegion(Class<T> type) {
+	public <T extends SelectionRegion> Optional<T> getRegion(final Class<T> type) {
 		if (!type.equals(SelectionRegion.Polygonal.class)) return Optional.empty();
 		if (this.positions.isEmpty()) return Optional.empty();
 		

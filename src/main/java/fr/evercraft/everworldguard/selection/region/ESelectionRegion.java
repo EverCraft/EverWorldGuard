@@ -27,7 +27,7 @@ public abstract class ESelectionRegion implements SelectionRegion {
 
 	protected World world;
 	
-	public ESelectionRegion(World world) {
+	public ESelectionRegion(final World world) {
 		this.world = world;
 	}
 
@@ -37,7 +37,7 @@ public abstract class ESelectionRegion implements SelectionRegion {
 	}
 
 	@Override
-	public void setWorld(World world) {
+	public void setWorld(final World world) {
 		this.world = world;
 	}
 

@@ -24,7 +24,7 @@ public class Point2DCuiMessage implements CUIMessage {
     protected final Vector3i position;
     protected final int area;
 
-    public Point2DCuiMessage(int identifier, Vector3i position, int area) {
+    public Point2DCuiMessage(int identifier, final Vector3i position, int area) {
         this.identifier = identifier;
         this.position = position;
         this.area = area;

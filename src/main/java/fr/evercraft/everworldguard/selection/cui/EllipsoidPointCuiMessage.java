@@ -23,7 +23,7 @@ public class EllipsoidPointCuiMessage implements CUIMessage {
     protected final int identifier;
     protected final Vector3i position;
 
-    public EllipsoidPointCuiMessage(int identifier, Vector3i position) {
+    public EllipsoidPointCuiMessage(int identifier, final Vector3i position) {
         this.identifier = identifier;
         this.position = position;
     }

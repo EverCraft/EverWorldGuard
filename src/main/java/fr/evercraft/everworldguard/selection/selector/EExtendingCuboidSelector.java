@@ -30,20 +30,20 @@ import fr.evercraft.everworldguard.selection.cui.PointCuiMessage;
 
 public class EExtendingCuboidSelector extends ECuboidSelector {
 	
-	public EExtendingCuboidSelector(ESelectionSubject subject) {
+	public EExtendingCuboidSelector(final ESelectionSubject subject) {
 		this(subject, null);
 	}
 	
-	public EExtendingCuboidSelector(ESelectionSubject subject, World world) {
+	public EExtendingCuboidSelector(final ESelectionSubject subject, final World world) {
 		super(subject, world);
 	}
 	
-	public EExtendingCuboidSelector(ESelectionSubject subject, World world, Vector3i min, Vector3i max) {
+	public EExtendingCuboidSelector(final ESelectionSubject subject, final World world, final Vector3i min, final Vector3i max) {
 		super(subject, world, min, max);
 	}
 
 	@Override
-	public boolean selectPrimary(Vector3i position) {
+	public boolean selectPrimary(final Vector3i position) {
 		if (this.position1 != null && position != null && (position.compareTo(this.position1) == 0)) {
             return false;
         }
@@ -63,7 +63,7 @@ public class EExtendingCuboidSelector extends ECuboidSelector {
 	}
 
 	@Override
-	public boolean selectSecondary(Vector3i position) {
+	public boolean selectSecondary(final Vector3i position) {
 		if (position == null) return false;
 		if (this.position1 == null) return this.selectPrimary(position);
 		
@@ -125,7 +125,7 @@ public class EExtendingCuboidSelector extends ECuboidSelector {
 	}
 	
 	@Override
-	public boolean expand(Vector3i... changes) {
+	public boolean expand(final Vector3i... changes) {
 		if (this.position1 == null || this.position2 == null) return false;
 		if (!this.region.expand(changes)) return false;
 		
@@ -135,7 +135,7 @@ public class EExtendingCuboidSelector extends ECuboidSelector {
 	}
 
 	@Override
-	public boolean contract(Vector3i... changes) {
+	public boolean contract(final Vector3i... changes) {
 		if (this.position1 == null || this.position2 == null) return false;
 		if (!this.region.contract(changes)) return false;
 		
@@ -145,7 +145,7 @@ public class EExtendingCuboidSelector extends ECuboidSelector {
 	}
 
 	@Override
-	public boolean shift(Vector3i change) {
+	public boolean shift(final Vector3i change) {
 		if (this.position1 == null || this.position2 == null) return false;
 		if (!this.region.shift(change)) return false;
 		

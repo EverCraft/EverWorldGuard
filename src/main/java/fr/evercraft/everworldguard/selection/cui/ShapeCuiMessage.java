@@ -20,7 +20,7 @@ public class ShapeCuiMessage implements CUIMessage {
 
     protected final String shapeName;
 
-    public ShapeCuiMessage(String shapeName) {
+    public ShapeCuiMessage(final String shapeName) {
         this.shapeName = shapeName;
     }
 

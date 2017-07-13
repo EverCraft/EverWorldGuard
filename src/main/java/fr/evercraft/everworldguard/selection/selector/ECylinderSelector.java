@@ -43,16 +43,16 @@ public class ECylinderSelector extends ESelector implements Selector.Cylinder, C
 	private Vector3i radius;
 	private final ESelectionCylinderRegion region;
 	
-	public ECylinderSelector(ESelectionSubject subject) {
+	public ECylinderSelector(final ESelectionSubject subject) {
 		this(subject, null);
 	}
 	
-	public ECylinderSelector(ESelectionSubject subject, World world) {
+	public ECylinderSelector(final ESelectionSubject subject, final World world) {
 		super(subject);
 		this.region = new ESelectionCylinderRegion(world, Vector3i.ZERO, Vector3d.ZERO, 0, 0);
 	}
 	
-	public ECylinderSelector(ESelectionSubject subject, World world, Vector3i min, Vector3i max) {
+	public ECylinderSelector(final ESelectionSubject subject, final World world, final Vector3i min, final Vector3i max) {
 		super(subject);
 		
 		this.center = max.add(min).div(2);
@@ -64,7 +64,7 @@ public class ECylinderSelector extends ESelector implements Selector.Cylinder, C
 		return this.region.getWorld();
 	}
 
-	public void setWorld(@Nullable World world) {
+	public void setWorld(final @Nullable World world) {
 		this.region.setWorld(world);
 	}
 
@@ -79,7 +79,7 @@ public class ECylinderSelector extends ESelector implements Selector.Cylinder, C
 	}
 	
 	@Override
-	public boolean selectPrimary(Vector3i position) {
+	public boolean selectPrimary(final Vector3i position) {
 		this.center = position;
 		this.radius = null;
 		
@@ -100,7 +100,7 @@ public class ECylinderSelector extends ESelector implements Selector.Cylinder, C
 	}
 
 	@Override
-	public boolean selectSecondary(Vector3i position) throws SelectorSecondaryException {
+	public boolean selectSecondary(final Vector3i position) throws SelectorSecondaryException {
 		if (this.center == null) {
 			throw new SelectorSecondaryException("");
 		}
@@ -139,7 +139,7 @@ public class ECylinderSelector extends ESelector implements Selector.Cylinder, C
 	}
 	
 	@Override
-	public boolean expand(Vector3i... changes) {
+	public boolean expand(final Vector3i... changes) {
 		if (this.center == null || this.radius == null) return false;
 		if (!this.region.expand(changes)) return false;
 		
@@ -151,7 +151,7 @@ public class ECylinderSelector extends ESelector implements Selector.Cylinder, C
 	}
 
 	@Override
-	public boolean contract(Vector3i... changes) {
+	public boolean contract(final Vector3i... changes) {
 		if (this.center == null || this.radius == null) return false;
 		if (!this.region.contract(changes)) return false;
 		
@@ -163,7 +163,7 @@ public class ECylinderSelector extends ESelector implements Selector.Cylinder, C
 	}
 
 	@Override
-	public boolean shift(Vector3i change) {
+	public boolean shift(final Vector3i change) {
 		if (this.center == null || this.radius == null) return false;
 		if (!this.region.shift(change)) return false;
 		
@@ -195,7 +195,7 @@ public class ECylinderSelector extends ESelector implements Selector.Cylinder, C
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends SelectionRegion> Optional<T> getRegion(Class<T> type) {
+	public <T extends SelectionRegion> Optional<T> getRegion(final Class<T> type) {
 		if (!type.equals(SelectionRegion.Cylinder.class)) return Optional.empty();
 		if (this.center == null || this.radius == null) return Optional.empty();
 		

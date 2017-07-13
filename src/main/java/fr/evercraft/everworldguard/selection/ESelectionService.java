@@ -82,11 +82,11 @@ public class ESelectionService implements SelectionService {
 		this.subjects.forEach((uuid, subject) -> subject.reload());
 	}
 	
-	public Optional<SubjectSelection> get(UUID uuid) {
+	public Optional<SubjectSelection> get(final UUID uuid) {
 		return Optional.ofNullable(this.getSubject(uuid).orElse(null));
 	}
 	
-	public Optional<ESelectionSubject> getSubject(UUID uuid) {
+	public Optional<ESelectionSubject> getSubject(final UUID uuid) {
 		Preconditions.checkNotNull(uuid, "uuid");
 		try {
 			if (!this.subjects.containsKey(uuid)) {
@@ -99,12 +99,12 @@ public class ESelectionService implements SelectionService {
 		}
 	}
 	
-	public Optional<ESelectionSubject> getOnline(UUID uuid) {
+	public Optional<ESelectionSubject> getOnline(final UUID uuid) {
 		Preconditions.checkNotNull(uuid, "uuid");
 		return Optional.ofNullable(this.subjects.get(uuid));
 	}
 	
-	public boolean hasRegistered(UUID uuid) {
+	public boolean hasRegistered(final UUID uuid) {
 		Preconditions.checkNotNull(uuid, "uuid");
 		
 		try {
@@ -118,7 +118,7 @@ public class ESelectionService implements SelectionService {
 	 * @param identifier L'UUID du joueur
 	 * @return 
 	 */
-	public ESelectionSubject registerPlayer(UUID uuid) {
+	public ESelectionSubject registerPlayer(final UUID uuid) {
 		Preconditions.checkNotNull(uuid, "uuid");
 		
 		ESelectionSubject player = this.cache.getIfPresent(uuid);
@@ -140,7 +140,7 @@ public class ESelectionService implements SelectionService {
 	 * Supprime un joueur à la liste et l'ajoute au cache
 	 * @param identifier L'UUID du joueur
 	 */
-	public void removePlayer(UUID uuid) {
+	public void removePlayer(final UUID uuid) {
 		Preconditions.checkNotNull(uuid, "uuid");
 		
 		ESelectionSubject player = this.subjects.remove(uuid);

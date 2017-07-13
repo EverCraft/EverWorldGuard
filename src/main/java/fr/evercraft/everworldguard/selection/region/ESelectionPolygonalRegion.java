@@ -41,7 +41,7 @@ public class ESelectionPolygonalRegion extends ESelectionRegion implements Selec
 	
 	private Integer area;
 	
-	public ESelectionPolygonalRegion(SelectionRegion.Polygonal region) {
+	public ESelectionPolygonalRegion(final SelectionRegion.Polygonal region) {
 		super(region.getWorld().orElse(null));
 		
 		this.area = null;
@@ -49,7 +49,7 @@ public class ESelectionPolygonalRegion extends ESelectionRegion implements Selec
 		this.setPositions(this.getPositions());
 	}
 	
-	public ESelectionPolygonalRegion(World world, List<Vector3i> positions) {
+	public ESelectionPolygonalRegion(final World world, final List<Vector3i> positions) {
 		super(world);
 		
 		Preconditions.checkNotNull(positions, "positions");
@@ -59,7 +59,7 @@ public class ESelectionPolygonalRegion extends ESelectionRegion implements Selec
 		this.setPositions(positions);
 	}
 
-	public void setPositions(List<Vector3i> positions) {
+	public void setPositions(final List<Vector3i> positions) {
 		Preconditions.checkNotNull(positions, "positions");
 		Preconditions.checkArgument(!positions.isEmpty(), "positions > 0");
 		
@@ -130,7 +130,7 @@ public class ESelectionPolygonalRegion extends ESelectionRegion implements Selec
     }
 	
 	@Override
-    public boolean containsPosition(Vector3i position) {
+    public boolean containsPosition(final Vector3i position) {
 		Preconditions.checkNotNull(position, "position");
     	
         final double x = position.getX();
@@ -206,7 +206,7 @@ public class ESelectionPolygonalRegion extends ESelectionRegion implements Selec
     }
 
 	@Override
-	public boolean expand(Vector3i... changes) throws RegionOperationException {
+	public boolean expand(final Vector3i... changes) throws RegionOperationException {
 		Preconditions.checkNotNull(changes, "changes");
 		
         for (Vector3i change : changes) {
@@ -232,7 +232,7 @@ public class ESelectionPolygonalRegion extends ESelectionRegion implements Selec
     }
 
 	@Override
-	public boolean contract(Vector3i... changes) throws RegionOperationException {
+	public boolean contract(final Vector3i... changes) throws RegionOperationException {
 		Preconditions.checkNotNull(changes, "changes");
 		
 		for (Vector3i change : changes) {
@@ -258,7 +258,7 @@ public class ESelectionPolygonalRegion extends ESelectionRegion implements Selec
 	}
 
 	@Override
-	public boolean shift(Vector3i change) {
+	public boolean shift(final Vector3i change) {
 		Preconditions.checkNotNull(change, "change");
 		
 		for (int i = 0; i < this.positions.size(); ++i) {

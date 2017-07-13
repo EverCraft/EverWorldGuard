@@ -18,13 +18,13 @@ package fr.evercraft.everworldguard.selection.cui;
 
 public interface CUIRegion {
     
-    public void describeCUI();
+    void describeCUI();
     
-    public void describeLegacyCUI();
+    void describeLegacyCUI();
     
-    public int getProtocolVersion();
+    int getProtocolVersion();
     
-    public String getTypeID();
+    String getTypeID();
     
-    public String getLegacyTypeID();
+    String getLegacyTypeID();
 }

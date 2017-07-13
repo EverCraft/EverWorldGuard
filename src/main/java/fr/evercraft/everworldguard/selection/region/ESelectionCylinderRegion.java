@@ -35,7 +35,7 @@ public class ESelectionCylinderRegion extends ESelectionRegion implements Select
 	private int minY;
 	private int maxY;
 	
-	public ESelectionCylinderRegion(SelectionRegion.Cylinder region) {
+	public ESelectionCylinderRegion(final SelectionRegion.Cylinder region) {
 		super(region.getWorld().orElse(null));
 		
 		this.setCenter(region.getCenter());
@@ -44,7 +44,7 @@ public class ESelectionCylinderRegion extends ESelectionRegion implements Select
 		this.setMaximumY(this.getMaximumY());
 	}
 	
-	public ESelectionCylinderRegion(World world, Vector3i center, Vector3d radius, int minY, int maxY) {
+	public ESelectionCylinderRegion(final World world, final Vector3i center, final Vector3d radius, int minY, int maxY) {
 		super(world);
 		
 		this.setCenter(center);
@@ -53,7 +53,7 @@ public class ESelectionCylinderRegion extends ESelectionRegion implements Select
 		this.setMaximumY(maxY);
 	}
 	
-	public void setCenter(Vector3i center) {
+	public void setCenter(final Vector3i center) {
 		this.center = Vector3i.from(center.getX(), 0, center.getZ());
 	}
 	
@@ -61,7 +61,7 @@ public class ESelectionCylinderRegion extends ESelectionRegion implements Select
 		return Vector3i.from(this.center.getX(), (this.maxY + this.minY) / 2, this.center.getZ());
 	}
 	
-	public void setRadius(Vector3d radius) {
+	public void setRadius(final Vector3d radius) {
 		this.radius = radius.abs();
 	}
 	
@@ -69,7 +69,7 @@ public class ESelectionCylinderRegion extends ESelectionRegion implements Select
 		return this.radius;
 	}
 	
-	public void extendRadius(Vector3d radius) {
+	public void extendRadius(final Vector3d radius) {
 		this.setRadius(this.radius.max(radius.abs()));
     }
 	
@@ -132,7 +132,7 @@ public class ESelectionCylinderRegion extends ESelectionRegion implements Select
     }
 	
 	@Override
-    public boolean containsPosition(Vector3i position) {
+    public boolean containsPosition(final Vector3i position) {
     	Preconditions.checkNotNull(position, "position");
     	
         double y = position.getY();        

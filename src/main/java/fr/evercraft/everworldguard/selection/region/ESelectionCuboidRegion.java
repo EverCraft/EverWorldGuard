@@ -32,14 +32,14 @@ public class ESelectionCuboidRegion extends ESelectionRegion implements Selectio
 	private Vector3i position1;
 	private Vector3i position2;
 	
-	public ESelectionCuboidRegion(SelectionRegion.Cuboid region) {
+	public ESelectionCuboidRegion(final SelectionRegion.Cuboid region) {
 		super(region.getWorld().orElse(null));
 		
 		this.position1 = region.getPrimaryPosition();
 		this.position2 = region.getSecondaryPosition();
 	}
 	
-	public ESelectionCuboidRegion(World world, Vector3i pos1, Vector3i pos2) {
+	public ESelectionCuboidRegion(final World world, final Vector3i pos1, final Vector3i pos2) {
 		super(world);
 		
 		this.position1 = pos1;
@@ -47,7 +47,7 @@ public class ESelectionCuboidRegion extends ESelectionRegion implements Selectio
 		this.recalculate();
 	}
 	
-	public void setPosition(Vector3i pos1, Vector3i pos2) {
+	public void setPosition(final Vector3i pos1, final Vector3i pos2) {
 		this.position1 = pos1;
 		this.position2 = pos2;
 		
@@ -100,7 +100,7 @@ public class ESelectionCuboidRegion extends ESelectionRegion implements Selectio
     }
 	
 	@Override
-    public boolean containsPosition(Vector3i position) {
+    public boolean containsPosition(final Vector3i position) {
     	Preconditions.checkNotNull(position, "position");
     	
         double x = position.getX();
@@ -138,7 +138,7 @@ public class ESelectionCuboidRegion extends ESelectionRegion implements Selectio
     }
 
 	@Override
-	public boolean expand(Vector3i... changes) {
+	public boolean expand(final Vector3i... changes) {
 		Preconditions.checkNotNull(changes, "changes");
 		
 		for (Vector3i change : changes) {
@@ -189,7 +189,7 @@ public class ESelectionCuboidRegion extends ESelectionRegion implements Selectio
 	}
 
 	@Override
-	public boolean contract(Vector3i... changes) {
+	public boolean contract(final Vector3i... changes) {
 		Preconditions.checkNotNull(changes, "changes");
 		
 		for (Vector3i change : changes) {
@@ -241,7 +241,7 @@ public class ESelectionCuboidRegion extends ESelectionRegion implements Selectio
 	}
 
 	@Override
-	public boolean shift(Vector3i change) {
+	public boolean shift(final Vector3i change) {
 		Preconditions.checkNotNull(change, "change");
 		
 		this.position1 = this.position1.add(change);

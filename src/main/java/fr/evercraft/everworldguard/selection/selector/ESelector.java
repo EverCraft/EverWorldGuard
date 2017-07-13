@@ -22,7 +22,7 @@ import fr.evercraft.everworldguard.selection.ESelectionSubject;
 public abstract class ESelector implements Selector {
 	protected final ESelectionSubject subject;
 
-	public ESelector(ESelectionSubject subject) {
+	public ESelector(final ESelectionSubject subject) {
 		this.subject = subject;
 	}
 }

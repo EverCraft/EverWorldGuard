@@ -18,7 +18,7 @@ package fr.evercraft.everworldguard.selection.cui;
 
 public interface CUIMessage {
 
-    public String getTypeId();
+    String getTypeId();
 
-    public String[] getParameters();
+    String[] getParameters();
 }
