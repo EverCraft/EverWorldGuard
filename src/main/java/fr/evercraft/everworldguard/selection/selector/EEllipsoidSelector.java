@@ -187,7 +187,7 @@ public class EEllipsoidSelector extends ESelector implements Selector.Ellipsoid,
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends SelectionRegion> Optional<T> getRegion(Class<T> type) {
+	public <T extends SelectionRegion> Optional<T> getRegion(final Class<T> type) {
 		if (!type.equals(SelectionRegion.Ellipsoid.class)) return Optional.empty();
 		if (this.center == null || this.radius == null) return Optional.empty();
 		
