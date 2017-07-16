@@ -200,8 +200,19 @@ public class EWRegionFlagRemove extends ESubCommand<EverWorldGuard> {
 
 	private <T> CompletableFuture<Boolean> commandRegionFlagRemove(final CommandSource source, final ProtectedRegion region, 
 			final ProtectedRegion.Group group, final Flag<T> flag, final List<String> values, final World world) {
+		
 		try {
 			Optional<T> value = flag.parseRemove(source, region, group, values);
+			
+			if (!region.getFlag(flag).get(group).isPresent() && !value.isPresent()) {
+				EWMessages.REGION_FLAG_REMOVE_EMPTY.sender()
+					.replace("<region>", region.getName())
+					.replace("<group>", group.getNameFormat())
+					.replace("<flag>", flag.getNameFormat())
+					.replace("<world>", world.getName())
+					.sendTo(source);
+				return CompletableFuture.completedFuture(false);
+			}
 			
 			return region.setFlag(flag, group, value.orElse(null))
 				.exceptionally(e -> false)

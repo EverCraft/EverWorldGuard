@@ -183,7 +183,7 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 		}
 		try {
 			return this.plugin.getProtectionService().getOrCreateEWorld(player.getWorld()).createRegionCuboid(region_id, 
-					selection.get().getPrimaryPosition(), selection.get().getSecondaryPosition(), players, groups)
+					selection.get().getPrimaryPosition(), selection.get().getSecondaryPosition(), players, groups, false)
 				.exceptionally(e -> null)
 				.thenApply(region -> {
 					if (region == null) {
@@ -233,7 +233,7 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 		}
 		
 		try {
-			return this.plugin.getProtectionService().getOrCreateEWorld(player.getWorld()).createRegionPolygonal(region_id, selector.get().getPositions(), players, groups)
+			return this.plugin.getProtectionService().getOrCreateEWorld(player.getWorld()).createRegionPolygonal(region_id, selector.get().getPositions(), players, groups, false)
 				.exceptionally(e -> null)
 				.thenApply(region -> {
 					if (region == null) {
@@ -293,7 +293,7 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 		}
 		
 		try {
-			return this.plugin.getProtectionService().getOrCreateEWorld(player.getWorld()).createRegionTemplate(region_id, players, groups)
+			return this.plugin.getProtectionService().getOrCreateEWorld(player.getWorld()).createRegionTemplate(region_id, players, groups, false)
 				.exceptionally(e -> null)
 				.thenApply(region -> {
 					if (region == null) {

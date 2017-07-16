@@ -52,7 +52,6 @@ public class EUserSubject implements WorldGuardSubject {
 	
 	private boolean bypass;
 	private Location<World> lastLocation;
-	private boolean lastRide;
 	private SetProtectedRegion lastRegions;
 	private final LoadingCache<Flag<?>, Long> messages;
 
@@ -102,7 +101,6 @@ public class EUserSubject implements WorldGuardSubject {
 	public void initialize(final Player player) {
 		this.lastLocation = player.getLocation();
 		this.lastLocation = this.lastLocation.setPosition(this.lastLocation.getBlockPosition().toDouble());
-		this.lastRide = player.getVehicle().isPresent();
 		
 		this.moveToPost(player, this.lastLocation, MoveTypes.UNKNOWN_NON_CANCELLABLE, Cause.source(this.plugin).build(), true);
 	}
@@ -126,7 +124,7 @@ public class EUserSubject implements WorldGuardSubject {
 		} else {
 			event = ESpongeEventFactory.createMoveRegionEventPre(player, this.lastLocation, toLocation, this.lastRegions, toRegions, entered, exited, cause);
 		}
-		
+				
 		if (this.plugin.getGame().getEventManager().post(event)) {
 			return Optional.ofNullable(this.lastLocation);
 		}
@@ -169,14 +167,6 @@ public class EUserSubject implements WorldGuardSubject {
 	
 	public Optional<Location<World>> getLastLocation() {
 		return Optional.ofNullable(this.lastLocation);
-	}
-	
-	public boolean getLastRide() {
-		return this.lastRide;
-	}
-	
-	public void setLastRide(boolean ride) {
-		this.lastRide = ride;
 	}
 
 	@Override

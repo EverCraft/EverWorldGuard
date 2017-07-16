@@ -121,13 +121,17 @@ public class FlagBlockPlace extends CatalogTypeFlag<BlockType> {
 					!world.getRegions(location.getPosition().add(direction)).getFlag(player, location, this).containsValue(location.getBlockType()))) {
 				event.setCancelled(true);
 			}
-		} else {
-			if (event.getLocations().stream().anyMatch(location -> 
-					this.getDefault().containsValue(location.getBlockType()) && 
-					!world.getRegions(location.getPosition().add(direction)).getFlagDefault(this).containsValue(location.getBlockType()))) {
-				event.setCancelled(true);
-			}
 		}
+	}
+	
+	/*
+	 * ChangeBlockEvent.Modify
+	 */
+	
+	public void onChangeBlockModify(ChangeBlockEvent.Modify event) {
+		if (event.isCancelled()) return;
+		
+		this.onChangeBlockPlaceNoFalling(this.plugin.getProtectionService(), event);
 	}
 
 	/*
@@ -170,24 +174,11 @@ public class FlagBlockPlace extends CatalogTypeFlag<BlockType> {
 						.from(event.getCause())
 						.named(UtilsCause.PLACE_EVENT, event).build());
 				});
-		
-		// Natural
-		} else {
-			event.getTransactions().stream().filter(transaction -> this.onChangeBlockPlace(service, transaction))
-				.forEach(transaction -> transaction.getFinal().getLocation().ifPresent(location -> {
-					Entity entity = location.getExtent().createEntity(EntityTypes.ITEM, location.getPosition());
-					entity.offer(Keys.REPRESENTED_ITEM, ItemStack.builder().fromBlockSnapshot(transaction.getFinal()).build().createSnapshot());
-					
-					location.getExtent().spawnEntity(entity, Cause
-						.source(EntitySpawnCause.builder().entity(entity).type(SpawnTypes.PLUGIN).build())
-						.from(event.getCause())
-						.named(UtilsCause.PLACE_EVENT, event).build());
-				}));
 		}
 	}
 	
 	// Placement de bloc
-	private void onChangeBlockPlaceNoFalling(EProtectionService service, ChangeBlockEvent.Place event) {
+	private void onChangeBlockPlaceNoFalling(EProtectionService service, ChangeBlockEvent event) {
 		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
 		
 		// Player
@@ -205,11 +196,6 @@ public class FlagBlockPlace extends CatalogTypeFlag<BlockType> {
 				Transaction<BlockSnapshot> transaction = transactions.get(0);
 				this.sendMessage(player, transaction.getOriginal().getLocation().get(), transaction.getFinal().getState().getType());
 			}
-			
-		// Natural
-		} else {
-			event.getTransactions().stream()
-				.forEach(transaction -> this.onChangeBlockPlace(service, transaction));
 		}
 	}
 	
@@ -224,23 +210,6 @@ public class FlagBlockPlace extends CatalogTypeFlag<BlockType> {
 		
 		Location<World> location = block.getLocation().get();
 		if (!service.getOrCreateEWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, location, this).containsValue(type)) {
-			transaction.setValid(false);
-			return true;
-		}
-		return false;
-	}
-	
-	private boolean onChangeBlockPlace(EProtectionService service, Transaction<BlockSnapshot> transaction) {
-		if (!transaction.isValid()) return false;
-		
-		BlockSnapshot block = transaction.getFinal();
-		if (!block.getLocation().isPresent()) return false;
-		
-		BlockType type = block.getState().getType();
-		if (!this.getDefault().containsValue(type)) return false;
-		
-		Location<World> location = block.getLocation().get();
-		if (!service.getOrCreateEWorld(location.getExtent()).getRegions(location.getPosition()).getFlagDefault(this).containsValue(type)) {
 			transaction.setValid(false);
 			return true;
 		}

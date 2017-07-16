@@ -412,7 +412,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 		Preconditions.checkNotNull(flag, "flag");
 		Preconditions.checkNotNull(group, "group");
 		
-		if (this.flags.get(flag) == null && value == null) return CompletableFuture.completedFuture(false);
+		if (this.flags.get(flag) == null && value == null) return CompletableFuture.completedFuture(true);
 		
 		return this.world.getStorage().setFlag(this, flag, group, value)
 			.thenApply(result -> {

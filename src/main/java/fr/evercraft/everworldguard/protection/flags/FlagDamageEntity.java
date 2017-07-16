@@ -23,7 +23,6 @@ import java.util.UUID;
 
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.Entity;
-import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.projectile.Projectile;
 import org.spongepowered.api.event.cause.NamedCause;
@@ -35,7 +34,6 @@ import org.spongepowered.api.event.cause.entity.damage.source.FallingBlockDamage
 import org.spongepowered.api.event.cause.entity.damage.source.IndirectEntityDamageSource;
 import org.spongepowered.api.event.entity.CollideEntityEvent;
 import org.spongepowered.api.event.entity.DamageEntityEvent;
-import org.spongepowered.api.event.entity.InteractEntityEvent;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -95,18 +93,19 @@ public class FlagDamageEntity extends EntityTemplateFlag {
 		
 		if (!event.getCause().get(NamedCause.SOURCE, Projectile.class).isPresent()) return;
 		
-		event.filterEntities(entity -> {
+		event.getEntities().stream().filter(entity -> {
 			if (this.getDefault().contains(entity) && !world.getRegions(entity.getLocation().getPosition()).getFlag(player, entity.getLocation(), this).contains(entity, player)) {
-				return false;
+				return true;
 			}
-			return true;
-		});
+			return false;
+		}).findAny().ifPresent(entity -> event.setCancelled(true));
 	}
 	
 	/*
 	 * DamageEntity
 	 */
 	
+	// TODO Bug : https://github.com/SpongePowered/SpongeCommon/pull/1157
 	public void onDamageEntity(WorldGuardWorld world, DamageEntityEvent event) {
 		if (event.isCancelled()) return;
 		if (!this.getDefault().contains(event.getTargetEntity())) return;
@@ -218,31 +217,5 @@ public class FlagDamageEntity extends EntityTemplateFlag {
 			return true;
 		}
 		return false;
-	}
-	
-	/*
-	 * InteractEntityEvent.Primary
-	 */
-
-	// TODO Bug : ARMOR_STAND
-	public void onInteractEntityPrimary(WorldGuardWorld world, InteractEntityEvent.Primary event) {
-		if (event.isCancelled()) return;
-		
-		if (!event.getTargetEntity().equals(EntityTypes.ARMOR_STAND)) return;
-		if (!this.getDefault().contains(event.getTargetEntity())) return;
-		
-		Optional<Player> optPlayer = event.getCause().get(NamedCause.SOURCE, Player.class);
-		if (!optPlayer.isPresent()) return;
-		Player player = optPlayer.get();
-		
-		// Bypass
-		if (this.plugin.getProtectionService().hasBypass(player)) return;
-		
-		if (!world.getRegions(event.getTargetEntity().getLocation().getPosition()).getFlag(player, event.getTargetEntity().getLocation(), this).contains(event.getTargetEntity(), player)) {
-			event.setCancelled(true);
-			
-			// Message
-			this.sendMessage((Player) player, event.getTargetEntity());
-		}
 	}
 }

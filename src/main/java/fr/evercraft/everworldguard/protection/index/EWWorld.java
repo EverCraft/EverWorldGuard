@@ -245,7 +245,7 @@ public class EWWorld implements WorldGuardWorld {
 
 	@Override
 	public CompletableFuture<ProtectedRegion.Cuboid> createRegionCuboid(final String name, final Vector3i pos1, final Vector3i pos2, 
-			final Set<UUID> owner_players, final Set<String> owner_groups) throws RegionIdentifierException {
+			final Set<UUID> owner_players, final Set<String> owner_groups, boolean transientRegion) throws RegionIdentifierException {
 		Preconditions.checkNotNull(name, "name");
 		Preconditions.checkNotNull(pos1, "pos1");
 		Preconditions.checkNotNull(pos2, "pos2");
@@ -254,7 +254,7 @@ public class EWWorld implements WorldGuardWorld {
 		if (this.regionsName.containsKey(name)) throw new RegionIdentifierException();
 		
 		UUID uuid = this.nextUUID();
-		EProtectedCuboidRegion region = new EProtectedCuboidRegion(this, uuid, name, pos1, pos2);
+		EProtectedCuboidRegion region = new EProtectedCuboidRegion(this, uuid, name, pos1, pos2, transientRegion);
 		region.init(0, owner_players, owner_groups, ImmutableSet.of(), ImmutableSet.of(), ImmutableMap.of());
 
 		return this.getStorage().add(region)
@@ -274,7 +274,7 @@ public class EWWorld implements WorldGuardWorld {
 
 	@Override
 	public CompletableFuture<ProtectedRegion.Polygonal> createRegionPolygonal(final String name, final List<Vector3i> positions, 
-			final Set<UUID> owner_players, final Set<String> owner_groups) throws RegionIdentifierException {
+			final Set<UUID> owner_players, final Set<String> owner_groups, boolean transientRegion) throws RegionIdentifierException {
 		Preconditions.checkNotNull(name, "name");
 		Preconditions.checkNotNull(positions, "positions");
 		Preconditions.checkNotNull(owner_players, "owner_players");
@@ -282,7 +282,7 @@ public class EWWorld implements WorldGuardWorld {
 		if (this.regionsName.containsKey(name)) throw new RegionIdentifierException();
 		
 		UUID uuid = this.nextUUID();
-		EProtectedPolygonalRegion region = new EProtectedPolygonalRegion(this, uuid, name, positions);
+		EProtectedPolygonalRegion region = new EProtectedPolygonalRegion(this, uuid, name, positions, transientRegion);
 		region.init(0, owner_players, owner_groups, ImmutableSet.of(), ImmutableSet.of(), ImmutableMap.of());
 		
 		return this.getStorage().add(region)
@@ -302,14 +302,14 @@ public class EWWorld implements WorldGuardWorld {
 
 	@Override
 	public CompletableFuture<ProtectedRegion.Template> createRegionTemplate(final String name, final Set<UUID> owner_players, 
-			final Set<String> owner_groups) throws RegionIdentifierException {
+			final Set<String> owner_groups, boolean transientRegion) throws RegionIdentifierException {
 		Preconditions.checkNotNull(name, "name");
 		Preconditions.checkNotNull(owner_players, "owner_players");
 		Preconditions.checkNotNull(owner_groups, "owner_groups");
 		if (this.regionsName.containsKey(name)) throw new RegionIdentifierException();
 		
 		UUID uuid = this.nextUUID();
-		EProtectedTemplateRegion region = new EProtectedTemplateRegion(this, uuid, name);
+		EProtectedTemplateRegion region = new EProtectedTemplateRegion(this, uuid, name, transientRegion);
 		region.init(0, owner_players, owner_groups, ImmutableSet.of(), ImmutableSet.of(), ImmutableMap.of());
 		
 		return this.getStorage().add(region)

@@ -24,6 +24,7 @@ import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.entity.explosive.DetonateExplosiveEvent;
 
 import fr.evercraft.everapi.services.worldguard.WorldGuardWorld;
+import fr.evercraft.everapi.sponge.UtilsCause;
 import fr.evercraft.everworldguard.EverWorldGuard;
 
 public class BlockListener {
@@ -57,7 +58,7 @@ public class BlockListener {
 		this.plugin.getManagerFlags().PROPAGATION.onChangeBlockPlace(event);
 		
 		// Debug
-		//UtilsCause.debug(event.getCause(), "ChangeBlockEvent.Place");
+		UtilsCause.debug(event.getCause(), "ChangeBlockEvent.Place");
 	}
 	
 	@Listener(order=Order.FIRST)
@@ -66,15 +67,19 @@ public class BlockListener {
 		this.plugin.getManagerFlags().BLOCK_BREAK.onChangeBlockBreak(event);
 		this.plugin.getManagerFlags().INTERACT_BLOCK.onChangeBlockBreak(event);
 		this.plugin.getManagerFlags().ENDERMAN_GRIEF.onChangeBlockBreak(event);
+		this.plugin.getManagerFlags().ENDERDRAGON_GRIEF.onChangeBlockBreak(event);
 		this.plugin.getManagerFlags().SNOW.onChangeBlockBreak(event);
 		
 		// Debug
-		//UtilsCause.debug(event.getCause(), "ChangeBlockEvent.Break");
+		UtilsCause.debug(event.getCause(), "ChangeBlockEvent.Break");
 	}
 	
 	@Listener(order=Order.FIRST)
 	public void onChangeBlock(ChangeBlockEvent.Modify event) {
 		
+		this.plugin.getManagerFlags().BUILD.onChangeBlockModify(event);
+		this.plugin.getManagerFlags().BLOCK_PLACE.onChangeBlockModify(event);
+		this.plugin.getManagerFlags().BLOCK_BREAK.onChangeBlockModify(event);
 		this.plugin.getManagerFlags().INTERACT_BLOCK.onChangeBlockModify(event);
 		this.plugin.getManagerFlags().SNOW.onChangeBlockModify(event);
 		
@@ -94,7 +99,7 @@ public class BlockListener {
 		});
 		
 		// Debug
-		//UtilsCause.debug(event.getCause(), "InteractBlockEvent.Secondary");
+		UtilsCause.debug(event.getCause(), "InteractBlockEvent.Secondary");
 	}
 	
 	@Listener(order=Order.FIRST)

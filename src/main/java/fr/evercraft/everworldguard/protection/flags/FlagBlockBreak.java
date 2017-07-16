@@ -144,13 +144,8 @@ public class FlagBlockBreak extends CatalogTypeFlag<BlockType> {
 			
 			if (event.getLocations().stream().anyMatch(location -> 
 					this.getDefault().containsValue(location.getBlockType()) && 
+					!location.getBlockType().equals(BlockTypes.AIR) &&
 					!world.getRegions(location.getPosition()).getFlag(player, location, this).containsValue(location.getBlockType()))) {
-				event.setCancelled(true);
-			}
-		} else {
-			if (event.getLocations().stream().anyMatch(location -> 
-					this.getDefault().containsValue(location.getBlockType()) && 
-					!world.getRegions(location.getPosition()).getFlagDefault(this).containsValue(location.getBlockType()))) {
 				event.setCancelled(true);
 			}
 		}
@@ -166,8 +161,6 @@ public class FlagBlockBreak extends CatalogTypeFlag<BlockType> {
 		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
 		if (optPlayer.isPresent()) {
 			this.onChangeBlockBreakPlayer(this.plugin.getProtectionService(), event, optPlayer.get());
-		} else {
-			this.onChangeBlockBreakNatural(this.plugin.getProtectionService(), event);
 		}
 	}
 
@@ -197,16 +190,6 @@ public class FlagBlockBreak extends CatalogTypeFlag<BlockType> {
 		}
 	}
 
-	private void onChangeBlockBreakNatural(EProtectionService service, ChangeBlockEvent.Break event) {
-		List<Transaction<BlockSnapshot>> transactions = event.getTransactions().stream()
-				.filter(transaction -> this.onChangeBlockBreak(service, transaction))
-				.collect(Collectors.toList());
-
-		if (!transactions.isEmpty()) {
-			event.getCause().get(NamedCause.SOURCE, FallingBlock.class).ifPresent(falling -> falling.remove());
-		}
-	}
-
 	private boolean onChangeBlockBreak(EProtectionService service, Transaction<BlockSnapshot> transaction, Player player) {		
 		if (!transaction.isValid()) return false;
 		
@@ -223,22 +206,15 @@ public class FlagBlockBreak extends CatalogTypeFlag<BlockType> {
 		}
 		return false;
 	}
-
-	private boolean onChangeBlockBreak(EProtectionService service, Transaction<BlockSnapshot> transaction) {
-		if (!transaction.isValid()) return false;
-
-		BlockSnapshot block = transaction.getOriginal();
-		if (!block.getLocation().isPresent()) return false;
-
-		BlockType type = block.getState().getType();
-		if (!this.getDefault().containsValue(type)) return false;
-
-		Location<World> location = block.getLocation().get();
-		if (!service.getOrCreateEWorld(location.getExtent()).getRegions(location.getPosition()).getFlagDefault(this).containsValue(type)) {
-			transaction.setValid(false);
-			return true;
-		}
-		return false;
+	
+	/*
+	 * ChangeBlockEvent.Modify
+	 */
+	
+	public void onChangeBlockModify(ChangeBlockEvent.Modify event) {
+		if (event.isCancelled()) return;
+		
+		this.onChangeBlockPlaceNoFalling(this.plugin.getProtectionService(), event);
 	}
 
 	/*
@@ -267,7 +243,7 @@ public class FlagBlockBreak extends CatalogTypeFlag<BlockType> {
 			// Bypass
 			if (this.plugin.getProtectionService().hasBypass(player)) return;
 			
-			event.getTransactions().stream().filter(transaction -> this.onChangeBlockPlace(service, transaction, player))
+			event.getTransactions().stream().filter(transaction -> this.onChangeBlock(service, transaction, player))
 				.forEach(transaction -> {
 					BlockSnapshot block = transaction.getOriginal();
 					Location<World> location = block.getLocation().get();
@@ -281,24 +257,11 @@ public class FlagBlockBreak extends CatalogTypeFlag<BlockType> {
 						.from(event.getCause())
 						.named(UtilsCause.PLACE_EVENT, event).build());
 				});
-		
-		// Natural
-		} else {
-			event.getTransactions().stream().filter(transaction -> this.onChangeBlockPlace(service, transaction))
-				.forEach(transaction -> transaction.getOriginal().getLocation().ifPresent(location -> {
-					Entity entity = location.getExtent().createEntity(EntityTypes.ITEM, location.getPosition());
-					entity.offer(Keys.REPRESENTED_ITEM, ItemStack.builder().fromBlockSnapshot(transaction.getFinal()).build().createSnapshot());
-					
-					location.getExtent().spawnEntity(entity, Cause
-						.source(EntitySpawnCause.builder().entity(entity).type(SpawnTypes.PLUGIN).build())
-						.from(event.getCause())
-						.named(UtilsCause.PLACE_EVENT, event).build());
-				}));
 		}
 	}
 	
 	// Placement de bloc
-	private void onChangeBlockPlaceNoFalling(EProtectionService service, ChangeBlockEvent.Place event) {
+	private void onChangeBlockPlaceNoFalling(EProtectionService service, ChangeBlockEvent event) {
 		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
 		
 		// Player
@@ -309,22 +272,17 @@ public class FlagBlockBreak extends CatalogTypeFlag<BlockType> {
 			if (this.plugin.getProtectionService().hasBypass(player)) return;
 			
 			List<Transaction<BlockSnapshot>> transactions = event.getTransactions().stream()
-				.filter(transaction -> this.onChangeBlockPlace(service, transaction, player))
+				.filter(transaction -> this.onChangeBlock(service, transaction, player))
 				.collect(Collectors.toList());
 			
 			if (!transactions.isEmpty()) {
 				Transaction<BlockSnapshot> transaction = transactions.get(0);
 				this.sendMessage(player, transaction.getOriginal().getLocation().get(), transaction.getOriginal().getState().getType());
 			}
-			
-		// Natural
-		} else {
-			event.getTransactions().stream()
-				.forEach(transaction -> this.onChangeBlockPlace(service, transaction));
 		}
 	}
 	
-	private boolean onChangeBlockPlace(EProtectionService service, Transaction<BlockSnapshot> transaction, Player player) {
+	private boolean onChangeBlock(EProtectionService service, Transaction<BlockSnapshot> transaction, Player player) {
 		if (!transaction.isValid()) return false;
 		
 		BlockSnapshot block = transaction.getOriginal();
@@ -336,24 +294,6 @@ public class FlagBlockBreak extends CatalogTypeFlag<BlockType> {
 		
 		Location<World> location = block.getLocation().get();
 		if (!service.getOrCreateEWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, location, this).containsValue(type)) {
-			transaction.setValid(false);
-			return true;
-		}
-		return false;
-	}
-	
-	private boolean onChangeBlockPlace(EProtectionService service, Transaction<BlockSnapshot> transaction) {
-		if (!transaction.isValid()) return false;
-		
-		BlockSnapshot block = transaction.getOriginal();
-		if (!block.getLocation().isPresent()) return false;
-		
-		BlockType type = block.getState().getType();
-		if (type.equals(BlockTypes.AIR)) return false;
-		if (!this.getDefault().containsValue(type)) return false;
-		
-		Location<World> location = block.getLocation().get();
-		if (!service.getOrCreateEWorld(location.getExtent()).getRegions(location.getPosition()).getFlagDefault(this).containsValue(type)) {
 			transaction.setValid(false);
 			return true;
 		}

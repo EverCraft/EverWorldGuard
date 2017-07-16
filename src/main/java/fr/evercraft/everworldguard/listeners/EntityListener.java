@@ -22,9 +22,13 @@ import org.spongepowered.api.event.action.CollideEvent;
 import org.spongepowered.api.event.entity.CollideEntityEvent;
 import org.spongepowered.api.event.entity.ConstructEntityEvent;
 import org.spongepowered.api.event.entity.DamageEntityEvent;
+import org.spongepowered.api.event.entity.DestructEntityEvent;
 import org.spongepowered.api.event.entity.HealEntityEvent;
 import org.spongepowered.api.event.entity.InteractEntityEvent;
 import org.spongepowered.api.event.entity.SpawnEntityEvent;
+import org.spongepowered.api.event.entity.TargetEntityEvent;
+import org.spongepowered.api.event.entity.living.humanoid.player.TargetPlayerEvent;
+import org.spongepowered.api.event.entity.projectile.LaunchProjectileEvent;
 import org.spongepowered.api.event.item.inventory.DropItemEvent;
 import org.spongepowered.api.event.item.inventory.InteractItemEvent;
 
@@ -41,10 +45,6 @@ public class EntityListener {
 	
 	@Listener(order=Order.FIRST)
 	public void onInteractEntityPrimary(InteractEntityEvent.Primary event) {
-		WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateEWorld(event.getTargetEntity().getWorld());
-		
-		this.plugin.getManagerFlags().DAMAGE_ENTITY.onInteractEntityPrimary(world, event);
-		
 		// Debug
 		//UtilsCause.debug(event.getCause(), "InteractEntityEvent.Primary");
 	}
@@ -59,6 +59,42 @@ public class EntityListener {
 		// Debug
 		//UtilsCause.debug(event.getCause(), "InteractEntityEvent.Secondary");
 	}	
+	
+	@Listener(order=Order.FIRST)
+	public void onInteractEntity(DestructEntityEvent event) {
+		// Debug
+		//UtilsCause.debug(event.getCause(), "DestructEntityEvent");
+	}
+	
+	@Listener(order=Order.FIRST)
+	public void onInteractEntity(LaunchProjectileEvent event) {
+		// Debug
+		//UtilsCause.debug(event.getCause(), "LaunchProjectileEvent");
+	}	
+	
+	@Listener(order=Order.FIRST)
+	public void onInteractEntity(DropItemEvent.Dispense event) {
+		// Debug
+		//UtilsCause.debug(event.getCause(), "DropItemEvent.Dispense");
+	}
+	
+	@Listener(order=Order.FIRST)
+	public void onInteractEntity(DropItemEvent event) {
+		// Debug
+		//UtilsCause.debug(event.getCause(), "DropItemEvent");
+	}
+	
+	@Listener(order=Order.FIRST)
+	public void onInteractEntity(TargetPlayerEvent event) {
+		// Debug
+		//UtilsCause.debug(event.getCause(), "TargetPlayerEvent");
+	}
+	
+	@Listener(order=Order.FIRST)
+	public void onInteractEntity(TargetEntityEvent event) {
+		// Debug
+		//UtilsCause.debug(event.getCause(), " TargetEntityEvent");
+	}
 	
 	@Listener(order=Order.FIRST)
 	public void onDamageEntity(DamageEntityEvent event) {
@@ -86,13 +122,14 @@ public class EntityListener {
 	
 	@Listener(order=Order.FIRST)
 	public void onSpawnEntity(SpawnEntityEvent event) {
+		this.plugin.getManagerFlags().ENTITY_DAMAGE.onSpawnEntity(event);
 		this.plugin.getManagerFlags().ENTITY_SPAWNING.onSpawnEntity(event);
 		this.plugin.getManagerFlags().ITEM_DROP.onSpawnEntity(event);
 		this.plugin.getManagerFlags().POTION_SPLASH.onSpawnEntity(event);
-		//this.plugin.getManagerFlags().EXP_DROP.onSpawnEntity(event);
+		this.plugin.getManagerFlags().EXP_DROP.onSpawnEntity(event);
 		
 		// Debug 
-		//UtilsCause.debug(event.getCause(), "SpawnEntityEvent : " + String.join(", ", event.getEntities().stream().map(entity -> entity.getType().getName()).collect(Collectors.toList())));
+		//UtilsCause.debug(event.getCause(), "SpawnEntityEvent : " + String.join(", ", event.getEntities().stream().map(entity -> entity.getType().getName()  + " : " + entity.getCreator()).collect(Collectors.toList())));
 	}
 	
 	@Listener(order=Order.FIRST)

@@ -79,7 +79,7 @@ public class FlagEntitySpawning extends EntityTemplateFlag {
 	public void onSpawnEntity(SpawnEntityEvent event) {
 		if (event.isCancelled()) return;
 		
-		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
+		Optional<Player> optPlayer = event.getCause().get(NamedCause.NOTIFIER, Player.class);
 		if (optPlayer.isPresent()) {
 			this.onSpawnEntityPlayer(this.plugin.getProtectionService(), event, optPlayer.get());
 		} else {

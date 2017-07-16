@@ -299,6 +299,7 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		REGION_FLAG_REMOVE_DESCRIPTION("region.removeflag.description",							"Supprime un flag d'une région"),
 		REGION_FLAG_REMOVE_UPDATE("region.removeflag.update",									"&7Vous avez défini le flag &6<flag> &7sur la région &6<region> &7dans le monde &6<world> &7pour le groupe &6<group> &7avec la valeur &6<value>&7."),
 		REGION_FLAG_REMOVE_PLAYER("region.removeflag.player",									"&7Vous avez supprimé le flag &6<flag> &7sur la région &6<region> &7dans le monde &6<world> &7pour le groupe &6<group>&7."),
+		REGION_FLAG_REMOVE_EMPTY("region.removeflag.empty",										"&cErreur : Il n'y a pas de flag &6<flag> &csur la région &6<region> &cdans le monde &6<world> &cpour le groupe &6<group>&c."),
 		REGION_FLAG_REMOVE_ERROR("region.removeflag.error",										"&cErreur : La valeur est &6'<value>&6' &cest invalide."),
 		
 		REGION_OWNER_ADD_DESCRIPTION("region.addowner.description",								"Ajoute un owner à une région"),

@@ -21,17 +21,23 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.spongepowered.api.entity.Entity;
+import org.spongepowered.api.entity.living.Agent;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.cause.entity.damage.source.EntityDamageSource;
 import org.spongepowered.api.event.cause.entity.damage.source.IndirectEntityDamageSource;
+import org.spongepowered.api.event.cause.entity.spawn.EntitySpawnCause;
+import org.spongepowered.api.event.cause.entity.spawn.SpawnTypes;
 import org.spongepowered.api.event.entity.CollideEntityEvent;
 import org.spongepowered.api.event.entity.DamageEntityEvent;
+import org.spongepowered.api.event.entity.SpawnEntityEvent;
 
 import fr.evercraft.everapi.services.entity.EntityTemplate;
 import fr.evercraft.everapi.services.worldguard.WorldGuardWorld;
 import fr.evercraft.everapi.services.worldguard.flag.EntityTemplateFlag;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EverWorldGuard;
+import fr.evercraft.everworldguard.protection.index.EWWorld;
 
 public class FlagEntityDamage extends EntityTemplateFlag {
 		
@@ -75,6 +81,39 @@ public class FlagEntityDamage extends EntityTemplateFlag {
 			}
 			return true;
 		});
+	}
+	
+	/*
+	 * SpawnEntityEvent : Permet désactiver les Witch
+	 */
+	
+	public void onSpawnEntity(SpawnEntityEvent event) {
+		if (event.isCancelled()) return;
+		
+		Optional<EntitySpawnCause> optCause = event.getCause().get(NamedCause.SOURCE, EntitySpawnCause.class);
+		if (!optCause.isPresent()) return;
+		
+		EntitySpawnCause cause = optCause.get();
+		if (!cause.getType().equals(SpawnTypes.PROJECTILE)) return;
+		if (!(cause.getEntity() instanceof Agent)) return;
+		if (!this.getDefault().contains(cause.getEntity())) return;
+		
+		
+		Agent agent = (Agent) cause.getEntity();
+		
+		if (!agent.getTarget().isPresent()) return;
+		if (!(agent.getTarget().get() instanceof Player)) return;
+		
+		Player player = (Player) agent.getTarget().get();
+		EWWorld world = this.plugin.getProtectionService().getOrCreateEWorld(player.getWorld());
+		
+		if (!world.getRegions(cause.getEntity().getLocation().getPosition()).getFlag((Player) player, cause.getEntity().getLocation(), this)
+				.contains(cause.getEntity(), (Player) player)) {
+			event.setCancelled(true);
+		} else if (!world.getRegions(player.getLocation().getPosition()).getFlag((Player) player, player.getLocation(), this)
+				.contains(cause.getEntity(), (Player) player)) {
+			event.setCancelled(true);
+		}
 	}
 	
 	/*

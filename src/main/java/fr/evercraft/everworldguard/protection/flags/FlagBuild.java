@@ -294,6 +294,29 @@ public class FlagBuild extends StateFlag {
 	}
 	
 	/*
+	 * ChangeBlockEvent.Modify
+	 */
+	
+	public void onChangeBlockModify(ChangeBlockEvent.Modify event) {
+		if (event.isCancelled()) return;
+		
+		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
+		if (!optPlayer.isPresent()) return;
+		Player player = optPlayer.get();
+		
+		// Bypass
+		if (this.plugin.getProtectionService().hasBypass(player)) return;
+		
+		EProtectionService service = this.plugin.getProtectionService();
+		List<Transaction<BlockSnapshot>> filter = event.filter(location -> 
+			service.getOrCreateEWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, location, this).equals(State.ALLOW));
+	
+		if (!filter.isEmpty()) {
+			this.sendMessage(player, filter.get(0).getOriginal().getPosition());
+		}
+	}
+	
+	/*
 	 * InteractEntity
 	 */
 

@@ -207,6 +207,7 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 				EntityTypes.ENDER_CRYSTAL.getId(),
 				EntityTypes.BOAT.getId(),
 				EntityTypes.ITEM_FRAME.getId(),
+				EntityTypes.PAINTING.getId(),
 				EntityTypes.VILLAGER.getId()));
 		addDefault("INTERACT_ENTITY, DAMAGE_ENTITY, ENTITY_DAMAGE, ENTITY_SPAWNING", interact_entity);
 	}
