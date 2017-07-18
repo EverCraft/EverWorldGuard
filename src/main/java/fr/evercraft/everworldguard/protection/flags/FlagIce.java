@@ -72,11 +72,22 @@ public class FlagIce extends CatalogTypeFlag<IceType> {
 	public void onChangeBlockPlace(ChangeBlockEvent.Place event) {
 		if (event.isCancelled()) return;
 		
-		this.onChangeBlockPlaceForm(event);
-		this.onChangeBlockPlaceMelt(event);
+		this.onChangeBlockForm(event);
+		this.onChangeBlockMelt(event);
 	}
 	
-	public void onChangeBlockPlaceForm(ChangeBlockEvent.Place event) {
+	/*
+	 * ChangeBlockEvent.Modify
+	 */
+	
+	public void onChangeBlockModify(ChangeBlockEvent.Modify event) {
+		if (event.isCancelled()) return;
+		
+		this.onChangeBlockForm(event);
+		this.onChangeBlockMelt(event);
+	}
+	
+	public void onChangeBlockForm(ChangeBlockEvent event) {
 		Optional<World> optWorld = event.getCause().get(NamedCause.SOURCE, World.class);
 		if (!optWorld.isPresent()) return;
 		
@@ -103,7 +114,7 @@ public class FlagIce extends CatalogTypeFlag<IceType> {
 			});
 	}
 	
-	public void onChangeBlockPlaceMelt(ChangeBlockEvent.Place event) {
+	public void onChangeBlockMelt(ChangeBlockEvent event) {
 		Optional<LocatableBlock> optBlock = event.getCause().get(NamedCause.SOURCE, LocatableBlock.class);
 		if (!optBlock.isPresent()) return;
 		if (!optBlock.get().getBlockState().getType().equals(BlockTypes.ICE)) return;

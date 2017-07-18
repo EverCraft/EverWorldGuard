@@ -134,6 +134,7 @@ public class FlagPvp extends StateFlag {
 		} else if (source instanceof DamageSource){
 			DamageSource damageSource = (DamageSource) source;
 			
+			// TODO Bug : Creator
 			if (damageSource.getType().equals(DamageTypes.SUFFOCATE)) {
 				Location<World> location = target.getLocation().add(Vector3d.from(0, 2, 0));
 				Optional<UUID> creator = location.getExtent().getCreator(location.getBlockPosition());

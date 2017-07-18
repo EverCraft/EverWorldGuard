@@ -72,12 +72,32 @@ public class FlagPropagation extends CatalogTypeFlag<BlockType> {
 	public Set<Group> getGroups() {
 		return ImmutableSet.of(Groups.DEFAULT);
 	}
-
+	
 	/*
 	 * ChangeBlockEvent.Place
 	 */
 	
 	public void onChangeBlockPlace(ChangeBlockEvent.Place event) {
+		if (event.isCancelled()) return;
+		
+		this.onChangeBlock(event);
+	}
+	
+	/*
+	 * ChangeBlockEvent.Modify
+	 */
+	
+	public void onChangeBlockModify(ChangeBlockEvent.Modify event) {
+		if (event.isCancelled()) return;
+		
+		this.onChangeBlock(event);
+	}
+
+	/*
+	 * ChangeBlockEvent
+	 */
+	
+	public void onChangeBlock(ChangeBlockEvent event) {
 		Optional<LocatableBlock> optBlock = event.getCause().get(NamedCause.SOURCE, LocatableBlock.class);
 		if (!optBlock.isPresent()) return;
 		BlockType typeSource = optBlock.get().getBlockState().getType();

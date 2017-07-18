@@ -41,13 +41,13 @@ public class EWManagerCommands extends HashSet<ECommand<EverWorldGuard>> {
 		this.command = new EWCommand(this.plugin);
 		this.command.add(new EWReload(this.plugin, this.command));
 		this.command.add(new EWTransfert(this.plugin, this.command));
+		this.command.add(new EWBypass(this.plugin, this.command));
 		
 		load();
 	}
 		
 	public void load() {
 		EWRegion region = new EWRegion(this.plugin);
-		region.add(new EWRegionBypass(this.plugin, region));
 		region.add(new EWRegionCheck(this.plugin, region));
 		region.add(new EWRegionDefine(this.plugin, region));
 		region.add(new EWRegionFlagAdd(this.plugin, region));

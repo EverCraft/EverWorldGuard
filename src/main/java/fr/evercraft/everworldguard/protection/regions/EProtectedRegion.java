@@ -919,10 +919,10 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 			return -1;
 		} else if (this.getPriority() < other.getPriority()) {
 			return 1;
+		} else if (other.getType().equals(Types.GLOBAL)) {
+			return -1;
 		} else if (this.getType().equals(Types.GLOBAL)) {
 			return 1;
-		} else if (this.getType().equals(Types.GLOBAL)) {
-			return -1;
 		}
 		
 		return this.getName().compareTo(other.getName());

@@ -16,6 +16,8 @@
  */
 package fr.evercraft.everworldguard.listeners;
 
+import java.util.stream.Collectors;
+
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.action.CollideEvent;
@@ -23,7 +25,6 @@ import org.spongepowered.api.event.entity.CollideEntityEvent;
 import org.spongepowered.api.event.entity.ConstructEntityEvent;
 import org.spongepowered.api.event.entity.DamageEntityEvent;
 import org.spongepowered.api.event.entity.DestructEntityEvent;
-import org.spongepowered.api.event.entity.HealEntityEvent;
 import org.spongepowered.api.event.entity.InteractEntityEvent;
 import org.spongepowered.api.event.entity.SpawnEntityEvent;
 import org.spongepowered.api.event.entity.TargetEntityEvent;
@@ -33,6 +34,7 @@ import org.spongepowered.api.event.item.inventory.DropItemEvent;
 import org.spongepowered.api.event.item.inventory.InteractItemEvent;
 
 import fr.evercraft.everapi.services.worldguard.WorldGuardWorld;
+import fr.evercraft.everapi.sponge.UtilsCause;
 import fr.evercraft.everworldguard.EverWorldGuard;
 
 public class EntityListener {
@@ -129,7 +131,7 @@ public class EntityListener {
 		this.plugin.getManagerFlags().EXP_DROP.onSpawnEntity(event);
 		
 		// Debug 
-		//UtilsCause.debug(event.getCause(), "SpawnEntityEvent : " + String.join(", ", event.getEntities().stream().map(entity -> entity.getType().getName()  + " : " + entity.getCreator()).collect(Collectors.toList())));
+		UtilsCause.debug(event.getCause(), "SpawnEntityEvent : " + String.join(", ", event.getEntities().stream().map(entity -> entity.getType().getName()  + " : " + entity.getCreator()).collect(Collectors.toList())));
 	}
 	
 	@Listener(order=Order.FIRST)
@@ -139,16 +141,6 @@ public class EntityListener {
 		
 		// Debug 
 		//UtilsCause.debug(event.getCause(), "DropItemEvent : " + String.join(", ", event.getDroppedItems().stream().map(entity -> entity.getType().getName()).collect(Collectors.toList())));
-	}
-	
-	@Listener(order=Order.FIRST)
-	public void onPlayerHeal(HealEntityEvent event) {
-		WorldGuardWorld world = this.plugin.getProtectionService().getOrCreateEWorld(event.getTargetEntity().getWorld());
-		
-		this.plugin.getManagerFlags().INVINCIBILITY.onHealEntity(world, event);
-		
-		// Debug
-		//UtilsCause.debug(event.getCause(), "HealEntityEvent");
 	}
 	
 	@Listener(order=Order.FIRST)

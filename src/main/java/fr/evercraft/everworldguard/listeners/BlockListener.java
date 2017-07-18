@@ -16,6 +16,8 @@
  */
 package fr.evercraft.everworldguard.listeners;
 
+import java.util.stream.Collectors;
+
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
@@ -43,7 +45,7 @@ public class BlockListener {
 		this.plugin.getManagerFlags().INTERACT_BLOCK.onChangeBlockPre(event);
 		
 		// Debug
-		//UtilsCause.debug(event.getCause(), "ChangeBlockEvent.Pre");
+		UtilsCause.debug(event.getCause(), "ChangeBlockEvent.Pre");
 	}
 	
 	@Listener(order=Order.FIRST)
@@ -58,7 +60,8 @@ public class BlockListener {
 		this.plugin.getManagerFlags().PROPAGATION.onChangeBlockPlace(event);
 		
 		// Debug
-		UtilsCause.debug(event.getCause(), "ChangeBlockEvent.Place");
+		UtilsCause.debug(event.getCause(), "ChangeBlockEvent.Place : " + String.join(", ", event.getTransactions().stream()
+				.map(t -> "(" + t.getOriginal().getState().getType().getId() + " : " + t.getFinal().getState().getType().getId() + ")").collect(Collectors.toList())));
 	}
 	
 	@Listener(order=Order.FIRST)
@@ -71,7 +74,8 @@ public class BlockListener {
 		this.plugin.getManagerFlags().SNOW.onChangeBlockBreak(event);
 		
 		// Debug
-		UtilsCause.debug(event.getCause(), "ChangeBlockEvent.Break");
+		UtilsCause.debug(event.getCause(), "ChangeBlockEvent.Break : " + String.join(", ", event.getTransactions().stream()
+				.map(t -> "(" + t.getOriginal().getState().getType().getId() + " : " + t.getFinal().getState().getType().getId() + ")").collect(Collectors.toList())));
 	}
 	
 	@Listener(order=Order.FIRST)
@@ -81,10 +85,13 @@ public class BlockListener {
 		this.plugin.getManagerFlags().BLOCK_PLACE.onChangeBlockModify(event);
 		this.plugin.getManagerFlags().BLOCK_BREAK.onChangeBlockModify(event);
 		this.plugin.getManagerFlags().INTERACT_BLOCK.onChangeBlockModify(event);
+		this.plugin.getManagerFlags().ICE.onChangeBlockModify(event);
 		this.plugin.getManagerFlags().SNOW.onChangeBlockModify(event);
+		this.plugin.getManagerFlags().PROPAGATION.onChangeBlockModify(event);
 		
 		// Debug
-		//UtilsCause.debug(event.getCause(), "ChangeBlockEvent.Modify");
+		UtilsCause.debug(event.getCause(), "ChangeBlockEvent.Modify : " + String.join(", ", event.getTransactions().stream()
+				.map(t -> "(" + t.getOriginal().getState().getType().getId() + " : " + t.getFinal().getState().getType().getId() + ")").collect(Collectors.toList())));
 	}
 	
 	@Listener(order=Order.FIRST)

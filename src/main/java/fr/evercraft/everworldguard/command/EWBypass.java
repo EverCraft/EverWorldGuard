@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with EverWorldGuard.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.evercraft.everworldguard.command.region;
+package fr.evercraft.everworldguard.command;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,17 +33,18 @@ import fr.evercraft.everapi.plugin.command.Args;
 import fr.evercraft.everapi.plugin.command.ESubCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everapi.server.user.EUser;
+import fr.evercraft.everworldguard.EWCommand;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EWPermissions;
 import fr.evercraft.everworldguard.EverWorldGuard;
 
-public class EWRegionBypass extends ESubCommand<EverWorldGuard> {
+public class EWBypass extends ESubCommand<EverWorldGuard> {
 	
 	public static final String MARKER_PLAYER = "-p";
 	
 	private final Args.Builder pattern;
 	
-	public EWRegionBypass(final EverWorldGuard plugin, final EWRegion command) {
+	public EWBypass(final EverWorldGuard plugin, final EWCommand command) {
         super(plugin, command, "bypass");
         
         this.pattern = Args.builder()

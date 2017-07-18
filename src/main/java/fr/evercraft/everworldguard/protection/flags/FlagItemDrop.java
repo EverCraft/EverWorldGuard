@@ -99,9 +99,15 @@ public class FlagItemDrop extends CatalogTypeFlag<ItemType> {
 			return;
 		} 
 		
-		Optional<Player> optPlayer = event.getCause().get(NamedCause.OWNER, Player.class);
-		if (optPlayer.isPresent()) {
-			this.onSpawnEntityPlayer(this.plugin.getProtectionService(), event, spawn, optPlayer.get());
+		Optional<Player> optNotifier = event.getCause().get(NamedCause.NOTIFIER, Player.class);
+		if (optNotifier.isPresent()) {
+			this.onSpawnEntityPlayer(this.plugin.getProtectionService(), event, spawn, optNotifier.get());
+			return;
+		}
+		
+		Optional<Player> optOwner = event.getCause().get(NamedCause.OWNER, Player.class);
+		if (optOwner.isPresent()) {
+			this.onSpawnEntityPlayer(this.plugin.getProtectionService(), event, spawn, optOwner.get());
 		} else {
 			this.onSpawnEntityNatural(this.plugin.getProtectionService(), event, spawn);
 		}
@@ -193,16 +199,7 @@ public class FlagItemDrop extends CatalogTypeFlag<ItemType> {
 		});
 		
 		
-		// TODO Si l'inventaire est ouvert l'item n'est pas redonné
-		/*
-		// TODO Bug : player.isViewingInventory() retourne toujours True
-		if (player.isViewingInventory()) {
-			CarriedInventory<? extends Carrier> inventory = player.getInventory();
-			items.forEach(item -> inventory.offer(
-				ItemStack.builder()
-					.fromSnapshot(item)
-					.build()));
-		}*/
+		// TODO Si l'inventaire est ouvert l'item n'est pas redonné https://github.com/SpongePowered/SpongeCommon/issues/1402
 		
 		if (!items.isEmpty()) {
 			this.sendMessage(player, player.getLocation(), items.get(0).getType());

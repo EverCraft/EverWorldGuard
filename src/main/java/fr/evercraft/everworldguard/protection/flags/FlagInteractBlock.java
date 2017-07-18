@@ -16,6 +16,7 @@
  */
 package fr.evercraft.everworldguard.protection.flags;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -101,6 +102,10 @@ public class FlagInteractBlock extends CatalogTypeFlag<BlockType> {
 		// Bypass
 		if (this.plugin.getProtectionService().hasBypass(player)) return;
 		
+		// Fix : Bug d'affichage de la porte
+		if (type.equals(BlockTypes.ACACIA_DOOR) || type.equals(BlockTypes.BIRCH_DOOR) || type.equals(BlockTypes.DARK_OAK_DOOR)
+				|| type.equals(BlockTypes.JUNGLE_DOOR) || type.equals(BlockTypes.SPRUCE_DOOR) || type.equals(BlockTypes.WOODEN_DOOR)) return;
+		
 		if (!world.getRegions(location.getPosition()).getFlag(player, location, this).containsValue(type)) {
 			event.setUseBlockResult(Tristate.FALSE);
 			
@@ -173,29 +178,29 @@ public class FlagInteractBlock extends CatalogTypeFlag<BlockType> {
 		// Bypass
 		if (this.plugin.getProtectionService().hasBypass(player)) return;
 		
-		Optional<Transaction<BlockSnapshot>> filter = event.getTransactions().stream().filter(transaction -> {
+		List<Transaction<BlockSnapshot>> filter = new ArrayList<Transaction<BlockSnapshot>>();
+		event.getTransactions().forEach(transaction -> {
 			BlockType type = transaction.getOriginal().getState().getType();
 			
 			// Fix : Bug d'affichage des coffres
-			if (type.equals(BlockTypes.CHEST) || type.equals(BlockTypes.TRAPPED_CHEST)) return false;
+			if (type.equals(BlockTypes.CHEST) || type.equals(BlockTypes.TRAPPED_CHEST)) return;
 			
 			// Fix : Bypass
-			if (transaction.getOriginal().get(Keys.POWERED).orElse(false) && !transaction.getDefault().get(Keys.POWERED).orElse(true)) {
-				return false;
-			}
+			if (transaction.getOriginal().get(Keys.POWERED).orElse(false) && !transaction.getFinal().get(Keys.POWERED).orElse(true)) return;
 			
 			Location<World> location = transaction.getOriginal().getLocation().get();
 			
 			if (this.getDefault().containsValue(type) && 
 					!service.getOrCreateEWorld(location.getExtent()).getRegions(location.getPosition()).getFlag(player, location, this).containsValue(type)) {
-				transaction.setValid(false);				
-				return true;
+				transaction.setValid(false);
+				filter.add(transaction);
+				
+				transaction.setCustom(transaction.getOriginal());
 			}
-			return false;
-		}).findAny();
+		});
 		
-		if (filter.isPresent()) {
-			BlockSnapshot block = filter.get().getOriginal();
+		if (!filter.isEmpty()) {
+			BlockSnapshot block = filter.get(0).getOriginal();
 			// Message
 			this.sendMessage(player, block.getLocation().get(), block.getState().getType());
 		}
@@ -247,9 +252,6 @@ public class FlagInteractBlock extends CatalogTypeFlag<BlockType> {
 		}
 	}
 	
-	/*
-	 * Projectile
-	 */
 	
 	public void onChangeBlockBreak(ChangeBlockEvent.Break event) {
 		if (event.isCancelled()) return;
