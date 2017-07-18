@@ -53,7 +53,6 @@ import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everapi.server.user.EUser;
 import fr.evercraft.everapi.services.worldguard.Flag;
 import fr.evercraft.everapi.services.worldguard.FlagValue;
-import fr.evercraft.everapi.services.worldguard.exception.CircularInheritanceException;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion.Group;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion.Groups;
@@ -321,32 +320,30 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 		
 		// Héritage
 		List<ProtectedRegion> parents = null;
-		try {
-			parents = region.getHeritage();
-			if (parents.size() > 1) {
-				List<Text> messages = new ArrayList<Text>();
-				messages.add(EWMessages.REGION_INFO_ONE_HERITAGE.getText());
-				
-				Text padding = EWMessages.REGION_INFO_ONE_HERITAGE_PADDING.getText();
-				for (int cpt=0; cpt < parents.size(); cpt++) {
-					Text message = Text.EMPTY;
-					for (int cpt2=0; cpt2 < cpt; cpt2++) {
-						message = message.concat(padding);
-					}
-					
-					ProtectedRegion curParent = parents.get(cpt);
-					message = message.concat(EWMessages.REGION_INFO_ONE_HERITAGE_LINE.getFormat()
-						.toText("<region>", Text.builder(curParent.getName())
-									.onShiftClick(TextActions.insertText(curParent.getName()))
-									.onClick(TextActions.runCommand("/" + this.getName() + " -w \"" + world.getName() + "\" \"" + curParent.getName() + "\" "))
-									.build(),
-								"<type>", curParent.getType().getNameFormat(),
-								"<priority>", String.valueOf(curParent.getPriority())));
-					messages.add(message);
+		parents = region.getHeritage();
+		if (parents.size() > 1) {
+			List<Text> messages = new ArrayList<Text>();
+			messages.add(EWMessages.REGION_INFO_ONE_HERITAGE.getText());
+			
+			Text padding = EWMessages.REGION_INFO_ONE_HERITAGE_PADDING.getText();
+			for (int cpt=0; cpt < parents.size(); cpt++) {
+				Text message = Text.EMPTY;
+				for (int cpt2=0; cpt2 < cpt; cpt2++) {
+					message = message.concat(padding);
 				}
-				this.addLine(list, Text.joinWith(Text.of("\n"), messages));
+				
+				ProtectedRegion curParent = parents.get(cpt);
+				message = message.concat(EWMessages.REGION_INFO_ONE_HERITAGE_LINE.getFormat()
+					.toText("<region>", Text.builder(curParent.getName())
+								.onShiftClick(TextActions.insertText(curParent.getName()))
+								.onClick(TextActions.runCommand("/" + this.getName() + " -w \"" + world.getName() + "\" \"" + curParent.getName() + "\" "))
+								.build(),
+							"<type>", curParent.getType().getNameFormat(),
+							"<priority>", String.valueOf(curParent.getPriority())));
+				messages.add(message);
 			}
-		} catch (CircularInheritanceException e) {}
+			this.addLine(list, Text.joinWith(Text.of("\n"), messages));
+		}
 		
 		// Owner
 		Set<UUID> owners = region.getOwners().getPlayers();

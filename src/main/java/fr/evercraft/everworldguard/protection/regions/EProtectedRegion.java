@@ -559,7 +559,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 	
 	@Override
-	public List<ProtectedRegion> getHeritage() throws CircularInheritanceException {
+	public List<ProtectedRegion> getHeritage() {
 		if (this.parent == null) return ImmutableList.of();
 		
 		this.read_lock.lock();
@@ -568,7 +568,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 			
 			ProtectedRegion curParent = this.parent;
 			while (curParent != null) {
-				if (curParent == this) throw new CircularInheritanceException();
+				if (curParent == this) return parents.build();
 				
 				parents.add(curParent);
 				curParent = curParent.getParent().orElse(null);
@@ -915,7 +915,11 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	public int compareTo(final ProtectedRegion other) {
 		Preconditions.checkNotNull(other, "other");
 		
-		if (this.getPriority() > other.getPriority()) {
+		if (this.getHeritage().contains(other)) {
+			return -1;
+		} else if (other.getHeritage().contains(this)) {
+			return 1;
+		} else if (this.getPriority() > other.getPriority()) {
 			return -1;
 		} else if (this.getPriority() < other.getPriority()) {
 			return 1;

@@ -212,7 +212,7 @@ public class EWRegionOwnerAdd extends ESubCommand<EverWorldGuard> {
 	}
 	
 	private CompletableFuture<Boolean> commandRegionOwnerAddPlayer(final CommandSource source, final ProtectedRegion region, final User player, final World world) {
-		if (!region.getOwners().containsPlayer(player.getUniqueId())) {
+		if (region.getOwners().containsPlayer(player.getUniqueId())) {
 			EWMessages.REGION_OWNER_ADD_PLAYER_ERROR.sender()
 				.replace("<region>", region.getName())
 				.replace("<world>", world.getName())

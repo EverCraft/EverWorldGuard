@@ -209,10 +209,7 @@ public class EWRegionParent extends ESubCommand<EverWorldGuard> {
 					}
 					
 					// Héritage
-					List<ProtectedRegion> parents = null;
-					try {
-						parents = region.getHeritage();
-					} catch (CircularInheritanceException e) {}
+					List<ProtectedRegion> parents = region.getHeritage();
 						
 					if (parents == null || parents.size() == 1) {
 						EWMessages.REGION_PARENT_SET.sender()

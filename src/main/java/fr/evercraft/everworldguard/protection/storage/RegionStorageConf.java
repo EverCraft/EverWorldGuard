@@ -90,7 +90,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 		for (Entry<Object, ? extends ConfigurationNode> config : this.getNode().getChildrenMap().entrySet()) {
 			try {
 				this.get(UUID.fromString(config.getKey().toString()), config.getValue())
-					.ifPresent(region -> regions.put(region.getName().toLowerCase(), region));
+					.ifPresent(region -> regions.put(region.getId().toString(), region));
 			} catch (IllegalArgumentException e) {
 				this.plugin.getELogger().warn("Error the uuid of the region is incorrect : (region='" + config.getKey().toString() + "';world='" + this.world.getUniqueId() + "')");
 			}
@@ -100,9 +100,9 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 		for (Entry<Object, ? extends ConfigurationNode> config : this.getNode().getChildrenMap().entrySet()) {
 			if (config.getKey() instanceof String) {
 				String key = (String) config.getKey();
-				String value = config.getValue().getNode("parent").getString(null);
+				String value = config.getValue().getNode("parent").getString("");
 				EProtectedRegion region = regions.get(key.toLowerCase());
-				if (region != null && value != null && !value.isEmpty()) {
+				if (region != null && !value.isEmpty()) {
 					EProtectedRegion parent = regions.get(value.toLowerCase());
 					if (parent != null) {
 						region.init(parent);
@@ -309,11 +309,8 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 		}
 		
 		// Parent
-		region.getParent().ifPresent(parent -> {
-			try {
-				config.getNode("parent").setValue(TypeToken.of(UUID.class), parent.getId());
-			} catch (ObjectMappingException e1) {}
-		});
+		region.getParent().ifPresent(parent -> 
+			config.getNode("parent").setValue(parent.getId().toString()));
 		
 		// Flags
 		Map<String, String> flags_owner = new HashMap<String, String>();
@@ -379,7 +376,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
         if (parent  == null) {
             config.removeChild("parent");
         } else {
-            config.getNode("parent").setValue(parent.getName());
+            config.getNode("parent").setValue(parent.getId().toString());
         }
         return CompletableFuture.supplyAsync(() -> this.save(true));
 	}
