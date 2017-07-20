@@ -93,7 +93,7 @@ public class FlagFire extends CatalogTypeFlag<FireType> {
 				fires.add(fire);
 			});
 			fire.getBlocks().forEach(block -> {
-				Set<FireType> fires = this.entities.get(block);
+				Set<FireType> fires = this.blocks.get(block);
 				if (fires == null) {
 					fires = new HashSet<FireType>();
 					this.blocks.put(block, fires);
@@ -101,7 +101,7 @@ public class FlagFire extends CatalogTypeFlag<FireType> {
 				fires.add(fire);
 			});
 			fire.getItems().forEach(item -> {
-				Set<FireType> fires = this.entities.get(item);
+				Set<FireType> fires = this.items.get(item);
 				if (fires == null) {
 					fires = new HashSet<FireType>();
 					this.items.put(item, fires);

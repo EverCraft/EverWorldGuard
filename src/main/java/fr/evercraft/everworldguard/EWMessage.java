@@ -487,7 +487,7 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		
 		FLAG_ICE_DESCRIPTION("flag.ice.description",							"Active/Désactive la formation de glace"),
 		
-		FLAG_KEEP_INVENTORY_DESCRIPTION("flag.inventoryDrop.description",		"Active/Désactive la perte de l'inventaire"),
+		FLAG_KEEP_INVENTORY_DESCRIPTION("flag.keekInventory.description",		"Active/Désactive la perte de l'inventaire"),
 		
 		FLAG_INVINCIBILITY_DESCRIPTION("flag.invincibity.description",			"Active/Désactive l'invincibilité"),
 		
