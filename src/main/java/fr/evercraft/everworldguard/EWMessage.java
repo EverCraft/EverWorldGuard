@@ -414,37 +414,37 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 																					.actionbarStay(3 * 1000)
 																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 				
-		FLAG_CHAT_DESCRIPTION("flag.chatSend.description",						"Désactive/Active le chat"),
+		FLAG_CHAT_DESCRIPTION("flag.chatSend.description",						"Active/Désactive le chat"),
 		FLAG_CHAT_SEND_MESSAGE("flag.chatSend.sendMessage",						"&cL'envoi de message est désactivé dans cette région (<x>, <y>, <z>)"),
 		
-		FLAG_COMMAND_DESCRIPTION("flag.commands.description",					"Désactive/Active l'execution des commandes"),
+		FLAG_COMMAND_DESCRIPTION("flag.commands.description",					"Active/Désactive l'execution des commandes"),
 		FLAG_COMMAND_MESSAGE("flag.commands.message",							"&cLa commande <command> est désactivé dans cette région (<x>, <y>, <z>)"),
 		
-		FLAG_DAMAGE_ENTITY_DESCRIPTION("flag.damageEntity.description",			"Désactive/Active les dégats infligés aux entités"),
+		FLAG_DAMAGE_ENTITY_DESCRIPTION("flag.damageEntity.description",			"Active/Désactive les dégats infligés aux entités"),
 		FLAG_DAMAGE_ENTITY_MESSAGE("flag.damageEntity.message",					EMessageFormat.builder()
 																					.actionbarMessageString("&cLes dégats infligés aux entités sont désactivé (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
 																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		
-		FLAG_ENDERDRAGON_GRIEF_DESCRIPTION("flag.enderDragonGrief.description",	"Désactive/Active la destruction des blocs par l'EnderDragon"),
+		FLAG_ENDERDRAGON_GRIEF_DESCRIPTION("flag.enderDragonGrief.description",	"Active/Désactive la destruction des blocs par l'EnderDragon"),
 		
-		FLAG_ENDERPEARL_DESCRIPTION("flag.enderpearl.description",				"Désactive/Active la téléportation avec une enderperle"),
+		FLAG_ENDERPEARL_DESCRIPTION("flag.enderpearl.description",				"Active/Désactive la téléportation avec une enderperle"),
 		FLAG_ENDERPEARL_MESSAGE("flag.enderpearl.message",						EMessageFormat.builder()
 																					.actionbarMessageString("&cL'utilisation des enderperles est désactivé (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
 																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		
-		FLAG_ENTITY_DAMAGE_DESCRIPTION("flag.entityDamage.description",			"Désactive/Active les dégats infligés par une entité"),
+		FLAG_ENTITY_DAMAGE_DESCRIPTION("flag.entityDamage.description",			"Active/Désactive les dégats infligés par une entité"),
 		
-		FLAG_ENDERMAN_GRIEF_DESCRIPTION("flag.endermanGrief.description",		"Désactive/Active la destruction des blocs de l'Enderman"),
+		FLAG_ENDERMAN_GRIEF_DESCRIPTION("flag.endermanGrief.description",		"Active/Désactive la destruction des blocs de l'Enderman"),
 			
-		FLAG_INTERACT_BLOCK_DESCRIPTION("flag.interactBlock.description",		"Désactive/Active l'interaction avec les blocs"),
+		FLAG_INTERACT_BLOCK_DESCRIPTION("flag.interactBlock.description",		"Active/Désactive l'interaction avec les blocs"),
 		FLAG_INTERACT_BLOCK_MESSAGE("flag.interactBlock.message",				EMessageFormat.builder()
 																					.actionbarMessageString("&cL'Interaction avec les blocs est désactivé (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
 																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		
-		FLAG_INTERACT_ENTITY_DESCRIPTION("flag.interactEntity.description",		"Désactive/Active les interactions avec les entités"),
+		FLAG_INTERACT_ENTITY_DESCRIPTION("flag.interactEntity.description",		"Active/Désactive les interactions avec les entités"),
 		FLAG_INTERACT_ENTITY_MESSAGE("flag.interactEntity.message",				EMessageFormat.builder()
 																					.actionbarMessageString("&cL'Interactions avec les entités est désactivé (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
@@ -472,65 +472,65 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		
 		FLAG_EXP_DROP_DESCRIPTION("flag.expDrop.description",					"Active/Désactive la perte d'expérience au sol"),
 		
-		FLAG_EXPLOSION_DESCRIPTION("flag.explosion.description",				"Désactive/Active les explosions dans la région"),
+		FLAG_EXPLOSION_DESCRIPTION("flag.explosion.description",				"Active/Désactive les explosions dans la région"),
 		
-		FLAG_EXPLOSION_BLOCK_DESCRIPTION("flag.explosionBlock.description",		"Désactive/Active la destruction des blocs lors d'une explosion"),
+		FLAG_EXPLOSION_BLOCK_DESCRIPTION("flag.explosionBlock.description",		"Active/Désactive la destruction des blocs lors d'une explosion"),
 		
-		FLAG_EXPLOSION_DAMAGE_DESCRIPTION("flag.explosionDamage.description",	"Désactive/Active les dégats lors d'une explosion"),
+		FLAG_EXPLOSION_DAMAGE_DESCRIPTION("flag.explosionDamage.description",	"Active/Désactive les dégats lors d'une explosion"),
 		
-		FLAG_FIRE_DESCRIPTION("flag.fire.description",							"Désactive/Active le fait d'allumer un feu"),
+		FLAG_FIRE_DESCRIPTION("flag.fire.description",							"Active/Désactive le fait d'allumer un feu"),
 		
 		FLAG_FIRE_MESSAGE("flag.fire.message",									EMessageFormat.builder()
 																					.actionbarMessageString("&cLe feu est désactivé (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
 																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		
-		FLAG_ICE_DESCRIPTION("flag.ice.description",							"Désactive/Active la formation de glace"),
+		FLAG_ICE_DESCRIPTION("flag.ice.description",							"Active/Désactive la formation de glace"),
 		
-		FLAG_INVENTORY_DROP_DESCRIPTION("flag.inventoryDrop.description",		"Désactive/Active la perte de l'inventaire"),
+		FLAG_KEEP_INVENTORY_DESCRIPTION("flag.inventoryDrop.description",		"Active/Désactive la perte de l'inventaire"),
 		
-		FLAG_INVINCIBILITY_DESCRIPTION("flag.invincibity.description",			"Désactive/Active l'invincibilité"),
+		FLAG_INVINCIBILITY_DESCRIPTION("flag.invincibity.description",			"Active/Désactive l'invincibilité"),
 		
-		FLAG_ITEM_DROP_DESCRIPTION("flag.itemDrop.description",					"Désactive/Active le fait de jeter des objets"),
+		FLAG_ITEM_DROP_DESCRIPTION("flag.itemDrop.description",					"Active/Désactive le fait de jeter des objets"),
 		FLAG_ITEM_DROP_MESSAGE("flag.itemDrop.message",							EMessageFormat.builder()
 																					.actionbarMessageString("&cJeter les objets de <item> est interdit (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
 																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		
-		FLAG_ITEM_PICKUP_DESCRIPTION("flag.itemPickup.description",				"Désactive/Active le fait de rammasser des objets"),
+		FLAG_ITEM_PICKUP_DESCRIPTION("flag.itemPickup.description",				"Active/Désactive le fait de rammasser des objets"),
 		FLAG_ITEM_PICKUP_MESSAGE("flag.itemPickup.message",						EMessageFormat.builder()
 																					.actionbarMessageString("&cRamasser les objets de <item> est interdit (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
 																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		
 		
-		FLAG_LIGHTNING_DESCRIPTION("flag.invincibity.description",				"Désactive/Active la foudre"),
+		FLAG_LIGHTNING_DESCRIPTION("flag.invincibity.description",				"Active/Désactive la foudre"),
 		
-		FLAG_POTION_SPLASH_DESCRIPTION("flag.potionSplash.description",				"Désactive/Active les potions splash"),
+		FLAG_POTION_SPLASH_DESCRIPTION("flag.potionSplash.description",				"Active/Désactive les potions splash"),
 		FLAG_POTION_SPLASH_MESSAGE("flag.potionSplash.message",						EMessageFormat.builder()
 																					.actionbarMessageString("&cL'utilisation des potions <potion> sont désactivé (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
 																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		
-		FLAG_PROPAGATION_DESCRIPTION("flag.propagation.description",			"Désactive/Active la propagation"),
+		FLAG_PROPAGATION_DESCRIPTION("flag.propagation.description",			"Active/Désactive la propagation"),
 		FLAG_PROPAGATION_MESSAGE("flag.propagation.message",					EMessageFormat.builder()
 																					.actionbarMessageString("&cPropagation désactivé (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
 																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		
-		FLAG_PVP_DESCRIPTION("flag.pvp.description",							"Désactive/Active le PVP"),
+		FLAG_PVP_DESCRIPTION("flag.pvp.description",							"Active/Désactive le PVP"),
 		FLAG_PVP_MESSAGE("flag.pvp.message",									EMessageFormat.builder()
 																					.actionbarMessageString("&cPVP désactivé (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
 																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		
-		FLAG_SNOW_DESCRIPTION("flag.snow.description",							"Désactive/Active la neige"),
+		FLAG_SNOW_DESCRIPTION("flag.snow.description",							"Active/Désactive la neige"),
 		
 		FLAG_TELEPORT_DESCRIPTION("flag.teleport.description",					"Sauvegarde une position pour se téléporter à la région"),
 		
 		FLAG_SPAWN_DESCRIPTION("flag.spawn.description",						"Défini un spawn pour la région"),
 		
-		FLAG_SPAWN_ENTITY_DESCRIPTION("flag.spawnEntity.description",			"Désactive/Active l'apparition des entités"),
+		FLAG_SPAWN_ENTITY_DESCRIPTION("flag.spawnEntity.description",			"Active/Désactive l'apparition des entités"),
 		FLAG_SPAWN_ENTITY_MESSAGE("flag.spawnEntity.message",					EMessageFormat.builder()
 																					.actionbarMessageString("&cL'apparition de l'entité <entity> est désactivé (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
