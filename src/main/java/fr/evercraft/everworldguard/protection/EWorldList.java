@@ -45,10 +45,14 @@ public class EWorldList {
 		this.worlds = new ConcurrentHashMap<UUID, EWWorld>();
 	}
 	
-	public EWWorld get(final World world) {
-		Preconditions.checkNotNull(world, "world");
+	public EWWorld get(final World worldSponge) {
+		Preconditions.checkNotNull(worldSponge, "world");
 		
-		return Optional.ofNullable(this.worlds.get(world.getUniqueId())).orElseGet(() -> new EWWorld(this.plugin, world));
+		return Optional.ofNullable(this.worlds.get(worldSponge.getUniqueId())).orElseGet(() -> {
+			EWWorld world = new EWWorld(this.plugin, worldSponge);
+			this.worlds.put(worldSponge.getUniqueId(), world);
+			return world;
+		});
 	}
 	
 	public CompletableFuture<WorldGuardWorld> getOrCreate(final World world) {

@@ -16,6 +16,8 @@
  */
 package fr.evercraft.everworldguard.listeners;
 
+import java.util.concurrent.ExecutionException;
+
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.world.LoadWorldEvent;
@@ -24,6 +26,7 @@ import org.spongepowered.api.event.world.chunk.LoadChunkEvent;
 import org.spongepowered.api.event.world.chunk.UnloadChunkEvent;
 import org.spongepowered.api.world.Chunk;
 
+import fr.evercraft.everapi.sponge.UtilsCause;
 import fr.evercraft.everworldguard.EverWorldGuard;
 
 public class WorldListener {
@@ -36,7 +39,10 @@ public class WorldListener {
 	
 	@Listener(order=Order.PRE)
 	public void onLoadWorld(LoadWorldEvent event) {
-		this.plugin.getProtectionService().getOrCreateWorld(event.getTargetWorld());
+		UtilsCause.debug(event.getCause(), "LoadWorldEvent");
+		try {
+			this.plugin.getProtectionService().getOrCreateWorld(event.getTargetWorld()).get();
+		} catch (InterruptedException | ExecutionException e) {}
 	}
 	
 	@Listener(order=Order.PRE)
@@ -46,6 +52,7 @@ public class WorldListener {
 	
 	@Listener(order=Order.PRE)
 	public void onLoadChunk(LoadChunkEvent event) {
+		UtilsCause.debug(event.getCause(), "LoadChunkEvent");
 		Chunk chunk = event.getTargetChunk();
 		this.plugin.getProtectionService().getOrCreateEWorld(chunk.getWorld()).loadChunk(chunk.getPosition());
 	}

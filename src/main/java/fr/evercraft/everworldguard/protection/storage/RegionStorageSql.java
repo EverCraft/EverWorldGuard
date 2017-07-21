@@ -471,4 +471,21 @@ public class RegionStorageSql implements RegionStorage {
 		    }
 		}, this.plugin.getThreadAsync());
 	}
+
+	@Override
+	public CompletableFuture<Boolean> clearAll() {
+		return CompletableFuture.supplyAsync(() -> {
+			Connection connection = null;
+			try {
+	    		connection = this.plugin.getDataBases().getConnection();
+	    		
+	    		return this.plugin.getDataBases().clear(connection);
+			} catch (ServerDisableException e) {
+				e.execute();
+			} finally {
+				try {if (connection != null) connection.close();} catch (SQLException e) {}
+		    }
+			return false;
+		}, this.plugin.getThreadAsync());
+	}
 }

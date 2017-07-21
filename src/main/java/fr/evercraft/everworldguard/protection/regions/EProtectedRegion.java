@@ -149,7 +149,8 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 		Preconditions.checkNotNull(name, "name");
 		
 		if (this.name.equals(name)) return CompletableFuture.completedFuture(false);
-		if (!this.world.rename(this, name)) throw new RegionIdentifierException();
+		if (name.length() >= 45) throw new RegionIdentifierException();
+		if (this.world.getRegion(name).isPresent()) return CompletableFuture.completedFuture(false);
 
 		return this.world.getStorage().setName(this, name)
 			.thenApply(result -> {
@@ -158,6 +159,7 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 				this.write_lock.lock();
 				try {
 					this.name = name;
+					this.world.rename(this, name);
 				} finally {
 					this.write_lock.unlock();
 				}

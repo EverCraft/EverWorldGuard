@@ -112,7 +112,7 @@ public class EWMigrate extends ESubCommand<EverWorldGuard > {
 							return false;
 						}
 						
-						this.plugin.getELogger().info(EWMessages.MIGRATE_SQL_LOG.getString());
+						this.plugin.getELogger().info(EWMessages.MIGRATE_SQL_LOG.getFormat().toString("<player>", source.getName()));
 						EWMessages.MIGRATE_SQL.sendTo(source);
 						return true;
 					}, this.plugin.getThreadAsync());
@@ -124,7 +124,7 @@ public class EWMigrate extends ESubCommand<EverWorldGuard > {
 							return false;
 						}
 						
-						this.plugin.getELogger().info(EWMessages.MIGRATE_CONF_LOG.getString());
+						this.plugin.getELogger().info(EWMessages.MIGRATE_CONF_LOG.getFormat().toString("<player>", source.getName()));
 						EWMessages.MIGRATE_CONF.sendTo(source);
 						return true;
 					}, this.plugin.getThreadAsync());
@@ -215,6 +215,8 @@ public class EWMigrate extends ESubCommand<EverWorldGuard > {
 					}
 				}
     		}
+			
+			this.plugin.reload();
 			return true;
 		} catch (ServerDisableException e) {
 			e.execute();
@@ -235,7 +237,7 @@ public class EWMigrate extends ESubCommand<EverWorldGuard > {
 				}
 					
 				RegionStorageConf config = new RegionStorageConf(this.plugin, world);
-				if (!config.clear()) {
+				if (!config.clearAll().get()) {
 					this.plugin.getELogger().warn("Error during the cleaning of the file of config (world='" + world.getUniqueId() + "')");
 					return false;
 				}
@@ -250,6 +252,9 @@ public class EWMigrate extends ESubCommand<EverWorldGuard > {
 				return false;
 			}
     	}
+		
+		this.plugin.getConfigs().setSql(false);
+		this.plugin.reload();
 		return true;
 	}
 	

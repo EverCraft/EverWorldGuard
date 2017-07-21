@@ -92,4 +92,9 @@ public class EWConfig extends EConfig<EverWorldGuard> {
 		}
 		return item.get();
 	}
+
+	public void setSql(boolean value) {
+		this.get("SQL.enable").setValue(value);
+		this.save(true);
+	}
 }

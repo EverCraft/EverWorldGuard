@@ -31,6 +31,7 @@ public interface RegionStorage {
 
 	boolean isSql();
 	void reload();
+	
 	CompletableFuture<Set<EProtectedRegion>> getAll();
 	
 	<T> CompletableFuture<Boolean> add(EProtectedRegion region);
@@ -54,4 +55,6 @@ public interface RegionStorage {
 	CompletableFuture<Boolean> removeRemoveChildren(Set<EProtectedRegion> regions);
 	
 	CompletableFuture<Boolean> redefine(EProtectedRegion region, EProtectedRegion newRegion);
+	
+	CompletableFuture<Boolean> clearAll();
 }

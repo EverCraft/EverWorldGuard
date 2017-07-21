@@ -156,4 +156,9 @@ public class ManagerRegionStorage implements RegionStorage {
 		if (region.isTransient()) return CompletableFuture.completedFuture(true);
 		return this.storage.redefine(region, newRegion);
 	}
+
+	@Override
+	public CompletableFuture<Boolean> clearAll() {
+		return this.storage.clearAll();
+	}
 }

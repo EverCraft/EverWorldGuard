@@ -127,10 +127,9 @@ public class EProtectionService implements WorldGuardService {
 	/*
 	 * World
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public CompletableFuture<WorldGuardWorld> getOrCreateWorld(final World world) {
-		return (CompletableFuture) this.worlds.getOrCreate(world);
+		return this.worlds.getOrCreate(world);
 	}
 	
 	public EWWorld getOrCreateEWorld(final World world) {
