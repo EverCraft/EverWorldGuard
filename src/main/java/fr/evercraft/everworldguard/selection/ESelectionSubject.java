@@ -67,6 +67,10 @@ public class ESelectionSubject implements SubjectSelection {
 		this.describeCUI();
 	}
 	
+	public int getSelectMaxPolygonalPoints() {
+		return this.plugin.getConfigs().getSelectMaxPolygonalPoints();
+	}
+	
 	@Override
 	public ESelector getSelector() {
 		return this.selector;

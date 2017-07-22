@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.filter.cause.First;
@@ -50,7 +51,6 @@ import fr.evercraft.everapi.message.replace.EReplace;
 import fr.evercraft.everapi.plugin.command.Args;
 import fr.evercraft.everapi.plugin.command.ESubCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
-import fr.evercraft.everapi.server.user.EUser;
 import fr.evercraft.everapi.services.worldguard.Flag;
 import fr.evercraft.everapi.services.worldguard.FlagValue;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
@@ -350,7 +350,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 		if (!owners.isEmpty()) {
 			List<Text> messages = new ArrayList<Text>();
 			for (UUID owner : owners) {
-				Optional<EUser> user = this.plugin.getEServer().getEUser(owner);
+				Optional<User> user = this.plugin.getEServer().getUser(owner);
 				if (user.isPresent()) {
 					messages.add(Text.builder(user.get().getName())
 										.onShiftClick(TextActions.insertText(user.get().getName()))
@@ -391,7 +391,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 		if (!members.isEmpty()) {
 			List<Text> messages = new ArrayList<Text>();
 			for (UUID member : members) {
-				Optional<EUser> user = this.plugin.getEServer().getEUser(member);
+				Optional<User> user = this.plugin.getEServer().getUser(member);
 				if (user.isPresent()) {
 					messages.add(Text.builder(user.get().getName())
 						.onShiftClick(TextActions.insertText(user.get().getName()))

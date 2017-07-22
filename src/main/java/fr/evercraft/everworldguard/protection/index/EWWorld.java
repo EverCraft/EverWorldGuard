@@ -470,4 +470,8 @@ public class EWWorld implements WorldGuardWorld {
 			this.write_lock.unlock();
 		}
 	}
+	
+	public int getRegionMaxRegionCountPerPlayer() {
+		return this.plugin.getConfigs().getRegionMaxRegionCountPerPlayer();
+	}
 }

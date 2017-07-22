@@ -33,6 +33,7 @@ import fr.evercraft.everapi.EAMessage.EAMessages;
 import fr.evercraft.everapi.plugin.command.ESubCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everapi.services.selection.SelectionRegion;
+import fr.evercraft.everapi.services.selection.exception.SelectorMaxPointsException;
 import fr.evercraft.everapi.services.selection.exception.SelectorSecondaryException;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EverWorldGuard;
@@ -97,7 +98,7 @@ public class EWSelectRemove extends ESubCommand<EverWorldGuard> {
 		Vector3i pos = positions.get(positions.size() - 1);
 		try {
 			player.setSelectorSecondary(null);
-		} catch (SelectorSecondaryException e) {}
+		} catch (SelectorSecondaryException | SelectorMaxPointsException e) {}
 		
 		EWMessages.SELECT_REMOVE_PLAYER.sender()
 			.replace("<pos>", EWSelect.getPositionHover(pos))

@@ -403,7 +403,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 		ConfigurationNode config = this.getNode().getNode(region.getId().toString());
 		
 		Set<UUID> all = new HashSet<UUID>();
-		all.addAll(region.getMembers().getPlayers());
+		all.addAll(region.getOwners().getPlayers());
 		all.addAll(players);
 		
 		config.getNode("owners").setValue(all.stream()
@@ -417,7 +417,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 		ConfigurationNode config = this.getNode().getNode(region.getId().toString());
 		
 		Set<String> all = new HashSet<String>();
-		all.addAll(region.getMembers().getGroups());
+		all.addAll(region.getOwners().getGroups());
 		all.addAll(groups);
 		
 		config.getNode("group-owners").setValue(all);
@@ -455,7 +455,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 		ConfigurationNode config = this.getNode().getNode(region.getId().toString());
 		
 		Set<UUID> all = new HashSet<UUID>();
-		all.addAll(region.getMembers().getPlayers());
+		all.addAll(region.getOwners().getPlayers());
 		all.removeAll(players);
 		
 		config.getNode("owners").setValue(all.stream()
@@ -469,7 +469,7 @@ public class RegionStorageConf extends EConfig<EverWorldGuard> implements Region
 		ConfigurationNode config = this.getNode().getNode(region.getId().toString());
 		
 		Set<String> all = new HashSet<String>();
-		all.addAll(region.getMembers().getGroups());
+		all.addAll(region.getOwners().getGroups());
 		all.removeAll(groups);
 		
 		config.getNode("group-owners").setValue(all);

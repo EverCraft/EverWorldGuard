@@ -204,12 +204,13 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 		return CompletableFuture.completedFuture(true);
 	}
 
-	private CompletableFuture<Boolean> commandRegionListPlayer(final CommandSource staff, final World world, final String player_string) {
-		Optional<EUser> user = this.plugin.getEServer().getEUser(player_string);
+	private CompletableFuture<Boolean> commandRegionListPlayer(final CommandSource staff, final World world, final String playerString) {
+		Optional<EUser> user = this.plugin.getEServer().getEUser(playerString);
 		// Le joueur est introuvable
 		if (!user.isPresent()) {
 			EAMessages.PLAYER_NOT_FOUND.sender()
 				.prefix(EWMessages.PREFIX)
+				.replace("<player>", playerString)
 				.sendTo(staff);
 			return CompletableFuture.completedFuture(false);
 		}
@@ -257,12 +258,13 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 		return CompletableFuture.completedFuture(true);
 	}
 	
-	private CompletableFuture<Boolean> commandRegionListGroup(final CommandSource player, final World world, final String group_string) {
-		Subject group = this.plugin.getEverAPI().getManagerService().getPermission().getGroupSubjects().get(group_string);
+	private CompletableFuture<Boolean> commandRegionListGroup(final CommandSource player, final World world, final String groupString) {
+		Subject group = this.plugin.getEverAPI().getManagerService().getPermission().getGroupSubjects().get(groupString);
 		// Le joueur est introuvable
 		if (group == null){
-			EAMessages.PLAYER_NOT_FOUND.sender()
+			EAMessages.GROUP_NOT_FOUND.sender()
 				.prefix(EWMessages.PREFIX)
+				.replace("<player>", groupString)
 				.sendTo(player);
 			return CompletableFuture.completedFuture(false);
 		}

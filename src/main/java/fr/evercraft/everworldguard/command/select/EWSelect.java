@@ -30,6 +30,7 @@ import fr.evercraft.everapi.message.replace.EReplace;
 import fr.evercraft.everapi.plugin.command.EParentCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everapi.services.selection.SelectionRegion;
+import fr.evercraft.everapi.services.selection.exception.SelectorMaxPointsException;
 import fr.evercraft.everapi.services.selection.exception.SelectorSecondaryException;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EWPermissions;
@@ -115,6 +116,12 @@ public class EWSelect extends EParentCommand<EverWorldGuard> {
 		} catch (SelectorSecondaryException e) {
 			EWMessages.SELECT_POS2_NO_CENTER.sender()
 				.replace("<position>", EWSelect.getPositionHover(position))
+				.sendTo(player);
+			return false;
+		} catch (SelectorMaxPointsException e) {
+			EWMessages.SELECT_POS2_POLY_ERROR.sender()
+				.replace("<position>", EWSelect.getPositionHover(position))
+				.replace("<max>", player.getSelectorPositions().size())
 				.sendTo(player);
 			return false;
 		}

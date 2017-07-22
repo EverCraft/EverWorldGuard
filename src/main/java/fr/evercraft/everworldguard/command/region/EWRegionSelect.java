@@ -42,6 +42,7 @@ import fr.evercraft.everapi.plugin.command.Args;
 import fr.evercraft.everapi.plugin.command.ESubCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everapi.services.selection.SelectionRegion;
+import fr.evercraft.everapi.services.selection.exception.SelectorMaxPointsException;
 import fr.evercraft.everapi.services.selection.exception.SelectorSecondaryException;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion.Type;
@@ -190,7 +191,7 @@ public class EWRegionSelect extends ESubCommand<EverWorldGuard> {
 		player.setSelectorPrimary(min);
 		try {
 			player.setSelectorSecondary(max);
-		} catch (SelectorSecondaryException e) {}
+		} catch (SelectorSecondaryException | SelectorMaxPointsException e) {}
 		
 		Map<String, EReplace<?>> replaces = new HashMap<String, EReplace<?>>();
 		replaces.put("<min_x>", EReplace.of(String.valueOf(min.getX())));
@@ -221,7 +222,7 @@ public class EWRegionSelect extends ESubCommand<EverWorldGuard> {
 			while (iterator.hasNext()) {
 				try {
 					player.setSelectorSecondary(iterator.next());
-				} catch (SelectorSecondaryException e) {}
+				} catch (SelectorSecondaryException | SelectorMaxPointsException e) {}
 			}
 		}
 		

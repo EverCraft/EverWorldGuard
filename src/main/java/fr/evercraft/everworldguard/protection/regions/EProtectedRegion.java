@@ -28,6 +28,7 @@ import com.google.common.collect.Sets;
 import fr.evercraft.everapi.services.worldguard.Flag;
 import fr.evercraft.everapi.services.worldguard.FlagValue;
 import fr.evercraft.everapi.services.worldguard.exception.CircularInheritanceException;
+import fr.evercraft.everapi.services.worldguard.exception.MaxPlayersException;
 import fr.evercraft.everapi.services.worldguard.exception.RegionIdentifierException;
 import fr.evercraft.everapi.services.worldguard.region.Domain;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
@@ -241,11 +242,15 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 	
 	@Override
-	public CompletableFuture<Set<UUID>> addPlayerOwner(final Set<UUID> players) {
+	public CompletableFuture<Set<UUID>> addPlayerOwner(final Set<UUID> players) throws MaxPlayersException {
 		Preconditions.checkNotNull(players, "players");
 		
 		Set<UUID> difference = Sets.difference(players, this.getOwners().getPlayers());
 		if (difference.isEmpty()) return CompletableFuture.completedFuture(ImmutableSet.of());
+		
+		if (this.owners.getPlayers().size() + difference.size() > this.world.getRegionMaxRegionCountPerPlayer()) {
+			throw new MaxPlayersException();
+		}
 		
 		return this.world.getStorage().addOwnerPlayer(this, difference)
 			.thenApply(value -> {
@@ -325,11 +330,15 @@ public abstract class EProtectedRegion implements ProtectedRegion {
 	}
 	
 	@Override
-	public CompletableFuture<Set<UUID>> addPlayerMember(final Set<UUID> players) {
+	public CompletableFuture<Set<UUID>> addPlayerMember(final Set<UUID> players) throws MaxPlayersException {
 		Preconditions.checkNotNull(players, "players");
 		
 		Set<UUID> difference = Sets.difference(players, this.getMembers().getPlayers());
 		if (difference.isEmpty()) return CompletableFuture.completedFuture(ImmutableSet.of());
+		
+		if (this.members.getPlayers().size() + difference.size() > this.world.getRegionMaxRegionCountPerPlayer()) {
+			throw new MaxPlayersException();
+		}
 		
 		return this.world.getStorage().addMemberPlayer(this, difference)
 			.thenApply(result -> {

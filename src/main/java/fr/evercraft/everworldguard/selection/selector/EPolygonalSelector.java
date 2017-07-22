@@ -31,6 +31,7 @@ import com.google.common.collect.ImmutableList;
 import fr.evercraft.everapi.services.selection.SelectionRegion;
 import fr.evercraft.everapi.services.selection.Selector;
 import fr.evercraft.everapi.services.selection.exception.RegionOperationException;
+import fr.evercraft.everapi.services.selection.exception.SelectorMaxPointsException;
 import fr.evercraft.everworldguard.selection.ESelectionSubject;
 import fr.evercraft.everworldguard.selection.cui.CUIRegion;
 import fr.evercraft.everworldguard.selection.cui.MinMaxCuiMessage;
@@ -95,7 +96,7 @@ public class EPolygonalSelector extends ESelector implements Selector.Polygonal,
 	}
 
 	@Override
-	public boolean selectSecondary(final Vector3i position) {
+	public boolean selectSecondary(@Nullable final Vector3i position) throws SelectorMaxPointsException {
 		if (position == null) {
             if (this.positions.isEmpty())return false;
             this.positions.remove(this.positions.size() - 1);
@@ -104,7 +105,11 @@ public class EPolygonalSelector extends ESelector implements Selector.Polygonal,
             // CUI
             this.subject.describeCUI();
             return true;
-        } else if (this.positions.isEmpty() || !this.positions.get(this.positions.size() - 1).equals(position)) {
+        } else if (this.positions.isEmpty() || (!this.positions.get(this.positions.size() - 1).equals(position))) {
+        	if (this.positions.size() >= this.subject.getSelectMaxPolygonalPoints()) {
+        		throw new SelectorMaxPointsException();
+        	}
+        	
         	this.positions.add(position);
         	this.recalculate();
         	

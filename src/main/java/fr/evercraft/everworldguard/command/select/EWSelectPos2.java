@@ -34,6 +34,7 @@ import fr.evercraft.everapi.EAMessage.EAMessages;
 import fr.evercraft.everapi.plugin.command.ESubCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everapi.services.selection.SelectionRegion;
+import fr.evercraft.everapi.services.selection.exception.SelectorMaxPointsException;
 import fr.evercraft.everapi.services.selection.exception.SelectorSecondaryException;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EverWorldGuard;
@@ -121,7 +122,7 @@ public class EWSelectPos2 extends ESubCommand<EverWorldGuard> {
 					.sendTo(player);
 				return CompletableFuture.completedFuture(false);
 			}
-		} catch (SelectorSecondaryException e) {
+		} catch (SelectorSecondaryException | SelectorMaxPointsException e) {
 			EAMessages.COMMAND_ERROR.sender()
 				.prefix(EWMessages.PREFIX)
 				.sendTo(player);
@@ -161,6 +162,12 @@ public class EWSelectPos2 extends ESubCommand<EverWorldGuard> {
 		} catch (SelectorSecondaryException e) {
 			EAMessages.COMMAND_ERROR.sender()
 				.prefix(EWMessages.PREFIX)
+				.sendTo(player);
+			return CompletableFuture.completedFuture(false);
+		} catch (SelectorMaxPointsException e) {
+			EWMessages.SELECT_POS2_POLY_ERROR.sender()
+				.replace("<position>", EWSelect.getPositionHover(position))
+				.replace("<max>", this.plugin.getConfigs().getSelectMaxPolygonalPoints())
 				.sendTo(player);
 			return CompletableFuture.completedFuture(false);
 		}
@@ -203,7 +210,7 @@ public class EWSelectPos2 extends ESubCommand<EverWorldGuard> {
 				.replace("<pos>", EWSelect.getPositionHover(position))
 				.sendTo(player);
 			return CompletableFuture.completedFuture(false);
-		}
+		} catch (SelectorMaxPointsException e) {}
 		
 		EWMessages.SELECT_POS2_RADIUS.sender()
 			.replace("<pos>", EWSelect.getPositionHover(position))

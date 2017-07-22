@@ -40,7 +40,7 @@ import fr.evercraft.everapi.EAMessage.EAMessages;
 import fr.evercraft.everapi.plugin.command.Args;
 import fr.evercraft.everapi.plugin.command.ESubCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
-import fr.evercraft.everapi.server.user.EUser;
+import fr.evercraft.everapi.services.worldguard.exception.MaxPlayersException;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everapi.sponge.UtilsContexts;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
@@ -172,7 +172,7 @@ public class EWRegionMemberAdd extends ESubCommand<EverWorldGuard> {
 	private CompletableFuture<Boolean> commandRegionMemberAddPlayer(final CommandSource source, final ProtectedRegion region, final List<String> players_string, final World world) {		
 		Set<User> players = new HashSet<User>();
 		for (String player_string : players_string) {
-			Optional<EUser> user = this.plugin.getEServer().getEUser(player_string);
+			Optional<User> user = this.plugin.getEServer().getUser(player_string);
 			if (user.isPresent()) {
 				players.add(user.get());
 			} else {
@@ -192,23 +192,32 @@ public class EWRegionMemberAdd extends ESubCommand<EverWorldGuard> {
 	}
 	
 	private CompletableFuture<Boolean> commandRegionMemberAddPlayer(final CommandSource source, final ProtectedRegion region, final Set<User> players, final World world) {
-		return region.addPlayerMember(players.stream()
-				.map(user -> user.getUniqueId())
-				.collect(Collectors.toSet()))
-			.exceptionally(e -> null)
-			.thenApply(result -> {
-				if (result == null) {
-					EAMessages.COMMAND_ERROR.sendTo(source);
-					return false;
-				}
-				
-				EWMessages.REGION_MEMBER_ADD_PLAYERS.sender()
-					.replace("<region>", region.getName())
-					.replace("<world>", world.getName())
-					.replace("<players>", String.join(EWMessages.REGION_MEMBER_ADD_PLAYERS_JOIN.getString(), players.stream().map(owner -> owner.getName()).collect(Collectors.toList())))
-					.sendTo(source);
-				return true;
-			});
+		try {
+			return region.addPlayerMember(players.stream()
+					.map(user -> user.getUniqueId())
+					.collect(Collectors.toSet()))
+				.exceptionally(e -> null)
+				.thenApply(result -> {
+					if (result == null) {
+						EAMessages.COMMAND_ERROR.sendTo(source);
+						return false;
+					}
+					
+					EWMessages.REGION_MEMBER_ADD_PLAYERS.sender()
+						.replace("<region>", region.getName())
+						.replace("<world>", world.getName())
+						.replace("<players>", String.join(EWMessages.REGION_MEMBER_ADD_PLAYERS_JOIN.getString(), players.stream().map(owner -> owner.getName()).collect(Collectors.toList())))
+						.sendTo(source);
+					return true;
+				});
+		} catch (MaxPlayersException e) {
+			EWMessages.REGION_MEMBER_ADD_ERROR_MAX.sender()
+				.replace("<region>", region.getName())
+				.replace("<world>", world.getName())
+				.replace("<max>", this.plugin.getConfigs().getRegionMaxRegionCountPerPlayer())
+				.sendTo(source);
+		}
+		return CompletableFuture.completedFuture(false);
 	}
 	
 	private CompletableFuture<Boolean> commandRegionMemberAddPlayer(final CommandSource source, final ProtectedRegion region, final User player, final World world) {
@@ -221,21 +230,30 @@ public class EWRegionMemberAdd extends ESubCommand<EverWorldGuard> {
 			return CompletableFuture.completedFuture(false);
 		}
 		
-		return region.addPlayerMember(ImmutableSet.of(player.getUniqueId()))
-			.exceptionally(e -> null)
-			.thenApply(result -> {
-				if (result == null) {
-					EAMessages.COMMAND_ERROR.sendTo(source);
-					return false;
-				}
-				
-				EWMessages.REGION_MEMBER_ADD_PLAYER.sender()
-					.replace("<region>", region.getName())
-					.replace("<world>", world.getName())
-					.replace("<player>", player.getName())
-					.sendTo(source);
-				return true;
-			});
+		try {
+			return region.addPlayerMember(ImmutableSet.of(player.getUniqueId()))
+				.exceptionally(e -> null)
+				.thenApply(result -> {
+					if (result == null) {
+						EAMessages.COMMAND_ERROR.sendTo(source);
+						return false;
+					}
+					
+					EWMessages.REGION_MEMBER_ADD_PLAYER.sender()
+						.replace("<region>", region.getName())
+						.replace("<world>", world.getName())
+						.replace("<player>", player.getName())
+						.sendTo(source);
+					return true;
+				});
+		} catch (MaxPlayersException e) {
+			EWMessages.REGION_MEMBER_ADD_ERROR_MAX.sender()
+				.replace("<region>", region.getName())
+				.replace("<world>", world.getName())
+				.replace("<max>", this.plugin.getConfigs().getRegionMaxRegionCountPerPlayer())
+				.sendTo(source);
+		}
+		return CompletableFuture.completedFuture(false);
 	}
 	
 	private CompletableFuture<Boolean> commandRegionMemberAddGroup(final CommandSource source, final ProtectedRegion region, final List<String> groups_string, final World world) {

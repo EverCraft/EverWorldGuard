@@ -186,7 +186,7 @@ public class EWRegionMemberRemove extends ESubCommand<EverWorldGuard> {
 	private CompletableFuture<Boolean> commandRegionMemberRemovePlayer(final CommandSource source, final ProtectedRegion region, final List<String> players_string, final World world) {		
 		Set<User> players = new HashSet<User>();
 		for (String player_string : players_string) {
-			Optional<EUser> user = this.plugin.getEServer().getEUser(player_string);
+			Optional<User> user = this.plugin.getEServer().getUser(player_string);
 			if (user.isPresent()) {
 				players.add(user.get());
 			} else {
