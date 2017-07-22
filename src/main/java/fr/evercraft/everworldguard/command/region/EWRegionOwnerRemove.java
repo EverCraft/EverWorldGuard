@@ -85,17 +85,21 @@ public class EWRegionOwnerRemove extends ESubCommand<EverWorldGuard> {
 				}
 		
 				if (args.isOption(MARKER_OWNER_GROUP)) {
-					return optRegion.get().getOwners().getGroups();
+					HashSet<String> groups = new HashSet<String>(optRegion.get().getOwners().getGroups());
+					groups.removeAll(args.getArgs(1));
+					return groups;
 				} else {
+					List<String> list = args.getArgs(1);
 					return optRegion.get().getOwners().getPlayers().stream()
-						.map(player -> {
-							Optional<EUser> user = this.plugin.getEServer().getEUser(player);
+						.map(uuid -> {
+							Optional<EUser> user = this.plugin.getEServer().getEUser(uuid);
 							if (user.isPresent()) {
 								return user.get().getName();
 							} else {
-								return "";
+								return uuid.toString();
 							}
 						})
+						.filter(player -> !list.contains(player))
 						.collect(Collectors.toSet());
 				}
 			});

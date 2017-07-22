@@ -64,8 +64,8 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
         this.pattern = Args.builder()
 			.empty(MARKER_TEMPLATE)
 			.arg((source, args) -> Arrays.asList("region..."))
-			.list(MARKER_OWNER_PLAYER, (source, args) -> this.getAllUsers(args.getValue(MARKER_OWNER_PLAYER).orElse(""), source))
-			.list(MARKER_OWNER_GROUP, (source, args) -> this.getAllGroups());
+			.list(MARKER_OWNER_PLAYER, (source, args) -> this.getAllUsers(args.getList(MARKER_OWNER_PLAYER).orElse(Arrays.asList()), source))
+			.list(MARKER_OWNER_GROUP, (source, args) -> this.getAllGroups(args.getList(MARKER_OWNER_GROUP).orElse(Arrays.asList())));
     }
 	
 	@Override

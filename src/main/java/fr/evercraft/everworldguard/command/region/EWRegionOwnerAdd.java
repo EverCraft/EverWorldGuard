@@ -75,14 +75,9 @@ public class EWRegionOwnerAdd extends ESubCommand<EverWorldGuard> {
 			})
 			.args((source, args) -> {
 				if (args.isOption(MARKER_OWNER_GROUP)) {
-					Set<String> suggests = this.getAllGroups();
-					suggests.removeAll(args.getArgs(1));
-					return suggests;
+					return this.getAllGroups(args.getArgs(1));
 				} else {
-					List<String> list = args.getArgs();
-					Set<String> suggests = this.getAllUsers(list.get(list.size()-1));
-					suggests.removeAll(args.getArgs(1));
-					return suggests;
+					return this.getAllUsers(args.getArgs(1), source);
 				}
 			});
     }
