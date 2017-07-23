@@ -142,7 +142,7 @@ public class FlagBuild extends StateFlag {
 		Optional<ItemStack> itemstack = player.getItemInHand(event.getHandType());
 		if (!itemstack.isPresent()) return;
 		
-		ItemType itemtype = itemstack.get().getItem();
+		ItemType itemtype = itemstack.get().getType();
 		if (!itemtype.equals(ItemTypes.FLINT_AND_STEEL) && !itemtype.equals(ItemTypes.FIRE_CHARGE)) return;
 		
 		if (world.getRegions(location.getPosition()).getFlag(player, location, this).equals(State.DENY)) {

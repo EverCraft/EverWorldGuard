@@ -63,7 +63,7 @@ public class ESelectionListener {
 		if (optItemInHand.isPresent() && optPosition.isPresent()) {
 			ItemStack itemInHand = optItemInHand.get();
 			
-			if (itemInHand.getItem().equals(this.plugin.getSelectionService().getItem())) {
+			if (itemInHand.getType().equals(this.plugin.getSelectionService().getItem())) {
 				EPlayer player = this.plugin.getEverAPI().getEServer().getEPlayer(player_sponge); 
 				Vector3i position = optPosition.get().toInt();
 
@@ -82,7 +82,7 @@ public class ESelectionListener {
 		if (optItemInHand.isPresent() && optPosition.isPresent()) {
 			ItemStack itemInHand = optItemInHand.get();
 
-			if (itemInHand.getItem().equals(this.plugin.getSelectionService().getItem())) {
+			if (itemInHand.getType().equals(this.plugin.getSelectionService().getItem())) {
 				EPlayer player = this.plugin.getEverAPI().getEServer().getEPlayer(player_sponge); 
 				Vector3i position = optPosition.get().toInt();
 				

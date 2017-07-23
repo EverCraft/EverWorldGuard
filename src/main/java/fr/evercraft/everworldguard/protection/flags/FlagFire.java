@@ -257,7 +257,7 @@ public class FlagFire extends CatalogTypeFlag<FireType> {
 		Optional<ItemStack> itemstack = player.getItemInHand(event.getHandType());
 		if (!itemstack.isPresent()) return;
 				
-		Set<FireType> fires = this.items.get(itemstack.get().getItem());
+		Set<FireType> fires = this.items.get(itemstack.get().getType());
 		if (fires == null) return;
 				
 		Vector3d position = location.getPosition();

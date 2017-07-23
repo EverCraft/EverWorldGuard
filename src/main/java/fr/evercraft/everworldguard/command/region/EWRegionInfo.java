@@ -591,7 +591,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 		if (optItemInHand.isPresent() && optPosition.isPresent()) {
 			ItemStack itemInHand = optItemInHand.get();
 
-			if (itemInHand.getItem().equals(this.plugin.getConfigs().getRegionInfo()) && player.hasPermission(EWPermissions.REGION_INFO_ITEM.get())) { 
+			if (itemInHand.getType().equals(this.plugin.getConfigs().getRegionInfo()) && player.hasPermission(EWPermissions.REGION_INFO_ITEM.get())) { 
 				Vector3i position = optPosition.get().toInt();
 				
 				this.commandRegionInfo(player, this.plugin.getProtectionService().getOrCreateEWorld(player.getWorld()).getRegions(position), player.getWorld());

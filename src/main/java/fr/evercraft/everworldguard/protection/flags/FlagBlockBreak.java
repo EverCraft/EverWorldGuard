@@ -103,7 +103,7 @@ public class FlagBlockBreak extends CatalogTypeFlag<BlockType> {
 		Optional<ItemStack> itemstack = player.getItemInHand(event.getHandType());
 		if (!itemstack.isPresent()) return;
 		
-		ItemType itemtype = itemstack.get().getItem();
+		ItemType itemtype = itemstack.get().getType();
 		if (!itemtype.equals(ItemTypes.FLINT_AND_STEEL) && !itemtype.equals(ItemTypes.FIRE_CHARGE)) return;
 		
 		if (!this.getDefault().containsValue(type)) return;
