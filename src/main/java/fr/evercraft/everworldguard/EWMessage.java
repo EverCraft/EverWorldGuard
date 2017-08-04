@@ -126,8 +126,8 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		SELECT_POS2_POLY_ALL("select.pos2.polyAll",					"&7Ajout de la position &6#<num> &7: <position> &7(&6<area>&7)."),
 		SELECT_POS2_POLY_ERROR("select.pos2.polyError",				"&cErreur : Vous avez déjà sélectionné le nombre maximum de position."),
 		SELECT_POS2_RADIUS("select.pos2.radius",					"&7Sélection d'un rayon de <radius> &7block(s) : <position>."),
-		SELECT_POS2_NO_CENTER("select.pos2.noCenter",				"&cErreur : Aucune position centrale sélectionnée."),
-		SELECT_POS2_EQUALS("select.pos2.equals",					"&cErreur : Vous avez déjà sélectionnée cette position."),
+		SELECT_POS2_NO_CENTER("select.pos2.noCenter",				"&cErreur : Aucune position centrale n'est sélectionnée."),
+		SELECT_POS2_EQUALS("select.pos2.equals",					"&cErreur : Vous avez déjà sélectionné cette position."),
 		SELECT_POS2_CANCEL("select.pos2.cancel",					"&cErreur : Impossible de sélectionner une position pour le moment."),
 		
 		SELECT_CLEAR_DESCRIPTION("select.clear.description",		"Supprime toutes les positions sélectionnées"),
@@ -199,7 +199,7 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		REGION_BYPASS_STATUS_OTHERS_ON("region.bypass.statusOthersOn", 				"&7Le mode admin de &6<player> &7est activé."),
 		REGION_BYPASS_STATUS_OTHERS_OFF("region.bypass.statusOthersOff", 			"&7Le mode admin de &6<player> &7est désactivé."),
 		
-		REGION_CHECK_DESCRIPTION("region.check.description", 						"Permet savoir la valeur de chaque flag"),
+		REGION_CHECK_DESCRIPTION("region.check.description", 						"Permet de savoir la valeur de chaque flag"),
 		
 		REGION_CHECK_GROUP_TITLE("region.check.groupTitle", 						"&aListe des flags : &6<group>"),
 		REGION_CHECK_GROUP_LINE("region.check.groupLine", 							"        &a&l- <flag> : &c<value> &7(Région : &a<region>&7)"),
@@ -295,7 +295,7 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		REGION_REDEFINE_ERROR_SELECT_TYPE("region.redefine.errorSelectType",						"&cErreur : Impossible de redéfinir une région en type &6<type>&c."),
 		
 		REGION_RENAME_DESCRIPTION("region.rename.description",									"Renomme une région"),
-		REGION_RENAME_SET("region.rename.set",													"&7Vous avez renommée la région &6<region> &7en &6<identifier> &7dans le monde &6<world>&7."),
+		REGION_RENAME_SET("region.rename.set",													"&7Vous avez renommé la région &6<region> &7en &6<identifier> &7dans le monde &6<world>&7."),
 		REGION_RENAME_ERROR_IDENTIFIER_EQUALS("region.rename.errorIdentifierEquals",			"&cErreur : Impossible de renommer la région &6<region> &cen &6<identifier> &ccar une autre région porte déjà ce nom."),
 		REGION_RENAME_ERROR_IDENTIFIER_INVALID("region.rename.errorIdentifierInvalid",			"&cErreur : Impossible de renommer la région &6<region> &cen &6<identifier> &ccar le nom est invalide."),
 		REGION_RENAME_ERROR_GLOBAL("region.rename.errorGlobal",									"&cErreur : Impossible de renommer la région &6<region> &cde type &6<type>&c."),
