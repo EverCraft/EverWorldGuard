@@ -120,9 +120,9 @@ public class EUserSubject implements WorldGuardSubject {
 		
         Event event = null;
 		if (move.isCancellable()) {
-			event = ESpongeEventFactory.createMoveRegionEventPreCancellable(player, this.lastLocation, toLocation, this.lastRegions, toRegions, entered, exited, cause);
+			event = ESpongeEventFactory.createMoveRegionEventPreCancellable(player, this.lastLocation, toLocation, this.lastRegions, toRegions, entered, exited, move, cause);
 		} else {
-			event = ESpongeEventFactory.createMoveRegionEventPre(player, this.lastLocation, toLocation, this.lastRegions, toRegions, entered, exited, cause);
+			event = ESpongeEventFactory.createMoveRegionEventPre(player, this.lastLocation, toLocation, this.lastRegions, toRegions, entered, exited, move, cause);
 		}
 				
 		if (this.plugin.getGame().getEventManager().post(event)) {
@@ -150,7 +150,7 @@ public class EUserSubject implements WorldGuardSubject {
 		this.lastRegions = toRegions;
 		
 		this.plugin.getGame().getEventManager().post(
-				ESpongeEventFactory.createMoveRegionEventPost(player, lastLocation, toLocation, lastRegions, toRegions, entered, exited, cause));
+				ESpongeEventFactory.createMoveRegionEventPost(player, lastLocation, toLocation, lastRegions, toRegions, entered, exited, move, cause));
 	}
 	
 	/*

@@ -254,7 +254,7 @@ public class EWRegionMemberAdd extends ESubCommand<EverWorldGuard> {
 	private CompletableFuture<Boolean> commandRegionMemberAddGroup(final CommandSource source, final ProtectedRegion region, final List<String> groups_string, final World world) {
 		Set<Subject> groups = new HashSet<Subject>();
 		for (String group_string : groups_string) {
-			Subject group = this.plugin.getEverAPI().getManagerService().getPermission().getGroupSubjects().get(group_string);
+			Subject group = this.plugin.getEverAPI().getManagerService().getPermission().getGroupSubjects().loadSubject(group_string).join();
 			if (group != null) {
 				groups.add(group);
 			} else {

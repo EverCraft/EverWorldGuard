@@ -259,7 +259,7 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 	}
 	
 	private CompletableFuture<Boolean> commandRegionListGroup(final CommandSource player, final World world, final String groupString) {
-		Subject group = this.plugin.getEverAPI().getManagerService().getPermission().getGroupSubjects().get(groupString);
+		Subject group = this.plugin.getEverAPI().getManagerService().getPermission().getGroupSubjects().loadSubject(groupString).join();
 		// Le joueur est introuvable
 		if (group == null){
 			EAMessages.GROUP_NOT_FOUND.sender()

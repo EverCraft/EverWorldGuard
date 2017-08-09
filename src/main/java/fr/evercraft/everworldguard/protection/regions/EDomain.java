@@ -23,7 +23,7 @@ import fr.evercraft.everapi.services.worldguard.region.Domain;
 
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.context.Context;
-import org.spongepowered.api.service.permission.Subject;
+import org.spongepowered.api.service.permission.SubjectReference;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -178,9 +178,9 @@ public class EDomain implements Domain {
 				return true;
 			}
 			
-			Optional<Subject> group = player.getParents(contexts)
+			Optional<SubjectReference> group = player.getParents(contexts)
 				.stream()
-				.filter(subject -> this.groups.contains(subject.getIdentifier()))
+				.filter(subject -> this.groups.contains(subject.getSubjectIdentifier()))
 				.findAny();
 			
 			return group.isPresent();

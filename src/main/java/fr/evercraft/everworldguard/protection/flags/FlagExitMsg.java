@@ -62,6 +62,8 @@ public class FlagExitMsg extends MessageFlag {
 		EPlayer player = event.getPlayer();
 		Set<Context> context = UtilsContexts.get(player.getWorld().getName());
 		
+		if (event.getMovetType().isTeleport()) return;
+		
 		for (ProtectedRegion region : regions) {
 			Optional<EMessageBuilder> flag_value = region.getFlagInherit(this, region.getGroup(player, context));
 			if (flag_value.isPresent()) {

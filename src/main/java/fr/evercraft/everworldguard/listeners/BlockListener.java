@@ -24,6 +24,7 @@ import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.block.CollideBlockEvent;
 import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.entity.explosive.DetonateExplosiveEvent;
+import org.spongepowered.api.event.entity.explosive.PrimeExplosiveEvent;
 
 import fr.evercraft.everapi.services.worldguard.WorldGuardWorld;
 import fr.evercraft.everapi.sponge.UtilsCause;
@@ -130,5 +131,11 @@ public class BlockListener {
 		
 		// Debug
 		//UtilsCause.debug(event.getCause(), "DetonateExplosiveEvent : " + event.getTargetEntity().getClass().getSimpleName() + " : shouldDamageEntities " + event.getExplosionBuilder().build().shouldDamageEntities());
+	}
+	
+	@Listener(order=Order.FIRST)
+	public void onDetonateExplosive(PrimeExplosiveEvent event) {
+		// Debug
+		UtilsCause.debug(event.getCause(), "PrimeExplosiveEvent : " + event.getTargetEntity().getClass().getSimpleName());
 	}
 }

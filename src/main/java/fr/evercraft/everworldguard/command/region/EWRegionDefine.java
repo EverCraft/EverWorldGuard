@@ -138,7 +138,7 @@ public class EWRegionDefine extends ESubCommand<EverWorldGuard> {
 		Optional<List<String>> groups_string = args.getList(MARKER_OWNER_GROUP);
 		if (groups_string.isPresent()) {
 			for (String group_string : groups_string.get()) {
-				Subject group = this.plugin.getEverAPI().getManagerService().getPermission().getGroupSubjects().get(group_string);
+				Subject group = this.plugin.getEverAPI().getManagerService().getPermission().getGroupSubjects().loadSubject(group_string).join();
 				if (group != null) {
 					groups.add(group.getIdentifier());
 				} else {
