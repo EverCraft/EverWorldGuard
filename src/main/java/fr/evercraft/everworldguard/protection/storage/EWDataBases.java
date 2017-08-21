@@ -65,7 +65,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 	}
 
 	public boolean init() throws ServerDisableException {
-		String regions =  "CREATE TABLE IF NOT EXISTS <table> ("
+		String regions =  "CREATE TABLE IF NOT EXISTS {table} ("
 							+ "`uuid` VARCHAR(36) NOT NULL, "
 							+ "`world` VARCHAR(36) NOT NULL, "
 							+ "`name` VARCHAR(45) NOT NULL, "
@@ -75,7 +75,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 							+ "PRIMARY KEY (`uuid`, `world`));";
 		initTable(this.getTableRegions(), regions);
 		
-		String positions =  "CREATE TABLE IF NOT EXISTS <table> ("
+		String positions =  "CREATE TABLE IF NOT EXISTS {table} ("
 							+ "`region` VARCHAR(36) NOT NULL, "
 							+ "`world` VARCHAR(36) NOT NULL, "
 							+ "`id` INT NOT NULL, "
@@ -91,7 +91,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 							+ " ON UPDATE NO ACTION);";
 		initTable(this.getTablePositions(), positions);
 		
-		String users =  "CREATE TABLE IF NOT EXISTS <table> ("
+		String users =  "CREATE TABLE IF NOT EXISTS {table} ("
 							+ "`region` VARCHAR(36) NOT NULL, "
 							+ "`world` VARCHAR(36) NOT NULL, "
 							+ "`group` VARCHAR(45) NOT NULL , "
@@ -105,7 +105,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 							+ " ON UPDATE NO ACTION);";
 		initTable(this.getTableUsers(), users);
 		
-		String groups =  "CREATE TABLE IF NOT EXISTS <table> ("
+		String groups =  "CREATE TABLE IF NOT EXISTS {table} ("
 							+ "`region` VARCHAR(36) NOT NULL, "
 							+ "`world` VARCHAR(36) NOT NULL, "
 							+ "`group` VARCHAR(45) NOT NULL , "
@@ -119,7 +119,7 @@ public class EWDataBases extends EDataBase<EverWorldGuard> {
 							+ " ON UPDATE NO ACTION);";
 		initTable(this.getTableGroups(), groups);
 		
-		String flags =  "CREATE TABLE IF NOT EXISTS <table> ("
+		String flags =  "CREATE TABLE IF NOT EXISTS {table} ("
 							+ "`region` VARCHAR(36) NOT NULL, "
 							+ "`world` VARCHAR(36) NOT NULL, "
 							+ "`group` VARCHAR(45) NOT NULL , "
