@@ -111,6 +111,7 @@ public class EUserSubject implements WorldGuardSubject {
 	}
 	
 	public Optional<Location<World>> moveToPre(final Player player_sponge, final Location<World> toLocation, final MoveType move, final Cause cause) {
+		if (this.lastLocation == null) return Optional.empty();
 		if (!UtilsLocation.isDifferentBlock(this.lastLocation, toLocation)) return Optional.empty();
 		
 		EPlayer player = this.plugin.getEServer().getEPlayer(player_sponge);

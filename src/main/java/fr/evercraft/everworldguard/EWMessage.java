@@ -454,7 +454,7 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		
 		FLAG_INTERACT_ENTITY_DESCRIPTION("flag.interactEntity.description",		"Active/Désactive les interactions avec les entités"),
 		FLAG_INTERACT_ENTITY_MESSAGE("flag.interactEntity.message",				EMessageFormat.builder()
-																					.actionbarMessageString("&cL'Interactions avec les entités est désactivé (<x>, <y>, <z>)")
+																					.actionbarMessageString("&cL'Interaction avec les entités est désactivé (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
 																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
 		
