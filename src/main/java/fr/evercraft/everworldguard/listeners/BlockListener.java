@@ -16,8 +16,6 @@
  */
 package fr.evercraft.everworldguard.listeners;
 
-import java.util.stream.Collectors;
-
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
@@ -46,7 +44,7 @@ public class BlockListener {
 		this.plugin.getManagerFlags().INTERACT_BLOCK.onChangeBlockPre(event);
 		
 		// Debug
-		UtilsCause.debug(event.getCause(), "ChangeBlockEvent.Pre");
+		//UtilsCause.debug(event.getCause(), "ChangeBlockEvent.Pre");
 	}
 	
 	@Listener(order=Order.FIRST)
@@ -61,8 +59,8 @@ public class BlockListener {
 		this.plugin.getManagerFlags().PROPAGATION.onChangeBlockPlace(event);
 		
 		// Debug
-		UtilsCause.debug(event.getCause(), "ChangeBlockEvent.Place : " + String.join(", ", event.getTransactions().stream()
-				.map(t -> "(" + t.getOriginal().getState().getType().getId() + " : " + t.getFinal().getState().getType().getId() + ")").collect(Collectors.toList())));
+		//UtilsCause.debug(event.getCause(), "ChangeBlockEvent.Place : " + String.join(", ", event.getTransactions().stream()
+		//		.map(t -> "(" + t.getOriginal().getState().getType().getId() + " : " + t.getFinal().getState().getType().getId() + ")").collect(Collectors.toList())));
 	}
 	
 	@Listener(order=Order.FIRST)
@@ -75,8 +73,8 @@ public class BlockListener {
 		this.plugin.getManagerFlags().SNOW.onChangeBlockBreak(event);
 		
 		// Debug
-		UtilsCause.debug(event.getCause(), "ChangeBlockEvent.Break : " + String.join(", ", event.getTransactions().stream()
-				.map(t -> "(" + t.getOriginal().getState().getType().getId() + " : " + t.getFinal().getState().getType().getId() + ")").collect(Collectors.toList())));
+		//UtilsCause.debug(event.getCause(), "ChangeBlockEvent.Break : " + String.join(", ", event.getTransactions().stream()
+		//		.map(t -> "(" + t.getOriginal().getState().getType().getId() + " : " + t.getFinal().getState().getType().getId() + ")").collect(Collectors.toList())));
 	}
 	
 	@Listener(order=Order.FIRST)
@@ -91,8 +89,8 @@ public class BlockListener {
 		this.plugin.getManagerFlags().PROPAGATION.onChangeBlockModify(event);
 		
 		// Debug
-		UtilsCause.debug(event.getCause(), "ChangeBlockEvent.Modify : " + String.join(", ", event.getTransactions().stream()
-				.map(t -> "(" + t.getOriginal().getState().getType().getId() + " : " + t.getFinal().getState().getType().getId() + ")").collect(Collectors.toList())));
+		//UtilsCause.debug(event.getCause(), "ChangeBlockEvent.Modify : " + String.join(", ", event.getTransactions().stream()
+		//		.map(t -> "(" + t.getOriginal().getState().getType().getId() + " : " + t.getFinal().getState().getType().getId() + ")").collect(Collectors.toList())));
 	}
 	
 	@Listener(order=Order.FIRST)
@@ -107,7 +105,7 @@ public class BlockListener {
 		});
 		
 		// Debug
-		UtilsCause.debug(event.getCause(), "InteractBlockEvent.Secondary");
+		//UtilsCause.debug(event.getCause(), "InteractBlockEvent.Secondary");
 	}
 	
 	@Listener(order=Order.FIRST)

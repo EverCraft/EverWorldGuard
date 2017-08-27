@@ -16,8 +16,6 @@
  */
 package fr.evercraft.everworldguard.listeners;
 
-import java.util.stream.Collectors;
-
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.action.CollideEvent;
@@ -34,7 +32,6 @@ import org.spongepowered.api.event.item.inventory.DropItemEvent;
 import org.spongepowered.api.event.item.inventory.InteractItemEvent;
 
 import fr.evercraft.everapi.services.worldguard.WorldGuardWorld;
-import fr.evercraft.everapi.sponge.UtilsCause;
 import fr.evercraft.everworldguard.EverWorldGuard;
 
 public class EntityListener {
@@ -131,7 +128,7 @@ public class EntityListener {
 		this.plugin.getManagerFlags().EXP_DROP.onSpawnEntity(event);
 		
 		// Debug 
-		UtilsCause.debug(event.getCause(), "SpawnEntityEvent : " + String.join(", ", event.getEntities().stream().map(entity -> entity.getType().getName()  + " : " + entity.getCreator()).collect(Collectors.toList())));
+		//UtilsCause.debug(event.getCause(), "SpawnEntityEvent : " + String.join(", ", event.getEntities().stream().map(entity -> entity.getType().getName()  + " : " + entity.getCreator()).collect(Collectors.toList())));
 	}
 	
 	@Listener(order=Order.FIRST)
