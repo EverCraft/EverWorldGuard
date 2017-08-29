@@ -158,7 +158,8 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 				BlockTypes.MOB_SPAWNER,
 				BlockTypes.JUKEBOX,
 				BlockTypes.CAULDRON,
-				BlockTypes.COMMAND_BLOCK)
+				BlockTypes.COMMAND_BLOCK,
+				BlockTypes.FLOWER_POT)
 					.stream().map(block -> block.getId()).collect(Collectors.toList()));
 		
 		addDefault("INTERACT_BLOCK", interact_block);
