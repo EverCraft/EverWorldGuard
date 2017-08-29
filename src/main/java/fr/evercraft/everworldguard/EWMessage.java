@@ -23,7 +23,7 @@ import fr.evercraft.everapi.message.EMessageFormat;
 import fr.evercraft.everapi.message.format.EFormatString;
 import fr.evercraft.everapi.plugin.file.EMessage;
 import fr.evercraft.everapi.plugin.file.EnumMessage;
-import fr.evercraft.everapi.services.worldguard.WorldGuardService;
+import fr.evercraft.everapi.services.worldguard.WorldGuardService.Priorities;
 
 public class EWMessage extends EMessage<EverWorldGuard> {
 
@@ -408,19 +408,19 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		FLAG_BLOCK_PLACE_MESSAGE("flagBlockPlaceMessage",						EMessageFormat.builder()
 																					.actionbarMessageString("&cPlacer des blocs de <block> est interdit (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
-																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
+																					.actionbarPriority(Priorities.FLAG)),
 		
 		FLAG_BLOCK_BREAK_DESCRIPTION("flagBlockBreakDescription",				"Autorise/Interdit de détruire des blocs"),
 		FLAG_BLOCK_BREAK_MESSAGE("flagBlockBreakMessage",						EMessageFormat.builder()
 																					.actionbarMessageString("&cCasser des blocs de <block> est interdit (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
-																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
+																					.actionbarPriority(Priorities.FLAG)),
 		
 		FLAG_BUILD_DESCRIPTION("flagBuildDescription",						"Autorise/Interdit les constructions"),
 		FLAG_BUILD_MESSAGE("flagBuildMessage",								EMessageFormat.builder()
 																					.actionbarMessageString("&cConstruction désactivé (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
-																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
+																					.actionbarPriority(Priorities.FLAG)),
 				
 		FLAG_CHAT_DESCRIPTION("flagChatSendDescription",						"Active/Désactive le chat"),
 		FLAG_CHAT_SEND_MESSAGE("flagChatSendSendMessage",						"&cL'envoi de message est désactivé dans cette région (<x>, <y>, <z>)"),
@@ -432,7 +432,7 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		FLAG_DAMAGE_ENTITY_MESSAGE("flagDamageEntityMessage",					EMessageFormat.builder()
 																					.actionbarMessageString("&cLes dégats infligés aux entités sont désactivé (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
-																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
+																					.actionbarPriority(Priorities.FLAG)),
 		
 		FLAG_ENDERDRAGON_GRIEF_DESCRIPTION("flagEnderDragonGriefDescription",	"Active/Désactive la destruction des blocs par l'EnderDragon"),
 		
@@ -440,7 +440,7 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		FLAG_ENDERPEARL_MESSAGE("flagEnderpearlMessage",						EMessageFormat.builder()
 																					.actionbarMessageString("&cL'utilisation des enderperles est désactivé (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
-																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
+																					.actionbarPriority(Priorities.FLAG)),
 		
 		FLAG_ENTITY_DAMAGE_DESCRIPTION("flagEntityDamageDescription",			"Active/Désactive les dégats infligés par une entité"),
 		
@@ -450,13 +450,13 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		FLAG_INTERACT_BLOCK_MESSAGE("flagInteractBlockMessage",				EMessageFormat.builder()
 																					.actionbarMessageString("&cL'Interaction avec les blocs est désactivé (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
-																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
+																					.actionbarPriority(Priorities.FLAG)),
 		
 		FLAG_INTERACT_ENTITY_DESCRIPTION("flagInteractEntityDescription",		"Active/Désactive les interactions avec les entités"),
 		FLAG_INTERACT_ENTITY_MESSAGE("flagInteractEntityMessage",				EMessageFormat.builder()
 																					.actionbarMessageString("&cL'Interaction avec les entités est désactivé (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
-																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
+																					.actionbarPriority(Priorities.FLAG)),
 		
 		FLAG_ENTRY_DESCRIPTION("flagEntryDescription",						"Autorise/Interdit le joueur d'entrer dans la région"),
 		
@@ -466,7 +466,7 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		FLAG_ENTRY_DENY_MESSAGE_DEFAULT("flagEntryDenyMessageDefault",		EMessageFormat.builder()
 																					.actionbarMessageString("&cImpossible d'entrer dans la région (<region>)")
 																					.actionbarStay(3 * 1000)
-																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
+																					.actionbarPriority(Priorities.FLAG)),
 		
 		FLAG_EXIT_DESCRIPTION("flagExitDescription",							"Autorise/Interdit le joueur de sortir dans la région"),
 		
@@ -476,7 +476,7 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		FLAG_EXIT_DENY_MESSAGE_DEFAULT("flagExitDenyMessageDefault",			EMessageFormat.builder()
 																					.actionbarMessageString("&cImpossible de sortir dans la région (<region>)")
 																					.actionbarStay(3 * 1000)
-																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
+																					.actionbarPriority(Priorities.FLAG)),
 		
 		FLAG_EXP_DROP_DESCRIPTION("flagExpDropDescription",					"Active/Désactive la perte d'expérience au sol"),
 		
@@ -491,7 +491,7 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		FLAG_FIRE_MESSAGE("flagFireMessage",									EMessageFormat.builder()
 																					.actionbarMessageString("&cLe feu est désactivé (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
-																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
+																					.actionbarPriority(Priorities.FLAG)),
 		
 		FLAG_ICE_DESCRIPTION("flagIceDescription",							"Active/Désactive la formation de glace"),
 		
@@ -503,13 +503,13 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		FLAG_ITEM_DROP_MESSAGE("flagItemDropMessage",							EMessageFormat.builder()
 																					.actionbarMessageString("&cJeter les objets de <item> est interdit (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
-																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
+																					.actionbarPriority(Priorities.FLAG)),
 		
 		FLAG_ITEM_PICKUP_DESCRIPTION("flagItemPickupDescription",				"Active/Désactive le fait de rammasser des objets"),
 		FLAG_ITEM_PICKUP_MESSAGE("flagItemPickupMessage",						EMessageFormat.builder()
 																					.actionbarMessageString("&cRamasser les objets de <item> est interdit (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
-																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
+																					.actionbarPriority(Priorities.FLAG)),
 		
 		
 		FLAG_LIGHTNING_DESCRIPTION("flagInvincibityDescription",				"Active/Désactive la foudre"),
@@ -518,19 +518,19 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		FLAG_POTION_SPLASH_MESSAGE("flagPotionSplashMessage",						EMessageFormat.builder()
 																					.actionbarMessageString("&cL'utilisation des potions <potion> sont désactivé (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
-																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
+																					.actionbarPriority(Priorities.FLAG)),
 		
 		FLAG_PROPAGATION_DESCRIPTION("flagPropagationDescription",			"Active/Désactive la propagation"),
 		FLAG_PROPAGATION_MESSAGE("flagPropagationMessage",					EMessageFormat.builder()
 																					.actionbarMessageString("&cPropagation désactivé (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
-																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
+																					.actionbarPriority(Priorities.FLAG)),
 		
 		FLAG_PVP_DESCRIPTION("flagPvpDescription",							"Active/Désactive le PVP"),
 		FLAG_PVP_MESSAGE("flagPvpMessage",									EMessageFormat.builder()
 																					.actionbarMessageString("&cPVP désactivé (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
-																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG)),
+																					.actionbarPriority(Priorities.FLAG)),
 		
 		FLAG_SNOW_DESCRIPTION("flagSnowDescription",							"Active/Désactive la neige"),
 		
@@ -542,7 +542,7 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		FLAG_SPAWN_ENTITY_MESSAGE("flagSpawnEntityMessage",					EMessageFormat.builder()
 																					.actionbarMessageString("&cL'apparition de l'entité <entity> est désactivé (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
-																					.actionbarPriority(WorldGuardService.MESSAGE_FLAG));
+																					.actionbarPriority(Priorities.FLAG));
 		
 		private final String path;
 	    private final EMessageBuilder french;
