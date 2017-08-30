@@ -16,7 +16,11 @@
  */
 package fr.evercraft.everworldguard.protection.flags;
 
+import java.util.Optional;
+
 import fr.evercraft.everapi.server.location.VirtualTransform;
+import fr.evercraft.everapi.server.player.EPlayer;
+import fr.evercraft.everapi.services.worldguard.WorldGuardService.Priorities;
 import fr.evercraft.everapi.services.worldguard.flag.LocationFlag;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
@@ -25,6 +29,18 @@ public class FlagSpawn extends LocationFlag {
 
 	public FlagSpawn(EverWorldGuard plugin) {
 		super(plugin, "SPAWN");
+	}
+	
+	public void register() {
+		this.plugin.getEverAPI().getManagerService().getSpawn().register(Priorities.FLAG, user -> {
+			if (user instanceof EPlayer) {
+				EPlayer player = (EPlayer) user;
+
+				return ((EverWorldGuard) this.plugin).getProtectionService().getOrCreateEWorld(player.getWorld())
+					.getRegions(player.getLocation().getPosition()).getFlag(user, player.getLocation(), this).getTransform();
+			}
+			return Optional.empty();
+		});
 	}
 	
 	@Override
