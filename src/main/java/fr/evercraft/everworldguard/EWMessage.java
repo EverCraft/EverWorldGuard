@@ -418,7 +418,7 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 		
 		FLAG_BUILD_DESCRIPTION("flagBuildDescription",						"Autorise/Interdit les constructions"),
 		FLAG_BUILD_MESSAGE("flagBuildMessage",								EMessageFormat.builder()
-																					.actionbarMessageString("&cConstruction désactivé (<x>, <y>, <z>)")
+																					.actionbarMessageString("&cConstruction désactivée (<x>, <y>, <z>)")
 																					.actionbarStay(3 * 1000)
 																					.actionbarPriority(Priorities.FLAG)),
 				
