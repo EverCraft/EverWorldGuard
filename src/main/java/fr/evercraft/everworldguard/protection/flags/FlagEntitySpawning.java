@@ -26,6 +26,8 @@ import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.cause.NamedCause;
+import org.spongepowered.api.event.cause.entity.spawn.SpawnCause;
+import org.spongepowered.api.event.cause.entity.spawn.SpawnTypes;
 import org.spongepowered.api.event.entity.SpawnEntityEvent;
 import org.spongepowered.api.event.item.inventory.InteractItemEvent;
 import org.spongepowered.api.item.ItemTypes;
@@ -73,11 +75,14 @@ public class FlagEntitySpawning extends EntityTemplateFlag {
 	}
 	
 	/*
-	 * CollideEntity
+	 * SpawnEntityEvent
 	 */
 	
 	public void onSpawnEntity(SpawnEntityEvent event) {
 		if (event.isCancelled()) return;
+		
+		Optional<SpawnCause> optSpawnCause = event.getCause().get(NamedCause.SOURCE, SpawnCause.class);
+		if (optSpawnCause.isPresent() && optSpawnCause.get().getType().equals(SpawnTypes.CHUNK_LOAD)) return;
 		
 		Optional<Player> optPlayer = event.getCause().get(NamedCause.NOTIFIER, Player.class);
 		if (optPlayer.isPresent()) {
