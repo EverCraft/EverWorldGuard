@@ -68,7 +68,7 @@ public class EWClear extends ESubCommand<EverWorldGuard > {
 	public CompletableFuture<Boolean> execute(final CommandSource source, final List<String> args) throws CommandException {
 		if (args.size() == 0) {
 			EWMessages.CLEAR_ALL_CONFIRMATION.sender()
-				.replace("{confirmation}", () -} this.getButtonConfirmationAll())
+				.replace("{confirmation}", () -> this.getButtonConfirmationAll())
 				.sendTo(source);
 			return CompletableFuture.completedFuture(false);
 		} else if (args.size() == 1) {
@@ -79,7 +79,7 @@ public class EWClear extends ESubCommand<EverWorldGuard > {
 				if (world.isPresent()) {
 					EWMessages.CLEAR_WORLD_CONFIRMATION.sender()
 						.replace("{world}", world.get().getName())
-						.replace("{confirmation}", () -} this.getButtonConfirmationWorld(world.get()))
+						.replace("{confirmation}", () -> this.getButtonConfirmationWorld(world.get()))
 						.sendTo(source);
 					return CompletableFuture.completedFuture(false);
 				} else {

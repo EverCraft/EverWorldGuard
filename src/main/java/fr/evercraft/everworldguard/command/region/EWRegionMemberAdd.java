@@ -201,7 +201,7 @@ public class EWRegionMemberAdd extends ESubCommand<EverWorldGuard> {
 					EWMessages.REGION_MEMBER_ADD_PLAYERS.sender()
 						.replace("{region}", region.getName())
 						.replace("{world}", world.getName())
-						.replace("{players}", String.join(EWMessages.REGION_MEMBER_ADD_PLAYERS_JOIN.getString(), players.stream().map(owner -} owner.getName()).collect(Collectors.toList())))
+						.replace("{players}", String.join(EWMessages.REGION_MEMBER_ADD_PLAYERS_JOIN.getString(), players.stream().map(owner -> owner.getName()).collect(Collectors.toList())))
 						.sendTo(source);
 					return true;
 				});
@@ -287,7 +287,7 @@ public class EWRegionMemberAdd extends ESubCommand<EverWorldGuard> {
 				EWMessages.REGION_MEMBER_ADD_GROUPS.sender()
 					.replace("{region}", region.getName())
 					.replace("{world}", world.getName())
-					.replace("{groups}", String.join(EWMessages.REGION_MEMBER_ADD_GROUPS_JOIN.getString(), groups.stream().map(owner -} owner.getIdentifier()).collect(Collectors.toList())))
+					.replace("{groups}", String.join(EWMessages.REGION_MEMBER_ADD_GROUPS_JOIN.getString(), groups.stream().map(owner -> owner.getIdentifier()).collect(Collectors.toList())))
 					.sendTo(source);
 				return true;
 			});

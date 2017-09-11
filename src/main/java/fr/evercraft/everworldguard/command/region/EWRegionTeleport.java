@@ -182,7 +182,7 @@ public class EWRegionTeleport extends ESubCommand<EverWorldGuard> {
 		EWMessages.REGION_TELEPORT_TELEPORT.sender()
 			.replace("{region}", region.getName())
 			.replace("{world}", world.getName())
-			.replace("{position}", () -} this.getTeleportHover(location)) 
+			.replace("{position}", () -> this.getTeleportHover(location)) 
 			.sendTo(player);
 		return CompletableFuture.completedFuture(true);
 	}
@@ -235,7 +235,7 @@ public class EWRegionTeleport extends ESubCommand<EverWorldGuard> {
 		EWMessages.REGION_TELEPORT_SPAWN.sender()
 			.replace("{region}", region.getName())
 			.replace("{world}", world.getName())
-			.replace("{position}", () -} this.getSpawnHover(location)) 
+			.replace("{position}", () -> this.getSpawnHover(location)) 
 			.sendTo(player);
 		return CompletableFuture.completedFuture(true);
 	}
