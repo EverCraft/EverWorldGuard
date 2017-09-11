@@ -16,6 +16,8 @@
  */
 package fr.evercraft.everworldguard;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import org.spongepowered.api.item.ItemType;
@@ -33,6 +35,14 @@ public class EWConfig extends EConfig<EverWorldGuard> {
 	public void reload() {
 		super.reload();
 		this.plugin.getELogger().setDebug(this.isDebug());
+	}
+	
+	@Override
+	public List<String> getHeader() {
+		return 	Arrays.asList(	"####################################################### #",
+								"                EverWorldGuard (By rexbut)               #",
+								"    For more information : https://docs.evercraft.fr     #",
+								"####################################################### #");
 	}
 	
 	@Override
