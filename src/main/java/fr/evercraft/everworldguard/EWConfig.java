@@ -53,10 +53,10 @@ public class EWConfig extends EConfig<EverWorldGuard> {
 		addDefault("message.interval", 1, "Second");
 		
 		addDefault("select.item", ItemTypes.WOODEN_AXE.getId());
-		addDefault("select.maxPolygonalPoints", 20);
+		addDefault("select.max-polygonal-points", 20);
 		
 		addDefault("region.info", ItemTypes.LEATHER.getId());
-		addDefault("region.maxRegionCountPerPlayer", 10, "");
+		addDefault("region.max-region-count-per-player", 10, "");
 	}
 
 	public ItemType getSelectItem() {
