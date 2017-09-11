@@ -112,7 +112,7 @@ public class EWRegionPriority extends ESubCommand<EverWorldGuard> {
 			} else {
 				EAMessages.WORLD_NOT_FOUND.sender()
 					.prefix(EWMessages.PREFIX)
-					.replace("<world>", world_arg.get())
+					.replace("{world}", world_arg.get())
 					.sendTo(source);
 				return CompletableFuture.completedFuture(false);
 			}
@@ -132,14 +132,14 @@ public class EWRegionPriority extends ESubCommand<EverWorldGuard> {
 		if (!region.isPresent()) {
 			EAMessages.REGION_NOT_FOUND.sender()
 				.prefix(EWMessages.PREFIX)
-				.replace("<region>", args_string.get(0))
+				.replace("{region}", args_string.get(0))
 				.sendTo(source);
 			return CompletableFuture.completedFuture(false);
 		}
 		
 		if (!this.hasPermission(source, region.get(), world)) {
 			EWMessages.REGION_NO_PERMISSION.sender()
-				.replace("<region>", region.get().getName())
+				.replace("{region}", region.get().getName())
 				.sendTo(source);
 			return CompletableFuture.completedFuture(false);
 		}
@@ -148,7 +148,7 @@ public class EWRegionPriority extends ESubCommand<EverWorldGuard> {
 		if (!priority.isPresent()) {
 			EAMessages.IS_NOT_NUMBER.sender()
 				.prefix(EWMessages.PREFIX)
-				.replace("<number>", args_string.get(1))
+				.replace("{number}", args_string.get(1))
 				.sendTo(source);
 			return CompletableFuture.completedFuture(false);
 		}
@@ -166,9 +166,9 @@ public class EWRegionPriority extends ESubCommand<EverWorldGuard> {
 				}
 				
 				EWMessages.REGION_PRIORITY_SET.sender()
-					.replace("<region>", region.getName())
-					.replace("<priority>", priority.toString())
-					.replace("<world>", world.getName())
+					.replace("{region}", region.getName())
+					.replace("{priority}", priority.toString())
+					.replace("{world}", world.getName())
 					.sendTo(source);	
 				return true;
 			});

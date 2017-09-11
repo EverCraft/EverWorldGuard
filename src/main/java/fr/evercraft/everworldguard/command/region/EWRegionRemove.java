@@ -118,7 +118,7 @@ public class EWRegionRemove extends ESubCommand<EverWorldGuard> {
 			} else {
 				EAMessages.WORLD_NOT_FOUND.sender()
 					.prefix(EWMessages.PREFIX)
-					.replace("<world>", world_arg.get())
+					.replace("{world}", world_arg.get())
 					.sendTo(source);
 				return CompletableFuture.completedFuture(false);
 			}
@@ -136,23 +136,23 @@ public class EWRegionRemove extends ESubCommand<EverWorldGuard> {
 		if (!region.isPresent()) {
 			EAMessages.REGION_NOT_FOUND.sender()
 				.prefix(EWMessages.PREFIX)
-				.replace("<region>", args_string.get(0))
+				.replace("{region}", args_string.get(0))
 				.sendTo(source);
 			return CompletableFuture.completedFuture(false);
 		}
 		
 		if (!this.hasPermission(source, region.get(), world)) {
 			EWMessages.REGION_NO_PERMISSION.sender()
-				.replace("<region>", region.get().getName())
+				.replace("{region}", region.get().getName())
 				.sendTo(source);
 			return CompletableFuture.completedFuture(false);
 		}
 		
 		if (region.get().getType().equals(ProtectedRegion.Types.GLOBAL)) {
 			EWMessages.REGION_REMOVE_ERROR_GLOBAL.sender()
-				.replace("<region>", region.get().getName())
-				.replace("<type>", region.get().getType().getNameFormat())
-				.replace("<world>", world.getName())
+				.replace("{region}", region.get().getName())
+				.replace("{type}", region.get().getType().getNameFormat())
+				.replace("{world}", world.getName())
 				.sendTo(source);
 			return CompletableFuture.completedFuture(false);
 		}
@@ -174,9 +174,9 @@ public class EWRegionRemove extends ESubCommand<EverWorldGuard> {
 			Optional<ProtectedRegion> parent = others.getParent();
 			if (parent.isPresent() && parent.get().equals(region)) {
 				EWMessages.REGION_REMOVE_ERROR_CHILDREN.sender()
-					.replace("<region>", region.getName())
-					.replace("<children>", others.getName())
-					.replace("<world>", world.getName())
+					.replace("{region}", region.getName())
+					.replace("{children}", others.getName())
+					.replace("{world}", world.getName())
 					.sendTo(source);
 				return CompletableFuture.completedFuture(false);
 			}
@@ -191,8 +191,8 @@ public class EWRegionRemove extends ESubCommand<EverWorldGuard> {
 				}
 				
 				EWMessages.REGION_REMOVE_REGION.sender()
-					.replace("<region>", region.getName())
-					.replace("<world>", world.getName())
+					.replace("{region}", region.getName())
+					.replace("{world}", world.getName())
 					.sendTo(source);	
 				return true;
 			});
@@ -208,8 +208,8 @@ public class EWRegionRemove extends ESubCommand<EverWorldGuard> {
 				}
 				
 				EWMessages.REGION_REMOVE_CHILDREN_REMOVE.sender()
-					.replace("<region>", region.getName())
-					.replace("<world>", world.getName())
+					.replace("{region}", region.getName())
+					.replace("{world}", world.getName())
 					.sendTo(source);	
 				return true;
 			});
@@ -225,8 +225,8 @@ public class EWRegionRemove extends ESubCommand<EverWorldGuard> {
 				}
 				
 				EWMessages.REGION_REMOVE_CHILDREN_UNSET.sender()
-					.replace("<region>", region.getName())
-					.replace("<world>", world.getName())
+					.replace("{region}", region.getName())
+					.replace("{world}", world.getName())
 					.sendTo(source);
 				return true;
 			});

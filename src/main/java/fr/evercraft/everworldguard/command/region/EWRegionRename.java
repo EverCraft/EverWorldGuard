@@ -112,7 +112,7 @@ public class EWRegionRename extends ESubCommand<EverWorldGuard> {
 			} else {
 				EAMessages.WORLD_NOT_FOUND.sender()
 					.prefix(EWMessages.PREFIX)
-					.replace("<world>", world_arg.get())
+					.replace("{world}", world_arg.get())
 					.sendTo(source);
 				return CompletableFuture.completedFuture(false);
 			}
@@ -131,14 +131,14 @@ public class EWRegionRename extends ESubCommand<EverWorldGuard> {
 		if (!region.isPresent()) {
 			EAMessages.REGION_NOT_FOUND.sender()
 				.prefix(EWMessages.PREFIX)
-				.replace("<region>", args_string.get(0))
+				.replace("{region}", args_string.get(0))
 				.sendTo(source);
 			return CompletableFuture.completedFuture(false);
 		}
 		
 		if (!this.hasPermission(source, region.get(), world)) {
 			EWMessages.REGION_NO_PERMISSION.sender()
-				.replace("<region>", region.get().getName())
+				.replace("{region}", region.get().getName())
 				.sendTo(source);
 			return CompletableFuture.completedFuture(false);
 		}
@@ -151,19 +151,19 @@ public class EWRegionRename extends ESubCommand<EverWorldGuard> {
 		String before_identifier = region.getName();
 		if (region.getType().equals(ProtectedRegion.Types.GLOBAL)) {
 			EWMessages.REGION_RENAME_ERROR_GLOBAL.sender()
-				.replace("<region>", region.getName())
-				.replace("<type>", region.getType().getNameFormat())
-				.replace("<world>", world.getName())
+				.replace("{region}", region.getName())
+				.replace("{type}", region.getType().getNameFormat())
+				.replace("{world}", world.getName())
 				.sendTo(source);
 			return CompletableFuture.completedFuture(false);
 		}
 		
 		if (manager.getRegion(region_string).isPresent()) {
 			EWMessages.REGION_RENAME_ERROR_IDENTIFIER_EQUALS.sender()
-				.replace("<region>", region.getName())
-				.replace("<identifier>", region_string)
-				.replace("<type>", region.getType().getNameFormat())
-				.replace("<world>", world.getName())
+				.replace("{region}", region.getName())
+				.replace("{identifier}", region_string)
+				.replace("{type}", region.getType().getNameFormat())
+				.replace("{world}", world.getName())
 				.sendTo(source);
 			return CompletableFuture.completedFuture(false);
 		}
@@ -178,19 +178,19 @@ public class EWRegionRename extends ESubCommand<EverWorldGuard> {
 					}
 					
 					EWMessages.REGION_RENAME_SET.sender()
-						.replace("<region>", before_identifier)
-						.replace("<identifier>", region_string)
-						.replace("<type>", region.getType().getNameFormat())
-						.replace("<world>", world.getName())
+						.replace("{region}", before_identifier)
+						.replace("{identifier}", region_string)
+						.replace("{type}", region.getType().getNameFormat())
+						.replace("{world}", world.getName())
 						.sendTo(source);
 					return true;
 				});
 		} catch (RegionIdentifierException e) {
 			EWMessages.REGION_RENAME_ERROR_IDENTIFIER_INVALID.sender()
-				.replace("<region>", before_identifier)
-				.replace("<identifier>", region_string)
-				.replace("<type>", region.getType().getNameFormat())
-				.replace("<world>", world.getName())
+				.replace("{region}", before_identifier)
+				.replace("{identifier}", region_string)
+				.replace("{type}", region.getType().getNameFormat())
+				.replace("{world}", world.getName())
 				.sendTo(source);
 		}
 		return CompletableFuture.completedFuture(false);

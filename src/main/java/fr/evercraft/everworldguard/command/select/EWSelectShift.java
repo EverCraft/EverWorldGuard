@@ -103,11 +103,11 @@ public class EWSelectShift extends ESubCommand<EverWorldGuard> {
 			}
 		} catch (RegionOperationException e) {
 			EWMessages.SELECT_SHIFT_ERROR_OPERATION.sender()
-				.replace("<exception>", e.getMessage())
+				.replace("{exception}", e.getMessage())
 				.sendTo(player);
 		} catch (NoSelectedRegionException e) {
 			EWMessages.SELECT_SHIFT_ERROR_NO_REGION.sender()
-				.replace("<exception>", e.getMessage())
+				.replace("{exception}", e.getMessage())
 				.sendTo(player);
 		}
 		return CompletableFuture.completedFuture(false);
@@ -118,7 +118,7 @@ public class EWSelectShift extends ESubCommand<EverWorldGuard> {
 		if (!amount.isPresent()) {
 			EAMessages.IS_NOT_NUMBER.sender()
 				.prefix(EWMessages.PREFIX)
-				.replace("<number>", amount_string)
+				.replace("{number}", amount_string)
 				.sendTo(player);
 			return CompletableFuture.completedFuture(false);
 		}
@@ -132,7 +132,7 @@ public class EWSelectShift extends ESubCommand<EverWorldGuard> {
 		if (!amount.isPresent()) {
 			EAMessages.IS_NOT_NUMBER.sender()
 				.prefix(EWMessages.PREFIX)
-				.replace("<number>", amount_string)
+				.replace("{number}", amount_string)
 				.sendTo(player);
 			return CompletableFuture.completedFuture(false);
 		}
@@ -147,7 +147,7 @@ public class EWSelectShift extends ESubCommand<EverWorldGuard> {
 		if (!direction.isPresent()) {
 			EAMessages.IS_NOT_DIRECTION.sender()
 				.prefix(EWMessages.PREFIX)
-				.replace("<direction>", direction_string)
+				.replace("{direction}", direction_string)
 				.sendTo(player);
 			return CompletableFuture.completedFuture(false);
 		}
@@ -162,8 +162,8 @@ public class EWSelectShift extends ESubCommand<EverWorldGuard> {
 		selector.shift(direction.asOffset().mul(amount).round().toInt());
 		
 		EWMessages.SELECT_SHIFT_DIRECTION.sender()
-			.replace("<amount>", String.valueOf(amount))
-			.replace("<direction>", UtilsDirection.getText(direction))
+			.replace("{amount}", String.valueOf(amount))
+			.replace("{direction}", UtilsDirection.getText(direction))
 			.sendTo(player);
 		return CompletableFuture.completedFuture(true);
 	}

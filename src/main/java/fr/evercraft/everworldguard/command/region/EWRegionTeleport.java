@@ -124,7 +124,7 @@ public class EWRegionTeleport extends ESubCommand<EverWorldGuard> {
 			} else {
 				EAMessages.WORLD_NOT_FOUND.sender()
 					.prefix(EWMessages.PREFIX)
-					.replace("<world>", world_arg.get())
+					.replace("{world}", world_arg.get())
 					.sendTo(source);
 				return CompletableFuture.completedFuture(false);
 			}
@@ -142,14 +142,14 @@ public class EWRegionTeleport extends ESubCommand<EverWorldGuard> {
 		if (!region.isPresent()) {
 			EAMessages.REGION_NOT_FOUND.sender()
 				.prefix(EWMessages.PREFIX)
-				.replace("<region>", args_string.get(0))
+				.replace("{region}", args_string.get(0))
 				.sendTo(source);
 			return CompletableFuture.completedFuture(false);
 		}
 		
 		if (!this.hasPermission(source, region.get(), world)) {
 			EWMessages.REGION_NO_PERMISSION.sender()
-				.replace("<region>", region.get().getName())
+				.replace("{region}", region.get().getName())
 				.sendTo(source);
 			return CompletableFuture.completedFuture(false);
 		}
@@ -168,8 +168,8 @@ public class EWRegionTeleport extends ESubCommand<EverWorldGuard> {
 		
 		if (location.isEmpty()) {
 			EWMessages.REGION_TELEPORT_TELEPORT_ERROR.sender()
-				.replace("<region>", region.getName())
-				.replace("<world>", world.getName())
+				.replace("{region}", region.getName())
+				.replace("{world}", world.getName())
 				.sendTo(player);
 			return CompletableFuture.completedFuture(false);
 		}
@@ -180,21 +180,21 @@ public class EWRegionTeleport extends ESubCommand<EverWorldGuard> {
 		}
 		
 		EWMessages.REGION_TELEPORT_TELEPORT.sender()
-			.replace("<region>", region.getName())
-			.replace("<world>", world.getName())
-			.replace("<position>", () -> this.getTeleportHover(location)) 
+			.replace("{region}", region.getName())
+			.replace("{world}", world.getName())
+			.replace("{position}", () -} this.getTeleportHover(location)) 
 			.sendTo(player);
 		return CompletableFuture.completedFuture(true);
 	}
 	
 	private Text getTeleportHover(final VirtualTransform location) {
 		Map<String, EReplace<?>> replaces = new HashMap<String, EReplace<?>>();
-		replaces.put("<x>", EReplace.of(String.valueOf(location.getPosition().getFloorX())));
-		replaces.put("<y>", EReplace.of(String.valueOf(location.getPosition().getFloorY())));
-		replaces.put("<z>", EReplace.of(String.valueOf(location.getPosition().getFloorZ())));
-		replaces.put("<pitch>", EReplace.of(String.valueOf(location.getPitch())));
-		replaces.put("<yaw>", EReplace.of(String.valueOf(location.getYaw())));
-		replaces.put("<world>", EReplace.of(location.getWorldName()));
+		replaces.put("{x}", EReplace.of(String.valueOf(location.getPosition().getFloorX())));
+		replaces.put("{y}", EReplace.of(String.valueOf(location.getPosition().getFloorY())));
+		replaces.put("{z}", EReplace.of(String.valueOf(location.getPosition().getFloorZ())));
+		replaces.put("{pitch}", EReplace.of(String.valueOf(location.getPitch())));
+		replaces.put("{yaw}", EReplace.of(String.valueOf(location.getYaw())));
+		replaces.put("{world}", EReplace.of(location.getWorldName()));
 		return EWMessages.REGION_TELEPORT_TELEPORT_POSITION.getFormat().toText2(replaces)
 				.toBuilder()
 				.onHover(TextActions.showText(EWMessages.REGION_TELEPORT_TELEPORT_POSITION_HOVER.getFormat().toText2(replaces)))
@@ -212,8 +212,8 @@ public class EWRegionTeleport extends ESubCommand<EverWorldGuard> {
 		Optional<VirtualTransform> optLocation = region.getFlag(Flags.SPAWN).getInherit(region.getGroup(player, UtilsContexts.get(world.getName())));
 		if (!optLocation.isPresent()) {
 			EWMessages.REGION_TELEPORT_SPAWN_EMPTY.sender()
-				.replace("<region>", region.getName())
-				.replace("<world>", world.getName())
+				.replace("{region}", region.getName())
+				.replace("{world}", world.getName())
 				.sendTo(player);
 			return CompletableFuture.completedFuture(false);
 		}
@@ -221,8 +221,8 @@ public class EWRegionTeleport extends ESubCommand<EverWorldGuard> {
 		
 		if (location.isEmpty()) {
 			EWMessages.REGION_TELEPORT_SPAWN_ERROR.sender()
-				.replace("<region>", region.getName())
-				.replace("<world>", world.getName())
+				.replace("{region}", region.getName())
+				.replace("{world}", world.getName())
 				.sendTo(player);
 			return CompletableFuture.completedFuture(false);
 		}
@@ -233,21 +233,21 @@ public class EWRegionTeleport extends ESubCommand<EverWorldGuard> {
 		}
 		
 		EWMessages.REGION_TELEPORT_SPAWN.sender()
-			.replace("<region>", region.getName())
-			.replace("<world>", world.getName())
-			.replace("<position>", () -> this.getSpawnHover(location)) 
+			.replace("{region}", region.getName())
+			.replace("{world}", world.getName())
+			.replace("{position}", () -} this.getSpawnHover(location)) 
 			.sendTo(player);
 		return CompletableFuture.completedFuture(true);
 	}
 	
 	private Text getSpawnHover(final VirtualTransform location) {
 		Map<String, EReplace<?>> replaces = new HashMap<String, EReplace<?>>();
-		replaces.put("<x>", EReplace.of(String.valueOf(location.getPosition().getFloorX())));
-		replaces.put("<y>", EReplace.of(String.valueOf(location.getPosition().getFloorY())));
-		replaces.put("<z>", EReplace.of(String.valueOf(location.getPosition().getFloorZ())));
-		replaces.put("<pitch>", EReplace.of(String.valueOf(location.getPitch())));
-		replaces.put("<yaw>", EReplace.of(String.valueOf(location.getYaw())));
-		replaces.put("<world>", EReplace.of(location.getWorldName()));
+		replaces.put("{x}", EReplace.of(String.valueOf(location.getPosition().getFloorX())));
+		replaces.put("{y}", EReplace.of(String.valueOf(location.getPosition().getFloorY())));
+		replaces.put("{z}", EReplace.of(String.valueOf(location.getPosition().getFloorZ())));
+		replaces.put("{pitch}", EReplace.of(String.valueOf(location.getPitch())));
+		replaces.put("{yaw}", EReplace.of(String.valueOf(location.getYaw())));
+		replaces.put("{world}", EReplace.of(location.getWorldName()));
 		return EWMessages.REGION_TELEPORT_SPAWN_POSITION.getFormat().toText2(replaces)
 				.toBuilder()
 				.onHover(TextActions.showText(EWMessages.REGION_TELEPORT_SPAWN_POSITION_HOVER.getFormat().toText2(replaces)))

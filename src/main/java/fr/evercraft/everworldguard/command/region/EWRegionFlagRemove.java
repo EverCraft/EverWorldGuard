@@ -149,7 +149,7 @@ public class EWRegionFlagRemove extends ESubCommand<EverWorldGuard> {
 			} else {
 				EAMessages.WORLD_NOT_FOUND.sender()
 					.prefix(EWMessages.PREFIX)
-					.replace("<world>", world_arg.get())
+					.replace("{world}", world_arg.get())
 					.sendTo(source);
 				return CompletableFuture.completedFuture(false);
 			}
@@ -167,14 +167,14 @@ public class EWRegionFlagRemove extends ESubCommand<EverWorldGuard> {
 		if (!region.isPresent()) {
 			EAMessages.REGION_NOT_FOUND.sender()
 				.prefix(EWMessages.PREFIX)
-				.replace("<region>", args_string.get(0))
+				.replace("{region}", args_string.get(0))
 				.sendTo(source);
 			return CompletableFuture.completedFuture(false);
 		}
 		
 		if (!this.hasPermission(source, region.get(), world)) {
 			EWMessages.REGION_NO_PERMISSION.sender()
-				.replace("<region>", region.get().getName())
+				.replace("{region}", region.get().getName())
 				.sendTo(source);
 			return CompletableFuture.completedFuture(false);
 		}
@@ -182,7 +182,7 @@ public class EWRegionFlagRemove extends ESubCommand<EverWorldGuard> {
 		Optional<Flag<?>> flag = this.plugin.getProtectionService().getFlag(args_string.get(1));
 		if (!flag.isPresent()) {
 			EWMessages.FLAG_NOT_FOUND.sender()
-				.replace("<group>", args_string.get(1))
+				.replace("{group}", args_string.get(1))
 				.sendTo(source);
 			return CompletableFuture.completedFuture(false);
 		}
@@ -190,7 +190,7 @@ public class EWRegionFlagRemove extends ESubCommand<EverWorldGuard> {
 		Optional<ProtectedRegion.Group> group = this.plugin.getGame().getRegistry().getType(ProtectedRegion.Group.class, args_string.get(2));
 		if (!group.isPresent()) {
 			EWMessages.GROUP_NOT_FOUND.sender()
-				.replace("<group>", args_string.get(2))
+				.replace("{group}", args_string.get(2))
 				.sendTo(source);
 			return CompletableFuture.completedFuture(false);
 		}
@@ -206,10 +206,10 @@ public class EWRegionFlagRemove extends ESubCommand<EverWorldGuard> {
 			
 			if (!region.getFlag(flag).get(group).isPresent() && !value.isPresent()) {
 				EWMessages.REGION_FLAG_REMOVE_EMPTY.sender()
-					.replace("<region>", region.getName())
-					.replace("<group>", group.getNameFormat())
-					.replace("<flag>", flag.getNameFormat())
-					.replace("<world>", world.getName())
+					.replace("{region}", region.getName())
+					.replace("{group}", group.getNameFormat())
+					.replace("{flag}", flag.getNameFormat())
+					.replace("{world}", world.getName())
 					.sendTo(source);
 				return CompletableFuture.completedFuture(false);
 			}
@@ -224,18 +224,18 @@ public class EWRegionFlagRemove extends ESubCommand<EverWorldGuard> {
 					
 					if (value.isPresent()) {
 						EWMessages.REGION_FLAG_REMOVE_UPDATE.sender()
-							.replace("<region>", region.getName())
-							.replace("<group>", group.getNameFormat())
-							.replace("<flag>", flag.getNameFormat())
-							.replace("<world>", world.getName())
-							.replace("<value>", flag.getValueFormat(value.get()))
+							.replace("{region}", region.getName())
+							.replace("{group}", group.getNameFormat())
+							.replace("{flag}", flag.getNameFormat())
+							.replace("{world}", world.getName())
+							.replace("{value}", flag.getValueFormat(value.get()))
 							.sendTo(source);
 					} else {
 						EWMessages.REGION_FLAG_REMOVE_PLAYER.sender()
-							.replace("<region>", region.getName())
-							.replace("<group>", group.getNameFormat())
-							.replace("<flag>", flag.getNameFormat())
-							.replace("<world>", world.getName())
+							.replace("{region}", region.getName())
+							.replace("{group}", group.getNameFormat())
+							.replace("{flag}", flag.getNameFormat())
+							.replace("{world}", world.getName())
 							.sendTo(source);
 					}
 					return true;
@@ -243,11 +243,11 @@ public class EWRegionFlagRemove extends ESubCommand<EverWorldGuard> {
 		} catch (IllegalArgumentException e) {
 			if (e.getMessage() == null || e.getMessage().isEmpty()) {
 				EWMessages.REGION_FLAG_REMOVE_ERROR.sender()
-					.replace("<region>", region.getName())
-					.replace("<group>", group.getNameFormat())
-					.replace("<flag>", flag.getNameFormat())
-					.replace("<world>", world.getName())
-					.replace("<value>", String.join(" ", values))
+					.replace("{region}", region.getName())
+					.replace("{group}", group.getNameFormat())
+					.replace("{flag}", flag.getNameFormat())
+					.replace("{world}", world.getName())
+					.replace("{value}", String.join(" ", values))
 					.sendTo(source);
 			} else {
 				EMessageFormat.builder()

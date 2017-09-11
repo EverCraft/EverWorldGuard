@@ -121,23 +121,23 @@ public class EWRegionRedefine extends ESubCommand<EverWorldGuard> {
 		if (!region.isPresent()) {
 			EAMessages.REGION_NOT_FOUND.sender()
 				.prefix(EWMessages.PREFIX)
-				.replace("<region>", args_string.get(0))
+				.replace("{region}", args_string.get(0))
 				.sendTo(source);
 			return CompletableFuture.completedFuture(false);
 		}
 		
 		if (!this.hasPermission(source, region.get(), player.getWorld())) {
 			EWMessages.REGION_NO_PERMISSION.sender()
-				.replace("<region>", region.get().getName())
+				.replace("{region}", region.get().getName())
 				.sendTo(source);
 			return CompletableFuture.completedFuture(false);
 		}
 		
 		if (region.get().getType().equals(ProtectedRegion.Types.GLOBAL)) {
 			EWMessages.REGION_REDEFINE_ERROR_GLOBAL.sender()
-				.replace("<region>", region.get().getName())
-				.replace("<type>", region.get().getType().getNameFormat())
-				.replace("<world>", player.getWorld().getName())
+				.replace("{region}", region.get().getName())
+				.replace("{type}", region.get().getType().getNameFormat())
+				.replace("{world}", player.getWorld().getName())
 				.sendTo(source);
 			return CompletableFuture.completedFuture(false);
 		}
@@ -156,8 +156,8 @@ public class EWRegionRedefine extends ESubCommand<EverWorldGuard> {
 			return this.commandRegionRedefinePolygonal(player, region);
 		} else {
 			EWMessages.REGION_REDEFINE_ERROR_SELECT_TYPE.sender()
-				.replace("<region>", region.getName())
-				.replace("<type>", player.getSelectorType().getName())
+				.replace("{region}", region.getName())
+				.replace("{type}", player.getSelectorType().getName())
 				.sendTo(player);
 			return CompletableFuture.completedFuture(false);
 		}
@@ -167,8 +167,8 @@ public class EWRegionRedefine extends ESubCommand<EverWorldGuard> {
 		Optional<SelectionRegion.Cuboid> selector = player.getSelectorRegion(SelectionRegion.Cuboid.class);
 		if (!selector.isPresent()) {
 			EWMessages.REGION_REDEFINE_CUBOID_ERROR_POSITION.sender()
-				.replace("<region>", region.getName())
-				.replace("<type>", ProtectedRegion.Types.CUBOID.getNameFormat())
+				.replace("{region}", region.getName())
+				.replace("{type}", ProtectedRegion.Types.CUBOID.getNameFormat())
 				.sendTo(player);
 			return CompletableFuture.completedFuture(false);
 		}
@@ -186,17 +186,17 @@ public class EWRegionRedefine extends ESubCommand<EverWorldGuard> {
 				Vector3i min = result.getMinimumPoint();
 				Vector3i max = result.getMaximumPoint();
 				Map<String, EReplace<?>> replaces = new HashMap<String, EReplace<?>>();
-				replaces.put("<min_x>", EReplace.of(String.valueOf(min.getX())));
-				replaces.put("<min_y>", EReplace.of(String.valueOf(min.getY())));
-				replaces.put("<min_z>", EReplace.of(String.valueOf(min.getZ())));
-				replaces.put("<max_x>", EReplace.of(String.valueOf(max.getX())));
-				replaces.put("<max_y>", EReplace.of(String.valueOf(max.getY())));
-				replaces.put("<max_z>", EReplace.of(String.valueOf(max.getZ())));		
+				replaces.put("{min_x}", EReplace.of(String.valueOf(min.getX())));
+				replaces.put("{min_y}", EReplace.of(String.valueOf(min.getY())));
+				replaces.put("{min_z}", EReplace.of(String.valueOf(min.getZ())));
+				replaces.put("{max_x}", EReplace.of(String.valueOf(max.getX())));
+				replaces.put("{max_y}", EReplace.of(String.valueOf(max.getY())));
+				replaces.put("{max_z}", EReplace.of(String.valueOf(max.getZ())));		
 				
 				EWMessages.REGION_REDEFINE_CUBOID_CREATE.sender()
-					.replace("<region>", region.getName())
-					.replace("<type>", result.getType().getNameFormat())
-					.replace("<positions>", EWMessages.REGION_REDEFINE_CUBOID_POINTS.getFormat()
+					.replace("{region}", region.getName())
+					.replace("{type}", result.getType().getNameFormat())
+					.replace("{positions}", EWMessages.REGION_REDEFINE_CUBOID_POINTS.getFormat()
 							.toText2(replaces).toBuilder()
 							.onHover(TextActions.showText(EWMessages.REGION_REDEFINE_CUBOID_POINTS_HOVER.getFormat()
 									.toText2(replaces)))
@@ -210,8 +210,8 @@ public class EWRegionRedefine extends ESubCommand<EverWorldGuard> {
 		Optional<SelectionRegion.Polygonal> selector = player.getSelectorRegion(SelectionRegion.Polygonal.class);
 		if (!selector.isPresent()) {
 			EWMessages.REGION_REDEFINE_POLYGONAL_ERROR_POSITION.sender()
-				.replace("<region>", region.getName())
-				.replace("<type>", ProtectedRegion.Types.POLYGONAL.getNameFormat())
+				.replace("{region}", region.getName())
+				.replace("{type}", ProtectedRegion.Types.POLYGONAL.getNameFormat())
 				.sendTo(player);
 			return CompletableFuture.completedFuture(false);
 		}
@@ -228,25 +228,25 @@ public class EWRegionRedefine extends ESubCommand<EverWorldGuard> {
 				Vector3i max = result.getMaximumPoint();
 				List<Text> positions_text = new ArrayList<Text>();
 				Map<String, EReplace<?>> replaces = new HashMap<String, EReplace<?>>();
-				replaces.put("<min_x>", EReplace.of(String.valueOf(min.getX())));
-				replaces.put("<min_y>", EReplace.of(String.valueOf(min.getY())));
-				replaces.put("<min_z>", EReplace.of(String.valueOf(min.getZ())));
-				replaces.put("<max_x>", EReplace.of(String.valueOf(max.getX())));
-				replaces.put("<max_y>", EReplace.of(String.valueOf(max.getY())));
-				replaces.put("<max_z>", EReplace.of(String.valueOf(max.getZ())));
+				replaces.put("{min_x}", EReplace.of(String.valueOf(min.getX())));
+				replaces.put("{min_y}", EReplace.of(String.valueOf(min.getY())));
+				replaces.put("{min_z}", EReplace.of(String.valueOf(min.getZ())));
+				replaces.put("{max_x}", EReplace.of(String.valueOf(max.getX())));
+				replaces.put("{max_y}", EReplace.of(String.valueOf(max.getY())));
+				replaces.put("{max_z}", EReplace.of(String.valueOf(max.getZ())));
 				
 				for(Vector3i pos : result.getPoints()) {
 					positions_text.add(EWMessages.REGION_REDEFINE_POLYGONAL_POINTS_HOVER_LINE.getFormat()
-							.toText("<x>", String.valueOf(pos.getX()),
-									"<y>", String.valueOf(pos.getY()),
-									"<z>", String.valueOf(pos.getZ())));
+							.toText("{x}", String.valueOf(pos.getX()),
+									"{y}", String.valueOf(pos.getY()),
+									"{z}", String.valueOf(pos.getZ())));
 				}				
-				replaces.put("<positions>", EReplace.of(Text.joinWith(EWMessages.REGION_REDEFINE_POLYGONAL_POINTS_HOVER_JOIN.getText(), positions_text)));
+				replaces.put("{positions}", EReplace.of(Text.joinWith(EWMessages.REGION_REDEFINE_POLYGONAL_POINTS_HOVER_JOIN.getText(), positions_text)));
 				
 				EWMessages.REGION_REDEFINE_POLYGONAL_CREATE.sender()
-					.replace("<region>", region.getName())
-					.replace("<type>", result.getType().getNameFormat())
-					.replace("<positions>", EWMessages.REGION_REDEFINE_POLYGONAL_POINTS.getFormat()
+					.replace("{region}", region.getName())
+					.replace("{type}", result.getType().getNameFormat())
+					.replace("{positions}", EWMessages.REGION_REDEFINE_POLYGONAL_POINTS.getFormat()
 							.toText2(replaces).toBuilder()
 							.onHover(TextActions.showText(EWMessages.REGION_REDEFINE_POLYGONAL_POINTS_HOVER.getFormat()
 									.toText2(replaces)))
@@ -266,8 +266,8 @@ public class EWRegionRedefine extends ESubCommand<EverWorldGuard> {
 				}
 				
 				EWMessages.REGION_REDEFINE_TEMPLATE_CREATE.sender()
-					.replace("<region>", region.getName())
-					.replace("<type>", result.getType().getNameFormat())
+					.replace("{region}", region.getName())
+					.replace("{type}", result.getType().getNameFormat())
 					.sendTo(player);
 				return true;
 			});

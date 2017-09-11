@@ -114,19 +114,19 @@ public class EWSelectInfo extends ESubCommand<EverWorldGuard> {
 		Text text = null;
 		if (pos1.isPresent() && pos2.isPresent()) {
 			text = EWMessages.SELECT_INFO_CUBOID_POS1_AND_POS2.sender()
-				.replace("<pos1>", EWSelect.getPositionHover(pos1.get()))
-				.replace("<pos2>", EWSelect.getPositionHover(pos2.get()))
-				.replace("<area>", String.valueOf(player.getSelectorVolume()))
+				.replace("{pos1}", EWSelect.getPositionHover(pos1.get()))
+				.replace("{pos2}", EWSelect.getPositionHover(pos2.get()))
+				.replace("{area}", String.valueOf(player.getSelectorVolume()))
 				.toText(false);
 		} else if (pos1.isPresent()) {
 			text = EWMessages.SELECT_INFO_CUBOID_POS1.sender()
-				.replace("<pos>", EWSelect.getPositionHover(pos1.get()))
-				.replace("<area>", String.valueOf(player.getSelectorVolume()))
+				.replace("{pos}", EWSelect.getPositionHover(pos1.get()))
+				.replace("{area}", String.valueOf(player.getSelectorVolume()))
 				.toText(false);
 		} else if (pos2.isPresent()) {
 			text = EWMessages.SELECT_INFO_CUBOID_POS2.sender()
-				.replace("<pos>", EWSelect.getPositionHover(pos2.get()))
-				.replace("<area>", String.valueOf(player.getSelectorVolume()))
+				.replace("{pos}", EWSelect.getPositionHover(pos2.get()))
+				.replace("{area}", String.valueOf(player.getSelectorVolume()))
 				.toText(false);
 		} else {
 			EWMessages.SELECT_INFO_CUBOID_EMPTY.sendTo(player);
@@ -135,7 +135,7 @@ public class EWSelectInfo extends ESubCommand<EverWorldGuard> {
 		
 		this.plugin.getEverAPI().getManagerService().getEPagination().sendTo(
 				EWMessages.SELECT_INFO_CUBOID_TITLE.getFormat()
-					.toText("<area>", String.valueOf(player.getSelectorVolume())).toBuilder()
+					.toText("{area}", String.valueOf(player.getSelectorVolume())).toBuilder()
 				.onClick(TextActions.runCommand("/" + this.getName()))
 				.build(), 
 				Arrays.asList(text), player);
@@ -149,19 +149,19 @@ public class EWSelectInfo extends ESubCommand<EverWorldGuard> {
 		Text text = null;
 		if (pos1.isPresent() && pos2.isPresent()) {
 			text = EWMessages.SELECT_INFO_EXTEND_POS1_AND_POS2.sender()
-				.replace("<pos1>", EWSelect.getPositionHover(pos1.get()))
-				.replace("<pos2>", EWSelect.getPositionHover(pos2.get()))
-				.replace("<area>", String.valueOf(player.getSelectorVolume()))
+				.replace("{pos1}", EWSelect.getPositionHover(pos1.get()))
+				.replace("{pos2}", EWSelect.getPositionHover(pos2.get()))
+				.replace("{area}", String.valueOf(player.getSelectorVolume()))
 				.toText(false);
 		} else if (pos1.isPresent()) {
 			text = EWMessages.SELECT_INFO_EXTEND_POS1.sender()
-				.replace("<pos>", EWSelect.getPositionHover(pos1.get()))
-				.replace("<area>", String.valueOf(player.getSelectorVolume()))
+				.replace("{pos}", EWSelect.getPositionHover(pos1.get()))
+				.replace("{area}", String.valueOf(player.getSelectorVolume()))
 				.toText(false);
 		} else if (pos2.isPresent()) {
 			text = EWMessages.SELECT_INFO_EXTEND_POS2.sender()
-				.replace("<pos>", EWSelect.getPositionHover(pos2.get()))
-				.replace("<area>", String.valueOf(player.getSelectorVolume()))
+				.replace("{pos}", EWSelect.getPositionHover(pos2.get()))
+				.replace("{area}", String.valueOf(player.getSelectorVolume()))
 				.toText(false);
 		} else {
 			EWMessages.SELECT_INFO_EXTEND_EMPTY.sendTo(player);
@@ -170,7 +170,7 @@ public class EWSelectInfo extends ESubCommand<EverWorldGuard> {
 		
 		this.plugin.getEverAPI().getManagerService().getEPagination().sendTo(
 				EWMessages.SELECT_INFO_EXTEND_TITLE.getFormat()
-					.toText("<area>", String.valueOf(player.getSelectorVolume())).toBuilder()
+					.toText("{area}", String.valueOf(player.getSelectorVolume())).toBuilder()
 				.onClick(TextActions.runCommand("/" + this.getName()))
 				.build(), 
 				Arrays.asList(text), player);
@@ -185,13 +185,13 @@ public class EWSelectInfo extends ESubCommand<EverWorldGuard> {
 			int num = 1;
 			for (Vector3i pos : points) {
 				lists.add(EWMessages.SELECT_INFO_POLY_LINE.getFormat()
-					.toText("<pos>", EWSelect.getPositionHover(pos),
-							"<num>", String.valueOf(num)));
+					.toText("{pos}", EWSelect.getPositionHover(pos),
+							"{num}", String.valueOf(num)));
 				num++;
 			}
 			
 			this.plugin.getEverAPI().getManagerService().getEPagination().sendTo(EWMessages.SELECT_INFO_POLY_TITLE.getFormat()
-					.toText("<area>", String.valueOf(player.getSelectorVolume())).toBuilder()
+					.toText("{area}", String.valueOf(player.getSelectorVolume())).toBuilder()
 					.onClick(TextActions.runCommand("/s"))
 					.build(), 
 					lists, player);
@@ -210,15 +210,15 @@ public class EWSelectInfo extends ESubCommand<EverWorldGuard> {
 		if (optRegion.isPresent()) { 
 			Cylinder region = optRegion.get();
 			text = EWMessages.SELECT_INFO_CYLINDER_CENTER_AND_RADIUS.sender()
-				.replace("<center>", EWSelect.getPositionHover(region.getCenter()))
-				.replace("<width>", region.getWidth())
-				.replace("<height>", region.getHeight())
-				.replace("<length>", region.getLength())
-				.replace("<area>", player.getSelectorVolume())
+				.replace("{center}", EWSelect.getPositionHover(region.getCenter()))
+				.replace("{width}", region.getWidth())
+				.replace("{height}", region.getHeight())
+				.replace("{length}", region.getLength())
+				.replace("{area}", player.getSelectorVolume())
 				.toText(false);
 		} else if (pos1.isPresent()) {
 			text = EWMessages.SELECT_INFO_CYLINDER_CENTER.sender()
-				.replace("<center>", EWSelect.getPositionHover(pos1.get()))
+				.replace("{center}", EWSelect.getPositionHover(pos1.get()))
 				.toText(false);
 		} else {
 			EWMessages.SELECT_INFO_CYLINDER_EMPTY.sendTo(player);
@@ -227,7 +227,7 @@ public class EWSelectInfo extends ESubCommand<EverWorldGuard> {
 		
 		this.plugin.getEverAPI().getManagerService().getEPagination().sendTo(
 				EWMessages.SELECT_INFO_CYLINDER_TITLE.getFormat()
-					.toText("<area>", String.valueOf(player.getSelectorVolume())).toBuilder()
+					.toText("{area}", String.valueOf(player.getSelectorVolume())).toBuilder()
 				.onClick(TextActions.runCommand("/" + this.getName()))
 				.build(), 
 				Arrays.asList(text), player);
@@ -242,15 +242,15 @@ public class EWSelectInfo extends ESubCommand<EverWorldGuard> {
 		if (optRegion.isPresent()) {
 			Ellipsoid region = optRegion.get();
 			text = EWMessages.SELECT_INFO_ELLIPSOID_CENTER_AND_RADIUS.sender()
-				.replace("<center>", EWSelect.getPositionHover(region.getCenter()))
-				.replace("<width>", region.getWidth())
-				.replace("<height>", region.getHeight())
-				.replace("<length>", region.getLength())
-				.replace("<area>", player.getSelectorVolume())
+				.replace("{center}", EWSelect.getPositionHover(region.getCenter()))
+				.replace("{width}", region.getWidth())
+				.replace("{height}", region.getHeight())
+				.replace("{length}", region.getLength())
+				.replace("{area}", player.getSelectorVolume())
 				.toText(false);
 		} else if (pos1.isPresent()) {
 			text = EWMessages.SELECT_INFO_ELLIPSOID_CENTER.sender()
-				.replace("<center>", EWSelect.getPositionHover(pos1.get()))
+				.replace("{center}", EWSelect.getPositionHover(pos1.get()))
 				.toText(false);
 		} else {
 			EWMessages.SELECT_INFO_ELLIPSOID_EMPTY.sendTo(player);
@@ -259,7 +259,7 @@ public class EWSelectInfo extends ESubCommand<EverWorldGuard> {
 		
 		this.plugin.getEverAPI().getManagerService().getEPagination().sendTo(
 				EWMessages.SELECT_INFO_ELLIPSOID_TITLE.getFormat()
-					.toText("<area>", String.valueOf(player.getSelectorVolume())).toBuilder()
+					.toText("{area}", String.valueOf(player.getSelectorVolume())).toBuilder()
 				.onClick(TextActions.runCommand("/" + this.getName()))
 				.build(), 
 				Arrays.asList(text), player);
@@ -274,16 +274,16 @@ public class EWSelectInfo extends ESubCommand<EverWorldGuard> {
 		if (optRegion.isPresent()) {
 			Ellipsoid region = optRegion.get();
 			text = EWMessages.SELECT_INFO_SPHERE_CENTER_AND_RADIUS.sender()
-				.replace("<center>", EWSelect.getPositionHover(region.getCenter()))
-				.replace("<radius>", Math.round(region.getWidth()/2))
-				.replace("<width>", region.getWidth())
-				.replace("<height>", region.getHeight())
-				.replace("<length>", region.getLength())
-				.replace("<area>", player.getSelectorVolume())
+				.replace("{center}", EWSelect.getPositionHover(region.getCenter()))
+				.replace("{radius}", Math.round(region.getWidth()/2))
+				.replace("{width}", region.getWidth())
+				.replace("{height}", region.getHeight())
+				.replace("{length}", region.getLength())
+				.replace("{area}", player.getSelectorVolume())
 				.toText(false);
 		} else if (pos1.isPresent()) {
 			text = EWMessages.SELECT_INFO_SPHERE_CENTER.sender()
-				.replace("<center>", EWSelect.getPositionHover(pos1.get()))
+				.replace("{center}", EWSelect.getPositionHover(pos1.get()))
 				.toText(false);
 		} else {
 			EWMessages.SELECT_INFO_SPHERE_EMPTY.sendTo(player);
@@ -292,7 +292,7 @@ public class EWSelectInfo extends ESubCommand<EverWorldGuard> {
 		
 		this.plugin.getEverAPI().getManagerService().getEPagination().sendTo(
 				EWMessages.SELECT_INFO_SPHERE_TITLE.getFormat()
-					.toText("<area>", String.valueOf(player.getSelectorVolume())).toBuilder()
+					.toText("{area}", String.valueOf(player.getSelectorVolume())).toBuilder()
 				.onClick(TextActions.runCommand("/" + this.getName()))
 				.build(), 
 				Arrays.asList(text), player);

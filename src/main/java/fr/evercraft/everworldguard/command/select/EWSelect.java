@@ -59,9 +59,9 @@ public class EWSelect extends EParentCommand<EverWorldGuard> {
 	
 	public static Text getPositionHover(final Vector3i position) {
 		Map<String, EReplace<?>> replaces = new HashMap<String, EReplace<?>>();
-		replaces.put("<x>", EReplace.of(String.valueOf(position.getX())));
-		replaces.put("<y>", EReplace.of(String.valueOf(position.getY())));
-		replaces.put("<z>", EReplace.of(String.valueOf(position.getZ())));
+		replaces.put("{x}", EReplace.of(String.valueOf(position.getX())));
+		replaces.put("{y}", EReplace.of(String.valueOf(position.getY())));
+		replaces.put("{z}", EReplace.of(String.valueOf(position.getZ())));
 		return EWMessages.SELECT_INFO_POS.getFormat().toText2(replaces)
 				.toBuilder()
 				.onHover(TextActions.showText(EWMessages.SELECT_INFO_POS_HOVER.getFormat().toText2(replaces)))
@@ -82,23 +82,23 @@ public class EWSelect extends EParentCommand<EverWorldGuard> {
 			Optional<Vector3i> pos2 = player.getSelectorSecondary();
 			if (!pos2.isPresent()) {
 				EWMessages.SELECT_POS1_ONE.sender()
-					.replace("<position>", EWSelect.getPositionHover(position))
+					.replace("{position}", EWSelect.getPositionHover(position))
 					.sendTo(player);
 			} else {
 				EWMessages.SELECT_POS1_TWO.sender()
-					.replace("<position>", EWSelect.getPositionHover(position))
-					.replace("<area>", String.valueOf(player.getSelectorVolume()))
+					.replace("{position}", EWSelect.getPositionHover(position))
+					.replace("{area}", String.valueOf(player.getSelectorVolume()))
 					.sendTo(player);
 			}
 		} else if (player.getSelectorType().equals(SelectionRegion.Types.POLYGONAL)) {
 			EWMessages.SELECT_POS1_POLY.sender()
-				.replace("<position>", EWSelect.getPositionHover(position))
+				.replace("{position}", EWSelect.getPositionHover(position))
 				.sendTo(player);
 		} else if (player.getSelectorType().equals(SelectionRegion.Types.CYLINDER) || 
 					player.getSelectorType().equals(SelectionRegion.Types.ELLIPSOID) || 
 					player.getSelectorType().equals(SelectionRegion.Types.SPHERE)) {
 			EWMessages.SELECT_POS1_CENTER.sender()
-				.replace("<position>", EWSelect.getPositionHover(position))
+				.replace("{position}", EWSelect.getPositionHover(position))
 				.sendTo(player);
 		}
 		return true;
@@ -115,13 +115,13 @@ public class EWSelect extends EParentCommand<EverWorldGuard> {
 			}
 		} catch (SelectorSecondaryException e) {
 			EWMessages.SELECT_POS2_NO_CENTER.sender()
-				.replace("<position>", EWSelect.getPositionHover(position))
+				.replace("{position}", EWSelect.getPositionHover(position))
 				.sendTo(player);
 			return false;
 		} catch (SelectorMaxPointsException e) {
 			EWMessages.SELECT_POS2_POLY_ERROR.sender()
-				.replace("<position>", EWSelect.getPositionHover(position))
-				.replace("<max>", player.getSelectorPositions().size())
+				.replace("{position}", EWSelect.getPositionHover(position))
+				.replace("{max}", player.getSelectorPositions().size())
 				.sendTo(player);
 			return false;
 		}
@@ -131,25 +131,25 @@ public class EWSelect extends EParentCommand<EverWorldGuard> {
 			Optional<Vector3i> pos1 = player.getSelectorPrimary();
 			if (!pos1.isPresent()) {
 				EWMessages.SELECT_POS2_ONE.sender()
-					.replace("<position>", EWSelect.getPositionHover(position))
+					.replace("{position}", EWSelect.getPositionHover(position))
 					.sendTo(player);
 			} else {
 				EWMessages.SELECT_POS2_TWO.sender()
-					.replace("<position>", EWSelect.getPositionHover(position))
-					.replace("<area>", String.valueOf(player.getSelectorVolume()))
+					.replace("{position}", EWSelect.getPositionHover(position))
+					.replace("{area}", String.valueOf(player.getSelectorVolume()))
 					.sendTo(player);
 			}
 		} else if (player.getSelectorType().equals(SelectionRegion.Types.POLYGONAL)) {
 			if (player.getSelectorPositions().size() == 1) {
 				EWMessages.SELECT_POS2_POLY_ONE.sender()
-					.replace("<position>", EWSelect.getPositionHover(position))
-					.replace("<num>", String.valueOf(player.getSelectorPositions().size()))
+					.replace("{position}", EWSelect.getPositionHover(position))
+					.replace("{num}", String.valueOf(player.getSelectorPositions().size()))
 					.sendTo(player);
 			} else {
 				EWMessages.SELECT_POS2_POLY_ALL.sender()
-					.replace("<position>", EWSelect.getPositionHover(position))
-					.replace("<num>", String.valueOf(player.getSelectorPositions().size()))
-					.replace("<area>", String.valueOf(player.getSelectorVolume()))
+					.replace("{position}", EWSelect.getPositionHover(position))
+					.replace("{num}", String.valueOf(player.getSelectorPositions().size()))
+					.replace("{area}", String.valueOf(player.getSelectorVolume()))
 					.sendTo(player);
 			}
 		} else if (player.getSelectorType().equals(SelectionRegion.Types.CYLINDER) || 
@@ -158,9 +158,9 @@ public class EWSelect extends EParentCommand<EverWorldGuard> {
 			Vector3i pos1 = player.getSelectorPrimary().orElse(Vector3i.ZERO);
 			
 			EWMessages.SELECT_POS2_RADIUS.sender()
-				.replace("<position>", EWSelect.getPositionHover(position))
-				.replace("<radius>", Math.round(position.distance(pos1)))
-				.replace("<area>", player.getSelectorVolume())
+				.replace("{position}", EWSelect.getPositionHover(position))
+				.replace("{radius}", Math.round(position.distance(pos1)))
+				.replace("{area}", player.getSelectorVolume())
 				.sendTo(player);
 		}
 		return true;

@@ -78,10 +78,10 @@ public class FlagBlockBreak extends CatalogTypeFlag<BlockType> {
 		Vector3i position = location.getPosition().toInt();
 		return this.plugin.getProtectionService().sendMessage(player, this,
 				EWMessages.FLAG_BLOCK_BREAK_MESSAGE.sender()
-					.replace("<x>", position.getX())
-					.replace("<y>", position.getY())
-					.replace("<z>", position.getZ())
-					.replace("<block>", type.getTranslation()));
+					.replace("{x}", position.getX())
+					.replace("{y}", position.getY())
+					.replace("{z}", position.getZ())
+					.replace("{block}", type.getTranslation()));
 	}
 
 	/*

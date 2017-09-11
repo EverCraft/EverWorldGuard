@@ -110,7 +110,7 @@ public class EWSelectPos2 extends ESubCommand<EverWorldGuard> {
 		
 		if (pos2.isPresent() && pos2.get().equals(position)) {
 			EWMessages.SELECT_POS2_EQUALS.sender()
-				.replace("<position>", EWSelect.getPositionHover(position))
+				.replace("{position}", EWSelect.getPositionHover(position))
 				.sendTo(player);
 			return CompletableFuture.completedFuture(false);
 		}
@@ -118,7 +118,7 @@ public class EWSelectPos2 extends ESubCommand<EverWorldGuard> {
 		try {
 			if (!player.setSelectorSecondary(position)) {
 				EWMessages.SELECT_POS2_CANCEL.sender()
-					.replace("<position>", EWSelect.getPositionHover(position))
+					.replace("{position}", EWSelect.getPositionHover(position))
 					.sendTo(player);
 				return CompletableFuture.completedFuture(false);
 			}
@@ -131,12 +131,12 @@ public class EWSelectPos2 extends ESubCommand<EverWorldGuard> {
 		
 		if (!player.getSelectorPrimary().isPresent()) {
 			EWMessages.SELECT_POS2_ONE.sender()
-				.replace("<position>", EWSelect.getPositionHover(position))
+				.replace("{position}", EWSelect.getPositionHover(position))
 				.sendTo(player);
 		} else {
 			EWMessages.SELECT_POS2_TWO.sender()
-				.replace("<position>", EWSelect.getPositionHover(position))
-				.replace("<area>", String.valueOf(player.getSelectorVolume()))
+				.replace("{position}", EWSelect.getPositionHover(position))
+				.replace("{area}", String.valueOf(player.getSelectorVolume()))
 				.sendTo(player);
 		}
 		return CompletableFuture.completedFuture(true);
@@ -147,7 +147,7 @@ public class EWSelectPos2 extends ESubCommand<EverWorldGuard> {
 		
 		if (!points.isEmpty() && points.get(points.size() - 1).equals(position)) {
 			EWMessages.SELECT_POS2_EQUALS.sender()
-				.replace("<pos>", EWSelect.getPositionHover(position))
+				.replace("{pos}", EWSelect.getPositionHover(position))
 				.sendTo(player);
 			return CompletableFuture.completedFuture(false);
 		}
@@ -155,7 +155,7 @@ public class EWSelectPos2 extends ESubCommand<EverWorldGuard> {
 		try {
 			if (!player.setSelectorSecondary(position)) {
 				EWMessages.SELECT_POS2_CANCEL.sender()
-					.replace("<pos>", EWSelect.getPositionHover(position))
+					.replace("{pos}", EWSelect.getPositionHover(position))
 					.sendTo(player);
 				return CompletableFuture.completedFuture(false);
 			}
@@ -166,22 +166,22 @@ public class EWSelectPos2 extends ESubCommand<EverWorldGuard> {
 			return CompletableFuture.completedFuture(false);
 		} catch (SelectorMaxPointsException e) {
 			EWMessages.SELECT_POS2_POLY_ERROR.sender()
-				.replace("<position>", EWSelect.getPositionHover(position))
-				.replace("<max>", this.plugin.getConfigs().getSelectMaxPolygonalPoints())
+				.replace("{position}", EWSelect.getPositionHover(position))
+				.replace("{max}", this.plugin.getConfigs().getSelectMaxPolygonalPoints())
 				.sendTo(player);
 			return CompletableFuture.completedFuture(false);
 		}
 		
 		if (points.isEmpty()) {
 			EWMessages.SELECT_POS2_POLY_ONE.sender()
-				.replace("<pos>", EWSelect.getPositionHover(position))
-				.replace("<num>", String.valueOf(points.size()))
+				.replace("{pos}", EWSelect.getPositionHover(position))
+				.replace("{num}", String.valueOf(points.size()))
 				.sendTo(player);
 		} else {
 			EWMessages.SELECT_POS2_POLY_ALL.sender()
-				.replace("<pos>", EWSelect.getPositionHover(position))
-				.replace("<num>", String.valueOf(points.size()))
-				.replace("<area>", String.valueOf(player.getSelectorVolume()))
+				.replace("{pos}", EWSelect.getPositionHover(position))
+				.replace("{num}", String.valueOf(points.size()))
+				.replace("{area}", String.valueOf(player.getSelectorVolume()))
 				.sendTo(player);
 		}
 		return CompletableFuture.completedFuture(true);
@@ -193,7 +193,7 @@ public class EWSelectPos2 extends ESubCommand<EverWorldGuard> {
 
 		if (pos2.isPresent() && pos2.get().equals(position)) {
 			EWMessages.SELECT_POS2_EQUALS.sender()
-				.replace("<pos>", EWSelect.getPositionHover(position))
+				.replace("{pos}", EWSelect.getPositionHover(position))
 				.sendTo(player);
 			return CompletableFuture.completedFuture(false);
 		}
@@ -201,21 +201,21 @@ public class EWSelectPos2 extends ESubCommand<EverWorldGuard> {
 		try {
 			if (!player.setSelectorSecondary(position)) {
 				EWMessages.SELECT_POS2_CANCEL.sender()
-					.replace("<pos>", EWSelect.getPositionHover(position))
+					.replace("{pos}", EWSelect.getPositionHover(position))
 					.sendTo(player);
 				return CompletableFuture.completedFuture(false);
 			}
 		} catch (SelectorSecondaryException e) {
 			EWMessages.SELECT_POS2_NO_CENTER.sender()
-				.replace("<pos>", EWSelect.getPositionHover(position))
+				.replace("{pos}", EWSelect.getPositionHover(position))
 				.sendTo(player);
 			return CompletableFuture.completedFuture(false);
 		} catch (SelectorMaxPointsException e) {}
 		
 		EWMessages.SELECT_POS2_RADIUS.sender()
-			.replace("<pos>", EWSelect.getPositionHover(position))
-			.replace("<radius>", String.valueOf(position.distance(pos1.get())))
-			.replace("<area>", String.valueOf(player.getSelectorVolume()))
+			.replace("{pos}", EWSelect.getPositionHover(position))
+			.replace("{radius}", String.valueOf(position.distance(pos1.get())))
+			.replace("{area}", String.valueOf(player.getSelectorVolume()))
 			.sendTo(player);
 		return CompletableFuture.completedFuture(true);
 	}

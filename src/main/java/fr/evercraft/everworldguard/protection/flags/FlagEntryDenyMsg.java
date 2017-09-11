@@ -50,7 +50,7 @@ public class FlagEntryDenyMsg extends MessageFlag {
 		message.prefix(EWMessages.PREFIX)
 			.build(Priorities.FLAG)
 			.sender()
-			.replace("<region>", region)
+			.replace("{region}", region)
 			.sendTo(player);
 	}
 	

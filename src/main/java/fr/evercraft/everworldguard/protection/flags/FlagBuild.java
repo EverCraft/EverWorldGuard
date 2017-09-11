@@ -101,9 +101,9 @@ public class FlagBuild extends StateFlag {
 	public boolean sendMessage(Player player, Vector3i position) {
 		return this.plugin.getProtectionService().sendMessage(player, this,
 				EWMessages.FLAG_BUILD_MESSAGE.sender()
-					.replace("<x>", position.getX())
-					.replace("<y>", position.getY())
-					.replace("<z>", position.getZ()));
+					.replace("{x}", position.getX())
+					.replace("{y}", position.getY())
+					.replace("{z}", position.getZ()));
 	}
 
 	@Override

@@ -108,14 +108,14 @@ public class EWSelectType extends ESubCommand<EverWorldGuard> {
 		
 		if (player.getSelectorType().equals(type.get())) {
 			EWMessages.SELECT_TYPE_EQUALS.sender()
-				.replace("<type>", type.get().getName())
+				.replace("{type}", type.get().getName())
 				.sendTo(player);
 			return CompletableFuture.completedFuture(false);
 		}
 		
 		if (!player.setSelectorType(type.get())) {
 			EWMessages.SELECT_TYPE_CANCEL.sender()
-				.replace("<type>", type.get().getName())
+				.replace("{type}", type.get().getName())
 				.sendTo(player);
 			return CompletableFuture.completedFuture(false);
 		}

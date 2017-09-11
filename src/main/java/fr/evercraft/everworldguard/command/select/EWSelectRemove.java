@@ -101,7 +101,7 @@ public class EWSelectRemove extends ESubCommand<EverWorldGuard> {
 		} catch (SelectorSecondaryException | SelectorMaxPointsException e) {}
 		
 		EWMessages.SELECT_REMOVE_PLAYER.sender()
-			.replace("<pos>", EWSelect.getPositionHover(pos))
+			.replace("{pos}", EWSelect.getPositionHover(pos))
 			.sendTo(player);
 		return CompletableFuture.completedFuture(true);
 	}

@@ -109,26 +109,26 @@ public class EWSelectPos1 extends ESubCommand<EverWorldGuard> {
 		
 		if (pos1.isPresent() && pos1.get().equals(position)) {
 			EWMessages.SELECT_POS1_EQUALS.sender()
-				.replace("<position>", EWSelect.getPositionHover(position))
+				.replace("{position}", EWSelect.getPositionHover(position))
 				.sendTo(player);
 			return CompletableFuture.completedFuture(false);
 		}
 		
 		if (!player.setSelectorPrimary(position)) {
 			EWMessages.SELECT_POS1_CANCEL.sender()
-				.replace("<position>", EWSelect.getPositionHover(position))
+				.replace("{position}", EWSelect.getPositionHover(position))
 				.sendTo(player);
 			return CompletableFuture.completedFuture(false);
 		}
 		
 		if (!pos2.isPresent()) {
 			EWMessages.SELECT_POS1_ONE.sender()
-				.replace("<position>", EWSelect.getPositionHover(position))
+				.replace("{position}", EWSelect.getPositionHover(position))
 				.sendTo(player);
 		} else {
 			EWMessages.SELECT_POS1_TWO.sender()
-				.replace("<position>", EWSelect.getPositionHover(position))
-				.replace("<area>", String.valueOf(player.getSelectorVolume()))
+				.replace("{position}", EWSelect.getPositionHover(position))
+				.replace("{area}", String.valueOf(player.getSelectorVolume()))
 				.sendTo(player);
 		}
 		return CompletableFuture.completedFuture(true);
@@ -137,13 +137,13 @@ public class EWSelectPos1 extends ESubCommand<EverWorldGuard> {
 	private CompletableFuture<Boolean> commandSelectPos1Polygonal(final EPlayer player, final Vector3i position) {
 		if (!player.setSelectorPrimary(position)) {
 			EWMessages.SELECT_POS1_CANCEL.sender()
-				.replace("<position>", EWSelect.getPositionHover(position))
+				.replace("{position}", EWSelect.getPositionHover(position))
 				.sendTo(player);
 			return CompletableFuture.completedFuture(false);
 		}
 		
 		EWMessages.SELECT_POS1_POLY.sender()
-			.replace("<pos>", EWSelect.getPositionHover(position))
+			.replace("{pos}", EWSelect.getPositionHover(position))
 			.sendTo(player);
 		return CompletableFuture.completedFuture(true);
 	}
@@ -151,13 +151,13 @@ public class EWSelectPos1 extends ESubCommand<EverWorldGuard> {
 	private CompletableFuture<Boolean> commandSelectPos1Cylinder(final EPlayer player, final Vector3i position) {		
 		if (!player.setSelectorPrimary(position)) {
 			EWMessages.SELECT_POS1_CANCEL.sender()
-				.replace("<pos>", EWSelect.getPositionHover(position))
+				.replace("{pos}", EWSelect.getPositionHover(position))
 				.sendTo(player);
 			return CompletableFuture.completedFuture(false);
 		}
 		
 		EWMessages.SELECT_POS1_CENTER.sender()
-			.replace("<pos>", EWSelect.getPositionHover(position))
+			.replace("{pos}", EWSelect.getPositionHover(position))
 			.sendTo(player);
 		return CompletableFuture.completedFuture(true);
 	}

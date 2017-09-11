@@ -158,7 +158,7 @@ public class EWBypass extends ESubCommand<EverWorldGuard> {
 		if (!optPlayer.isPresent()) {
 			EAMessages.PLAYER_NOT_FOUND.sender()
 				.prefix(EWMessages.PREFIX)
-				.replace("<player>", playerString)
+				.replace("{player}", playerString)
 				.sendTo(staff);
 			return CompletableFuture.completedFuture(false);
 		}
@@ -180,17 +180,17 @@ public class EWBypass extends ESubCommand<EverWorldGuard> {
 	private CompletableFuture<Boolean> commandRegionBypassOn(final CommandSource staff, final EUser player) {
 		if (player.hasProtectionBypass()) {
 			EWMessages.REGION_BYPASS_ON_OTHERS_ERROR.sender()
-				.replace("<player>", player.getName())
+				.replace("{player}", player.getName())
 				.sendTo(staff);
 			return CompletableFuture.completedFuture(false);
 		}
 		
 		player.setProtectionBypass(true);
 		EWMessages.REGION_BYPASS_ON_OTHERS_PLAYER.sender()
-			.replace("<staff>", staff.getName())
+			.replace("{staff}", staff.getName())
 			.sendTo(player);
 		EWMessages.REGION_BYPASS_ON_OTHERS_STAFF.sender()
-			.replace("<player>", player.getName())
+			.replace("{player}", player.getName())
 			.sendTo(staff);
 		return CompletableFuture.completedFuture(true);
 	}
@@ -198,17 +198,17 @@ public class EWBypass extends ESubCommand<EverWorldGuard> {
 	private CompletableFuture<Boolean> commandRegionBypassOff(final CommandSource staff, final EUser player) {
 		if (!player.hasProtectionBypass()) {
 			EWMessages.REGION_BYPASS_OFF_OTHERS_ERROR.sender()
-				.replace("<player>", player.getName())
+				.replace("{player}", player.getName())
 				.sendTo(staff);
 			return CompletableFuture.completedFuture(false);
 		}
 		
 		player.setProtectionBypass(false);
 		EWMessages.REGION_BYPASS_OFF_OTHERS_PLAYER.sender()
-			.replace("<staff>", staff.getName())
+			.replace("{staff}", staff.getName())
 			.sendTo(player);
 		EWMessages.REGION_BYPASS_OFF_OTHERS_STAFF.sender()
-			.replace("<player>", player.getName())
+			.replace("{player}", player.getName())
 			.sendTo(staff);
 		return CompletableFuture.completedFuture(true);
 	}
@@ -216,11 +216,11 @@ public class EWBypass extends ESubCommand<EverWorldGuard> {
 	private CompletableFuture<Boolean> commandRegionBypassStatus(final CommandSource staff, final EUser player) {
 		if (player.hasProtectionBypass()) {
 			EWMessages.REGION_BYPASS_STATUS_OTHERS_ON.sender()
-				.replace("<player>", player.getName())
+				.replace("{player}", player.getName())
 				.sendTo(staff);
 		} else {
 			EWMessages.REGION_BYPASS_STATUS_OTHERS_OFF.sender()
-				.replace("<player>", player.getName())
+				.replace("{player}", player.getName())
 				.sendTo(staff);
 		}
 		return CompletableFuture.completedFuture(true);

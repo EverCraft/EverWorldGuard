@@ -77,10 +77,10 @@ public class FlagPotionSplash extends CatalogTypeFlag<PotionEffectType> {
 	public boolean sendMessage(Player player, Vector3i position, PotionEffectType type) {
 		return this.plugin.getProtectionService().sendMessage(player, this,
 				EWMessages.FLAG_POTION_SPLASH_MESSAGE.sender()
-					.replace("<x>", position.getX())
-					.replace("<y>", position.getY())
-					.replace("<z>", position.getZ())
-					.replace("<potion>", type.getTranslation()));
+					.replace("{x}", position.getX())
+					.replace("{y}", position.getY())
+					.replace("{z}", position.getZ())
+					.replace("{potion}", type.getTranslation()));
 	}
 
 	/*

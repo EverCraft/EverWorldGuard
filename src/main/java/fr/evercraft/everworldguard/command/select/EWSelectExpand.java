@@ -119,11 +119,11 @@ public class EWSelectExpand extends ESubCommand<EverWorldGuard> {
 			}
 		} catch (RegionOperationException e) {
 			EWMessages.SELECT_EXPAND_ERROR_OPERATION.sender()
-				.replace("<exception>", e.getMessage())
+				.replace("{exception}", e.getMessage())
 				.sendTo(player);
 		} catch (NoSelectedRegionException e) {
 			EWMessages.SELECT_EXPAND_ERROR_NO_REGION.sender()
-				.replace("<exception>", e.getMessage())
+				.replace("{exception}", e.getMessage())
 				.sendTo(player);
 		}
 		return CompletableFuture.completedFuture(false);
@@ -138,7 +138,7 @@ public class EWSelectExpand extends ESubCommand<EverWorldGuard> {
 		int newArea = selector.getVolume();
 		
 		EWMessages.SELECT_EXPAND_VERT.sender()
-			.replace("<size>", String.valueOf(newArea-oldArea))
+			.replace("{size}", String.valueOf(newArea-oldArea))
 			.sendTo(player);
 		return CompletableFuture.completedFuture(true);
 
@@ -149,7 +149,7 @@ public class EWSelectExpand extends ESubCommand<EverWorldGuard> {
 		if (!amount.isPresent()) {
 			EAMessages.IS_NOT_NUMBER.sender()
 				.prefix(EWMessages.PREFIX)
-				.replace("<number>", amount_string)
+				.replace("{number}", amount_string)
 				.sendTo(player);
 			return CompletableFuture.completedFuture(false);
 		}
@@ -163,7 +163,7 @@ public class EWSelectExpand extends ESubCommand<EverWorldGuard> {
 		if (!amount.isPresent()) {
 			EAMessages.IS_NOT_NUMBER.sender()
 				.prefix(EWMessages.PREFIX)
-				.replace("<number>", amount_string)
+				.replace("{number}", amount_string)
 				.sendTo(player);
 			return CompletableFuture.completedFuture(false);
 		}
@@ -178,7 +178,7 @@ public class EWSelectExpand extends ESubCommand<EverWorldGuard> {
 		if (!direction.isPresent()) {
 			EAMessages.IS_NOT_DIRECTION.sender()
 				.prefix(EWMessages.PREFIX)
-				.replace("<direction>", direction_string)
+				.replace("{direction}", direction_string)
 				.sendTo(player);
 			return CompletableFuture.completedFuture(false);
 		}
@@ -195,9 +195,9 @@ public class EWSelectExpand extends ESubCommand<EverWorldGuard> {
 		int newArea = selector.getVolume();
 		
 		EWMessages.SELECT_EXPAND_DIRECTION.sender()
-			.replace("<size>", String.valueOf(newArea-oldArea))
-			.replace("<amount>", String.valueOf(amount))
-			.replace("<direction>", UtilsDirection.getText(direction))
+			.replace("{size}", String.valueOf(newArea-oldArea))
+			.replace("{amount}", String.valueOf(amount))
+			.replace("{direction}", UtilsDirection.getText(direction))
 			.sendTo(player);
 		return CompletableFuture.completedFuture(true);
 	}
@@ -209,7 +209,7 @@ public class EWSelectExpand extends ESubCommand<EverWorldGuard> {
 		if (!amount.isPresent()) {
 			EAMessages.IS_NOT_NUMBER.sender()
 				.prefix(EWMessages.PREFIX)
-				.replace("<number>", amount_string)
+				.replace("{number}", amount_string)
 				.sendTo(player);
 			return CompletableFuture.completedFuture(false);
 		}
@@ -224,7 +224,7 @@ public class EWSelectExpand extends ESubCommand<EverWorldGuard> {
 		if (!direction.isPresent()) {
 			EAMessages.IS_NOT_DIRECTION.sender()
 				.prefix(EWMessages.PREFIX)
-				.replace("<direction>", direction_string)
+				.replace("{direction}", direction_string)
 				.sendTo(player);
 			return CompletableFuture.completedFuture(false);
 		}
@@ -233,7 +233,7 @@ public class EWSelectExpand extends ESubCommand<EverWorldGuard> {
 		if (!amountOpposite.isPresent()) {
 			EAMessages.IS_NOT_NUMBER.sender()
 				.prefix(EWMessages.PREFIX)
-				.replace("<number>", amountOpposite_string)
+				.replace("{number}", amountOpposite_string)
 				.sendTo(player);
 			return CompletableFuture.completedFuture(false);
 		}
@@ -254,11 +254,11 @@ public class EWSelectExpand extends ESubCommand<EverWorldGuard> {
 		int newArea = selector.getVolume();
 		
 		EWMessages.SELECT_EXPAND_DIRECTION_OPPOSITE.sender()
-			.replace("<size>", String.valueOf(newArea-oldArea))
-			.replace("<amount>", String.valueOf(amount))
-			.replace("<direction>", UtilsDirection.getText(direction))
-			.replace("<amount_opposite>", String.valueOf(amountOpposite))
-			.replace("<direction_opposite>", UtilsDirection.getText(directionOpposite))
+			.replace("{size}", String.valueOf(newArea-oldArea))
+			.replace("{amount}", String.valueOf(amount))
+			.replace("{direction}", UtilsDirection.getText(direction))
+			.replace("{amount_opposite}", String.valueOf(amountOpposite))
+			.replace("{direction_opposite}", UtilsDirection.getText(directionOpposite))
 			.sendTo(player);
 		return CompletableFuture.completedFuture(true);
 	}

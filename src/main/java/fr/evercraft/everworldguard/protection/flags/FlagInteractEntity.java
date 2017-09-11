@@ -60,10 +60,10 @@ public class FlagInteractEntity extends EntityTemplateFlag {
 		Vector3i position = entity.getLocation().getPosition().toInt();
 		return this.plugin.getProtectionService().sendMessage(player, this,
 				EWMessages.FLAG_INTERACT_ENTITY_MESSAGE.sender()
-					.replace("<x>", position.getX())
-					.replace("<y>", position.getY())
-					.replace("<z>", position.getZ())
-					.replace("<entity>", entity.getType().getTranslation()));
+					.replace("{x}", position.getX())
+					.replace("{y}", position.getY())
+					.replace("{z}", position.getZ())
+					.replace("{entity}", entity.getType().getTranslation()));
 	}
 	
 	/*

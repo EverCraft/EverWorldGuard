@@ -127,7 +127,7 @@ public class EWRegionMemberAdd extends ESubCommand<EverWorldGuard> {
 			} else {
 				EAMessages.WORLD_NOT_FOUND.sender()
 					.prefix(EWMessages.PREFIX)
-					.replace("<world>", world_arg.get())
+					.replace("{world}", world_arg.get())
 					.sendTo(source);
 				return CompletableFuture.completedFuture(false);
 			}
@@ -145,14 +145,14 @@ public class EWRegionMemberAdd extends ESubCommand<EverWorldGuard> {
 		if (!region.isPresent()) {
 			EAMessages.REGION_NOT_FOUND.sender()
 				.prefix(EWMessages.PREFIX)
-				.replace("<region>", args_string.get(0))
+				.replace("{region}", args_string.get(0))
 				.sendTo(source);
 			return CompletableFuture.completedFuture(false);
 		}
 		
 		if (!this.hasPermission(source, region.get(), world)) {
 			EWMessages.REGION_NO_PERMISSION.sender()
-				.replace("<region>", region.get().getName())
+				.replace("{region}", region.get().getName())
 				.sendTo(source);
 			return CompletableFuture.completedFuture(false);
 		}
@@ -173,7 +173,7 @@ public class EWRegionMemberAdd extends ESubCommand<EverWorldGuard> {
 			} else {
 				EAMessages.PLAYER_NOT_FOUND.sender()
 					.prefix(EWMessages.PREFIX)
-					.replace("<player>", player_string)
+					.replace("{player}", player_string)
 					.sendTo(source);
 				return CompletableFuture.completedFuture(false);
 			}
@@ -199,17 +199,17 @@ public class EWRegionMemberAdd extends ESubCommand<EverWorldGuard> {
 					}
 					
 					EWMessages.REGION_MEMBER_ADD_PLAYERS.sender()
-						.replace("<region>", region.getName())
-						.replace("<world>", world.getName())
-						.replace("<players>", String.join(EWMessages.REGION_MEMBER_ADD_PLAYERS_JOIN.getString(), players.stream().map(owner -> owner.getName()).collect(Collectors.toList())))
+						.replace("{region}", region.getName())
+						.replace("{world}", world.getName())
+						.replace("{players}", String.join(EWMessages.REGION_MEMBER_ADD_PLAYERS_JOIN.getString(), players.stream().map(owner -} owner.getName()).collect(Collectors.toList())))
 						.sendTo(source);
 					return true;
 				});
 		} catch (MaxPlayersException e) {
 			EWMessages.REGION_MEMBER_ADD_ERROR_MAX.sender()
-				.replace("<region>", region.getName())
-				.replace("<world>", world.getName())
-				.replace("<max>", this.plugin.getConfigs().getRegionMaxRegionCountPerPlayer())
+				.replace("{region}", region.getName())
+				.replace("{world}", world.getName())
+				.replace("{max}", this.plugin.getConfigs().getRegionMaxRegionCountPerPlayer())
 				.sendTo(source);
 		}
 		return CompletableFuture.completedFuture(false);
@@ -218,9 +218,9 @@ public class EWRegionMemberAdd extends ESubCommand<EverWorldGuard> {
 	private CompletableFuture<Boolean> commandRegionMemberAddPlayer(final CommandSource source, final ProtectedRegion region, final User player, final World world) {
 		if (region.getMembers().containsPlayer(player.getUniqueId())) {
 			EWMessages.REGION_MEMBER_ADD_PLAYER_ERROR.sender()
-				.replace("<region>", region.getName())
-				.replace("<world>", world.getName())
-				.replace("<player>", player.getName())
+				.replace("{region}", region.getName())
+				.replace("{world}", world.getName())
+				.replace("{player}", player.getName())
 				.sendTo(source);
 			return CompletableFuture.completedFuture(false);
 		}
@@ -235,17 +235,17 @@ public class EWRegionMemberAdd extends ESubCommand<EverWorldGuard> {
 					}
 					
 					EWMessages.REGION_MEMBER_ADD_PLAYER.sender()
-						.replace("<region>", region.getName())
-						.replace("<world>", world.getName())
-						.replace("<player>", player.getName())
+						.replace("{region}", region.getName())
+						.replace("{world}", world.getName())
+						.replace("{player}", player.getName())
 						.sendTo(source);
 					return true;
 				});
 		} catch (MaxPlayersException e) {
 			EWMessages.REGION_MEMBER_ADD_ERROR_MAX.sender()
-				.replace("<region>", region.getName())
-				.replace("<world>", world.getName())
-				.replace("<max>", this.plugin.getConfigs().getRegionMaxRegionCountPerPlayer())
+				.replace("{region}", region.getName())
+				.replace("{world}", world.getName())
+				.replace("{max}", this.plugin.getConfigs().getRegionMaxRegionCountPerPlayer())
 				.sendTo(source);
 		}
 		return CompletableFuture.completedFuture(false);
@@ -260,7 +260,7 @@ public class EWRegionMemberAdd extends ESubCommand<EverWorldGuard> {
 			} else {
 				EAMessages.GROUP_NOT_FOUND.sender()
 					.prefix(EWMessages.PREFIX)
-					.replace("<group>", group_string)
+					.replace("{group}", group_string)
 					.sendTo(source);
 				return CompletableFuture.completedFuture(false);
 			}
@@ -285,9 +285,9 @@ public class EWRegionMemberAdd extends ESubCommand<EverWorldGuard> {
 				}
 				
 				EWMessages.REGION_MEMBER_ADD_GROUPS.sender()
-					.replace("<region>", region.getName())
-					.replace("<world>", world.getName())
-					.replace("<groups>", String.join(EWMessages.REGION_MEMBER_ADD_GROUPS_JOIN.getString(), groups.stream().map(owner -> owner.getIdentifier()).collect(Collectors.toList())))
+					.replace("{region}", region.getName())
+					.replace("{world}", world.getName())
+					.replace("{groups}", String.join(EWMessages.REGION_MEMBER_ADD_GROUPS_JOIN.getString(), groups.stream().map(owner -} owner.getIdentifier()).collect(Collectors.toList())))
 					.sendTo(source);
 				return true;
 			});
@@ -296,9 +296,9 @@ public class EWRegionMemberAdd extends ESubCommand<EverWorldGuard> {
 	private CompletableFuture<Boolean> commandRegionMemberAddGroup(final CommandSource source, final ProtectedRegion region, final Subject group, final World world) {
 		if (region.getMembers().containsGroup(group)) {
 			EWMessages.REGION_MEMBER_ADD_GROUP_ERROR.sender()
-				.replace("<region>", region.getName())
-				.replace("<world>", world.getName())
-				.replace("<group>", group.getIdentifier())
+				.replace("{region}", region.getName())
+				.replace("{world}", world.getName())
+				.replace("{group}", group.getIdentifier())
 				.sendTo(source);
 			return CompletableFuture.completedFuture(false);
 		}
@@ -312,9 +312,9 @@ public class EWRegionMemberAdd extends ESubCommand<EverWorldGuard> {
 				}
 				
 				EWMessages.REGION_MEMBER_ADD_GROUP.sender()
-				.replace("<region>", region.getName())
-				.replace("<world>", world.getName())
-				.replace("<group>", group.getIdentifier())
+				.replace("{region}", region.getName())
+				.replace("{world}", world.getName())
+				.replace("{group}", group.getIdentifier())
 				.sendTo(source);
 				return true;
 			});

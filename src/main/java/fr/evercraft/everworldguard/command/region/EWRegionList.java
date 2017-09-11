@@ -117,7 +117,7 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 			} else {
 				EAMessages.WORLD_NOT_FOUND.sender()
 					.prefix(EWMessages.PREFIX)
-					.replace("<world>", arg_world.get())
+					.replace("{world}", arg_world.get())
 					.sendTo(source);
 				return CompletableFuture.completedFuture(false);
 			}
@@ -178,11 +178,11 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 		TreeMap<String, Text> list = new TreeMap<String, Text>();
 		for (ProtectedRegion region : this.plugin.getProtectionService().getOrCreateEWorld(world).getAll()) {
 			list.put(region.getName(), EWMessages.REGION_LIST_ALL_LINE.getFormat()
-					.toText("<region>", Text.builder(region.getName())
+					.toText("{region}", Text.builder(region.getName())
 								.onShiftClick(TextActions.insertText(region.getName()))
 								.build(),
-							"<type>", region.getType().getNameFormat(),
-							"<priority>", String.valueOf(region.getPriority()))
+							"{type}", region.getType().getNameFormat(),
+							"{priority}", String.valueOf(region.getPriority()))
 					.toBuilder()
 					.onClick(TextActions.suggestCommand(
 							"/" + this.getParentName() + " info -w \"" + world.getName() + "\" \"" + region.getName() + "\""))
@@ -195,7 +195,7 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 		
 		this.plugin.getEverAPI().getManagerService().getEPagination().sendTo(
 				EWMessages.REGION_LIST_ALL_TITLE.getFormat()
-					.toText("<world>", world.getName())
+					.toText("{world}", world.getName())
 					.toBuilder()
 					.onClick(TextActions.runCommand("/" + this.getName() + " -w \"" + world.getName() + "\""))
 					.build(), 
@@ -210,7 +210,7 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 		if (!user.isPresent()) {
 			EAMessages.PLAYER_NOT_FOUND.sender()
 				.prefix(EWMessages.PREFIX)
-				.replace("<player>", playerString)
+				.replace("{player}", playerString)
 				.sendTo(staff);
 			return CompletableFuture.completedFuture(false);
 		}
@@ -223,11 +223,11 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 		for (ProtectedRegion region : this.plugin.getProtectionService().getOrCreateEWorld(world).getAll()) {
 			if (region.isOwnerOrMember(user, UtilsContexts.get(world.getName()))) {
 				list.put(region.getName(), EWMessages.REGION_LIST_PLAYER_LINE.getFormat()
-						.toText("<region>", Text.builder(region.getName())
+						.toText("{region}", Text.builder(region.getName())
 									.onShiftClick(TextActions.insertText(region.getName()))
 									.build(),
-								"<type>", region.getType().getNameFormat(),
-								"<priority>", String.valueOf(region.getPriority()))
+								"{type}", region.getType().getNameFormat(),
+								"{priority}", String.valueOf(region.getPriority()))
 						.toBuilder()
 						.onClick(TextActions.suggestCommand(
 								"/" + this.getParentName() + " info -w \"" + world.getName() + "\" \"" + region.getName() + "\""))
@@ -248,8 +248,8 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 		
 		this.plugin.getEverAPI().getManagerService().getEPagination().sendTo(
 				title
-					.toText("<world>", world.getName(),
-							"<player>", user.getName())
+					.toText("{world}", world.getName(),
+							"{player}", user.getName())
 					.toBuilder()
 					.onClick(TextActions.runCommand("/" + this.getName() + " -w \"" + world.getName() + "\" -p \"" + user.getIdentifier() + "\""))
 					.build(), 
@@ -264,7 +264,7 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 		if (group == null){
 			EAMessages.GROUP_NOT_FOUND.sender()
 				.prefix(EWMessages.PREFIX)
-				.replace("<player>", groupString)
+				.replace("{player}", groupString)
 				.sendTo(player);
 			return CompletableFuture.completedFuture(false);
 		}
@@ -273,11 +273,11 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 		for (ProtectedRegion region : this.plugin.getProtectionService().getOrCreateEWorld(world).getAll()) {
 			if (region.isOwnerOrMember(group)) {
 				list.put(region.getName(), EWMessages.REGION_LIST_GROUP_LINE.getFormat()
-						.toText("<region>", Text.builder(region.getName())
+						.toText("{region}", Text.builder(region.getName())
 									.onShiftClick(TextActions.insertText(region.getName()))
 									.build(),
-								"<type>", region.getType().getNameFormat(),
-								"<priority>", String.valueOf(region.getPriority()))
+								"{type}", region.getType().getNameFormat(),
+								"{priority}", String.valueOf(region.getPriority()))
 						.toBuilder()
 						.onClick(TextActions.suggestCommand(
 								"/" + this.getParentName() + " info -w \"" + world.getName() + "\" \"" + region.getName() + "\""))
@@ -291,8 +291,8 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 		
 		this.plugin.getEverAPI().getManagerService().getEPagination().sendTo(
 				EWMessages.REGION_LIST_GROUP_TITLE.getFormat()
-					.toText("<world>", world.getName(),
-							"<group>", group.getIdentifier())
+					.toText("{world}", world.getName(),
+							"{group}", group.getIdentifier())
 					.toBuilder()
 					.onClick(TextActions.runCommand("/" + this.getName() + " -w \"" + world.getName() + "\" -g \"" + group.getIdentifier() + "\""))
 					.build(), 

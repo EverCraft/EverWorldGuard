@@ -85,7 +85,7 @@ public class EWRegionLoad extends ESubCommand<EverWorldGuard> {
 			if (!world.isPresent()) {
 				EAMessages.WORLD_NOT_FOUND.sender()
 					.prefix(EWMessages.PREFIX)
-					.replace("<world>", worldString.get())
+					.replace("{world}", worldString.get())
 					.sendTo(source);
 				return CompletableFuture.completedFuture(false);
 			}
@@ -105,7 +105,7 @@ public class EWRegionLoad extends ESubCommand<EverWorldGuard> {
 	private CompletableFuture<Boolean> commandRegionLoad(CommandSource source, World world) {
 		this.plugin.getProtectionService().getOrCreateEWorld(world).reload();
 		EWMessages.REGION_LOAD_MESSAGE.sender()
-			.replace("<world>", world.getName())
+			.replace("{world}", world.getName())
 			.sendTo(source);
 		return CompletableFuture.completedFuture(true);
 	}

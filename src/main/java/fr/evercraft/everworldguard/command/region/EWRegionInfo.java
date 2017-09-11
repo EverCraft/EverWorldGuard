@@ -190,7 +190,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 		if (!world.isPresent()) {
 			EAMessages.WORLD_NOT_FOUND.sender()
 				.prefix(EWMessages.PREFIX)
-				.replace("<world>", world_string)
+				.replace("{world}", world_string)
 				.sendTo(player);
 			return CompletableFuture.completedFuture(false);
 		}
@@ -204,14 +204,14 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 		if (!region.isPresent()) {
 			EAMessages.REGION_NOT_FOUND.sender()
 				.prefix(EWMessages.PREFIX)
-				.replace("<region>", region_string)
+				.replace("{region}", region_string)
 				.sendTo(player);
 			return CompletableFuture.completedFuture(false);
 		}
 		
 		if (!this.hasPermission(player, region.get(), world)) {
 			EWMessages.REGION_NO_PERMISSION.sender()
-				.replace("<region>", region.get().getName())
+				.replace("{region}", region.get().getName())
 				.sendTo(player);
 			return CompletableFuture.completedFuture(false);
 		}		
@@ -224,13 +224,13 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 		
 		for (ProtectedRegion region : regions) {
 			this.addLine(map, region, EWMessages.REGION_INFO_LIST_LINE.getFormat()
-					.toText("<region>", Text.builder(region.getName())
+					.toText("{region}", Text.builder(region.getName())
 								.onShiftClick(TextActions.insertText(region.getName()))
 								.onClick(TextActions.suggestCommand(
 									"/" + this.getName() + " -w \"" + world.getName() + "\" \"" + region.getName() + "\""))
 								.build(),
-							"<type>", region.getType().getNameFormat(),
-							"<priority>", Text.builder(String.valueOf(region.getPriority()))
+							"{type}", region.getType().getNameFormat(),
+							"{priority}", Text.builder(String.valueOf(region.getPriority()))
 								.onClick(TextActions.suggestCommand(
 									"/" + this.getParentName() + " setpriority -w \"" + world.getName() + "\" \"" + region.getName() + "\" " + region.getPriority()))
 								.build()));
@@ -238,7 +238,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 		
 		this.plugin.getEverAPI().getManagerService().getEPagination().sendTo(
 				EWMessages.REGION_INFO_LIST_TITLE.getFormat()
-					.toText("<region>", world.getName())
+					.toText("{region}", world.getName())
 					.toBuilder()
 					.onClick(TextActions.runCommand("/" + this.getName() + " -w \"" + world.getName() + "\""))
 					.build(), 
@@ -252,15 +252,15 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 		
 		// World
 		this.addLine(list, EWMessages.REGION_INFO_ONE_WORLD.getFormat()
-								.toText("<world>", world.getName()));
+								.toText("{world}", world.getName()));
 		
 		// Type
 		this.addLine(list, EWMessages.REGION_INFO_ONE_TYPE.getFormat()
-								.toText("<type>", region.getType().getNameFormat()));
+								.toText("{type}", region.getType().getNameFormat()));
 		
 		// Priority
 		this.addLine(list, EWMessages.REGION_INFO_ONE_PRIORITY.getFormat()
-				.toText("<prority>", Text.builder(String.valueOf(region.getPriority()))
+				.toText("{prority}", Text.builder(String.valueOf(region.getPriority()))
 					.onClick(TextActions.suggestCommand(
 						"/" + this.getParentName() + " setpriority -w \"" + world.getName() + "\" \"" + region.getName() + "\" " + region.getPriority()))
 					.build()));
@@ -270,17 +270,17 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 			Vector3i min = region.getMinimumPoint();
 			Vector3i max = region.getMaximumPoint();
 			Map<String, EReplace<?>> replaces = new HashMap<String, EReplace<?>>();
-			replaces.put("<min_x>", EReplace.of(String.valueOf(min.getX())));
-			replaces.put("<min_y>", EReplace.of(String.valueOf(min.getY())));
-			replaces.put("<min_z>", EReplace.of(String.valueOf(min.getZ())));
-			replaces.put("<max_x>", EReplace.of(String.valueOf(max.getX())));
-			replaces.put("<max_y>", EReplace.of(String.valueOf(max.getY())));
-			replaces.put("<max_z>", EReplace.of(String.valueOf(max.getZ())));
+			replaces.put("{min_x}", EReplace.of(String.valueOf(min.getX())));
+			replaces.put("{min_y}", EReplace.of(String.valueOf(min.getY())));
+			replaces.put("{min_z}", EReplace.of(String.valueOf(min.getZ())));
+			replaces.put("{max_x}", EReplace.of(String.valueOf(max.getX())));
+			replaces.put("{max_y}", EReplace.of(String.valueOf(max.getY())));
+			replaces.put("{max_z}", EReplace.of(String.valueOf(max.getZ())));
 			
 			
 			if (region.getType().equals(ProtectedRegion.Types.CUBOID)) {
 				this.addLine(list, EWMessages.REGION_INFO_ONE_POINTS.getFormat()
-						.toText("<positions>",  EWMessages.REGION_INFO_ONE_POINTS_CUBOID.getFormat()
+						.toText("{positions}",  EWMessages.REGION_INFO_ONE_POINTS_CUBOID.getFormat()
 								.toText2(replaces).toBuilder()
 								.onHover(TextActions.showText(EWMessages.REGION_INFO_ONE_POINTS_CUBOID_HOVER.getFormat()
 										.toText2(replaces)))
@@ -290,16 +290,16 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 				int num = 1;
 				for(Vector3i pos : region.getPoints()) {
 					positions.add(EWMessages.REGION_INFO_ONE_POINTS_POLYGONAL_HOVER_POSITIONS.getFormat()
-							.toText("<num>", String.valueOf(num),
-									"<x>", String.valueOf(pos.getX()),
-									"<y>", String.valueOf(pos.getY()),
-									"<z>", String.valueOf(pos.getZ())));
+							.toText("{num}", String.valueOf(num),
+									"{x}", String.valueOf(pos.getX()),
+									"{y}", String.valueOf(pos.getY()),
+									"{z}", String.valueOf(pos.getZ())));
 					num++;
 				}				
-				replaces.put("<positions>", EReplace.of(Text.joinWith(EWMessages.REGION_INFO_ONE_POINTS_POLYGONAL_HOVER_JOIN.getText(), positions)));
+				replaces.put("{positions}", EReplace.of(Text.joinWith(EWMessages.REGION_INFO_ONE_POINTS_POLYGONAL_HOVER_JOIN.getText(), positions)));
 				
 				this.addLine(list, EWMessages.REGION_INFO_ONE_POINTS.getFormat()
-						.toText("<positions>",  EWMessages.REGION_INFO_ONE_POINTS_POLYGONAL.getFormat()
+						.toText("{positions}",  EWMessages.REGION_INFO_ONE_POINTS_POLYGONAL.getFormat()
 								.toText2(replaces).toBuilder()
 								.onHover(TextActions.showText(EWMessages.REGION_INFO_ONE_POINTS_POLYGONAL_HOVER.getFormat()
 										.toText2(replaces)))
@@ -311,7 +311,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 		Optional<ProtectedRegion> parent = region.getParent();
 		if (parent.isPresent()) {
 			this.addLine(list, EWMessages.REGION_INFO_ONE_PARENT.getFormat()
-					.toText("<parent>", Text.builder(parent.get().getName())
+					.toText("{parent}", Text.builder(parent.get().getName())
 						.onShiftClick(TextActions.insertText(region.getName()))
 						.onClick(TextActions.suggestCommand(
 							"/" + this.getParentName() + " setparent -w \"" + world.getName() + "\" \"" + region.getName() + "\" \"" + parent.get().getName() + "\""))
@@ -334,12 +334,12 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 				
 				ProtectedRegion curParent = parents.get(cpt);
 				message = message.concat(EWMessages.REGION_INFO_ONE_HERITAGE_LINE.getFormat()
-					.toText("<region>", Text.builder(curParent.getName())
+					.toText("{region}", Text.builder(curParent.getName())
 								.onShiftClick(TextActions.insertText(curParent.getName()))
 								.onClick(TextActions.runCommand("/" + this.getName() + " -w \"" + world.getName() + "\" \"" + curParent.getName() + "\" "))
 								.build(),
-							"<type>", curParent.getType().getNameFormat(),
-							"<priority>", String.valueOf(curParent.getPriority())));
+							"{type}", curParent.getType().getNameFormat(),
+							"{priority}", String.valueOf(curParent.getPriority())));
 				messages.add(message);
 			}
 			this.addLine(list, Text.joinWith(Text.of("\n"), messages));
@@ -367,7 +367,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 			}
 			
 			this.addLine(list, EWMessages.REGION_INFO_ONE_OWNERS.getFormat()
-					.toText("<owners>", Text.joinWith(EWMessages.REGION_INFO_ONE_OWNERS_JOIN.getText(), messages)));
+					.toText("{owners}", Text.joinWith(EWMessages.REGION_INFO_ONE_OWNERS_JOIN.getText(), messages)));
 		}
 		
 		// Groups Owner
@@ -383,7 +383,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 			}
 			
 			this.addLine(list, EWMessages.REGION_INFO_ONE_GROUP_OWNERS.getFormat()
-					.toText("<owners>", Text.joinWith(EWMessages.REGION_INFO_ONE_GROUP_OWNERS_JOIN.getText(), messages)));
+					.toText("{owners}", Text.joinWith(EWMessages.REGION_INFO_ONE_GROUP_OWNERS_JOIN.getText(), messages)));
 		}
 		
 		// Members
@@ -408,7 +408,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 			}
 			
 			this.addLine(list, EWMessages.REGION_INFO_ONE_MEMBERS.getFormat()
-					.toText("<members>", Text.joinWith(EWMessages.REGION_INFO_ONE_MEMBERS_JOIN.getText(), messages)));
+					.toText("{members}", Text.joinWith(EWMessages.REGION_INFO_ONE_MEMBERS_JOIN.getText(), messages)));
 		}
 		
 		// Groups Members
@@ -424,7 +424,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 			}
 			
 			this.addLine(list, EWMessages.REGION_INFO_ONE_GROUP_MEMBERS.getFormat()
-					.toText("<members>", Text.joinWith(EWMessages.REGION_INFO_ONE_GROUP_MEMBERS_JOIN.getText(), messages)));
+					.toText("{members}", Text.joinWith(EWMessages.REGION_INFO_ONE_GROUP_MEMBERS_JOIN.getText(), messages)));
 		}
 		
 		// Flags
@@ -439,10 +439,10 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 				values.getAll().forEach((association, value) ->  {
 					String value_string = key.serialize((T) value);
 					Text message = EWMessages.REGION_INFO_ONE_FLAGS_LINE.getFormat()
-							.toText("<flag>",  flag.getNameFormat().toBuilder()
+							.toText("{flag}",  flag.getNameFormat().toBuilder()
 													.onShiftClick(TextActions.insertText(flag.getId()))
 													.build(),
-									"<value>", key.getValueFormat((T) value).toBuilder()
+									"{value}", key.getValueFormat((T) value).toBuilder()
 													.onShiftClick(TextActions.insertText(value_string))
 													.onClick(TextActions.suggestCommand(
 						"/" + this.getParentName() + " removeflag -w \"" + world.getName() + "\" \"" + region.getName() + "\" \"" + flag.getName() + "\" \"" + association.getName() + "\""))
@@ -529,7 +529,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 		
 		this.plugin.getEverAPI().getManagerService().getEPagination().sendTo(
 				EWMessages.REGION_INFO_ONE_TITLE.getFormat()
-					.toText("<region>", region.getName())
+					.toText("{region}", region.getName())
 					.toBuilder()
 					.onClick(TextActions.runCommand("/" + this.getName() + " -w \"" + world.getName() + "\" \"" + region.getName() + "\" "))
 					.build(), 
@@ -553,10 +553,10 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 	private <T> Text getTextHeritagFlagsLine(final Flag<T> flag, final T value, final Group association, final ProtectedRegion curParent, final World world) {
 		String value_string = flag.serialize(value);
 		return EWMessages.REGION_INFO_ONE_HERITAGE_FLAGS_LINE.getFormat()
-				.toText("<flag>",  flag.getNameFormat().toBuilder()
+				.toText("{flag}",  flag.getNameFormat().toBuilder()
 										.onShiftClick(TextActions.insertText(flag.getId()))
 										.build(),
-						"<value>", flag.getValueFormat(value).toBuilder()
+						"{value}", flag.getValueFormat(value).toBuilder()
 										.onShiftClick(TextActions.insertText(value_string))
 										.onClick(TextActions.suggestCommand(
 			"/" + this.getParentName() + " removeflag -w \"" + world.getName() + "\" \"" + curParent.getName() + "\" \"" + flag.getName() + "\" \"" + association.getName() + "\""))

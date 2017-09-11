@@ -128,7 +128,7 @@ public class EWRegionSelect extends ESubCommand<EverWorldGuard> {
 			} else {
 				EAMessages.WORLD_NOT_FOUND.sender()
 					.prefix(EWMessages.PREFIX)
-					.replace("<world>", world_arg.get())
+					.replace("{world}", world_arg.get())
 					.sendTo(source);
 				return CompletableFuture.completedFuture(false);
 			}
@@ -146,14 +146,14 @@ public class EWRegionSelect extends ESubCommand<EverWorldGuard> {
 		if (!region.isPresent()) {
 			EAMessages.REGION_NOT_FOUND.sender()
 				.prefix(EWMessages.PREFIX)
-				.replace("<region>", args_string.get(0))
+				.replace("{region}", args_string.get(0))
 				.sendTo(source);
 			return CompletableFuture.completedFuture(false);
 		}
 		
 		if (!this.hasPermission(source, region.get(), world)) {
 			EWMessages.REGION_NO_PERMISSION.sender()
-				.replace("<region>", region.get().getName())
+				.replace("{region}", region.get().getName())
 				.sendTo(source);
 			return CompletableFuture.completedFuture(false);
 		}
@@ -169,15 +169,15 @@ public class EWRegionSelect extends ESubCommand<EverWorldGuard> {
 			return this.commandRegionSelectPolygonal(player, region, world);
 		} else if (type.equals(Types.GLOBAL)) {
 			EWMessages.REGION_SELECT_GLOBAL.sender()
-				.replace("<region>", region.getName())
-				.replace("<world>", world.getName())
-				.replace("<type>", type.getNameFormat())
+				.replace("{region}", region.getName())
+				.replace("{world}", world.getName())
+				.replace("{type}", type.getNameFormat())
 				.sendTo(player);
 		} else if (type.equals(Types.TEMPLATE)) {
 			EWMessages.REGION_SELECT_TEMPLATE.sender()
-				.replace("<region>", region.getName())
-				.replace("<world>", world.getName())
-				.replace("<type>", type.getNameFormat())
+				.replace("{region}", region.getName())
+				.replace("{world}", world.getName())
+				.replace("{type}", type.getNameFormat())
 				.sendTo(player);
 		}
 		return CompletableFuture.completedFuture(false);
@@ -194,18 +194,18 @@ public class EWRegionSelect extends ESubCommand<EverWorldGuard> {
 		} catch (SelectorSecondaryException | SelectorMaxPointsException e) {}
 		
 		Map<String, EReplace<?>> replaces = new HashMap<String, EReplace<?>>();
-		replaces.put("<min_x>", EReplace.of(String.valueOf(min.getX())));
-		replaces.put("<min_y>", EReplace.of(String.valueOf(min.getY())));
-		replaces.put("<min_z>", EReplace.of(String.valueOf(min.getZ())));
-		replaces.put("<max_x>", EReplace.of(String.valueOf(max.getX())));
-		replaces.put("<max_y>", EReplace.of(String.valueOf(max.getY())));
-		replaces.put("<max_z>", EReplace.of(String.valueOf(max.getZ())));
-		replaces.put("<region>", EReplace.of(region.getName()));
-		replaces.put("<type>", EReplace.of(region.getType().getNameFormat()));
+		replaces.put("{min_x}", EReplace.of(String.valueOf(min.getX())));
+		replaces.put("{min_y}", EReplace.of(String.valueOf(min.getY())));
+		replaces.put("{min_z}", EReplace.of(String.valueOf(min.getZ())));
+		replaces.put("{max_x}", EReplace.of(String.valueOf(max.getX())));
+		replaces.put("{max_y}", EReplace.of(String.valueOf(max.getY())));
+		replaces.put("{max_z}", EReplace.of(String.valueOf(max.getZ())));
+		replaces.put("{region}", EReplace.of(region.getName()));
+		replaces.put("{type}", EReplace.of(region.getType().getNameFormat()));
 		
 		EWMessages.REGION_SELECT_CUBOID.sender()
 			.replaceString(replaces)
-			.replace("<positions>", EWMessages.REGION_SELECT_CUBOID_POINTS.getFormat()
+			.replace("{positions}", EWMessages.REGION_SELECT_CUBOID_POINTS.getFormat()
 					.toText2(replaces).toBuilder()
 					.onHover(TextActions.showText(EWMessages.REGION_SELECT_CUBOID_POINTS_HOVER.getFormat()
 							.toText2(replaces)))
@@ -230,26 +230,26 @@ public class EWRegionSelect extends ESubCommand<EverWorldGuard> {
 		Vector3i max = region.getMaximumPoint();
 		List<Text> positions_text = new ArrayList<Text>();
 		Map<String, EReplace<?>> replaces = new HashMap<String, EReplace<?>>();
-		replaces.put("<min_x>", EReplace.of(String.valueOf(min.getX())));
-		replaces.put("<min_y>", EReplace.of(String.valueOf(min.getY())));
-		replaces.put("<min_z>", EReplace.of(String.valueOf(min.getZ())));
-		replaces.put("<max_x>", EReplace.of(String.valueOf(max.getX())));
-		replaces.put("<max_y>", EReplace.of(String.valueOf(max.getY())));
-		replaces.put("<max_z>", EReplace.of(String.valueOf(max.getZ())));
-		replaces.put("<region>", EReplace.of(region.getName()));
-		replaces.put("<type>", EReplace.of(region.getType().getNameFormat()));
+		replaces.put("{min_x}", EReplace.of(String.valueOf(min.getX())));
+		replaces.put("{min_y}", EReplace.of(String.valueOf(min.getY())));
+		replaces.put("{min_z}", EReplace.of(String.valueOf(min.getZ())));
+		replaces.put("{max_x}", EReplace.of(String.valueOf(max.getX())));
+		replaces.put("{max_y}", EReplace.of(String.valueOf(max.getY())));
+		replaces.put("{max_z}", EReplace.of(String.valueOf(max.getZ())));
+		replaces.put("{region}", EReplace.of(region.getName()));
+		replaces.put("{type}", EReplace.of(region.getType().getNameFormat()));
 		
 		for(Vector3i pos : region.getPoints()) {
 			positions_text.add(EWMessages.REGION_SELECT_POLYGONAL_POINTS_HOVER_LINE.getFormat()
-					.toText("<x>", String.valueOf(pos.getX()),
-							"<y>", String.valueOf(pos.getY()),
-							"<z>", String.valueOf(pos.getZ())));
+					.toText("{x}", String.valueOf(pos.getX()),
+							"{y}", String.valueOf(pos.getY()),
+							"{z}", String.valueOf(pos.getZ())));
 		}				
-		replaces.put("<positions>", EReplace.of(Text.joinWith(EWMessages.REGION_SELECT_POLYGONAL_POINTS_HOVER_JOIN.getText(), positions_text)));
+		replaces.put("{positions}", EReplace.of(Text.joinWith(EWMessages.REGION_SELECT_POLYGONAL_POINTS_HOVER_JOIN.getText(), positions_text)));
 		
 		EWMessages.REGION_SELECT_POLYGONAL.sender()
 			.replaceString(replaces)
-			.replace("<positions>", EWMessages.REGION_SELECT_POLYGONAL_POINTS.getFormat()
+			.replace("{positions}", EWMessages.REGION_SELECT_POLYGONAL_POINTS.getFormat()
 					.toText2(replaces).toBuilder()
 					.onHover(TextActions.showText(EWMessages.REGION_SELECT_POLYGONAL_POINTS_HOVER.getFormat()
 							.toText2(replaces)))

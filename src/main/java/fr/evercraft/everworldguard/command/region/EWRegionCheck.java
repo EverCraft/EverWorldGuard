@@ -117,7 +117,7 @@ public class EWRegionCheck extends ESubCommand<EverWorldGuard> {
 			Optional<ProtectedRegion.Group> group = this.plugin.getGame().getRegistry().getType(ProtectedRegion.Group.class, optGroupString.get());
 			if (!group.isPresent()) {
 				EWMessages.GROUP_NOT_FOUND.sender()
-					.replace("<group>", optGroupString.get())
+					.replace("{group}", optGroupString.get())
 					.sendTo(source);
 				return CompletableFuture.completedFuture(false);
 			}
@@ -129,7 +129,7 @@ public class EWRegionCheck extends ESubCommand<EverWorldGuard> {
 			Optional<Flag<?>> flag = this.plugin.getProtectionService().getFlag(optFlagString.get());
 			if (!flag.isPresent()) {
 				EWMessages.FLAG_NOT_FOUND.sender()
-					.replace("<flag>", optFlagString.get())
+					.replace("{flag}", optFlagString.get())
 					.sendTo(source);
 				return CompletableFuture.completedFuture(false);
 			}
@@ -152,7 +152,7 @@ public class EWRegionCheck extends ESubCommand<EverWorldGuard> {
 		
 		this.plugin.getEverAPI().getManagerService().getEPagination().sendTo(
 				EWMessages.REGION_CHECK_GROUP_TITLE.getFormat()
-					.toText("<group>", group.getNameFormat())
+					.toText("{group}", group.getNameFormat())
 					.toBuilder()
 					.onClick(TextActions.runCommand("/" + this.getName() + " " + MARKER_REGION_GROUP + " " + group.getName()))
 					.build(), 
@@ -179,7 +179,7 @@ public class EWRegionCheck extends ESubCommand<EverWorldGuard> {
 		
 		this.plugin.getEverAPI().getManagerService().getEPagination().sendTo(
 				EWMessages.REGION_CHECK_FLAG_TITLE.getFormat()
-					.toText("<flag>", flag.getNameFormat())
+					.toText("{flag}", flag.getNameFormat())
 					.toBuilder()
 					.onClick(TextActions.runCommand("/" + this.getName()))
 					.build(), 
@@ -197,25 +197,25 @@ public class EWRegionCheck extends ESubCommand<EverWorldGuard> {
 		
 		if (region.isPresent()) {
 			return messageRegion.getFormat()
-						.toText("<region>",  Text.builder(region.get().getName())
+						.toText("{region}",  Text.builder(region.get().getName())
 												.onShiftClick(TextActions.insertText(flag.getId()))
 												.onClick(TextActions.suggestCommand(
 					"/" + this.getParentName() + " info -w \"" + world.getName() + "\" \"" + region.get().getName() + "\""))
 												.build(),
-								"<flag>",  flag.getNameFormat().toBuilder()
+								"{flag}",  flag.getNameFormat().toBuilder()
 												.onShiftClick(TextActions.insertText(flag.getId()))
 												.build(),
-								"<value>", valueFormat.toBuilder()
+								"{value}", valueFormat.toBuilder()
 												.onShiftClick(TextActions.insertText(valueString))
 												.onClick(TextActions.suggestCommand(
 					"/" + this.getParentName() + " removeflag -w \"" + world.getName() + "\" \"" + region.get().getName() + "\" \"" + flag.getName() + "\" \"" + ProtectedRegion.Groups.DEFAULT.getName() + "\""))
 												.build());
 		} else {
 			return messageDefault.getFormat()
-						.toText("<flag>",  flag.getNameFormat().toBuilder()
+						.toText("{flag}",  flag.getNameFormat().toBuilder()
 												.onShiftClick(TextActions.insertText(flag.getId()))
 												.build(),
-								"<value>", valueFormat.toBuilder()
+								"{value}", valueFormat.toBuilder()
 												.onShiftClick(TextActions.insertText(valueString))
 												.build());
 		}

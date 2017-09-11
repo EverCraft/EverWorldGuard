@@ -61,9 +61,9 @@ public class FlagChat extends CatalogTypeFlag<ChatType> {
 	public boolean sendMessage(Player player, Vector3i position) {
 		return this.plugin.getProtectionService().sendMessage(player, this,
 				EWMessages.FLAG_CHAT_SEND_MESSAGE.sender()
-					.replace("<x>", position.getX())
-					.replace("<y>", position.getY())
-					.replace("<z>", position.getZ()));
+					.replace("{x}", position.getX())
+					.replace("{y}", position.getY())
+					.replace("{z}", position.getZ()));
 	}
 	
     public void onMessageChannelChat(MessageChannelEvent.Chat event, WorldGuardWorld worldSender, Player playerSender) {

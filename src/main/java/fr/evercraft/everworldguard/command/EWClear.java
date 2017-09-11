@@ -68,7 +68,7 @@ public class EWClear extends ESubCommand<EverWorldGuard > {
 	public CompletableFuture<Boolean> execute(final CommandSource source, final List<String> args) throws CommandException {
 		if (args.size() == 0) {
 			EWMessages.CLEAR_ALL_CONFIRMATION.sender()
-				.replace("<confirmation>", () -> this.getButtonConfirmationAll())
+				.replace("{confirmation}", () -} this.getButtonConfirmationAll())
 				.sendTo(source);
 			return CompletableFuture.completedFuture(false);
 		} else if (args.size() == 1) {
@@ -78,13 +78,13 @@ public class EWClear extends ESubCommand<EverWorldGuard > {
 				Optional<World> world = this.plugin.getEServer().getEWorld(args.get(0));
 				if (world.isPresent()) {
 					EWMessages.CLEAR_WORLD_CONFIRMATION.sender()
-						.replace("<world>", world.get().getName())
-						.replace("<confirmation>", () -> this.getButtonConfirmationWorld(world.get()))
+						.replace("{world}", world.get().getName())
+						.replace("{confirmation}", () -} this.getButtonConfirmationWorld(world.get()))
 						.sendTo(source);
 					return CompletableFuture.completedFuture(false);
 				} else {
 					EAMessages.WORLD_NOT_FOUND.sender()
-						.replace("<world>", args.get(0))
+						.replace("{world}", args.get(0))
 						.sendTo(source);
 				}
 			}
@@ -98,7 +98,7 @@ public class EWClear extends ESubCommand<EverWorldGuard > {
 				}
 			} else {
 				EAMessages.WORLD_NOT_FOUND.sender()
-					.replace("<world>", args.get(0))
+					.replace("{world}", args.get(0))
 					.sendTo(source);
 			}
 		} else {
@@ -109,9 +109,9 @@ public class EWClear extends ESubCommand<EverWorldGuard > {
 
 	public Text getButtonConfirmationWorld(World world){
 		return EWMessages.CLEAR_WORLD_CONFIRMATION_VALID.getFormat()
-					.toText("<world>", world.getName()).toBuilder()
+					.toText("{world}", world.getName()).toBuilder()
 					.onHover(TextActions.showText(EWMessages.CLEAR_WORLD_CONFIRMATION_VALID_HOVER.getFormat()
-						.toText("<world>", world.getName())))
+						.toText("{world}", world.getName())))
 					.onClick(TextActions.runCommand("/" + this.getName() + " \"" + world.getUniqueId() + "\" -confirmation"))
 					.build();
 	}
@@ -131,11 +131,11 @@ public class EWClear extends ESubCommand<EverWorldGuard > {
 			}
 			
 			EWMessages.CLEAR_WORLD_PLAYER.sender()
-				.replace("<world>", world.getName())
+				.replace("{world}", world.getName())
 				.sendTo(source);
 			this.plugin.getELogger().info(EWMessages.CLEAR_WORLD_LOG.getFormat().toString(
-					"<player>", source.getName(),
-					"<world>", world.getName()));
+					"{player}", source.getName(),
+					"{world}", world.getName()));
 			return true;
 		}, this.plugin.getThreadAsync());
 	}
@@ -161,7 +161,7 @@ public class EWClear extends ESubCommand<EverWorldGuard > {
 			}
 			
 			EWMessages.CLEAR_ALL_PLAYER.sendTo(source);
-			this.plugin.getELogger().info(EWMessages.CLEAR_ALL_LOG.getFormat().toString("<player>", source.getName()));
+			this.plugin.getELogger().info(EWMessages.CLEAR_ALL_LOG.getFormat().toString("{player}", source.getName()));
 			return true;
 		}, this.plugin.getThreadAsync());
 	}

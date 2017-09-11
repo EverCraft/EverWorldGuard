@@ -65,10 +65,10 @@ public class FlagCommand extends StringsFlag {
 	public boolean sendMessage(Player player, Vector3i position, String command) {
 		return this.plugin.getProtectionService().sendMessage(player, this,
 				EWMessages.FLAG_COMMAND_MESSAGE.sender()
-					.replace("<x>", position.getX())
-					.replace("<y>", position.getY())
-					.replace("<z>", position.getZ())
-					.replace("<command>", command));
+					.replace("{x}", position.getX())
+					.replace("{y}", position.getY())
+					.replace("{z}", position.getZ())
+					.replace("{command}", command));
 	}
 		
 	public void onSendCommand(SendCommandEvent event) {

@@ -57,10 +57,10 @@ public class FlagItemPickup extends CatalogTypeFlag<ItemType> {
 		Vector3i position = location.getPosition().toInt();
 		return this.plugin.getProtectionService().sendMessage(player, this,
 				EWMessages.FLAG_ITEM_PICKUP_MESSAGE.sender()
-					.replace("<x>", position.getX())
-					.replace("<y>", position.getY())
-					.replace("<z>", position.getZ())
-					.replace("<item>", type.getTranslation()));
+					.replace("{x}", position.getX())
+					.replace("{y}", position.getY())
+					.replace("{z}", position.getZ())
+					.replace("{item}", type.getTranslation()));
 	}
 
 	/*
