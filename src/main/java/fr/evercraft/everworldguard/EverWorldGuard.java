@@ -21,6 +21,7 @@ import org.spongepowered.api.plugin.Plugin;
 
 import fr.evercraft.everapi.EverAPI;
 import fr.evercraft.everapi.exception.PluginDisableException;
+import fr.evercraft.everapi.exception.ServerDisableException;
 import fr.evercraft.everapi.plugin.EPlugin;
 import fr.evercraft.everapi.services.selection.SelectionService;
 import fr.evercraft.everapi.services.worldguard.WorldGuardService;
@@ -84,8 +85,9 @@ public class EverWorldGuard extends EPlugin<EverWorldGuard> {
 		this.protection.getRegister().setInitialized(false);
 	}
 
-	protected void onReload() throws PluginDisableException {
-		this.reloadConfigurations();
+	protected void onReload() throws PluginDisableException, ServerDisableException {
+		super.onReload();
+		
 		this.database.reload();
 		this.protection.reload();
 		this.flags.reload();

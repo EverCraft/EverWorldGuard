@@ -22,7 +22,6 @@ import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.ItemTypes;
 
 import fr.evercraft.everapi.plugin.file.EConfig;
-import fr.evercraft.everapi.plugin.file.EMessage;
 import fr.evercraft.everapi.sponge.UtilsItemType;
 
 public class EWConfig extends EConfig<EverWorldGuard> {
@@ -38,16 +37,8 @@ public class EWConfig extends EConfig<EverWorldGuard> {
 	
 	@Override
 	public void loadDefault() {
-		addDefault("DEBUG", false, "Displays plugin performance in the logs");
-		addDefault("LANGUAGE", EMessage.FRENCH, "Select language messages", "Examples : ", "  French : FR_fr", "  English : EN_en");
-		
-		addComment("SQL", 	"Save the user in a database : ",
-				" H2 : \"jdbc:h2:" + this.plugin.getPath().toAbsolutePath() + "/permissions\"",
-				" SQL : \"jdbc:mysql://[login[:password]@]<host>:<port>/<database>\"",
-				"By default users are saving in the 'users/'");
-		addDefault("SQL.enable", false);
-		addDefault("SQL.url", "jdbc:mysql://root:password@localhost:3306/minecraft");
-		addDefault("SQL.prefix", "everworldguard_");
+		this.configDefault();
+		this.sqlDefault();
 		
 		addDefault("message.interval", 1, "Second");
 		
