@@ -162,9 +162,9 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 				BlockTypes.FLOWER_POT)
 					.stream().map(block -> block.getId()).collect(Collectors.toList()));
 		
-		addDefault("INTERACT_BLOCK", interact_block);
+		addDefault(Arrays.asList("INTERACT_BLOCK"), interact_block);
 	}
-	
+
 	public void loadEntity() {
 		Map<String, List<String>> interact_entity = new HashMap<String, List<String>>();
 		
@@ -210,7 +210,7 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 				EntityTypes.ITEM_FRAME.getId(),
 				EntityTypes.PAINTING.getId(),
 				EntityTypes.VILLAGER.getId()));
-		addDefault("INTERACT_ENTITY, DAMAGE_ENTITY, ENTITY_DAMAGE, ENTITY_SPAWNING", interact_entity);
+		addDefault(Arrays.asList("INTERACT_ENTITY", "DAMAGE_ENTITY", "ENTITY_DAMAGE", "ENTITY_SPAWNING"), interact_entity);
 	}
 	
 	public void loadBuild() {
@@ -218,7 +218,7 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 		interact_entity.put("entities", Arrays.asList(
 				EntityTypes.PAINTING.getId(),
 				EntityTypes.ITEM_FRAME.getId()));
-		addDefault("BUILD", interact_entity);
+		addDefault(Arrays.asList("BUILD"), interact_entity);
 	}
 	
 	public void loadBlock() {
@@ -239,7 +239,7 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 		
 		blocks.put("GROUP_OTHERS", "*");
 		
-		addDefault("BLOCK_PLACE, BLOCK_BREAK", blocks);
+		addDefault(Arrays.asList("BLOCK_PLACE", "BLOCK_BREAK"), blocks);
 	}
 	
 	public void loadItem() {
@@ -262,7 +262,7 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 		
 		items.put("GROUP_OTHERS", "*");
 		
-		addDefault("ITEM_PICKUP, ITEM_DROP", items);
+		addDefault(Arrays.asList("ITEM_PICKUP", "ITEM_DROP"), items);
 	}
 	
 	public void loadExplosion() {
@@ -275,7 +275,7 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 				EntityTypes.WITHER.getId(),
 				EntityTypes.WITHER_SKULL.getId()));
 		
-		addDefault("EXPLOSION, EXPLOSION_DAMAGE, EXPLOSION_BLOCK", interact_entity);
+		addDefault(Arrays.asList("EXPLOSION", "EXPLOSION_DAMAGE", "EXPLOSION_BLOCK"), interact_entity);
 	}
 	
 	public void loadPropagation() {
@@ -287,7 +287,7 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 				BlockTypes.RED_MUSHROOM.getId(),
 				BlockTypes.BROWN_MUSHROOM.getId()));
 		
-		addDefault("PROPAGATION", propagation);
+		addDefault(Arrays.asList("PROPAGATION"), propagation);
 	}
 	
 	public void loadChat() {
@@ -297,7 +297,7 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 			chats.put(chat.getName(), Arrays.asList(chat.getId()));
 		}
 		
-		addDefault("CHAT", chats);
+		addDefault(Arrays.asList("CHAT"), chats);
 	}
 	
 	public void loadFire() {
@@ -307,7 +307,7 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 			fires.put(fire.getName(), Arrays.asList(fire.getId()));
 		}
 		
-		addDefault("FIRE", fires);
+		addDefault(Arrays.asList("FIRE"), fires);
 	}
 	
 	public void loadSnow() {
@@ -317,7 +317,7 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 			snows.put(snow.getName(), Arrays.asList(snow.getId()));
 		}
 		
-		addDefault("SNOW", snows);
+		addDefault(Arrays.asList("SNOW"), snows);
 	}
 	
 	public void loadIce() {
@@ -327,7 +327,7 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 			ices.put(ice.getName(), Arrays.asList(ice.getId()));
 		}
 		
-		addDefault("ICE", ices);
+		addDefault(Arrays.asList("ICE"), ices);
 	}
 	
 	public void loadPotion() {
@@ -364,7 +364,7 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 				PotionEffectTypes.WITHER)
 					.stream().map(block -> block.getId()).collect(Collectors.toList()));
 		
-		addDefault("POTION_SPLASH", potions);
+		addDefault(Arrays.asList("POTION_SPLASH"), potions);
 	}
 	
 	public void loadCommand() {
@@ -379,7 +379,7 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 				"-home",
 				"-spawn",
 				"-teleport"));
-		addDefault("COMMAND", commands);
+		addDefault(Arrays.asList("COMMAND"), commands);
 	}
 	
 	/*
@@ -441,15 +441,6 @@ public class EWFlagConfig extends EConfig<EverWorldGuard> {
 			groups.put(group.toString().toUpperCase(), set.build());
 		});
 		return groups.build();
-	}
-	
-	public ConfigurationNode getContains(final String name) {
-		for (Entry<Object, ? extends ConfigurationNode> config : this.getNode().getChildrenMap().entrySet()) {
-			if (config.getKey().toString().contains(name)) {
-				return config.getValue();
-			}
-		}
-		return this.get(name);
 	}
 
 	public Map<String, Set<String>> getString(final String name) {
