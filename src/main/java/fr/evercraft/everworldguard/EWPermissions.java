@@ -16,127 +16,138 @@
  */
 package fr.evercraft.everworldguard;
 
-import org.spongepowered.api.command.CommandSource;
-
-import com.google.common.base.Preconditions;
-
 import fr.evercraft.everapi.plugin.EnumPermission;
+import fr.evercraft.everapi.plugin.file.EnumMessage;
+import fr.evercraft.everworldguard.EWMessage.EWMessages;
 
 public enum EWPermissions implements EnumPermission {
-	EVERWORLDGUARD("commands.execute"),
+	EVERWORLDGUARD("commands.execute", EWMessages.PERMISSIONS_COMMANDS_EXECUTE),
 	
-	HELP("commands.help"),
-	RELOAD("commands.reload"),
-	MIGRATE("commands.migrate"),
-	CLEAR("commands.clear"),
+	HELP("commands.help", EWMessages.PERMISSIONS_COMMANDS_HELP),
+	RELOAD("commands.reload", EWMessages.PERMISSIONS_COMMANDS_RELOAD),
+	MIGRATE("commands.migrate", EWMessages.PERMISSIONS_COMMANDS_MIGRATE),
+	BYPASS("commands.bypass", EWMessages.PERMISSIONS_COMMANDS_BYPASS),
+	CLEAR("commands.clear", EWMessages.PERMISSIONS_COMMANDS_CLEAR),
 	
-	SELECT("commands.select.execute"),
-	SELECT_WAND("commands.select.wand"),
-	SELECT_POS("commands.select.pos"),
-	SELECT_EXPAND("commands.select.expand"),
-	SELECT_CUI("commands.select.cui"),
+	SELECT("commands.select.execute", EWMessages.PERMISSIONS_COMMANDS_SELECT_EXECUTE),
+	SELECT_WAND("commands.select.wand", EWMessages.PERMISSIONS_COMMANDS_SELECT_WAND),
+	SELECT_POS("commands.select.pos", EWMessages.PERMISSIONS_COMMANDS_SELECT_POS),
+	SELECT_EXPAND("commands.select.expand", EWMessages.PERMISSIONS_COMMANDS_SELECT_EXPAND),
+	SELECT_CUI("commands.select.cui", EWMessages.PERMISSIONS_COMMANDS_SELECT_CUI),
 	
-	REGION("commands.region.execute"),
-	REGION_LOAD("commands.region.load"),
-	REGION_FLAGS("commands.region.flags"),
-	REGION_BYPASS("commands.region.bypass"),
-	REGION_CHECK("commands.region.check"),
+	REGION("commands.region.execute", EWMessages.PERMISSIONS_COMMANDS_REGION_EXECUTE),
+	REGION_LOAD("commands.region.load", EWMessages.PERMISSIONS_COMMANDS_REGION_LOAD),
+	REGION_FLAGS("commands.region.flags", EWMessages.PERMISSIONS_COMMANDS_REGION_FLAGS),
+	REGION_CHECK("commands.region.check", EWMessages.PERMISSIONS_COMMANDS_REGION_CHECK),
 	
-	REGION_INFO("commands.region.info.execute"),
-	REGION_INFO_ITEM("commands.region.info.item"),
-	REGION_INFO_OWNER("commands.region.info.owner"),
-	REGION_INFO_MEMBER("commands.region.info.member"),
-	REGION_INFO_REGIONS("commands.region.info.regions"),
+	REGION_INFO("commands.region.info.execute", EWMessages.PERMISSIONS_COMMANDS_REGION_INFO_EXECUTE),
+	REGION_INFO_ITEM("commands.region.info.item", EWMessages.PERMISSIONS_COMMANDS_REGION_INFO_ITEM),
+	REGION_INFO_OWNER("commands.region.info.owner", EWMessages.PERMISSIONS_COMMANDS_REGION_INFO_OWNER),
+	REGION_INFO_MEMBER("commands.region.info.member", EWMessages.PERMISSIONS_COMMANDS_REGION_INFO_MEMBER),
+	REGION_INFO_REGIONS("commands.region.info.regions", EWMessages.PERMISSIONS_COMMANDS_REGION_INFO_REGIONS),
 	
-	REGION_LIST("commands.region.list.execute"),
-	REGION_LIST_OTHERS("commands.region.list.others"),
+	REGION_LIST("commands.region.list.execute", EWMessages.PERMISSIONS_COMMANDS_REGION_LIST_EXECUTE),
+	REGION_LIST_OTHERS("commands.region.list.others", EWMessages.PERMISSIONS_COMMANDS_REGION_LIST_OTHERS),
 	
-	REGION_DEFINE("commands.region.define.execute"),
-	REGION_DEFINE_TEMPLATE("commands.region.define.template"),
+	REGION_DEFINE("commands.region.define.execute", EWMessages.PERMISSIONS_COMMANDS_REGION_DEFINE_EXECUTE),
+	REGION_DEFINE_TEMPLATE("commands.region.define.template", EWMessages.PERMISSIONS_COMMANDS_REGION_DEFINE_TEMPLATE),
 	
-	REGION_REMOVE("commands.region.remove.execute"),
-	REGION_REMOVE_OWNER("commands.region.remove.owner"),
-	REGION_REMOVE_MEMBER("commands.region.remove.member"),
-	REGION_REMOVE_REGIONS("commands.region.remove.regions"),
+	REGION_REMOVE("commands.region.remove.execute", EWMessages.PERMISSIONS_COMMANDS_REGION_REMOVE_EXECUTE),
+	REGION_REMOVE_OWNER("commands.region.remove.owner", EWMessages.PERMISSIONS_COMMANDS_REGION_REMOVE_OWNER),
+	REGION_REMOVE_MEMBER("commands.region.remove.member", EWMessages.PERMISSIONS_COMMANDS_REGION_REMOVE_MEMBER),
+	REGION_REMOVE_REGIONS("commands.region.remove.regions", EWMessages.PERMISSIONS_COMMANDS_REGION_REMOVE_REGIONS),
 	
-	REGION_REDEFINE("commands.region.redefine.execute"),
-	REGION_REDEFINE_OWNER("commands.region.redefine.owner"),
-	REGION_REDEFINE_MEMBER("commands.region.redefine.member"),
-	REGION_REDEFINE_REGIONS("commands.region.redefine.regions"),
+	REGION_REDEFINE("commands.region.redefine.execute", EWMessages.PERMISSIONS_COMMANDS_REGION_REDEFINE_EXECUTE),
+	REGION_REDEFINE_OWNER("commands.region.redefine.owner", EWMessages.PERMISSIONS_COMMANDS_REGION_REDEFINE_OWNER),
+	REGION_REDEFINE_MEMBER("commands.region.redefine.member", EWMessages.PERMISSIONS_COMMANDS_REGION_REDEFINE_MEMBER),
+	REGION_REDEFINE_REGIONS("commands.region.redefine.regions", EWMessages.PERMISSIONS_COMMANDS_REGION_REDEFINE_REGIONS),
 	
-	REGION_RENAME("commands.region.rename.execute"),
-	REGION_RENAME_OWNER("commands.region.rename.owner"),
-	REGION_RENAME_MEMBER("commands.region.rename.member"),
-	REGION_RENAME_REGIONS("commands.region.rename.regions"),
+	REGION_RENAME("commands.region.rename.execute", EWMessages.PERMISSIONS_COMMANDS_REGION_RENAME_EXECUTE),
+	REGION_RENAME_OWNER("commands.region.rename.owner", EWMessages.PERMISSIONS_COMMANDS_REGION_RENAME_OWNER),
+	REGION_RENAME_MEMBER("commands.region.rename.member", EWMessages.PERMISSIONS_COMMANDS_REGION_RENAME_MEMBER),
+	REGION_RENAME_REGIONS("commands.region.rename.regions", EWMessages.PERMISSIONS_COMMANDS_REGION_RENAME_REGIONS),
 	
-	REGION_SELECT("commands.region.select.execute"),
-	REGION_SELECT_OWNER("commands.region.select.owner"),
-	REGION_SELECT_MEMBER("commands.region.select.member"),
-	REGION_SELECT_REGIONS("commands.region.select.regions"),
+	REGION_SELECT("commands.region.select.execute", EWMessages.PERMISSIONS_COMMANDS_REGION_SELECT_EXECUTE),
+	REGION_SELECT_OWNER("commands.region.select.owner", EWMessages.PERMISSIONS_COMMANDS_REGION_SELECT_OWNER),
+	REGION_SELECT_MEMBER("commands.region.select.member", EWMessages.PERMISSIONS_COMMANDS_REGION_SELECT_MEMBER),
+	REGION_SELECT_REGIONS("commands.region.select.regions", EWMessages.PERMISSIONS_COMMANDS_REGION_SELECT_REGIONS),
 	
-	REGION_FLAG_ADD("commands.region.flag.add.execute"),
-	REGION_FLAG_ADD_OWNER("commands.region.flag.add.owner"),
-	REGION_FLAG_ADD_MEMBER("commands.region.flag.add.member"),
-	REGION_FLAG_ADD_REGIONS("commands.region.flag.add.regions"),
+	REGION_FLAG_ADD("commands.region.flag.add.execute", EWMessages.PERMISSIONS_COMMANDS_REGION_FLAG_ADD_EXECUTE),
+	REGION_FLAG_ADD_OWNER("commands.region.flag.add.owner", EWMessages.PERMISSIONS_COMMANDS_REGION_FLAG_ADD_OWNER),
+	REGION_FLAG_ADD_MEMBER("commands.region.flag.add.member", EWMessages.PERMISSIONS_COMMANDS_REGION_FLAG_ADD_MEMBER),
+	REGION_FLAG_ADD_REGIONS("commands.region.flag.add.regions", EWMessages.PERMISSIONS_COMMANDS_REGION_FLAG_ADD_REGIONS),
 	
-	REGION_FLAG_REMOVE("commands.region.flag.remove.execute"),
-	REGION_FLAG_REMOVE_OWNER("commands.region.flag.remove.owner"),
-	REGION_FLAG_REMOVE_MEMBER("commands.region.flag.remove.member"),
-	REGION_FLAG_REMOVE_REGIONS("commands.region.flag.remove.regions"),
+	REGION_FLAG_REMOVE("commands.region.flag.remove.execute", EWMessages.PERMISSIONS_COMMANDS_REGION_FLAG_REMOVE_EXECUTE),
+	REGION_FLAG_REMOVE_OWNER("commands.region.flag.remove.owner", EWMessages.PERMISSIONS_COMMANDS_REGION_FLAG_REMOVE_OWNER),
+	REGION_FLAG_REMOVE_MEMBER("commands.region.flag.remove.member", EWMessages.PERMISSIONS_COMMANDS_REGION_FLAG_REMOVE_MEMBER),
+	REGION_FLAG_REMOVE_REGIONS("commands.region.flag.remove.regions", EWMessages.PERMISSIONS_COMMANDS_REGION_FLAG_REMOVE_REGIONS),
 	
-	REGION_OWNER_ADD("commands.region.owner.add.execute"),
-	REGION_OWNER_ADD_OWNER("commands.region.owner.add.owner"),
-	REGION_OWNER_ADD_MEMBER("commands.region.owner.add.member"),
-	REGION_OWNER_ADD_REGIONS("commands.region.owner.add.regions"),
+	REGION_OWNER_ADD("commands.region.owner.add.execute", EWMessages.PERMISSIONS_COMMANDS_REGION_OWNER_ADD_EXECUTE),
+	REGION_OWNER_ADD_OWNER("commands.region.owner.add.owner", EWMessages.PERMISSIONS_COMMANDS_REGION_OWNER_ADD_OWNER),
+	REGION_OWNER_ADD_MEMBER("commands.region.owner.add.member", EWMessages.PERMISSIONS_COMMANDS_REGION_OWNER_ADD_MEMBER),
+	REGION_OWNER_ADD_REGIONS("commands.region.owner.add.regions", EWMessages.PERMISSIONS_COMMANDS_REGION_OWNER_ADD_REGIONS),
 	
-	REGION_OWNER_REMOVE("commands.region.owner.remove.execute"),
-	REGION_OWNER_REMOVE_OWNER("commands.region.owner.remove.owner"),
-	REGION_OWNER_REMOVE_MEMBER("commands.region.owner.remove.member"),
-	REGION_OWNER_REMOVE_REGIONS("commands.region.owner.remove.regions"),
+	REGION_OWNER_REMOVE("commands.region.owner.remove.execute", EWMessages.PERMISSIONS_COMMANDS_REGION_OWNER_REMOVE_EXECUTE),
+	REGION_OWNER_REMOVE_OWNER("commands.region.owner.remove.owner", EWMessages.PERMISSIONS_COMMANDS_REGION_OWNER_REMOVE_OWNER),
+	REGION_OWNER_REMOVE_MEMBER("commands.region.owner.remove.member", EWMessages.PERMISSIONS_COMMANDS_REGION_OWNER_REMOVE_MEMBER),
+	REGION_OWNER_REMOVE_REGIONS("commands.region.owner.remove.regions", EWMessages.PERMISSIONS_COMMANDS_REGION_OWNER_REMOVE_REGIONS),
 	
-	REGION_MEMBER_ADD("commands.region.member.add.execute"),
-	REGION_MEMBER_ADD_OWNER("commands.region.member.add.owner"),
-	REGION_MEMBER_ADD_MEMBER("commands.region.member.add.member"),
-	REGION_MEMBER_ADD_REGIONS("commands.region.member.add.regions"),
+	REGION_MEMBER_ADD("commands.region.member.add.execute", EWMessages.PERMISSIONS_COMMANDS_REGION_MEMBER_ADD_EXECUTE),
+	REGION_MEMBER_ADD_OWNER("commands.region.member.add.owner", EWMessages.PERMISSIONS_COMMANDS_REGION_MEMBER_ADD_OWNER),
+	REGION_MEMBER_ADD_MEMBER("commands.region.member.add.member", EWMessages.PERMISSIONS_COMMANDS_REGION_MEMBER_ADD_MEMBER),
+	REGION_MEMBER_ADD_REGIONS("commands.region.member.add.regions", EWMessages.PERMISSIONS_COMMANDS_REGION_MEMBER_ADD_REGIONS),
 	
-	REGION_MEMBER_REMOVE("commands.region.member.remove.execute"),
-	REGION_MEMBER_REMOVE_OWNER("commands.region.member.remove.owner"),
-	REGION_MEMBER_REMOVE_MEMBER("commands.region.member.remove.member"),
-	REGION_MEMBER_REMOVE_REGIONS("commands.region.member.remove.regions"),
+	REGION_MEMBER_REMOVE("commands.region.member.remove.execute", EWMessages.PERMISSIONS_COMMANDS_REGION_MEMBER_REMOVE_EXECUTE),
+	REGION_MEMBER_REMOVE_OWNER("commands.region.member.remove.owner", EWMessages.PERMISSIONS_COMMANDS_REGION_MEMBER_REMOVE_OWNER),
+	REGION_MEMBER_REMOVE_MEMBER("commands.region.member.remove.member", EWMessages.PERMISSIONS_COMMANDS_REGION_MEMBER_REMOVE_MEMBER),
+	REGION_MEMBER_REMOVE_REGIONS("commands.region.member.remove.regions", EWMessages.PERMISSIONS_COMMANDS_REGION_MEMBER_REMOVE_REGIONS),
 	
-	REGION_PARENT("commands.region.setparent.execute"),
-	REGION_PARENT_OWNER("commands.region.setparent.owner"),
-	REGION_PARENT_MEMBER("commands.region.setparent.member"),
-	REGION_PARENT_REGIONS("commands.region.setparent.regions"),
+	REGION_PARENT("commands.region.setparent.execute", EWMessages.PERMISSIONS_COMMANDS_REGION_SETPARENT_EXECUTE),
+	REGION_PARENT_OWNER("commands.region.setparent.owner", EWMessages.PERMISSIONS_COMMANDS_REGION_SETPARENT_OWNER),
+	REGION_PARENT_MEMBER("commands.region.setparent.member", EWMessages.PERMISSIONS_COMMANDS_REGION_SETPARENT_MEMBER),
+	REGION_PARENT_REGIONS("commands.region.setparent.regions", EWMessages.PERMISSIONS_COMMANDS_REGION_SETPARENT_REGIONS),
 	
-	REGION_PRIORITY("commands.region.setpriority.execute"),
-	REGION_PRIORITY_OWNER("commands.region.setpriority.owner"),
-	REGION_PRIORITY_MEMBER("commands.region.setpriority.member"),
-	REGION_PRIORITY_REGIONS("commands.region.setpriority.regions"),
+	REGION_PRIORITY("commands.region.setpriority.execute", EWMessages.PERMISSIONS_COMMANDS_REGION_SETPRIORITY_EXECUTE),
+	REGION_PRIORITY_OWNER("commands.region.setpriority.owner", EWMessages.PERMISSIONS_COMMANDS_REGION_SETPRIORITY_OWNER),
+	REGION_PRIORITY_MEMBER("commands.region.setpriority.member", EWMessages.PERMISSIONS_COMMANDS_REGION_SETPRIORITY_MEMBER),
+	REGION_PRIORITY_REGIONS("commands.region.setpriority.regions", EWMessages.PERMISSIONS_COMMANDS_REGION_SETPRIORITY_REGIONS),
 	
-	REGION_TELEPORT("commands.region.teleport.execute"),
-	REGION_TELEPORT_SPAWN("commands.region.teleport.spawn"),
-	REGION_TELEPORT_OWNER("commands.region.teleport.owner"),
-	REGION_TELEPORT_MEMBER("commands.region.teleport.member"),
-	REGION_TELEPORT_REGIONS("commands.region.teleport.regions"),
+	REGION_TELEPORT("commands.region.teleport.execute", EWMessages.PERMISSIONS_COMMANDS_REGION_TELEPORT_EXECUTE),
+	REGION_TELEPORT_SPAWN("commands.region.teleport.spawn", EWMessages.PERMISSIONS_COMMANDS_REGION_TELEPORT_SPAWN),
+	REGION_TELEPORT_OWNER("commands.region.teleport.owner", EWMessages.PERMISSIONS_COMMANDS_REGION_TELEPORT_OWNER),
+	REGION_TELEPORT_MEMBER("commands.region.teleport.member", EWMessages.PERMISSIONS_COMMANDS_REGION_TELEPORT_MEMBER),
+	REGION_TELEPORT_REGIONS("commands.region.teleport.regions", EWMessages.PERMISSIONS_COMMANDS_REGION_TELEPORT_REGIONS),
 	
-	FLAGS("flags");
+	FLAGS("flags", EWMessages.PERMISSIONS_FLAGS);
 	
-	private final static String prefix = "everworldguard";
+	private static final String PREFIX = "everworldguard";
 	
 	private final String permission;
+	private final EnumMessage message;
+	private final boolean value;
     
-    private EWPermissions(final String permission) {   	
-    	Preconditions.checkNotNull(permission, "La permission '" + this.name() + "' n'est pas définit");
-    	
-    	this.permission = permission;
+    private EWPermissions(final String permission, final EnumMessage message) {
+    	this(permission, message, false);
+    }
+    
+    private EWPermissions(final String permission, final EnumMessage message, final boolean value) {   	    	
+    	this.permission = PREFIX + "." + permission;
+    	this.message = message;
+    	this.value = value;
     }
 
+    @Override
     public String get() {
-		return EWPermissions.prefix + "." + this.permission;
+		return this.permission;
 	}
-    
-    public boolean has(CommandSource player) {
-    	return player.hasPermission(this.get());
-    }
+
+	@Override
+	public boolean getDefault() {
+		return this.value;
+	}
+
+	@Override
+	public EnumMessage getMessage() {
+		return this.message;
+	}
 }

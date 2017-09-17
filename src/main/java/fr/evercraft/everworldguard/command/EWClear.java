@@ -53,8 +53,9 @@ public class EWClear extends ESubCommand<EverWorldGuard > {
 	}
 
 	public Text help(final CommandSource source) {
-		return Text.builder("/" + this.getName() + " ").onClick(TextActions.suggestCommand("/" + this.getName() + " "))
-				.append(Text.of(" [confirmation]"))
+		return Text.builder("/" + this.getName() + " [" + EAMessages.ARGS_WORLD.getString() + "]")
+				.onClick(TextActions.suggestCommand("/" + this.getName() + " "))
+				.append(Text.of(" [-confirmation]"))
 				.color(TextColors.RED).build();
 	}
 	

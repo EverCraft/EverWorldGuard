@@ -54,7 +54,7 @@ public class EWBypass extends ESubCommand<EverWorldGuard> {
 	
 	@Override
 	public boolean testPermission(final CommandSource source) {
-		return source.hasPermission(EWPermissions.REGION_BYPASS.get());
+		return source.hasPermission(EWPermissions.BYPASS.get());
 	}
 
 	@Override
