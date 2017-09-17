@@ -23,6 +23,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.world.World;
 
 import fr.evercraft.everapi.message.EMessageSender;
@@ -31,6 +32,7 @@ import fr.evercraft.everapi.services.worldguard.Flag;
 import fr.evercraft.everapi.services.worldguard.WorldGuardSubject;
 import fr.evercraft.everapi.services.worldguard.WorldGuardService;
 import fr.evercraft.everapi.services.worldguard.WorldGuardWorld;
+import fr.evercraft.everworldguard.EWPermissions;
 import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.protection.index.EWWorld;
 import fr.evercraft.everworldguard.protection.subject.EUserSubject;
@@ -178,5 +180,10 @@ public class EProtectionService implements WorldGuardService {
 	
 	public FlagRegister getRegister() {
 		return this.flagsRegister;
+	}
+
+	@Override
+	public boolean hasPermissionFlag(final Subject subject, final Flag<?> flag) {
+		return subject.hasPermission(EWPermissions.FLAGS.get() + "." + flag.getName().toLowerCase());
 	}
 }
