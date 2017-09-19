@@ -680,4 +680,9 @@ public class EWMessage extends EMessage<EverWorldGuard> {
 			this.builder = message;
 		}
 	}
+	
+	@Override
+	public EnumMessage getPrefix() {
+		return EWMessages.PREFIX;
+	}
 }

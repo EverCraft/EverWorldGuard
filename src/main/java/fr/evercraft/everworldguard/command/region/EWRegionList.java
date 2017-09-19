@@ -66,9 +66,9 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 				
 				if (optWorld.isPresent()) {
 					this.plugin.getEServer().getWorld(optWorld.get()).ifPresent(world -> 
-						suggests.addAll(this.getAllGroups(world)));
+						suggests.addAll(this.getAllGroups(world.getName())));
 				} else if (source instanceof Player) {
-					suggests.addAll(this.getAllGroups(((Player) source).getWorld()));
+					suggests.addAll(this.getAllGroups(((Player) source).getWorld().getName()));
 				}
 				
 				return suggests;
