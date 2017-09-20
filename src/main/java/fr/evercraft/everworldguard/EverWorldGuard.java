@@ -112,6 +112,10 @@ public class EverWorldGuard extends EPlugin<EverWorldGuard> {
 		return this.configs;
 	}
 	
+	public EWPermissions[] getPermissions() {
+		return EWPermissions.values();
+	}
+	
 	public EWFlagConfig getConfigFlags() {
 		return this.configFlags;
 	}
