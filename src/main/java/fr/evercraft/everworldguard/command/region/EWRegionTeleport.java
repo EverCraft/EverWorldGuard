@@ -94,7 +94,7 @@ public class EWRegionTeleport extends ESubCommand<EverWorldGuard> {
 	
 	@Override
 	public Collection<String> tabCompleter(final CommandSource source, final List<String> args) throws CommandException {
-		return this.pattern.suggest(source, args);
+		return this.pattern.suggest(this.plugin, source, args);
 	}
 	
 	@Override
@@ -107,7 +107,7 @@ public class EWRegionTeleport extends ESubCommand<EverWorldGuard> {
 		}
 		EPlayer player = (EPlayer) source;
 		
-		Args args = this.pattern.build(args_list);
+		Args args = this.pattern.build(this.plugin, source, args_list);
 		
 		if (args.getArgs().size() != 1) {
 			source.sendMessage(this.help(source));

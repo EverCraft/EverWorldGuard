@@ -90,12 +90,12 @@ public class EWRegionPriority extends ESubCommand<EverWorldGuard> {
 	
 	@Override
 	public Collection<String> tabCompleter(final CommandSource source, final List<String> args) throws CommandException {
-		return this.pattern.suggest(source, args);
+		return this.pattern.suggest(this.plugin, source, args);
 	}
 	
 	@Override
 	public CompletableFuture<Boolean> execute(final CommandSource source, final List<String> args_list) throws CommandException {
-		Args args = this.pattern.build(args_list);
+		Args args = this.pattern.build(this.plugin, source, args_list);
 		
 		if (args.getArgs().size() != 2) {
 			source.sendMessage(this.help(source));

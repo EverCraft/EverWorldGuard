@@ -81,11 +81,11 @@ public class EWManagerFlags {
 		ENTITY_DAMAGE = new FlagEntityDamage(this.plugin);
 		ENTITY_SPAWNING = new FlagEntitySpawning(this.plugin);
 		ENTRY = new FlagEntry();
-		ENTRY_MESSAGE = new FlagEntryMsg();
-		ENTRY_DENY_MESSAGE = new FlagEntryDenyMsg();
+		ENTRY_MESSAGE = new FlagEntryMsg(this.plugin);
+		ENTRY_DENY_MESSAGE = new FlagEntryDenyMsg(this.plugin);
 		EXIT = new FlagExit();
-		EXIT_MESSAGE = new FlagExitMsg();
-		EXIT_DENY_MESSAGE = new FlagExitDenyMsg();
+		EXIT_MESSAGE = new FlagExitMsg(this.plugin);
+		EXIT_DENY_MESSAGE = new FlagExitDenyMsg(this.plugin);
 		EXP_DROP = new FlagExpDrop(this.plugin);
 		EXPLOSION = new FlagExplosion(this.plugin);
 		EXPLOSION_BLOCK = new FlagExplosionBlock(this.plugin);

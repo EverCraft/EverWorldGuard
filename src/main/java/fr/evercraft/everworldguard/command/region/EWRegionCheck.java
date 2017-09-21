@@ -90,7 +90,7 @@ public class EWRegionCheck extends ESubCommand<EverWorldGuard> {
 	
 	@Override
 	public Collection<String> tabCompleter(final CommandSource source, final List<String> args) throws CommandException {
-		return this.pattern.suggest(source, args);
+		return this.pattern.suggest(this.plugin, source, args);
 	}
 	
 	@Override
@@ -103,7 +103,7 @@ public class EWRegionCheck extends ESubCommand<EverWorldGuard> {
 		}
 		EPlayer player = (EPlayer) source;
 		
-		Args args = this.pattern.build(args_list);
+		Args args = this.pattern.build(this.plugin, source, args_list);
 		
 		Optional<String> optGroupString = args.getValue(MARKER_REGION_GROUP);
 		Optional<String> optFlagString = args.getValue(MARKER_FLAG);

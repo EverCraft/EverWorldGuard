@@ -28,12 +28,13 @@ import fr.evercraft.everapi.services.worldguard.WorldGuardService.Priorities;
 import fr.evercraft.everapi.services.worldguard.flag.MessageFlag;
 import fr.evercraft.everapi.services.worldguard.region.ProtectedRegion;
 import fr.evercraft.everapi.sponge.UtilsContexts;
+import fr.evercraft.everworldguard.EverWorldGuard;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 
 public class FlagExitDenyMsg extends MessageFlag {
 	
-	public FlagExitDenyMsg() {
-		super("EXIT_DENY_MSG");
+	public FlagExitDenyMsg(EverWorldGuard plugin) {
+		super(plugin, "EXIT_DENY_MSG");
 	}
 	
 	@Override
