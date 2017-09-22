@@ -17,7 +17,6 @@
 package fr.evercraft.everworldguard.command.region;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -49,7 +48,6 @@ import fr.evercraft.everworldguard.EverWorldGuard;
 
 public class EWRegionRedefine extends ESubCommand<EverWorldGuard> {
 	
-	public static final String MARKER_WORLD = "-w";
 	public static final String MARKER_TEMPLATE = "-t";
 	
 	private final Args.Builder pattern;
@@ -59,16 +57,11 @@ public class EWRegionRedefine extends ESubCommand<EverWorldGuard> {
         
         this.pattern = Args.builder()
 			.empty(MARKER_TEMPLATE)
-			.value(MARKER_WORLD, 
+			.value(Args.MARKER_WORLD, 
 					(source, args) -> this.getAllWorlds(),
 					(source, args) -> args.getArgs().size() <= 1)
 			.arg((source, args) -> {
-				Optional<World> world = EWRegion.getWorld(this.plugin, source, args, MARKER_WORLD);
-				if (!world.isPresent()) {
-					return Arrays.asList();
-				}
-				
-				return this.plugin.getProtectionService().getOrCreateEWorld(world.get()).getAll().stream()
+				return this.plugin.getProtectionService().getOrCreateEWorld(args.getWorld()).getAll().stream()
 							.map(region -> region.getName())
 							.collect(Collectors.toSet());
 			});
@@ -86,7 +79,7 @@ public class EWRegionRedefine extends ESubCommand<EverWorldGuard> {
 
 	@Override
 	public Text help(final CommandSource source) {
-		return Text.builder("/" + this.getName() + " [" + MARKER_WORLD + " " + EAMessages.ARGS_WORLD.getString() + "]" 
+		return Text.builder("/" + this.getName() + " [" + Args.MARKER_WORLD + " " + EAMessages.ARGS_WORLD.getString() + "]" 
 												 + " [" + MARKER_TEMPLATE + "]"
 												 + " <" + EAMessages.ARGS_REGION.getString() + ">")
 				.onClick(TextActions.suggestCommand("/" + this.getName() + " "))

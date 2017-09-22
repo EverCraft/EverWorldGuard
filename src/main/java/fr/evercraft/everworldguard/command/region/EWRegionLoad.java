@@ -18,7 +18,6 @@ package fr.evercraft.everworldguard.command.region;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import org.spongepowered.api.command.CommandException;
@@ -29,24 +28,22 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.World;
 
 import fr.evercraft.everapi.EAMessage.EAMessages;
+import fr.evercraft.everapi.exception.message.EMessageException;
 import fr.evercraft.everapi.plugin.command.Args;
 import fr.evercraft.everapi.plugin.command.ESubCommand;
-import fr.evercraft.everapi.server.player.EPlayer;
 import fr.evercraft.everworldguard.EWMessage.EWMessages;
 import fr.evercraft.everworldguard.EWPermissions;
 import fr.evercraft.everworldguard.EverWorldGuard;
 
 public class EWRegionLoad extends ESubCommand<EverWorldGuard> {
-	
-	public static final String MARKER_WORLD = "-w";
-	
+		
 	private final Args.Builder pattern;
 	
 	public EWRegionLoad(final EverWorldGuard plugin, final EWRegion command) {
         super(plugin, command, "load");
         
         this.pattern = Args.builder()
-    		.value(MARKER_WORLD, 
+    		.value(Args.MARKER_WORLD, 
 					(source, args) -> this.getAllWorlds(),
 					(source, args) -> args.getArgs().size() <= 1);
     }
@@ -75,31 +72,15 @@ public class EWRegionLoad extends ESubCommand<EverWorldGuard> {
 	}
 	
 	@Override
-	public CompletableFuture<Boolean> execute(final CommandSource source, final List<String> args_list) throws CommandException {
+	public CompletableFuture<Boolean> execute(final CommandSource source, final List<String> args_list) throws CommandException, EMessageException {
 		Args args = this.pattern.build(this.plugin, source, args_list);
-		
-		Optional<String> worldString = args.getValue(MARKER_WORLD);
-		if (worldString.isPresent()) {
-			Optional<World> world = this.plugin.getEServer().getEWorld(worldString.get());
-			// Monde introuvable
-			if (!world.isPresent()) {
-				EAMessages.WORLD_NOT_FOUND.sender()
-					.prefix(EWMessages.PREFIX)
-					.replace("{world}", worldString.get())
-					.sendTo(source);
-				return CompletableFuture.completedFuture(false);
-			}
-			
-			return this.commandRegionLoad(source, world.get());
-		}
-		
-		if (!(source instanceof EPlayer)) {
-			EAMessages.COMMAND_ERROR_FOR_PLAYER.sender()
-				.prefix(EWMessages.PREFIX)
-				.sendTo(source);
+
+		if (args.getArgs().size() > 0) {
+			source.sendMessage(this.help(source));
 			return CompletableFuture.completedFuture(false);
 		}
-		return this.commandRegionLoad(source, ((EPlayer) source).getWorld());
+		
+		return this.commandRegionLoad(source, args.getWorld());
 	}
 
 	private CompletableFuture<Boolean> commandRegionLoad(CommandSource source, World world) {

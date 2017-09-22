@@ -17,7 +17,6 @@
 package fr.evercraft.everworldguard.command.region;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -63,9 +62,7 @@ import fr.evercraft.everworldguard.EWPermissions;
 import fr.evercraft.everworldguard.EverWorldGuard;
 
 public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
-	
-	public static final String MARKER_WORLD = "-w";
-	
+		
 	private final Args.Builder pattern;
 	
 	public EWRegionInfo(final EverWorldGuard plugin, final EWRegion command) {
@@ -74,16 +71,11 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
         this.plugin.getGame().getEventManager().registerListeners(this.plugin, this);
         
         this.pattern = Args.builder()
-    		.value(MARKER_WORLD, 
+    		.value(Args.MARKER_WORLD, 
 					(source, args) -> this.getAllWorlds(),
 					(source, args) -> args.getArgs().size() <= 1)
 			.arg((source, args) -> {
-				Optional<World> world = EWRegion.getWorld(this.plugin, source, args, MARKER_WORLD);
-				if (!world.isPresent()) {
-					return Arrays.asList();
-				}
-				
-				return this.plugin.getProtectionService().getOrCreateEWorld(world.get()).getAll().stream()
+				return this.plugin.getProtectionService().getOrCreateEWorld(args.getWorld()).getAll().stream()
 							.map(region -> region.getName())
 							.collect(Collectors.toSet());
 			});
@@ -101,7 +93,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 
 	@Override
 	public Text help(final CommandSource source) {
-		return Text.builder("/" + this.getName() + " [[-w " + EAMessages.ARGS_WORLD.getString() + "]"
+		return Text.builder("/" + this.getName() + " [[" + Args.MARKER_WORLD + " " + EAMessages.ARGS_WORLD.getString() + "]"
 												 + " " + EAMessages.ARGS_REGION.getString() + "]")
 				.onClick(TextActions.suggestCommand("/" + this.getName() + " "))
 				.color(TextColors.RED)
@@ -119,7 +111,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 		
 		if (args.getArgs().size() == 0) {
 			if (source instanceof EPlayer) {
-				Optional<String> world = args.getValue(MARKER_WORLD);
+				Optional<String> world = args.getValue(Args.MARKER_WORLD);
 				if (world.isPresent()) {
 					source.sendMessage(this.help(source));
 				} else {
@@ -132,7 +124,7 @@ public class EWRegionInfo extends ESubCommand<EverWorldGuard> {
 					.sendTo(source);
 			}
 		} else if (args.getArgs().size() == 1) {
-			Optional<String> world = args.getValue(MARKER_WORLD);
+			Optional<String> world = args.getValue(Args.MARKER_WORLD);
 			if (world.isPresent()) {
 				return this.commandRegionInfo(source, args.getArgs().get(0), world.get());
 			} else {

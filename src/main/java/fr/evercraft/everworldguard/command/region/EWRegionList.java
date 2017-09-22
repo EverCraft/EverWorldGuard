@@ -33,6 +33,7 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.World;
 
 import fr.evercraft.everapi.EAMessage.EAMessages;
+import fr.evercraft.everapi.exception.message.EMessageException;
 import fr.evercraft.everapi.message.format.EFormat;
 import fr.evercraft.everapi.plugin.command.Args;
 import fr.evercraft.everapi.plugin.command.ESubCommand;
@@ -46,21 +47,17 @@ import fr.evercraft.everworldguard.EverWorldGuard;
 
 public class EWRegionList extends ESubCommand<EverWorldGuard> {
 	
-	public static final String MARKER_WORLD = "-w";
-	public static final String MARKER_PLAYER = "-p";
-	public static final String MARKER_GROUP = "-g";
-	
 	private final Args.Builder pattern;
 	
 	public EWRegionList(final EverWorldGuard plugin, final EWRegion command) {
         super(plugin, command, "list");
         
         this.pattern = Args.builder()
-    		.value(MARKER_WORLD, 
+    		.value(Args.MARKER_WORLD, 
 					(source, args) -> this.getAllWorlds(),
 					(source, args) -> args.getArgs().size() <= 1)
-			.value(MARKER_PLAYER, (source, args) -> this.getAllPlayers(source, false))
-			.value(MARKER_GROUP, (source, args) ->  {
+			.value(Args.MARKER_PLAYER, (source, args) -> this.getAllPlayers(source, false))
+			.value(Args.MARKER_GROUP, (source, args) ->  {
 				List<String> suggests = new ArrayList<String>();
 				Optional<String> optWorld = args.getArg(0);
 				
@@ -87,8 +84,9 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 
 	@Override
 	public Text help(final CommandSource source) {
-		return Text.builder("/" + this.getName() + " [-w " + EAMessages.ARGS_WORLD.getString() + "]"
-												 + " [-p " + EAMessages.ARGS_PLAYER.getString() + " | -g " + EAMessages.ARGS_GROUP.getString() + "]")
+		return Text.builder("/" + this.getName() + " [" + Args.MARKER_WORLD + " " + EAMessages.ARGS_WORLD.getString() + "]"
+												 + " [" + Args.MARKER_PLAYER + " " + EAMessages.ARGS_PLAYER.getString() 
+												 + " | " + Args.MARKER_GROUP + " " + EAMessages.ARGS_GROUP.getString() + "]")
 				.onClick(TextActions.suggestCommand("/" + this.getName() + " "))
 				.color(TextColors.RED)
 				.build();
@@ -100,7 +98,7 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 	}
 	
 	@Override
-	public CompletableFuture<Boolean> execute(final CommandSource source, final List<String> args_list) throws CommandException {
+	public CompletableFuture<Boolean> execute(final CommandSource source, final List<String> args_list) throws CommandException, EMessageException {
 		Args args = this.pattern.build(this.plugin, source, args_list);
 		
 		if (args.getArgs().size() > 0) {
@@ -108,39 +106,21 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 			return CompletableFuture.completedFuture(false);
 		}
 		
-		World world = null;
-		Optional<String> arg_world = args.getValue(MARKER_WORLD);
-		if (arg_world.isPresent()) {
-			Optional<World> optWorld = this.plugin.getEServer().getWorld(arg_world.get());
-			if (optWorld.isPresent()) {
-				world = optWorld.get();
-			} else {
-				EAMessages.WORLD_NOT_FOUND.sender()
-					.prefix(EWMessages.PREFIX)
-					.replace("{world}", arg_world.get())
-					.sendTo(source);
-				return CompletableFuture.completedFuture(false);
-			}
-		} else if (source instanceof EPlayer) {
-			world = ((EPlayer) source).getWorld();
-		} else {
-			EAMessages.COMMAND_ERROR_FOR_PLAYER.sender()
-				.prefix(EWMessages.PREFIX)
-				.sendTo(source);
-			return CompletableFuture.completedFuture(false);
-		}
+		Optional<List<EUser>> arg_players = args.getValue(Args.MARKER_PLAYER, Args.USERS);
+		Optional<String> arg_group = args.getValue(Args.MARKER_GROUP);
 		
-		Optional<String> arg_player = args.getValue(MARKER_PLAYER);
-		Optional<String> arg_group = args.getValue(MARKER_GROUP);
-		
-		if (arg_player.isPresent() && arg_group.isPresent()) {
+		if (arg_players.isPresent() && arg_group.isPresent()) {
 			source.sendMessage(this.help(source));
 			return CompletableFuture.completedFuture(false);
 		
 		// Commande pour les régions d'un joueurs
-		} else if (arg_player.isPresent()) {
+		} else if (arg_players.isPresent()) {
 			if (source.hasPermission(EWPermissions.REGION_LIST_OTHERS.get())) {
-				return this.commandRegionListPlayer(source, world, arg_player.get());
+				World world = args.getWorld();
+				for (EUser player : arg_players.get()) {
+					this.commandRegionListPlayer(source, world, player);
+				}
+				return CompletableFuture.completedFuture(true);
 			} else {
 				EAMessages.NO_PERMISSION.sender()
 					.prefix(EWMessages.PREFIX)
@@ -151,7 +131,7 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 		// Commande pour les régions d'un groupe
 		} else if (arg_group.isPresent()) {
 			if (source.hasPermission(EWPermissions.REGION_LIST_OTHERS.get())) {
-				return this.commandRegionListGroup(source, world, arg_group.get());
+				return this.commandRegionListGroup(source, args.getWorld(), arg_group.get());
 			} else {
 				EAMessages.NO_PERMISSION.sender()
 					.prefix(EWMessages.PREFIX)
@@ -162,9 +142,10 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 		// Commande pour toutes les régions
 		} else {
 			if (source.hasPermission(EWPermissions.REGION_LIST_OTHERS.get())) {
-				return this.commandRegionList(source, world);
+				return this.commandRegionList(source, args.getWorld());
 			} else if(source instanceof EPlayer) {
-				return this.commandRegionListPlayer(source, world, (EPlayer) source);
+				this.commandRegionListPlayer(source, args.getWorld(), (EPlayer) source);
+				return CompletableFuture.completedFuture(true);
 			} else {
 				EAMessages.COMMAND_ERROR_FOR_PLAYER.sender()
 					.prefix(EWMessages.PREFIX)
@@ -203,22 +184,8 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 		
 		return CompletableFuture.completedFuture(true);
 	}
-
-	private CompletableFuture<Boolean> commandRegionListPlayer(final CommandSource staff, final World world, final String playerString) {
-		Optional<EUser> user = this.plugin.getEServer().getEUser(playerString);
-		// Le joueur est introuvable
-		if (!user.isPresent()) {
-			EAMessages.PLAYER_NOT_FOUND.sender()
-				.prefix(EWMessages.PREFIX)
-				.replace("{player}", playerString)
-				.sendTo(staff);
-			return CompletableFuture.completedFuture(false);
-		}
-		
-		return this.commandRegionListPlayer(staff, world, user.get());
-	}
 	
-	private CompletableFuture<Boolean> commandRegionListPlayer(final CommandSource staff, final World world, final EUser user) {
+	private void commandRegionListPlayer(final CommandSource staff, final World world, final EUser user) {
 		TreeMap<String, Text> list = new TreeMap<String, Text>();
 		for (ProtectedRegion region : this.plugin.getProtectionService().getOrCreateEWorld(world).getAll()) {
 			if (region.isOwnerOrMember(user, UtilsContexts.get(world.getName()))) {
@@ -254,8 +221,6 @@ public class EWRegionList extends ESubCommand<EverWorldGuard> {
 					.onClick(TextActions.runCommand("/" + this.getName() + " -w \"" + world.getName() + "\" -p \"" + user.getIdentifier() + "\""))
 					.build(), 
 				new ArrayList<Text>(list.values()), staff);
-		
-		return CompletableFuture.completedFuture(true);
 	}
 	
 	private CompletableFuture<Boolean> commandRegionListGroup(final CommandSource player, final World world, final String groupString) {

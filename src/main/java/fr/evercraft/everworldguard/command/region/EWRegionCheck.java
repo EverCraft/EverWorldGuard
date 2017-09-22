@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandSource;
@@ -44,31 +43,20 @@ import fr.evercraft.everworldguard.EverWorldGuard;
 
 public class EWRegionCheck extends ESubCommand<EverWorldGuard> {
 	
-	public static final String MARKER_REGION_GROUP = "-g";
-	public static final String MARKER_FLAG = "-f";
-	
 	private final Args.Builder pattern;
 	
 	public EWRegionCheck(final EverWorldGuard plugin, final EWRegion command) {
 		super(plugin, command, "check");
 
 		this.pattern = Args.builder()
-			.value(MARKER_REGION_GROUP, 
-					(source, args) -> {
-						return this.plugin.getGame().getRegistry().getAllOf(ProtectedRegion.Group.class).stream()
-							.map(group -> group.getName())
-							.collect(Collectors.toList());
-					},
+			.value(Args.MARKER_GROUP, 
+					(source, args) -> this.getAll(ProtectedRegion.Group.class),
 					(source, args) -> args.countValues() == 0)
-			.value(MARKER_FLAG, 
-					(source, args) -> {
-						return this.plugin.getGame().getRegistry().getAllOf(Flag.class).stream()
-							.map(group -> group.getName())
-							.collect(Collectors.toList());
-					},
+			.value(Args.MARKER_FLAG, 
+					(source, args) -> this.getAll(Flag.class),
 					(source, args) -> args.countValues() == 0);
 	}
-	
+
 	@Override
 	public boolean testPermission(final CommandSource source) {
 		return source.hasPermission(EWPermissions.REGION_CHECK.get());
@@ -81,8 +69,8 @@ public class EWRegionCheck extends ESubCommand<EverWorldGuard> {
 
 	@Override
 	public Text help(final CommandSource source) {
-		return Text.builder("/" + this.getName() + " <" + MARKER_REGION_GROUP + " " + EAMessages.ARGS_REGION_GROUP.getString()
-												 + " | " + MARKER_FLAG + " " + EAMessages.ARGS_FLAG.getString() + ">")
+		return Text.builder("/" + this.getName() + " <" + Args.MARKER_GROUP + " " + EAMessages.ARGS_REGION_GROUP.getString()
+												 + " | " + Args.MARKER_FLAG + " " + EAMessages.ARGS_FLAG.getString() + ">")
 				.onClick(TextActions.suggestCommand("/" + this.getName() + " "))
 				.color(TextColors.RED)
 				.build();
@@ -105,8 +93,8 @@ public class EWRegionCheck extends ESubCommand<EverWorldGuard> {
 		
 		Args args = this.pattern.build(this.plugin, source, args_list);
 		
-		Optional<String> optGroupString = args.getValue(MARKER_REGION_GROUP);
-		Optional<String> optFlagString = args.getValue(MARKER_FLAG);
+		Optional<String> optGroupString = args.getValue(Args.MARKER_GROUP);
+		Optional<String> optFlagString = args.getValue(Args.MARKER_FLAG);
 		
 		if (!args.getArgs().isEmpty() || args.countValues() != 1) {
 			player.sendMessage(this.help(player));
@@ -154,7 +142,7 @@ public class EWRegionCheck extends ESubCommand<EverWorldGuard> {
 				EWMessages.REGION_CHECK_GROUP_TITLE.getFormat()
 					.toText("{group}", group.getNameFormat())
 					.toBuilder()
-					.onClick(TextActions.runCommand("/" + this.getName() + " " + MARKER_REGION_GROUP + " " + group.getName()))
+					.onClick(TextActions.runCommand("/" + this.getName() + " " + Args.MARKER_GROUP + " " + group.getName()))
 					.build(), 
 					new ArrayList<Text>(map.values()), player);
 		

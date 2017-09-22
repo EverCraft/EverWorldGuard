@@ -31,6 +31,7 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.World;
 
 import fr.evercraft.everapi.EAMessage.EAMessages;
+import fr.evercraft.everapi.exception.message.EMessageException;
 import fr.evercraft.everapi.plugin.command.Args;
 import fr.evercraft.everapi.plugin.command.ESubCommand;
 import fr.evercraft.everapi.server.player.EPlayer;
@@ -43,25 +44,18 @@ import fr.evercraft.everworldguard.EWPermissions;
 import fr.evercraft.everworldguard.EverWorldGuard;
 
 public class EWRegionRename extends ESubCommand<EverWorldGuard> {
-	
-	public static final String MARKER_WORLD = "-w";
-	
+		
 	private final Args.Builder pattern;
 	
 	public EWRegionRename(final EverWorldGuard plugin, final EWRegion command) {
 		super(plugin, command, "rename");
 		
 		this.pattern = Args.builder()
-			.value(MARKER_WORLD, 
+			.value(Args.MARKER_WORLD, 
 					(source, args) -> this.getAllWorlds(),
 					(source, args) -> args.getArgs().size() <= 1)
 			.arg((source, args) -> {
-				Optional<World> world = EWRegion.getWorld(this.plugin, source, args, MARKER_WORLD);
-				if (!world.isPresent()) {
-					return Arrays.asList();
-				}
-				
-				return this.plugin.getProtectionService().getOrCreateEWorld(world.get()).getAll().stream()
+				return this.plugin.getProtectionService().getOrCreateEWorld(args.getWorld()).getAll().stream()
 							.map(region -> region.getName())
 							.collect(Collectors.toSet());
 			})
@@ -80,7 +74,7 @@ public class EWRegionRename extends ESubCommand<EverWorldGuard> {
 
 	@Override
 	public Text help(final CommandSource source) {
-		return Text.builder("/" + this.getName() + " [" + MARKER_WORLD + " " + EAMessages.ARGS_WORLD.getString() + "]"
+		return Text.builder("/" + this.getName() + " [" + Args.MARKER_WORLD + " " + EAMessages.ARGS_WORLD.getString() + "]"
 												 + " <" + EAMessages.ARGS_REGION.getString() + ">"
 												 + " <" + EAMessages.ARGS_VALUE.getString() + ">")
 				.onClick(TextActions.suggestCommand("/" + this.getName() + " "))
@@ -94,7 +88,7 @@ public class EWRegionRename extends ESubCommand<EverWorldGuard> {
 	}
 	
 	@Override
-	public CompletableFuture<Boolean> execute(final CommandSource source, final List<String> args_list) throws CommandException {
+	public CompletableFuture<Boolean> execute(final CommandSource source, final List<String> args_list) throws CommandException, EMessageException {
 		Args args = this.pattern.build(this.plugin, source, args_list);
 		
 		if (args.getArgs().size() != 2) {
@@ -103,28 +97,7 @@ public class EWRegionRename extends ESubCommand<EverWorldGuard> {
 		}
 		List<String> args_string = args.getArgs();
 		
-		World world = null;
-		Optional<String> world_arg = args.getValue(MARKER_WORLD);
-		if (world_arg.isPresent()) {
-			Optional<World> optWorld = this.plugin.getEServer().getWorld(world_arg.get());
-			if (optWorld.isPresent()) {
-				world = optWorld.get();
-			} else {
-				EAMessages.WORLD_NOT_FOUND.sender()
-					.prefix(EWMessages.PREFIX)
-					.replace("{world}", world_arg.get())
-					.sendTo(source);
-				return CompletableFuture.completedFuture(false);
-			}
-		} else if (source instanceof EPlayer) {
-			world = ((EPlayer) source).getWorld();
-		} else {
-			EAMessages.COMMAND_ERROR_FOR_PLAYER.sender()
-				.prefix(EWMessages.PREFIX)
-				.sendTo(source);
-			return CompletableFuture.completedFuture(false);
-		}
-		
+		World world = args.getWorld();
 		WorldGuardWorld manager = this.plugin.getProtectionService().getOrCreateEWorld(world);
 		Optional<ProtectedRegion> region = manager.getRegion(args_string.get(0));
 		// Region introuvable

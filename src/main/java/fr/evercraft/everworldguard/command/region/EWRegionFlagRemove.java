@@ -45,19 +45,17 @@ import fr.evercraft.everworldguard.EverWorldGuard;
 
 public class EWRegionFlagRemove extends ESubCommand<EverWorldGuard> {
 	
-	public static final String MARKER_WORLD = "-w";
-	
 	private final Args.Builder pattern;
 	
 	public EWRegionFlagRemove(final EverWorldGuard plugin, final EWRegion command) {
         super(plugin, command, "removeflag");
         
         this.pattern = Args.builder()
-    		.value(MARKER_WORLD, 
+    		.value(Args.MARKER_WORLD, 
 					(source, args) -> this.getAllWorlds(),
 					(source, args) -> args.getArgs().size() <= 1)
 			.arg((source, args) -> {
-				Optional<World> world = EWRegion.getWorld(this.plugin, source, args, MARKER_WORLD);
+				Optional<World> world = EWRegion.getWorld(this.plugin, source, args, Args.MARKER_WORLD);
 				if (!world.isPresent()) {
 					return Arrays.asList();
 				}
@@ -115,7 +113,7 @@ public class EWRegionFlagRemove extends ESubCommand<EverWorldGuard> {
 
 	@Override
 	public Text help(final CommandSource source) {
-		return Text.builder("/" + this.getName() + " [" + MARKER_WORLD + " " + EAMessages.ARGS_WORLD.getString() + "]"
+		return Text.builder("/" + this.getName() + " [" + Args.MARKER_WORLD + " " + EAMessages.ARGS_WORLD.getString() + "]"
 												 + " <" + EAMessages.ARGS_REGION.getString() + ">"
 												 + " <" + EAMessages.ARGS_FLAG.getString() + ">"
 												 + " <" + EAMessages.ARGS_REGION_GROUP.getString() + ">"
@@ -141,7 +139,7 @@ public class EWRegionFlagRemove extends ESubCommand<EverWorldGuard> {
 		List<String> args_string = args.getArgs();
 		
 		World world = null;
-		Optional<String> world_arg = args.getValue(MARKER_WORLD);
+		Optional<String> world_arg = args.getValue(Args.MARKER_WORLD);
 		if (world_arg.isPresent()) {
 			Optional<World> optWorld = this.plugin.getEServer().getWorld(world_arg.get());
 			if (optWorld.isPresent()) {
